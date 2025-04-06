@@ -1,0 +1,154 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MudBlazor
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="MyCustomTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+	<MudAppBar Elevation="1">
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+		<img src="images/logo500.png" asp-append-version="true" width="150px" />
+		<MudSpacer />
+		<AuthorizeView>
+			<Authorized>
+				<MudAvatar>
+					<MudImage Src="https://mudblazor.com/images/mony.jpg"></MudImage>
+				</MudAvatar>
+				<MudButton @onclick="Logout" EndIcon="@Icons.Material.Filled.Logout">Log out</MudButton>
+			</Authorized>
+			<NotAuthorized>
+				<MudButton Href="authentication/login" StartIcon="@Icons.Material.Filled.Login">Log in</MudButton>
+			</NotAuthorized>
+		</AuthorizeView>
+	</MudAppBar>
+	<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+		<MudNavMenu Class="ma-2">
+			<MudNavLink Icon="@Icons.Material.Filled.Home" Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.AllInbox" Href="/referrals" Match="NavLinkMatch.All">Referrals</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/calendar" Match="NavLinkMatch.All">Calendar</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.Summarize" Href="/reports" Match="NavLinkMatch.All">Reports</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.Payments" Href="/billing" Match="NavLinkMatch.All">Billing</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.Handshake" Href="/crm" Match="NavLinkMatch.All">CRM</MudNavLink>
+		</MudNavMenu>
+	</MudDrawer>
+	<MudMainContent>
+		<MudContainer>
+			<MudPaper Class="pa-8 ma-2">
+				@Body
+			</MudPaper>
+		</MudContainer>
+	</MudMainContent>
+</MudLayout>
+
+<style>
+	.mud-navmenu.mud-navmenu-default .mud-nav-link.active:not(.mud-nav-link-disabled) {
+		background-color: white;
+		color: black;
+		border-top-left-radius: 20px;
+		border-bottom-left-radius: 20px;
+	}
+
+	.mud-navmenu.mud-navmenu-default .mud-nav-link:hover:not(.mud-nav-link-disabled) {
+		background-color: rgba(255,255,255,0.3);
+		border-top-left-radius: 20px;
+		border-bottom-left-radius: 20px;
+	}
+
+	a.mud-nav-link.mud-ripple.active svg.mud-icon-root.mud-icon-default.mud-svg-icon.mud-icon-size-medium.mud-nav-link-icon.mud-nav-link-icon-default{
+		color: black;
+	}
+</style>
+
+@code {
+	MudTheme MyCustomTheme = new MudTheme()
+		{
+			PaletteLight = new PaletteLight()
+			{
+				Black = Colors.Shades.Black,
+				White = Colors.Shades.Black,
+
+				Primary = Colors.Blue.Darken4,
+				TextPrimary = Colors.Shades.Black,
+				PrimaryContrastText = Colors.Shades.White,
+				Secondary = Colors.Red.Lighten5,
+				TextSecondary = Colors.Shades.Black,
+				SecondaryContrastText = Colors.Shades.White,
+
+				Background = Colors.Gray.Lighten4,
+				DrawerBackground = Colors.Blue.Darken4,
+				AppbarBackground = Colors.Shades.White,
+				DrawerText = Colors.Shades.White,
+				DrawerIcon = Colors.Shades.White,
+				ActionDefault = Colors.Shades.Black,
+			},
+			PaletteDark = new PaletteDark()
+			{
+				Primary = Colors.Blue.Lighten1
+			},
+			Typography = new Typography()
+			{
+				H1 = new H6Typography()
+				{
+					FontSize = "2.25rem",
+				},
+				H2 = new H6Typography()
+				{
+					FontSize = "2rem",
+				},
+				H3 = new H6Typography()
+				{
+					FontSize = "1.75rem",
+				},
+				H4 = new H6Typography()
+				{
+					FontSize = "1.5rem",
+				},
+				H5 = new H6Typography()
+				{
+					FontSize = "1.25rem",
+				},
+				H6 = new H6Typography()
+				{
+					FontSize = "1rem",
+				}
+			},
+			LayoutProperties = new LayoutProperties()
+			{
+				DrawerWidthLeft = "260px",
+				DrawerWidthRight = "300px",
+			}
+		};
+
+	bool _drawerOpen = true;
+
+	bool authenticated;
+	string? userName;
+
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await authenticationStateTask;
+		var user = authState.User;
+		authenticated = user.Identity?.IsAuthenticated ?? false;
+		if (authenticated)
+		{
+			userName = user.Identity?.Name;
+		}
+	}
+	private void Logout(MouseEventArgs args)
+	{
+		NavigationManager.NavigateToLogout("authentication/logout");
+	}
+	void DrawerToggle()
+	{
+		_drawerOpen = !_drawerOpen;
+	}
+}

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Base\Endpoints\ComposedHealthBase.Server.BaseModule.Endpoints.csproj" />
+    <ProjectReference Include="..\Base\Infrastructure\ComposedHealthBase.Server.BaseModule.Infrastructure.csproj" />
+	  
+    <ProjectReference Include="..\Modules\Billing\Infrastructure\Server.Modules.Billing.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Clinical\Infrastructure\Server.Modules.Clinical.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\CRM\Infrastructure\Server.Modules.CRM.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Schedule\Infrastructure\Server.Modules.Schedule.Infrastructure.csproj" />
+
+	  <ProjectReference Include="..\Modules\Billing\Endpoints\Server.Modules.Billing.Endpoints.csproj" />
+	  <ProjectReference Include="..\Modules\Clinical\Endpoints\Server.Modules.Clinical.Endpoints.csproj" />
+	  <ProjectReference Include="..\Modules\CRM\Endpoints\Server.Modules.CRM.Endpoints.csproj" />
+	  <ProjectReference Include="..\Modules\Schedule\Endpoints\Server.Modules.Schedule.Endpoints.csproj" />
+  </ItemGroup>
+
+</Project>

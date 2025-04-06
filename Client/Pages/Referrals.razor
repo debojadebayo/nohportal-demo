@@ -1,0 +1,55 @@
+﻿@page "/referrals"
+@using Microsoft.AspNetCore.Authorization
+@using Shared.DTOs.CRM
+@using Shared.DTOs.Schedule
+@inject IHttpClientFactory HttpClientFactory
+@* @attribute [Authorize] *@
+
+<PageTitle>Referrals</PageTitle>
+
+<MudText Typo="Typo.h1">Referrals</MudText>
+<MudText Typo="Typo.h2">Referral list</MudText>
+<MudDataGrid Items="@referrals">
+	<Columns>
+		<PropertyColumn Property="x => x.NOHCustomerId" Title="Customer" />
+		<PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+		<PropertyColumn Property="x => x.PatientId" Title="Patient ID" />
+		<PropertyColumn Property="x => x.Name" Title="Patient Name" />
+		<PropertyColumn Property="x => x.DOB" Title="DOB" />
+		<PropertyColumn Property="x => x.ReferralDetails" Title="Details" />
+	</Columns>
+</MudDataGrid>
+<MudText Typo="Typo.h2">Add Referral</MudText>
+<MudForm>
+	<MudTextField Variant="Variant.Outlined" T="string" Label="Name" @bind-Value=@newReferral.Name />
+	<MudTextField Variant="Variant.Outlined" T="string" Label="DOB" @bind-Value=@newReferral.DOB />
+	<MudTextField Variant="Variant.Outlined" T="string" Label="Details" @bind-Value=@newReferral.ReferralDetails />
+	<MudButton @onclick=AddReferral>Add Referral</MudButton>
+</MudForm>
+
+@code {
+	private ReferralDto newReferral = new();
+	private IEnumerable<ReferralDto>? referrals;
+	private HttpClient? httpClient;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			httpClient = HttpClientFactory.CreateClient("api");
+			referrals = await httpClient.GetFromJsonAsync<ReferralDto[]>("api/referrals");
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error fetching referral data: {ex.Message}");
+		}
+	}
+	private async Task AddReferral(){
+		var response = await httpClient.PostAsJsonAsync("api/referrals", newReferral);
+		if (response != null)
+		{
+			newReferral = new();
+			referrals = await httpClient.GetFromJsonAsync<ReferralDto[]>("api/referrals");
+		}
+	}
+}
