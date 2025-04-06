@@ -1,55 +1,96 @@
 ﻿@page "/crm"
-@using Microsoft.AspNetCore.Authorization
+
+@using Shared.Validators
 @using Shared.DTOs.CRM
-@inject IHttpClientFactory HttpClientFactory
-@* @attribute [Authorize] *@
 
-<PageTitle>CRM</PageTitle>
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Details">
+        <MudForm Model="@model" @ref="@form" Validation="@(customerValidator.ValidateValue)" ValidationDelay="0">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="model.CompanyId" For="@(() => model.CompanyId)" Immediate="true"
+                        Label="Company ID" Variant="Variant.Outlined" />
 
-<MudText Typo="Typo.h1">Customer Relationship Manager</MudText>
+                    <MudTextField @bind-Value="model.Name" For="@(() => model.Name)" Immediate="true" Label="Name"
+                        Variant="Variant.Outlined" />
 
-<p>WElcome to the CRM.</p>
+                    <MudTextField @bind-Value="model.PhoneNumber" For="@(() => model.PhoneNumber)" Immediate="true"
+                        Label="Phone Number" Variant="Variant.Outlined" />
 
-@if (customers == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Address</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var customer in customers)
-            {
-                <tr>
-                    <td>@customer.Id</td>
-                    <td>@customer.Name</td>
-                    <td>@customer.Address</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                    <MudTextField @bind-Value="model.Email" For="@(() => model.Email)" Immediate="true" Label="Email"
+                        Variant="Variant.Outlined" />
+
+                    <MudTextField @bind-Value="model.InvoiceEmail" For="@(() => model.InvoiceEmail)" Immediate="true"
+                        Label="Invoice Email" Variant="Variant.Outlined" />
+                    <MudTextField @bind-Value="model.Address" For="@(() => model.Address)" Immediate="true"
+                        Label="Address" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="model.Postcode" For="@(() => model.Postcode)" Immediate="true"
+                        Label="Postcode" Variant="Variant.Outlined" />
+
+                    <MudTextField @bind-Value="model.Site" For="@(() => model.Site)" Immediate="true" Label="Site"
+                        Variant="Variant.Outlined" />
+
+                    <MudTextField @bind-Value="model.Industry" For="@(() => model.Industry)" Immediate="true"
+                        Label="Industry" Variant="Variant.Outlined" />
+
+                    <MudTextField @bind-Value="model.OHServicesRequired" For="@(() => model.OHServicesRequired)"
+                        Immediate="true" Label="OH Services Required" Variant="Variant.Outlined" />
+
+                    <MudNumericField @bind-Value="model.NumberOfEmployees" For="@(() => model.NumberOfEmployees)"
+                        Immediate="true" Label="Number of Employees" Variant="Variant.Outlined" />
+
+                </MudItem>
+            </MudGrid>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"
+                    OnClick="@(async () => await Submit())">Submit
+                </MudButton>
+            </MudCardActions>
+        </MudForm>
+    </MudTabPanel>
+    <MudTabPanel Text="Employees">
+        <MudText>Employees Content</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Appointments">
+        <MudText>Appointments Content</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Referrals">
+        <MudText>Referrals Content</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Managers">
+        <MudText>Managers Content</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Services">
+        <MudText>Services Content</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Invoicing">
+        <MudText>Invoicing Content</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Documents">
+        <MudText>Documents Content</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Reports">
+        <MudText>Reports Content</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Notes">
+        <MudText>Notes Content</MudText>
+    </MudTabPanel>
+</MudTabs>
 
 @code {
-    private CustomerDto[]? customers;
-
-    protected override async Task OnInitializedAsync()
+    [Inject] ISnackbar Snackbar { get; set; }
+    MudForm form;
+    CustomerDto model = new CustomerDto();
+    CustomerValidator customerValidator = new CustomerValidator();
+    private async Task Submit()
     {
-        try
+        await form.Validate();
+
+        if (form.IsValid)
         {
-            var client = HttpClientFactory.CreateClient("api");
-            customers = await client.GetFromJsonAsync<CustomerDto[]>("api/CRM/Customers");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching weather data: {ex.Message}");
+            Snackbar.Add("Submitted!");
         }
     }
 }
