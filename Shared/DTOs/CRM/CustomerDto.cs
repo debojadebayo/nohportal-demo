@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Server.Base.DTOs;
 
 namespace Shared.DTOs.CRM
 {
-	public class CustomerDto
+	public class CustomerDto : IDto
 	{
 		public string CompanyId { get; set; } = string.Empty;
 		public string PhoneNumber { get; set; } = string.Empty;

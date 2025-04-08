@@ -8,26 +8,18 @@ using Server.Modules.CRM.Infrastructure.Queries;
 
 namespace Server.Modules.CRM.Endpoints
 {
-	public class CRMEndpoints : IEndpoints
+	public class CRMEndpoints : BaseEndpoints
 	{
-		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
-			var group = endpoints.MapGroup("/api/CRM");
+			base.MapEndpoints(endpoints);
 
-			// Enhanced CRM endpoints
-			group.MapGet("/Customers", (IMediator mediator) => GetAllCustomerDetails(mediator));
-			group.MapGet("/Customers/{customerId}", GetCustomerDetails);
-			group.MapGet("/Search", SearchCustomers);
-			group.MapPost("/Products/{customerId}", LinkProductsToCustomer);
-			group.MapGet("/Reports/MI/{customerId}", GetCustomerMI);
-			group.MapGet("/Cases/{customerId}", TrackCaseReferrals);
-			group.MapPut("/Contracts/{customerId}", UpdateCustomerContract);
-			group.MapPost("/Deactivate/{customerId}", DeactivateCustomerAccount);
+			group.MapGet("/Customers", (IMediator mediator) => GetAllCustomers(mediator));
 
 			return endpoints;
 		}
 
-		private async Task<IResult> GetAllCustomerDetails(IMediator mediator)
+		private async Task<IResult> GetAllCustomers(IMediator mediator)
 		{
 			try
 			{

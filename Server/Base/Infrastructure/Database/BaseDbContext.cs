@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Database
 {
-	public class BaseDbContext<TContext> : DbContext where TContext : DbContext
+	public class BaseDbContext<TContext> : DbContext
+	where TContext : DbContext
 	{
 		public BaseDbContext(DbContextOptions<TContext> options) : base(options) { }
 		public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)

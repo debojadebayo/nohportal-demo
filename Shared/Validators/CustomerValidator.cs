@@ -22,8 +22,7 @@ namespace Shared.Validators
             RuleFor(x => x.Email)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty()
-                .EmailAddress()
-                .MustAsync(async (value, cancellationToken) => await IsUniqueAsync(value));
+                .EmailAddress();
 
             RuleFor(x => x.InvoiceEmail)
                 .Cascade(CascadeMode.Stop)
@@ -59,13 +58,6 @@ namespace Shared.Validators
                 .Length(1, 200)
                 .Must(value => Uri.IsWellFormedUriString(value, UriKind.Absolute))
                 .WithMessage("Website must be a valid URL.");
-        }
-
-        private async Task<bool> IsUniqueAsync(string email)
-        {
-            // Simulates a long running HTTP call
-            await Task.Delay(2000);
-            return email.ToLower() != "test@test.com";
         }
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>

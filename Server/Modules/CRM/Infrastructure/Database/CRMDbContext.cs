@@ -4,7 +4,7 @@ using Server.Modules.CRM.Entities;
 
 namespace Server.Modules.CRM.Infrastructure.Database
 {
-	public sealed class CRMDbContext(DbContextOptions<CRMDbContext> options) : BaseDbContext<CRMDbContext>(options)
+	public sealed class CRMDbContext(DbContextOptions<CRMDbContext> options) : BaseDbContext<CRMDbContext>(options), IDbContext
 	{
 		public DbSet<Contract> Contracts { get; set; }
 		public DbSet<NOHCustomer> NOHCustomers { get; set; }

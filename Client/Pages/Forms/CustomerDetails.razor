@@ -1,11 +1,7 @@
-﻿@page "/crm"
-
 @using Shared.Validators
 @using Shared.DTOs.CRM
 
-<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-    <MudTabPanel Text="Details">
-        <MudForm Model="@model" @ref="@form" Validation="@(customerValidator.ValidateValue)" ValidationDelay="0">
+<MudForm Model="@model" @ref="@form" Validation="@(customerValidator.ValidateValue)" ValidationDelay="0">
             <MudGrid>
                 <MudItem xs="12" sm="6">
                     <MudTextField @bind-Value="model.CompanyId" For="@(() => model.CompanyId)" Immediate="true"
@@ -49,37 +45,8 @@
                 </MudButton>
             </MudCardActions>
         </MudForm>
-    </MudTabPanel>
-    <MudTabPanel Text="Employees">
-        <MudText>Employees Content</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Appointments">
-        <MudText>Appointments Content</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Referrals">
-        <MudText>Referrals Content</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Managers">
-        <MudText>Managers Content</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Services">
-        <MudText>Services Content</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Invoicing">
-        <MudText>Invoicing Content</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Documents">
-        <MudText>Documents Content</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Reports">
-        <MudText>Reports Content</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Notes">
-        <MudText>Notes Content</MudText>
-    </MudTabPanel>
-</MudTabs>
 
-@code {
+        @code {
     [Inject] ISnackbar Snackbar { get; set; }
     MudForm form;
     CustomerDto model = new CustomerDto();
