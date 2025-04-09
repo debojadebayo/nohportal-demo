@@ -1,8 +1,8 @@
 ﻿namespace Shared.DTOs.Scheduling
 {
-	public class ReferralDto
+	public class ReferralDto : IDto
 	{
-		public long ReferralId { get; set; }
+		public long Id { get; set; }
 		public long NOHCustomerId { get; set; }
 		public long PatientId { get; set; }
 		public string Name { get; set; } = string.Empty;

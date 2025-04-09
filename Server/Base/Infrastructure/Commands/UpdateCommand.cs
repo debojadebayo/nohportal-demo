@@ -1,17 +1,20 @@
 using AutoMapper;
-using ComposedHealthBase.Shared.DTOs;
+using ComposedHealthBase.Server.BaseModule.Entities;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
-
-namespace Server.Base.Infrastructure.Commands
+using ComposedHealthBase.Shared.DTOs;
+namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
 {
-    interface IUpdateCommand
+    interface IUpdateCommand<T, TDto>
     {
-        Task<long> Handle(IDto dto);
+        Task<long> Handle(TDto dto);
     }
-    class UpdateCommand<TDto, T> where T : class where TDto : class
+
+    class UpdateCommand<T, TDto> : IUpdateCommand<T, TDto>
+    where T : BaseEntity<T>
+    where TDto : BaseDto<TDto>
     {
-        private readonly IDbContext _dbContext;
-        private readonly IMapper _mapper;
+        public IDbContext _dbContext { get; }
+        public IMapper _mapper { get; }
 
         public UpdateCommand(IDbContext dbContext, IMapper mapper)
         {
@@ -19,17 +22,17 @@ namespace Server.Base.Infrastructure.Commands
             _mapper = mapper;
         }
 
-        public async Task Handle(long id, IDto dto)
+        public async Task<long> Handle(TDto dto)
         {
-            var existingEntity = await _dbContext.Set<T>().FindAsync(id);
+            var existingEntity = await _dbContext.Set<T>().FindAsync(dto.Id);
             if (existingEntity == null)
             {
-                throw new KeyNotFoundException($"Entity with id {id} not found.");
+                throw new KeyNotFoundException($"Entity with id {dto.Id} not found.");
             }
-
             _mapper.Map(dto, existingEntity);
             _dbContext.Set<T>().Update(existingEntity);
             await _dbContext.SaveChangesAsync();
+            return existingEntity.Id;
         }
     }
 }

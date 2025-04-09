@@ -36,9 +36,6 @@ namespace ComposedHealthBase.Server.BaseModule.Infrastructure
 			IMapper mapper = mapperConfig.CreateMapper();
 			services.AddSingleton(mapper);
 
-			services.AddMediatR(cfg =>
-				cfg.RegisterServicesFromAssemblies(moduleAssemblies.ToArray()));
-
 			return services;
 		}
 		public static WebApplication ConfigureServices(this WebApplication services, bool isDevelopment, ref List<Type> moduleTypes, List<IModule> registeredModules)

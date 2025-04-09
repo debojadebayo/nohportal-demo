@@ -1,15 +1,15 @@
 using AutoMapper;
+using ComposedHealthBase.Server.BaseModule.Entities;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
-using ComposedHealthBase.Shared.DTOs;
 namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
 {
-    interface ICreateCommand
+    interface ICreateCommand<T, TDto>
     {
-        Task<long> Handle(IDto dto);
+        Task<long> Handle(TDto dto);
     }
 
-    class CreateCommand<TDto, T> : ICreateCommand
-    where T : class
+    class CreateCommand<T, TDto> : ICreateCommand<T, TDto>
+    where T : BaseEntity<T>
     where TDto : class
     {
         public IDbContext _dbContext { get; }
@@ -21,12 +21,12 @@ namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
             _mapper = mapper;
         }
 
-        public async Task<long> Handle(IDto dto)
+        public async Task<long> Handle(TDto dto)
         {
             var newEntity = _mapper.Map<T>(dto);
             _dbContext.Set<T>().Add(newEntity);
             await _dbContext.SaveChangesAsync();
-            return (long)newEntity.GetType().GetProperty("Id").GetValue(newEntity);
+            return newEntity.Id;
         }
     }
 }

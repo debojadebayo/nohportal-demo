@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using MediatR;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Commands;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Queries;

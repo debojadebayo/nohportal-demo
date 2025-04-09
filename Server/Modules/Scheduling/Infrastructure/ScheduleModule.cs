@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Server.Modules.Scheduling.Infrastructure.Database;
+using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
 
 namespace Server.Modules.Scheduling.Infrastructure
 {
@@ -13,7 +14,7 @@ namespace Server.Modules.Scheduling.Infrastructure
 		public IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration)
 		{
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-			services.AddDbContext<ScheduleDbContext>(options =>
+			services.AddDbContext<IDbContext, ScheduleDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
 			return services;
