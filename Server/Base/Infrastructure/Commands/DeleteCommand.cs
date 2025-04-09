@@ -1,12 +1,12 @@
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
 
-namespace Server.Base.Infrastructure.Commands
+namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
 {
-    interface IDeleteCommand
+    public interface IDeleteCommand
     {
-        Task Handle(long id);
+        Task<bool> Handle(long id);
     }
-    class DeleteCommand<T> : IDeleteCommand
+    public class DeleteCommand<T> : IDeleteCommand
     where T : class
     {
         private readonly IDbContext _dbContext;
@@ -16,7 +16,7 @@ namespace Server.Base.Infrastructure.Commands
             _dbContext = dbContext;
         }
 
-        public async Task Handle(long id)
+        public async Task<bool> Handle(long id)
         {
             var entity = await _dbContext.Set<T>().FindAsync(id);
             if (entity == null)
@@ -26,6 +26,7 @@ namespace Server.Base.Infrastructure.Commands
 
             _dbContext.Set<T>().Remove(entity);
             await _dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

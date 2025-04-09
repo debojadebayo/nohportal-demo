@@ -11,7 +11,7 @@ namespace Server.Modules.CRM.Entities
         public string Postcode { get; set; }
         public string Email { get; set; }
         public string Telephone { get; set; }
-        public string CompanyId { get; set; }
+        public string Id { get; set; }
         public string CompanyName { get; set; }
         public string JobRole { get; set; }
         public string Department { get; set; }

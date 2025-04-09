@@ -4,12 +4,12 @@ using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
 using ComposedHealthBase.Shared.DTOs;
 namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
 {
-    interface IUpdateCommand<T, TDto>
+    public interface IUpdateCommand<T, TDto>
     {
         Task<long> Handle(TDto dto);
     }
 
-    class UpdateCommand<T, TDto> : IUpdateCommand<T, TDto>
+    public class UpdateCommand<T, TDto> : IUpdateCommand<T, TDto>
     where T : BaseEntity<T>
     where TDto : BaseDto<TDto>
     {

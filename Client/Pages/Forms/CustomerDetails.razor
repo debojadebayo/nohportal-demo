@@ -4,7 +4,7 @@
 <MudForm Model="@model" @ref="@form" Validation="@(customerValidator.ValidateValue)" ValidationDelay="0">
             <MudGrid>
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="model.CompanyId" For="@(() => model.CompanyId)" Immediate="true"
+                    <MudTextField @bind-Value="model.Id" For="@(() => model.Id)" Immediate="true"
                         Label="Company ID" Variant="Variant.Outlined" />
 
                     <MudTextField @bind-Value="model.Name" For="@(() => model.Name)" Immediate="true" Label="Name"

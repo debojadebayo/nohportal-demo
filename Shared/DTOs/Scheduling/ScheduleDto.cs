@@ -1,6 +1,8 @@
-﻿namespace Shared.DTOs.Scheduling
+﻿using ComposedHealthBase.Shared.DTOs;
+
+namespace Shared.DTOs.Scheduling
 {
-	public class ScheduleDto : IDto
+	public class ScheduleDto : BaseDto<ScheduleDto>, IDto
 	{
 		public long Id { get; set; }
 		public DateTime StartTime { get; set; }

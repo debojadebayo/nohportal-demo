@@ -7,7 +7,7 @@ namespace Shared.Validators
     {
         public EmployeeValidator()
         {
-            RuleFor(e => e.EmployeeId).NotEmpty().WithMessage("Employee ID is required.");
+            RuleFor(e => e.Id).NotEmpty().WithMessage("Employee ID is required.");
             RuleFor(e => e.CaseNumber).NotEmpty().WithMessage("Case Number is required.");
             RuleFor(e => e.Name).NotEmpty().WithMessage("Name is required.");
             RuleFor(e => e.DOB).NotEmpty().WithMessage("Date of Birth is required.");
@@ -15,7 +15,7 @@ namespace Shared.Validators
             RuleFor(e => e.Postcode).NotEmpty().WithMessage("Postcode is required.");
             RuleFor(e => e.Email).NotEmpty().EmailAddress().WithMessage("A valid Email is required.");
             RuleFor(e => e.Telephone).NotEmpty().WithMessage("Telephone is required.");
-            RuleFor(e => e.CompanyId).NotEmpty().WithMessage("Company ID is required.");
+            RuleFor(e => e.Id).NotEmpty().WithMessage("Company ID is required.");
             RuleFor(e => e.CompanyName).NotEmpty().WithMessage("Company Name is required.");
             RuleFor(e => e.JobRole).NotEmpty().WithMessage("Job Role is required.");
             RuleFor(e => e.Department).NotEmpty().WithMessage("Department is required.");

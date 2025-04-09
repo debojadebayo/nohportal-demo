@@ -1,6 +1,8 @@
-﻿namespace Shared.DTOs.Scheduling
+﻿using ComposedHealthBase.Shared.DTOs;
+
+namespace Shared.DTOs.Scheduling
 {
-	public class ReferralDto : IDto
+	public class ReferralDto : BaseDto<ReferralDto>, IDto
 	{
 		public long Id { get; set; }
 		public long NOHCustomerId { get; set; }

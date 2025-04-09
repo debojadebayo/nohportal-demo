@@ -15,7 +15,7 @@ namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Queries
 
     public class GetAllQuery<T, TDto> : IGetAllQuery<T, TDto>
     where T : BaseEntity<T>
-    where TDto : class
+    where TDto : BaseDto<TDto>
     {
         public IDbContext _dbContext { get; }
         public IMapper _mapper { get; }

@@ -1,16 +1,17 @@
 using AutoMapper;
 using ComposedHealthBase.Server.BaseModule.Entities;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
+using ComposedHealthBase.Shared.DTOs;
 namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
 {
-    interface ICreateCommand<T, TDto>
+    public interface ICreateCommand<T, TDto>
     {
         Task<long> Handle(TDto dto);
     }
 
-    class CreateCommand<T, TDto> : ICreateCommand<T, TDto>
+    public class CreateCommand<T, TDto> : ICreateCommand<T, TDto>
     where T : BaseEntity<T>
-    where TDto : class
+    where TDto : BaseDto<TDto>
     {
         public IDbContext _dbContext { get; }
         public IMapper _mapper { get; }
