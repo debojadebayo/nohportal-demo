@@ -1,5 +1,5 @@
 using AutoMapper;
-using ComposedHealthBase.Server.BaseModule.Entities.DTOs;
+using ComposedHealthBase.Shared.DTOs;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
 
 namespace Server.Base.Infrastructure.Commands

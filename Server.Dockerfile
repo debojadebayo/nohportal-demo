@@ -18,29 +18,17 @@ COPY Server/Base/Infrastructure/ComposedHealthBase.Server.BaseModule.Infrastruct
 COPY Server/Base/Services/ComposedHealthBase.Server.BaseModule.Services.csproj ./Server/Base/Services/
 COPY Server/Base/Application/ComposedHealthBase.Server.BaseModule.Application.csproj ./Server/Base/Application/
 
-COPY Server/Modules/Billing/Endpoints/Server.Modules.Billing.Endpoints.csproj ./Server/Modules/Billing/Endpoints/
-COPY Server/Modules/Billing/Entities/Server.Modules.Billing.Entities.csproj ./Server/Modules/Billing/Entities/
-COPY Server/Modules/Billing/Infrastructure/Server.Modules.Billing.Infrastructure.csproj ./Server/Modules/Billing/Infrastructure/
-COPY Server/Modules/Billing/Services/Server.Modules.Billing.Services.csproj ./Server/Modules/Billing/Services/
-COPY Server/Modules/Billing/Application/Server.Modules.Billing.Application.csproj ./Server/Modules/Billing/Application/
-
 COPY Server/Modules/CRM/Endpoints/Server.Modules.CRM.Endpoints.csproj ./Server/Modules/CRM/Endpoints/
 COPY Server/Modules/CRM/Entities/Server.Modules.CRM.Entities.csproj ./Server/Modules/CRM/Entities/
 COPY Server/Modules/CRM/Infrastructure/Server.Modules.CRM.Infrastructure.csproj ./Server/Modules/CRM/Infrastructure/
 COPY Server/Modules/CRM/Services/Server.Modules.CRM.Services.csproj ./Server/Modules/CRM/Services/
 COPY Server/Modules/CRM/Application/Server.Modules.CRM.Application.csproj ./Server/Modules/CRM/Application/
 
-COPY Server/Modules/Clinical/Endpoints/Server.Modules.Clinical.Endpoints.csproj ./Server/Modules/Clinical/Endpoints/
-COPY Server/Modules/Clinical/Entities/Server.Modules.Clinical.Entities.csproj ./Server/Modules/Clinical/Entities/
-COPY Server/Modules/Clinical/Infrastructure/Server.Modules.Clinical.Infrastructure.csproj ./Server/Modules/Clinical/Infrastructure/
-COPY Server/Modules/Clinical/Services/Server.Modules.Clinical.Services.csproj ./Server/Modules/Clinical/Services/
-COPY Server/Modules/Clinical/Application/Server.Modules.Clinical.Application.csproj ./Server/Modules/Clinical/Application/
-
-COPY Server/Modules/Schedule/Endpoints/Server.Modules.Schedule.Endpoints.csproj ./Server/Modules/Schedule/Endpoints/
-COPY Server/Modules/Schedule/Entities/Server.Modules.Schedule.Entities.csproj ./Server/Modules/Schedule/Entities/
-COPY Server/Modules/Schedule/Infrastructure/Server.Modules.Schedule.Infrastructure.csproj ./Server/Modules/Schedule/Infrastructure/
-COPY Server/Modules/Schedule/Services/Server.Modules.Schedule.Services.csproj ./Server/Modules/Schedule/Services/
-COPY Server/Modules/Schedule/Application/Server.Modules.Schedule.Application.csproj ./Server/Modules/Schedule/Application/
+COPY Server/Modules/Scheduling/Endpoints/Server.Modules.Scheduling.Endpoints.csproj ./Server/Modules/Scheduling/Endpoints/
+COPY Server/Modules/Scheduling/Entities/Server.Modules.Scheduling.Entities.csproj ./Server/Modules/Scheduling/Entities/
+COPY Server/Modules/Scheduling/Infrastructure/Server.Modules.Scheduling.Infrastructure.csproj ./Server/Modules/Scheduling/Infrastructure/
+COPY Server/Modules/Scheduling/Services/Server.Modules.Scheduling.Services.csproj ./Server/Modules/Scheduling/Services/
+COPY Server/Modules/Scheduling/Application/Server.Modules.Scheduling.Application.csproj ./Server/Modules/Scheduling/Application/
 
 COPY Shared/Shared.csproj ./Shared/
 

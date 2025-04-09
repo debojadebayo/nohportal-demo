@@ -17,15 +17,11 @@
     <ProjectReference Include="..\Base\Endpoints\ComposedHealthBase.Server.BaseModule.Endpoints.csproj" />
     <ProjectReference Include="..\Base\Infrastructure\ComposedHealthBase.Server.BaseModule.Infrastructure.csproj" />
 	  
-    <ProjectReference Include="..\Modules\Billing\Infrastructure\Server.Modules.Billing.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modules\Clinical\Infrastructure\Server.Modules.Clinical.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\CRM\Infrastructure\Server.Modules.CRM.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modules\Schedule\Infrastructure\Server.Modules.Schedule.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Scheduling\Infrastructure\Server.Modules.Scheduling.Infrastructure.csproj" />
 
-	  <ProjectReference Include="..\Modules\Billing\Endpoints\Server.Modules.Billing.Endpoints.csproj" />
-	  <ProjectReference Include="..\Modules\Clinical\Endpoints\Server.Modules.Clinical.Endpoints.csproj" />
 	  <ProjectReference Include="..\Modules\CRM\Endpoints\Server.Modules.CRM.Endpoints.csproj" />
-	  <ProjectReference Include="..\Modules\Schedule\Endpoints\Server.Modules.Schedule.Endpoints.csproj" />
+	  <ProjectReference Include="..\Modules\Scheduling\Endpoints\Server.Modules.Scheduling.Endpoints.csproj" />
   </ItemGroup>
 
 </Project>
