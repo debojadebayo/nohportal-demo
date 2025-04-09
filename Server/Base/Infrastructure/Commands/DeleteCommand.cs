@@ -1,3 +1,5 @@
+using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
+
 namespace Server.Base.Infrastructure.Commands
 {
     interface IDeleteCommand

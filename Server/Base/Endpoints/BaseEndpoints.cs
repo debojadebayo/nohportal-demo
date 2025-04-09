@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using MediatR;
+using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
 
 namespace ComposedHealthBase.Server.BaseModule.Endpoints
 {
@@ -15,20 +16,20 @@ namespace ComposedHealthBase.Server.BaseModule.Endpoints
 			var endpointName = typeof(T).Name;
 			var group = endpoints.MapGroup($"/api/{endpointName}");
 
-			group.MapGet("/GetAll", (IMediator mediator) => GetAll(mediator));
-			group.MapGet("/GetById/{id}", (IMediator mediator, int id) => GetById(mediator, id));
-			group.MapPost("/Create", (IMediator mediator, T entity) => Create(mediator, entity));
-			group.MapPut("/Update", (IMediator mediator, T entity) => Update(mediator, entity));
-			group.MapPost("/Delete/{id}", (IMediator mediator, int id) => Delete(mediator, id));
+			group.MapGet("/GetAll", (IDbContext dbContext) => GetAll(dbContext));
+			group.MapGet("/GetById/{id}", (IDbContext dbContext, int id) => GetById(dbContext, id));
+			group.MapPost("/Create", (IDbContext dbContext, T entity) => Create(dbContext, entity));
+			group.MapPut("/Update", (IDbContext dbContext, T entity) => Update(dbContext, entity));
+			group.MapPost("/Delete/{id}", (IDbContext dbContext, int id) => Delete(dbContext, id));
 
 			return endpoints;
 		}
 
-		protected async Task<IResult> GetAll(IMediator mediator)
+		protected async Task<IResult> GetAll(IDbContext dbContext)
 		{
 			try
 			{
-				var allEntities = await mediator.Send(new GetAllQuery<T>());
+				var allEntities = await new GetAllQuery<T>(dbContext).Handle();
 
 				if (allEntities == null || !allEntities.Any())
 				{
@@ -44,11 +45,11 @@ namespace ComposedHealthBase.Server.BaseModule.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetById(IMediator mediator, int id)
+		protected async Task<IResult> GetById(IDbContext dbContext, int id)
 		{
 			try
 			{
-				var entity = await mediator.Send(new GetByIdQuery<T>(id));
+				var entity = await dbContext.Send(new GetByIdQuery<T>(id));
 
 				if (entity == null)
 				{
@@ -64,11 +65,11 @@ namespace ComposedHealthBase.Server.BaseModule.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Create(IMediator mediator, T entity)
+		protected async Task<IResult> Create(IDbContext dbContext, T entity)
 		{
 			try
 			{
-				var result = await mediator.Send(new CreateCommand<T>(entity));
+				var result = await dbContext.Send(new CreateCommand<T>(entity));
 
 				if (!result.Success)
 				{
@@ -84,11 +85,11 @@ namespace ComposedHealthBase.Server.BaseModule.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Update(IMediator mediator, T entity)
+		protected async Task<IResult> Update(IDbContext dbContext, T entity)
 		{
 			try
 			{
-				var result = await mediator.Send(new UpdateCommand<T>(entity));
+				var result = await dbContext.Send(new UpdateCommand<T>(entity));
 
 				if (!result.Success)
 				{
@@ -104,11 +105,11 @@ namespace ComposedHealthBase.Server.BaseModule.Endpoints
 			}
 		}
 
-		private async Task<IResult> Delete(IMediator mediator, int id)
+		private async Task<IResult> Delete(IDbContext dbContext, int id)
 		{
 			try
 			{
-				var result = await mediator.Send(new DeleteCommand<T>(id));
+				var result = await dbContext.Send(new DeleteCommand<T>(id));
 
 				if (!result.Success)
 				{

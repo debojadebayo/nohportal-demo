@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Server.Base.DTOs;
+using ComposedHealthBase.Server.BaseModule.Entities.DTOs;
 
 namespace Shared.DTOs.CRM
 {

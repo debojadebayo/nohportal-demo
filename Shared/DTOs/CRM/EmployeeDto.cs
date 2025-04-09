@@ -1,4 +1,4 @@
-using Server.Base.DTOs;
+using ComposedHealthBase.Server.BaseModule.Entities.DTOs;
 
 namespace Shared.DTOs.CRM
 {

@@ -1,6 +1,7 @@
 using AutoMapper;
-using Server.Base.Infrastructure.Database;
-namespace Server.Base.Infrastructure.Commands
+using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
+using ComposedHealthBase.Server.BaseModule.Entities.DTOs;
+namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
 {
     interface ICreateCommand
     {
