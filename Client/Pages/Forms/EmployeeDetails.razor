@@ -4,16 +4,19 @@
 <MudForm Model="@model" @ref="@form" Validation="@(customerValidator.ValidateValue)" ValidationDelay="0">
     <MudGrid>
         <MudItem xs="12" sm="6">
-            <MudTextField @bind-Value="model.CaseNumber" For="@(() => model.CaseNumber)" Immediate="true"
-                Label="Case Number" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.FirstName" For="@(() => model.FirstName)" Immediate="true"
+                Label="First Name" Variant="Variant.Outlined" />
 
-            <MudTextField @bind-Value="model.Name" For="@(() => model.Name)" Immediate="true" Label="Name"
+            <MudTextField @bind-Value="model.LastName" For="@(() => model.LastName)" Immediate="true" Label="Last Name"
                 Variant="Variant.Outlined" />
 
-            <MudTextField @bind-Value="model.DOB" For="@(() => model.DOB)" Immediate="true" Label="DOB"
+            <MudTextField @bind-Value="model.Address1" For="@(() => model.Address1)" Immediate="true" Label="Address Line 1"
                 Variant="Variant.Outlined" />
 
-            <MudTextField @bind-Value="model.Address" For="@(() => model.Address)" Immediate="true" Label="Address"
+            <MudTextField @bind-Value="model.Address2" For="@(() => model.Address2)" Immediate="true" Label="Address Line 2"
+                Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="model.Address3" For="@(() => model.Address3)" Immediate="true" Label="Address Line 3"
                 Variant="Variant.Outlined" />
 
             <MudTextField @bind-Value="model.Postcode" For="@(() => model.Postcode)" Immediate="true" Label="Postcode"
@@ -26,8 +29,8 @@
             <MudTextField @bind-Value="model.Telephone" For="@(() => model.Telephone)" Immediate="true"
                 Label="Telephone" Variant="Variant.Outlined" />
 
-            <MudTextField @bind-Value="model.Id" For="@(() => model.Id)" Immediate="true"
-                Label="Company ID" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.Id" For="@(() => model.Id)" Immediate="true" Label="Company ID"
+                Variant="Variant.Outlined" />
 
             <MudTextField @bind-Value="model.CompanyName" For="@(() => model.CompanyName)" Immediate="true"
                 Label="Company Name" Variant="Variant.Outlined" />

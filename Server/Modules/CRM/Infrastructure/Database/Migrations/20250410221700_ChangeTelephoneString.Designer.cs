@@ -9,11 +9,11 @@ using Server.Modules.CRM.Infrastructure.Database;
 
 #nullable disable
 
-namespace Server.Modules.CRM.Infrastructure.Database
+namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(CRMDbContext))]
-    [Migration("20250409200705_EntitiesMigration")]
-    partial class EntitiesMigration
+    [Migration("20250410221700_ChangeTelephoneString")]
+    partial class ChangeTelephoneString
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,7 +52,7 @@ namespace Server.Modules.CRM.Infrastructure.Database
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("NOHCustomerId")
+                    b.Property<long?>("NOHCustomerId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("StartTime")
@@ -63,6 +63,85 @@ namespace Server.Modules.CRM.Infrastructure.Database
                     b.HasIndex("NOHCustomerId");
 
                     b.ToTable("Contracts", "crm");
+                });
+
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Employee", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address1")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address2")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address3")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DOB")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("JobRole")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LineManager")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Postcode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Telephone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Employees", "crm");
                 });
 
             modelBuilder.Entity("Server.Modules.CRM.Entities.NOHCustomer", b =>
@@ -126,9 +205,6 @@ namespace Server.Modules.CRM.Infrastructure.Database
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("ProductId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Site")
                         .IsRequired()
                         .HasColumnType("text");
@@ -139,9 +215,7 @@ namespace Server.Modules.CRM.Infrastructure.Database
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("NOHCustomers", "crm");
+                    b.ToTable("Customers", "crm");
                 });
 
             modelBuilder.Entity("Server.Modules.CRM.Entities.Product", b =>
@@ -152,10 +226,16 @@ namespace Server.Modules.CRM.Infrastructure.Database
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long?>("ContractId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("CreatedBy")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
@@ -167,17 +247,18 @@ namespace Server.Modules.CRM.Infrastructure.Database
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
                     b.Property<long>("ProductTypeId")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
 
                     b.HasIndex("ProductTypeId");
 
@@ -227,20 +308,15 @@ namespace Server.Modules.CRM.Infrastructure.Database
                 {
                     b.HasOne("Server.Modules.CRM.Entities.NOHCustomer", null)
                         .WithMany("Contracts")
-                        .HasForeignKey("NOHCustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Server.Modules.CRM.Entities.NOHCustomer", b =>
-                {
-                    b.HasOne("Server.Modules.CRM.Entities.Product", null)
-                        .WithMany("NOHCustomers")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("NOHCustomerId");
                 });
 
             modelBuilder.Entity("Server.Modules.CRM.Entities.Product", b =>
                 {
+                    b.HasOne("Server.Modules.CRM.Entities.Contract", null)
+                        .WithMany("Products")
+                        .HasForeignKey("ContractId");
+
                     b.HasOne("Server.Modules.CRM.Entities.ProductType", "ProductType")
                         .WithMany()
                         .HasForeignKey("ProductTypeId")
@@ -250,14 +326,14 @@ namespace Server.Modules.CRM.Infrastructure.Database
                     b.Navigation("ProductType");
                 });
 
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Contract", b =>
+                {
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("Server.Modules.CRM.Entities.NOHCustomer", b =>
                 {
                     b.Navigation("Contracts");
-                });
-
-            modelBuilder.Entity("Server.Modules.CRM.Entities.Product", b =>
-                {
-                    b.Navigation("NOHCustomers");
                 });
 #pragma warning restore 612, 618
         }

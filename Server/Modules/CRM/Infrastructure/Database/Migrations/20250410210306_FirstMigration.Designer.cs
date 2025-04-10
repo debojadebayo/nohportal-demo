@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Server.Modules.CRM.Infrastructure.Database;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Server.Modules.CRM.Infrastructure.Database;
 
 #nullable disable
 
 namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(CRMDbContext))]
-    [Migration("20250329010514_UpdateCustomerEntity")]
-    partial class UpdateCustomerEntity
+    [Migration("20250410210306_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,21 +26,6 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("NOHCustomerProduct", b =>
-                {
-                    b.Property<long>("NOHCustomersId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("ProductsId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("NOHCustomersId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("NOHCustomerProduct", "crm");
-                });
-
             modelBuilder.Entity("Server.Modules.CRM.Entities.Contract", b =>
                 {
                     b.Property<long>("Id")
@@ -49,16 +34,25 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("NOHCustomerId")
+                    b.Property<long?>("NOHCustomerId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("StartTime")
@@ -71,6 +65,84 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.ToTable("Contracts", "crm");
                 });
 
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Employee", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address1")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address2")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address3")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DOB")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("JobRole")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LineManager")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Postcode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Telephone")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Employees", "crm");
+                });
+
             modelBuilder.Entity("Server.Modules.CRM.Entities.NOHCustomer", b =>
                 {
                     b.Property<long>("Id")
@@ -79,17 +151,12 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Contact")
+                    b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("County")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -98,12 +165,19 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("HouseNumberOrName")
+                    b.Property<string>("Industry")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("InvoiceEmail")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -112,21 +186,35 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<int>("NumberOfEmployees")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("OHServicesRequired")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Postcode")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Street")
+                    b.Property<string>("Site")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("TownOrCity")
+                    b.Property<string>("Website")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("NOHCustomers", "crm");
+                    b.ToTable("Customers", "crm");
                 });
 
             modelBuilder.Entity("Server.Modules.CRM.Entities.Product", b =>
@@ -137,15 +225,26 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long?>("ContractId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -153,7 +252,12 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<long>("ProductTypeId")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
 
                     b.HasIndex("ProductTypeId");
 
@@ -168,6 +272,9 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -177,6 +284,12 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -190,32 +303,19 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.ToTable("ProductTypes", "crm");
                 });
 
-            modelBuilder.Entity("NOHCustomerProduct", b =>
-                {
-                    b.HasOne("Server.Modules.CRM.Entities.NOHCustomer", null)
-                        .WithMany()
-                        .HasForeignKey("NOHCustomersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Server.Modules.CRM.Entities.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Server.Modules.CRM.Entities.Contract", b =>
                 {
                     b.HasOne("Server.Modules.CRM.Entities.NOHCustomer", null)
                         .WithMany("Contracts")
-                        .HasForeignKey("NOHCustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("NOHCustomerId");
                 });
 
             modelBuilder.Entity("Server.Modules.CRM.Entities.Product", b =>
                 {
+                    b.HasOne("Server.Modules.CRM.Entities.Contract", null)
+                        .WithMany("Products")
+                        .HasForeignKey("ContractId");
+
                     b.HasOne("Server.Modules.CRM.Entities.ProductType", "ProductType")
                         .WithMany()
                         .HasForeignKey("ProductTypeId")
@@ -223,6 +323,11 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("ProductType");
+                });
+
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Contract", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("Server.Modules.CRM.Entities.NOHCustomer", b =>

@@ -7,9 +7,10 @@ namespace Server.Modules.CRM.Infrastructure.Database
 	public sealed class CRMDbContext(DbContextOptions<CRMDbContext> options) : BaseDbContext<CRMDbContext>(options), IDbContext
 	{
 		public DbSet<Contract> Contracts { get; set; }
-		public DbSet<NOHCustomer> NOHCustomers { get; set; }
 		public DbSet<Product> Products { get; set; }
 		public DbSet<ProductType> ProductTypes { get; set; }
+		public DbSet<Employee> Employees { get; set; }
+		public DbSet<NOHCustomer> Customers { get; set; }
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.HasDefaultSchema(Schema.CRM);

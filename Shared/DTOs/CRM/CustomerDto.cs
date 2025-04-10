@@ -9,7 +9,6 @@ namespace Shared.DTOs.CRM
 {
 	public class CustomerDto : BaseDto<CustomerDto>, IDto
 	{
-		public long Id { get; set; } = 0;
 		public string PhoneNumber { get; set; } = string.Empty;
 		public string Name { get; set; } = string.Empty;
 		public int NumberOfEmployees { get; set; }
