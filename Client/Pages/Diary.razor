@@ -8,42 +8,122 @@
 
 <MudText Typo="Typo.h1">Calendar</MudText>
 
-<MudCalendar ShowCurrentTime="true" T="CalendarItem" Items="_events">
-    <CellTemplate>
-        <div style="width: 100%; height: 100%; border: 2px solid @GetColor(((CustomItem)context).Color)">
-            <div style="background-color: @GetColor(((CustomItem)context).Color)"><MudText Style="color: #ffffff;" Typo="Typo.body1" Align="Align.Center">@(((CustomItem)context).Title)</MudText></div>
-            <div class="pa-2"><MudText Typo="Typo.body2">@context.Text</MudText></div>
-        </div>
-    </CellTemplate>
-</MudCalendar>
+<MudGrid>
+    <MudItem xs="12">
+        <MudButtonGroup>
+            <MudButton OnClick="SwitchToDayView">Day</MudButton>
+            <MudButton OnClick="SwitchToWeekView">Week</MudButton>
+            <MudButton OnClick="SwitchToWorkWeekView">Workweek</MudButton>
+            <MudButton OnClick="SwitchToMonthView">Month</MudButton>
+        </MudButtonGroup>
+    </MudItem>
+    @foreach (var resource in Resources)
+    {
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudText Typo="Typo.h6">@resource.Name</MudText>
+            <MudCalendar Height="2000" ShowDay="CalendarView == CalendarView.Day"
+                ShowWeek="CalendarView == CalendarView.Week" ShowWorkWeek="CalendarView == CalendarView.WorkWeek"
+                ShowMonth="CalendarView == CalendarView.Month" Items="@Events[resource.Name]" />
+        </MudItem>
+    }
+</MudGrid>
+
+<style>
+    .mud-calendar .mud-cal-toolbar {
+        display: none;
+    }
+</style>
 
 @code {
-    private string GetColor(Color color) => $"var(--mud-palette-{color.ToDescriptionString()})";
-    private List<CustomItem> _events = new()
+    private List<Resource> Resources { get; set; } = new List<Resource>()
+{
+new Resource { Name = "John", Date = DateTime.Now },
+new Resource { Name = "Alice", Date = DateTime.Now.AddDays(1) },
+new Resource { Name = "Bob", Date = DateTime.Now.AddDays(-1) },
+new Resource { Name = "Potato", Date = DateTime.Now.AddDays(-1) },
+};
+
+    private Dictionary<string, List<CalendarItem>> Events { get; set; } = new Dictionary<string, List<CalendarItem>>{
+{ "John", new List<CalendarItem> { new CalendarItem
+{
+Start = DateTime.Today.AddHours(10),
+End = DateTime.Today.AddHours(11),
+Text = "Event today"
+},
+new CalendarItem
+{
+Start = DateTime.Today.AddDays(1).AddHours(11),
+End = DateTime.Today.AddDays(1).AddHours(12.5),
+Text = "Event tomorrow"
+} } },
+{ "Alice", new List<CalendarItem> { new CalendarItem
+{
+Start = DateTime.Today.AddHours(10),
+End = DateTime.Today.AddHours(11),
+Text = "Event today"
+},
+new CalendarItem
+{
+Start = DateTime.Today.AddHours(11),
+End = DateTime.Today.AddHours(12.5),
+Text = "Event tomorrow"
+} } },
+{ "Bob", new List<CalendarItem> { new CalendarItem
+{
+Start = DateTime.Today.AddHours(10),
+End = DateTime.Today.AddHours(11),
+Text = "Event today"
+},
+new CalendarItem
+{
+Start = DateTime.Today.AddDays(1).AddHours(11),
+End = DateTime.Today.AddDays(1).AddHours(12.5),
+Text = "Event tomorrow"
+} } },
+{ "Potato", new List<CalendarItem> { new CalendarItem
+{
+Start = DateTime.Today.AddHours(10),
+End = DateTime.Today.AddHours(11),
+Text = "Event today"
+},
+new CalendarItem
+{
+Start = DateTime.Today.AddDays(1).AddHours(11),
+End = DateTime.Today.AddDays(1).AddHours(12.5),
+Text = "Event tomorrow"
+}} }
+};
+
+    private CalendarView CalendarView { get; set; } = CalendarView.Month;
+
+    private void OnDateChange(DateTime date, Resource resource)
     {
-        new CustomItem
-        {
-            Start = DateTime.Today.AddHours(10),
-            End = DateTime.Today.AddHours(11),
-            Title = "Event today",
-            Location = "Over here",
-            Text = "This is an event today",
-            Color = Color.Secondary
-        },
-        new CustomItem
-        {
-            Start = DateTime.Today.AddDays(1).AddHours(11),
-            End = DateTime.Today.AddDays(1).AddHours(12.5),
-            Title = "Event tomorrow",
-            Location = "Over there",
-            Text = "This is an event tomorrow",
-            Color = Color.Tertiary
-        }
-    };
-    private class CustomItem : CalendarItem
+        resource.Date = date;
+    }
+
+    private void SwitchToDayView()
     {
-        public string Title { get; set; } = string.Empty;
-        public string Location { get; set; } = string.Empty;
-        public Color Color { get; set; } = Color.Primary;
+        CalendarView = CalendarView.Day;
+    }
+
+    private void SwitchToWeekView()
+    {
+        CalendarView = CalendarView.Week;
+    }
+
+    private void SwitchToWorkWeekView()
+    {
+        CalendarView = CalendarView.WorkWeek;
+    }
+
+    private void SwitchToMonthView()
+    {
+        CalendarView = CalendarView.Month;
+    }
+
+    public class Resource
+    {
+        public string Name { get; set; }
+        public DateTime Date { get; set; }
     }
 }
