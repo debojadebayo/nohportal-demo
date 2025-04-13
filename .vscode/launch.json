@@ -16,7 +16,6 @@
             "type": "blazorwasm",
             "request": "launch",
             "cwd": "${workspaceFolder}/Client",
-            "browser": "edge",
             "url": "http://localhost:5030",
             "preLaunchTask": "build",
             "env": {

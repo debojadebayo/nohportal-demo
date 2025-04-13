@@ -9,13 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 var moduleTypes = new List<Type>
 {
 	typeof(BaseModule),
-	typeof(CRMModule)
+	typeof(CRMModule),
+	typeof(SchedulingModule)
 };
 
 var endpointTypes = new List<Type>
 {
 	typeof(CustomerEndpoints),
-	typeof(EmployeeEndpoints)
+	typeof(EmployeeEndpoints),
+	
 };
 
 builder.Services.RegisterServices(builder.Configuration, ref moduleTypes, out var registeredModules);
