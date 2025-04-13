@@ -14,7 +14,7 @@ namespace Shared.Validators
                 .NotEmpty()
                 .Length(1, 100);
 
-            RuleFor(x => x.PhoneNumber)
+            RuleFor(x => x.Telephone)
                 .NotEmpty()
                 .Length(1, 15);
 

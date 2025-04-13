@@ -4,6 +4,5 @@ using Server.Modules.Scheduling.Entities;
 
 namespace Server.Modules.Scheduling.Endpoints
 {
-		public class EmployeeEndpoints : BaseEndpoints<Schedule, ScheduleDto> {}
-		public class CustomerEndpoints : BaseEndpoints<Referral, ReferralDto> {}
+	public class ClinicianEndpoints : BaseEndpoints<Clinician, ClinicianDto>, IEndpoints {}
 }

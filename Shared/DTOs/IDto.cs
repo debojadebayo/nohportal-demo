@@ -1,7 +1,0 @@
-namespace ComposedHealthBase.Shared.DTOs
-{
-    public interface IDto
-    {
-        public long Id { get; set; }
-    }
-}

@@ -2,10 +2,10 @@
 
 namespace Server.Modules.CRM.Entities
 {
-	public class NOHCustomer : BaseEntity<NOHCustomer>
+	public class Customer : BaseEntity<Customer>
 	{
 		public string Name { get; set; } = string.Empty;
-		public string PhoneNumber { get; set; } = string.Empty;
+		public string Telephone { get; set; } = string.Empty;
 		public int NumberOfEmployees { get; set; }
 		public string Site { get; set; } = string.Empty;
 		public string OHServicesRequired { get; set; } = string.Empty;

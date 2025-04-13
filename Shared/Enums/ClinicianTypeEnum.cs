@@ -1,4 +1,4 @@
-namespace NationOH.Shared.Enums
+namespace Shared.Enums
 {
     public enum ClinicianTypeEnum
     {

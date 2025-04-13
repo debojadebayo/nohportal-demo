@@ -1,7 +1,8 @@
-using AutoMapper;
+
 using ComposedHealthBase.Server.BaseModule.Entities;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
-using ComposedHealthBase.Shared.DTOs;
+using NationOH.Server.Base.Infrastructure.Mappers;
+using Shared.DTOs;
 namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
 {
     public interface IUpdateCommand<T, TDto>
@@ -14,9 +15,9 @@ namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
     where TDto : BaseDto<TDto>
     {
         public IDbContext _dbContext { get; }
-        public IMapper _mapper { get; }
+        public IMapper<T, TDto> _mapper { get; }
 
-        public UpdateCommand(IDbContext dbContext, IMapper mapper)
+        public UpdateCommand(IDbContext dbContext, IMapper<T, TDto> mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;

@@ -1,13 +1,12 @@
-﻿using ComposedHealthBase.Shared.DTOs;
+﻿using Shared.DTOs;
 
 namespace Shared.DTOs.Scheduling
 {
-	public class ReferralDto : BaseDto<ReferralDto>, IDto
+	public class ReferralDto : BaseDto<ReferralDto>
 	{
-		public long NOHCustomerId { get; set; }
+		public long CustomerId { get; set; }
 		public long PatientId { get; set; }
-		public string Name { get; set; } = string.Empty;
-		public string DOB { get; set; } = string.Empty;
 		public string ReferralDetails { get; set; } = string.Empty;
+		public string DocumentId { get; set; } = string.Empty;
 	}
 }

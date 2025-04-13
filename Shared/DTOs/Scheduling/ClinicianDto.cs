@@ -1,9 +1,9 @@
-﻿using ComposedHealthBase.Server.BaseModule.Entities;
+﻿using Shared.DTOs;
 using Shared.Enums;
 
-namespace Server.Modules.Scheduling.Entities
+namespace Shared.DTOs.Scheduling
 {
-	public class Clinician : BaseEntity<Clinician>
+	public class ClinicianDto : BaseDto<ClinicianDto>
 	{
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
@@ -13,6 +13,6 @@ namespace Server.Modules.Scheduling.Entities
 		public RegulatorTypeEnum RegulatorType { get; set; }
 		public string LicenceNumber { get; set; }
 		public string ProfilePictureUrl { get; set; }
-		public HashSet<Schedule> Schedules { get; set; } = new HashSet<Schedule>();
+		public HashSet<ScheduleDto> Schedules { get; set; } = new HashSet<ScheduleDto>();
 	}
 }

@@ -1,8 +1,7 @@
-﻿using ComposedHealthBase.Server.BaseModule.Entities;
-
-namespace Server.Modules.CRM.Entities
+﻿using Shared.DTOs;
+namespace Shared.DTOs.CRM
 {
-	public class ProductType : BaseEntity<ProductType>
+	public class ProductTypeDto : BaseDto<ProductTypeDto>
 	{
 		public string Name { get; set; }
 		public string Description { get; set; }

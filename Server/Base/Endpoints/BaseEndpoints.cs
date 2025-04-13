@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Commands;
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Queries;
-using AutoMapper;
 using ComposedHealthBase.Server.BaseModule.Entities;
-using ComposedHealthBase.Shared.DTOs;
+using Shared.DTOs;
+using NationOH.Server.Base.Infrastructure.Mappers;
 
 namespace ComposedHealthBase.Server.BaseModule.Endpoints
 {
@@ -19,16 +19,16 @@ namespace ComposedHealthBase.Server.BaseModule.Endpoints
 			var endpointName = typeof(T).Name;
 			var group = endpoints.MapGroup($"/api/{endpointName}");
 
-			group.MapGet("/GetAll", (IDbContext dbContext, IMapper mapper) => GetAll(dbContext, mapper));
-			group.MapGet("/GetById/{id}", (IDbContext dbContext, IMapper mapper, long id) => GetById(dbContext, mapper, id));
-			group.MapPost("/Create", (IDbContext dbContext, IMapper mapper, TDto dto) => Create(dbContext, mapper, dto));
-			group.MapPut("/Update", (IDbContext dbContext, IMapper mapper, TDto dto) => Update(dbContext, mapper, dto));
-			group.MapPost("/Delete/{id}", (IDbContext dbContext, IMapper mapper, long id) => Delete(dbContext, mapper, id));
+			group.MapGet("/GetAll", (IDbContext dbContext, IMapper<T, TDto> mapper) => GetAll(dbContext, mapper));
+			group.MapGet("/GetById/{id}", (IDbContext dbContext, IMapper<T, TDto> mapper, long id) => GetById(dbContext, mapper, id));
+			group.MapPost("/Create", (IDbContext dbContext, IMapper<T, TDto> mapper, TDto dto) => Create(dbContext, mapper, dto));
+			group.MapPut("/Update", (IDbContext dbContext, IMapper<T, TDto> mapper, TDto dto) => Update(dbContext, mapper, dto));
+			group.MapPost("/Delete/{id}", (IDbContext dbContext, IMapper<T, TDto> mapper, long id) => Delete(dbContext, mapper, id));
 
 			return endpoints;
 		}
 
-		protected async Task<IResult> GetAll(IDbContext dbContext, IMapper mapper)
+		protected async Task<IResult> GetAll(IDbContext dbContext, IMapper<T, TDto> mapper)
 		{
 			try
 			{
@@ -48,7 +48,7 @@ namespace ComposedHealthBase.Server.BaseModule.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetById(IDbContext dbContext, IMapper mapper, long id)
+		protected async Task<IResult> GetById(IDbContext dbContext, IMapper<T, TDto> mapper, long id)
 		{
 			try
 			{
@@ -68,7 +68,7 @@ namespace ComposedHealthBase.Server.BaseModule.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Create(IDbContext dbContext, IMapper mapper, TDto dto)
+		protected async Task<IResult> Create(IDbContext dbContext, IMapper<T, TDto> mapper, TDto dto)
 		{
 			try
 			{
@@ -88,7 +88,7 @@ namespace ComposedHealthBase.Server.BaseModule.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Update(IDbContext dbContext, IMapper mapper, TDto dto)
+		protected async Task<IResult> Update(IDbContext dbContext, IMapper<T, TDto> mapper, TDto dto)
 		{
 			try
 			{
@@ -108,7 +108,7 @@ namespace ComposedHealthBase.Server.BaseModule.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Delete(IDbContext dbContext, IMapper mapper, long id)
+		protected async Task<IResult> Delete(IDbContext dbContext, IMapper<T, TDto> mapper, long id)
 		{
 			try
 			{

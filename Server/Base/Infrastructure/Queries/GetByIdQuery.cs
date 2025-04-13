@@ -1,10 +1,11 @@
-using AutoMapper;
+
 using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
 using ComposedHealthBase.Server.BaseModule.Entities;
-using ComposedHealthBase.Shared.DTOs;
+using Shared.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NationOH.Server.Base.Infrastructure.Mappers;
 
 namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Queries
 {
@@ -18,9 +19,9 @@ namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Queries
     where TDto : BaseDto<TDto>
     {
         public IDbContext _dbContext { get; }
-        public IMapper _mapper { get; }
+        public IMapper<T, TDto> _mapper { get; }
 
-        public GetByIdQuery(IDbContext dbContext, IMapper mapper)
+        public GetByIdQuery(IDbContext dbContext, IMapper<T, TDto> mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -29,7 +30,7 @@ namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Queries
         public async Task<TDto> Handle(long id)
         {
             var entity = await _dbContext.Set<T>().SingleOrDefaultAsync(x => x.Id == id);
-            return _mapper.Map<TDto>(entity);
+            return _mapper.Map(entity);
         }
     }
 }

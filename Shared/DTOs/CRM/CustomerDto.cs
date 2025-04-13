@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ComposedHealthBase.Shared.DTOs;
+﻿using Shared.DTOs;
 
 namespace Shared.DTOs.CRM
 {
-	public class CustomerDto : BaseDto<CustomerDto>, IDto
+	public class CustomerDto : BaseDto<CustomerDto>
 	{
-		public string PhoneNumber { get; set; } = string.Empty;
 		public string Name { get; set; } = string.Empty;
+		public string Telephone { get; set; } = string.Empty;
 		public int NumberOfEmployees { get; set; }
 		public string Site { get; set; } = string.Empty;
 		public string OHServicesRequired { get; set; } = string.Empty;
@@ -21,5 +16,6 @@ namespace Shared.DTOs.CRM
 		public string Email { get; set; } = string.Empty;
 		public string InvoiceEmail { get; set; } = string.Empty;
 		public string? Notes { get; set; }
+		public HashSet<ContractDto> Contracts { get; set; }
 	}
 }

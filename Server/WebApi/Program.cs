@@ -4,13 +4,16 @@ using ComposedHealthBase.Server.BaseModule.Infrastructure;
 using Server.Modules.CRM.Endpoints;
 using Server.Modules.CRM.Infrastructure;
 
+using Server.Modules.Scheduling.Endpoints;
+using Server.Modules.Scheduling.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var moduleTypes = new List<Type>
 {
 	typeof(BaseModule),
 	typeof(CRMModule),
-	typeof(SchedulingModule)
+	typeof(ScheduleModule)
 };
 
 var endpointTypes = new List<Type>

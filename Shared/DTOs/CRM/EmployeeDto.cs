@@ -1,8 +1,8 @@
-using ComposedHealthBase.Shared.DTOs;
+using Shared.DTOs;
 
 namespace Shared.DTOs.CRM
 {
-    public class EmployeeDto : BaseDto<EmployeeDto>, IDto
+    public class EmployeeDto : BaseDto<EmployeeDto>
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

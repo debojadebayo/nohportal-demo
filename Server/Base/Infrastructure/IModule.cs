@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.DTOs.CRM;
@@ -29,13 +28,6 @@ namespace ComposedHealthBase.Server.BaseModule.Infrastructure
 			}
 
 			var moduleAssemblies = moduleTypes.Select(x => x.Assembly).ToList();
-
-			var mapperConfig = new MapperConfiguration(cfg =>
-			{
-				cfg.AddMaps(moduleAssemblies);
-			});
-			IMapper mapper = mapperConfig.CreateMapper();
-			services.AddSingleton(mapper);
 
 			return services;
 		}
