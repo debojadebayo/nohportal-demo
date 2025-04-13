@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Base\Entities\ComposedHealthBase.Server.BaseModule.Entities.csproj" />
+    <ProjectReference Include="..\..\..\Base\Entities\ComposedHealthBase.Server.Entities.csproj" />
   </ItemGroup>
 
 </Project>

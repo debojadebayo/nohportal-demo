@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Shared\Shared.csproj" />
-    <ProjectReference Include="..\..\..\Base\Endpoints\ComposedHealthBase.Server.BaseModule.Endpoints.csproj" />
+    <ProjectReference Include="..\..\..\ComposedHealthBase\ComposedHealthBase.Server.csproj" />
     <ProjectReference Include="..\Infrastructure\Server.Modules.Scheduling.Infrastructure.csproj" />
   </ItemGroup>
 

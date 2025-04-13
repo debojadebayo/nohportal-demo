@@ -1,7 +1,6 @@
-﻿namespace ComposedHealthBase.Server.BaseModule.Entities
+﻿namespace ComposedHealthBase.Server.Entities
 {
-	public class BaseEntity<T> : IBaseEntity
-	where T : class
+	public interface IEntity
 	{
 		public long Id { get; set; }
 		public bool IsActive { get; set; }

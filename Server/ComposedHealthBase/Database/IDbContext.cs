@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Database
+namespace ComposedHealthBase.Server.Database
 {
     public interface IDbContext
     {

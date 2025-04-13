@@ -1,4 +1,4 @@
-﻿using NationOH.Server.Base.Infrastructure.Mappers;
+﻿using ComposedHealthBase.Server.Mappers;
 using Server.Modules.CRM.Entities;
 using Shared.DTOs.CRM;
 

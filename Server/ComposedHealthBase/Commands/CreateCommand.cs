@@ -1,9 +1,9 @@
 
-using ComposedHealthBase.Server.BaseModule.Entities;
-using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
+using ComposedHealthBase.Server.Entities;
+using ComposedHealthBase.Server.Infrastructure.Database;
 using Shared.DTOs;
-using NationOH.Server.Base.Infrastructure.Mappers;
-namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
+using ComposedHealthBase.Server.Mappers;
+namespace ComposedHealthBase.Server.Commands
 {
     public interface ICreateCommand<T, TDto>
     {
@@ -14,8 +14,8 @@ namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
     where T : BaseEntity<T>
     where TDto : BaseDto<TDto>
     {
-        public IDbContext _dbContext { get; }
-        public IMapper<T, TDto> _mapper { get; }
+        private IDbContext _dbContext { get; }
+        private IMapper<T, TDto> _mapper { get; }
 
         public CreateCommand(IDbContext dbContext, IMapper<T, TDto> mapper)
         {

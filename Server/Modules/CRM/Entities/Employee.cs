@@ -1,8 +1,8 @@
-using ComposedHealthBase.Server.BaseModule.Entities;
+using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.CRM.Entities
 {
-    public class Employee : BaseEntity<Employee>
+    public class Employee : BaseEntity<Employee>, IEntity
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

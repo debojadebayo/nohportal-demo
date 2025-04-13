@@ -1,7 +1,7 @@
-using ComposedHealthBase.Server.BaseModule.Entities;
+using ComposedHealthBase.Server.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Database
+namespace ComposedHealthBase.Server.Database
 {
 	public class BaseDbContext<TContext> : DbContext
 	where TContext : DbContext
@@ -10,8 +10,8 @@ namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Database
 		public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
 		{
 			var timeNow = DateTime.UtcNow;
-			var createdEntities = ChangeTracker.Entries<IBaseEntity>().Where(e => e.State == EntityState.Added).ToList();
-			var modifiedEntities = ChangeTracker.Entries<IBaseEntity>().Where(e => e.State == EntityState.Modified).ToList();
+			var createdEntities = ChangeTracker.Entries<IEntity>().Where(e => e.State == EntityState.Added).ToList();
+			var modifiedEntities = ChangeTracker.Entries<IEntity>().Where(e => e.State == EntityState.Modified).ToList();
 			foreach (var createdEntity in createdEntities)
 			{
 				createdEntity.Entity.CreatedDate = timeNow;

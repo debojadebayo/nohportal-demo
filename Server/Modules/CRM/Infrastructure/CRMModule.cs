@@ -1,14 +1,14 @@
-﻿using ComposedHealthBase.Server.BaseModule;
-using ComposedHealthBase.Server.BaseModule.Endpoints;
-using ComposedHealthBase.Server.BaseModule.Infrastructure;
+﻿using ComposedHealthBase.Server;
+using ComposedHealthBase.Server.Endpoints;
+using ComposedHealthBase.Server.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Server.Modules.CRM.Infrastructure.Database;
-using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
+using ComposedHealthBase.Server.Infrastructure.Database;
 using Shared.DTOs.CRM;
-using NationOH.Server.Base.Infrastructure.Mappers;
+using ComposedHealthBase.Server.Mappers;
 using Server.Modules.CRM.Entities;
 
 

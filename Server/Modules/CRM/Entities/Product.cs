@@ -1,8 +1,8 @@
-﻿using ComposedHealthBase.Server.BaseModule.Entities;
+﻿using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Product : BaseEntity<Product>
+	public class Product : BaseEntity<Product>, IEntity
 	{
 		public ProductType ProductType { get; set; }
 		public decimal Price { get; set; }

@@ -1,3 +1,4 @@
+using ComposedHealthBase.Shared.DTOs;
 using Shared.DTOs;
 
 namespace Shared.DTOs.CRM

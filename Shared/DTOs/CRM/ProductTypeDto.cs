@@ -1,4 +1,5 @@
-﻿using Shared.DTOs;
+﻿using ComposedHealthBase.Shared.DTOs;
+using Shared.DTOs;
 namespace Shared.DTOs.CRM
 {
 	public class ProductTypeDto : BaseDto<ProductTypeDto>

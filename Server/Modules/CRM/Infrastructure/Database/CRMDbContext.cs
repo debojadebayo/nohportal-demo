@@ -1,4 +1,4 @@
-﻿using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
+﻿using ComposedHealthBase.Server.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Server.Modules.CRM.Entities;
 

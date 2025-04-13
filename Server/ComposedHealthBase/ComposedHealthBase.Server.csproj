@@ -28,7 +28,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\Shared\Shared.csproj" />
-	  <ProjectReference Include="..\Entities\ComposedHealthBase.Server.BaseModule.Entities.csproj" />
 	</ItemGroup>
 
 </Project>

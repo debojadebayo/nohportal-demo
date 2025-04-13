@@ -1,9 +1,9 @@
-﻿using ComposedHealthBase.Server.BaseModule.Entities;
+﻿using ComposedHealthBase.Server.Entities;
 using Shared.Enums;
 
 namespace Server.Modules.Scheduling.Entities
 {
-	public class Clinician : BaseEntity<Clinician>
+	public class Clinician : BaseEntity<Clinician>, IEntity
 	{
 		public string FirstName { get; set; }
 		public string LastName { get; set; }

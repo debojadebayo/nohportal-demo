@@ -1,8 +1,8 @@
-﻿using ComposedHealthBase.Server.BaseModule.Entities;
+﻿using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Contract : BaseEntity<Contract>
+	public class Contract : BaseEntity<Contract>, IEntity
 	{
 		public string Reference { get; set; }
 		public string Notes { get; set; }

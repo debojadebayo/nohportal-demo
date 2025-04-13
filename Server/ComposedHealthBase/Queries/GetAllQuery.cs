@@ -1,13 +1,13 @@
 
-using ComposedHealthBase.Server.BaseModule.Entities;
-using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
+using ComposedHealthBase.Server.Entities;
+using ComposedHealthBase.Server.Infrastructure.Database;
 using Shared.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NationOH.Server.Base.Infrastructure.Mappers;
+using ComposedHealthBase.Server.Mappers;
 
-namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Queries
+namespace ComposedHealthBase.Server.Infrastructure.Queries
 {
     public interface IGetAllQuery<T, TDto>
     {

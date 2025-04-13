@@ -1,4 +1,4 @@
-namespace NationOH.Server.Base.Infrastructure.Mappers
+namespace ComposedHealthBase.Server.Mappers
 {
     public interface IMapper<T, TDto>
     {

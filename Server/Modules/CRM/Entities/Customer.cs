@@ -1,8 +1,8 @@
-﻿using ComposedHealthBase.Server.BaseModule.Entities;
+﻿using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Customer : BaseEntity<Customer>
+	public class Customer : BaseEntity<Customer>, IEntity
 	{
 		public string Name { get; set; } = string.Empty;
 		public string Telephone { get; set; } = string.Empty;

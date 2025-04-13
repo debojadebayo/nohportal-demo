@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Reflection;
 
-namespace ComposedHealthBase.Server.BaseModule.Infrastructure
+namespace ComposedHealthBase.Server.Modules
 {
 	public class BaseModule : IModule
 	{

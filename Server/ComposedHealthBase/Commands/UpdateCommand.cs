@@ -1,9 +1,9 @@
 
-using ComposedHealthBase.Server.BaseModule.Entities;
-using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
-using NationOH.Server.Base.Infrastructure.Mappers;
+using ComposedHealthBase.Server.Entities;
+using ComposedHealthBase.Server.Infrastructure.Database;
+using ComposedHealthBase.Server.Mappers;
 using Shared.DTOs;
-namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
+namespace ComposedHealthBase.Server.Commands
 {
     public interface IUpdateCommand<T, TDto>
     {
@@ -14,8 +14,8 @@ namespace ComposedHealthBase.Server.BaseModule.Infrastructure.Commands
     where T : BaseEntity<T>
     where TDto : BaseDto<TDto>
     {
-        public IDbContext _dbContext { get; }
-        public IMapper<T, TDto> _mapper { get; }
+        private IDbContext _dbContext { get; }
+        private IMapper<T, TDto> _mapper { get; }
 
         public UpdateCommand(IDbContext dbContext, IMapper<T, TDto> mapper)
         {

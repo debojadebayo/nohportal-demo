@@ -1,4 +1,4 @@
-namespace Shared.DTOs
+namespace ComposedHealthBase.Shared.DTOs
 {
     public class BaseDto<TDto>
     where TDto : class

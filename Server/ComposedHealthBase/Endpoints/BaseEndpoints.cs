@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http;
-using ComposedHealthBase.Server.BaseModule.Infrastructure.Database;
-using ComposedHealthBase.Server.BaseModule.Infrastructure.Commands;
-using ComposedHealthBase.Server.BaseModule.Infrastructure.Queries;
-using ComposedHealthBase.Server.BaseModule.Entities;
+using ComposedHealthBase.Server.Database;
+using ComposedHealthBase.Server.Commands;
+using ComposedHealthBase.Server.Queries;
+using ComposedHealthBase.Server.Entities;
 using Shared.DTOs;
-using NationOH.Server.Base.Infrastructure.Mappers;
 
-namespace ComposedHealthBase.Server.BaseModule.Endpoints
+namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class BaseEndpoints<T, TDto>
     where T : BaseEntity<T>
