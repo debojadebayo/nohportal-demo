@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ComposedHealthBase.Server.Mappers;
+using ComposedHealthBase.Shared.DTOs;
 
 namespace ComposedHealthBase.Server.Queries
 {

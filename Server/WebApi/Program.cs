@@ -1,4 +1,5 @@
 using ComposedHealthBase.Server.Modules;
+using ComposedHealthBase.Server.Extensions;
 using Server.Modules.CRM.Infrastructure;
 using Server.Modules.Scheduling.Infrastructure;
 

@@ -3,6 +3,7 @@ using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Shared.DTOs;
 using ComposedHealthBase.Server.Mappers;
+using ComposedHealthBase.Shared.DTOs;
 namespace ComposedHealthBase.Server.Commands
 {
     public interface ICreateCommand<T, TDto>

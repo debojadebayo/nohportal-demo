@@ -3,7 +3,7 @@ using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Server.Modules;
-using Shared.DTOs;
+using ComposedHealthBase.Shared.DTOs;
 namespace ComposedHealthBase.Server.Commands
 {
     public interface IUpdateCommand<T, TDto>

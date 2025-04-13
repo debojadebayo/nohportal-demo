@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Server.Modules.Scheduling.Infrastructure.Database;
 using ComposedHealthBase.Server.Database;
+using ComposedHealthBase.Server.Modules;
 
 namespace Server.Modules.Scheduling.Infrastructure
 {
