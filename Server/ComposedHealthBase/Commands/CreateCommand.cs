@@ -1,7 +1,7 @@
 
 using ComposedHealthBase.Server.Entities;
-using ComposedHealthBase.Server.Infrastructure.Database;
-using Shared.DTOs;
+using ComposedHealthBase.Server.Database;
+using ComposedHealthBase.Shared.DTOs;
 using ComposedHealthBase.Server.Mappers;
 namespace ComposedHealthBase.Server.Commands
 {

@@ -14,7 +14,7 @@ COPY Server/WebApi/WebApi.csproj ./Server/WebApi/
 
 COPY Server/Base/Endpoints/ComposedHealthBase.Server.Endpoints.csproj ./Server/Base/Endpoints/
 COPY Server/Base/Entities/ComposedHealthBase.Server.Entities.csproj ./Server/Base/Entities/
-COPY Server/Base/Infrastructure/ComposedHealthBase.Server.Infrastructure.csproj ./Server/Base/Infrastructure/
+COPY Server/Base/Infrastructure/ComposedHealthBase.Server.csproj ./Server/Base/Infrastructure/
 COPY Server/Base/Services/ComposedHealthBase.Server.Services.csproj ./Server/Base/Services/
 COPY Server/Base/Application/ComposedHealthBase.Server.Application.csproj ./Server/Base/Application/
 

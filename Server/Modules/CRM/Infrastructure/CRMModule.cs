@@ -1,12 +1,12 @@
 ﻿using ComposedHealthBase.Server;
 using ComposedHealthBase.Server.Endpoints;
-using ComposedHealthBase.Server.Infrastructure;
+using ComposedHealthBase.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Server.Modules.CRM.Infrastructure.Database;
-using ComposedHealthBase.Server.Infrastructure.Database;
+using ComposedHealthBase.Server.Database;
 using Shared.DTOs.CRM;
 using ComposedHealthBase.Server.Mappers;
 using Server.Modules.CRM.Entities;

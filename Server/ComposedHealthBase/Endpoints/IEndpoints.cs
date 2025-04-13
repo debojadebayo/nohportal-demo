@@ -1,4 +1,4 @@
-﻿using ComposedHealthBase.Server.Infrastructure;
+﻿using ComposedHealthBase.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using System.Configuration;

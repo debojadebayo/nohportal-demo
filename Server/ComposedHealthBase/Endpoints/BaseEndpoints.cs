@@ -5,7 +5,8 @@ using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Commands;
 using ComposedHealthBase.Server.Queries;
 using ComposedHealthBase.Server.Entities;
-using Shared.DTOs;
+using ComposedHealthBase.Server.Mappers;
+using ComposedHealthBase.Shared.DTOs;
 
 namespace ComposedHealthBase.Server.Endpoints
 {

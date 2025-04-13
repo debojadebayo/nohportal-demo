@@ -1,11 +1,11 @@
 ﻿using ComposedHealthBase.Server;
-using ComposedHealthBase.Server.Infrastructure;
+using ComposedHealthBase.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Server.Modules.Scheduling.Infrastructure.Database;
-using ComposedHealthBase.Server.Infrastructure.Database;
+using ComposedHealthBase.Server.Database;
 
 namespace Server.Modules.Scheduling.Infrastructure
 {

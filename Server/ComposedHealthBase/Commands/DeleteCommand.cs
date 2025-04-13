@@ -1,4 +1,4 @@
-using ComposedHealthBase.Server.Infrastructure.Database;
+using ComposedHealthBase.Server.Database;
 
 namespace ComposedHealthBase.Server.Commands
 {
