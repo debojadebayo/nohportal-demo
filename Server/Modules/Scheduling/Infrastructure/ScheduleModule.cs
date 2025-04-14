@@ -15,7 +15,7 @@ namespace Server.Modules.Scheduling.Infrastructure
 		public IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration)
 		{
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-			services.AddDbContext<IDbContext, ScheduleDbContext>(options =>
+			services.AddDbContext<IDbContext, SchedulingDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
 			return services;
@@ -26,7 +26,7 @@ namespace Server.Modules.Scheduling.Infrastructure
 			{
 				using (var scope = app.Services.CreateScope())
 				{
-					var dbContext = scope.ServiceProvider.GetRequiredService<ScheduleDbContext>();
+					var dbContext = scope.ServiceProvider.GetRequiredService<SchedulingDbContext>();
 					dbContext.Database.Migrate();
 				}
 			}

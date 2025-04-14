@@ -4,7 +4,7 @@ using Server.Modules.Scheduling.Entities;
 
 namespace Server.Modules.Scheduling.Infrastructure.Database
 {
-	public sealed class ScheduleDbContext(DbContextOptions<ScheduleDbContext> options) : BaseDbContext<ScheduleDbContext>(options), IDbContext
+	public sealed class SchedulingDbContext(DbContextOptions<SchedulingDbContext> options) : BaseDbContext<SchedulingDbContext>(options), IDbContext
 	{
 		public DbSet<Clinician> Clinicians { get; set; }
 		public DbSet<Schedule> Schedules { get; set; }
@@ -12,7 +12,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.HasDefaultSchema(Schema.Schedule);
-			modelBuilder.ApplyConfigurationsFromAssembly(typeof(ScheduleDbContext).Assembly);
+			modelBuilder.ApplyConfigurationsFromAssembly(typeof(SchedulingDbContext).Assembly);
 		}
 	}
 }
