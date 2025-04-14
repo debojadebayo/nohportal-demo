@@ -1,6 +1,5 @@
 ﻿using ComposedHealthBase.Server;
 using ComposedHealthBase.Server.Endpoints;
-using ComposedHealthBase.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,9 +18,8 @@ namespace Server.Modules.CRM.Infrastructure
 		public IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration)
 		{
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-			services.AddDbContext<IDbContext, CRMDbContext>(options =>
+			services.AddDbContext<CRMDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-			//services.AddScoped<IMapper<ProductType, ProductTypeDto>, ContractMapper>();
 
 			return services;
 		}

@@ -1,5 +1,4 @@
 ﻿using ComposedHealthBase.Server;
-using ComposedHealthBase.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,12 +9,12 @@ using ComposedHealthBase.Server.Modules;
 
 namespace Server.Modules.Scheduling.Infrastructure
 {
-	public class ScheduleModule : IModule
+	public class SchedulingModule : IModule
 	{
 		public IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration)
 		{
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-			services.AddDbContext<IDbContext, SchedulingDbContext>(options =>
+			services.AddDbContext<SchedulingDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
 			return services;

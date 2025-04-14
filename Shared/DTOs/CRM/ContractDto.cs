@@ -7,6 +7,7 @@ namespace Shared.DTOs.CRM
 	{
 		public string Reference { get; set; }
 		public string Notes { get; set; }
+		public long RepresentativeId { get; set; }
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
 		public HashSet<ProductDto> Products { get; set; } = new HashSet<ProductDto>();

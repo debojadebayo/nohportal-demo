@@ -12,11 +12,7 @@ COPY Server/Server.sln ./Server/
 
 COPY Server/WebApi/WebApi.csproj ./Server/WebApi/
 
-COPY Server/Base/Endpoints/ComposedHealthBase.Server.Endpoints.csproj ./Server/Base/Endpoints/
-COPY Server/Base/Entities/ComposedHealthBase.Server.Entities.csproj ./Server/Base/Entities/
-COPY Server/Base/Infrastructure/ComposedHealthBase.Server.csproj ./Server/Base/Infrastructure/
-COPY Server/Base/Services/ComposedHealthBase.Server.Services.csproj ./Server/Base/Services/
-COPY Server/Base/Application/ComposedHealthBase.Server.Application.csproj ./Server/Base/Application/
+COPY Server/ComposedHealthBase/ComposedHealthBase.Server.csproj ./Server/ComposedHealthBase/
 
 COPY Server/Modules/CRM/Endpoints/Server.Modules.CRM.Endpoints.csproj ./Server/Modules/CRM/Endpoints/
 COPY Server/Modules/CRM/Entities/Server.Modules.CRM.Entities.csproj ./Server/Modules/CRM/Entities/

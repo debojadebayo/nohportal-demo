@@ -2,6 +2,6 @@
 {
 	internal static class Schema
 	{
-		internal const string Schedule = "schedule";
+		internal const string Scheduling = "scheduling";
 	}
 }

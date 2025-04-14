@@ -14,16 +14,16 @@
 		<PropertyColumn Property="x => x.CustomerId" Title="Customer" />
 		<PropertyColumn Property="x => x.Id" Title="Referral ID" />
 		<PropertyColumn Property="x => x.PatientId" Title="Patient ID" />
-		<PropertyColumn Property="x => x.Name" Title="Patient Name" />
-		<PropertyColumn Property="x => x.DOB" Title="DOB" />
 		<PropertyColumn Property="x => x.ReferralDetails" Title="Details" />
+		<PropertyColumn Property="x => x.DocumentId" Title="Document ID" />
 	</Columns>
 </MudDataGrid>
 <MudText Typo="Typo.h2">Add Referral</MudText>
 <MudForm>
-	<MudTextField Variant="Variant.Outlined" T="string" Label="Name" @bind-Value=@newReferral.Name />
-	<MudTextField Variant="Variant.Outlined" T="string" Label="DOB" @bind-Value=@newReferral.DOB />
-	<MudTextField Variant="Variant.Outlined" T="string" Label="Details" @bind-Value=@newReferral.ReferralDetails />
+	<MudTextField Variant="Variant.Outlined" T="string" Label="Referral Details" @bind-Value=@newReferral.ReferralDetails />
+	<MudTextField Variant="Variant.Outlined" T="string" Label="Document ID" @bind-Value=@newReferral.DocumentId />
+	<MudTextField Variant="Variant.Outlined" T="long" Label="Customer ID" @bind-Value=@newReferral.CustomerId />
+	<MudTextField Variant="Variant.Outlined" T="long" Label="Patient ID" @bind-Value=@newReferral.PatientId />
 	<MudButton @onclick=AddReferral>Add Referral</MudButton>
 </MudForm>
 

@@ -9,7 +9,7 @@ var moduleTypes = new List<Type>
 {
 	typeof(BaseModule),
 	typeof(CRMModule),
-	typeof(ScheduleModule)
+	typeof(SchedulingModule)
 };
 
 builder.Services.RegisterServices(builder.Configuration, ref moduleTypes, out var registeredModules);

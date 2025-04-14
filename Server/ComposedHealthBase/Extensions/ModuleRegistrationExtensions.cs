@@ -23,18 +23,24 @@ namespace ComposedHealthBase.Server.Extensions
 			{
 				module.RegisterModuleServices(services, configuration);
 				registeredModules.Add(module);
-
-				var mapperTypes = module.GetType().Assembly.GetTypes()
-	.Where(t => t.IsInterface && t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IMapper<,>));
-
-				foreach (var mapper in mapperTypes)
-				{
-					var sourceType = mapper.GenericTypeArguments[0];
-					var destinationType = mapper.GenericTypeArguments[1];
-
-					services.AddScoped(typeof(IMapper<,>).MakeGenericType(sourceType, destinationType), mapper);
-				}
 			}
+
+            var mapperInterfaceType = typeof(IMapper<,>);
+            var moduleAssemblies = moduleTypes.Select(t => t.Assembly).Distinct();
+
+            foreach (var assembly in moduleAssemblies)
+            {
+                var mapperTypes = assembly.GetTypes()
+                                          .Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces()
+                                              .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType));
+
+                foreach (var mapperType in mapperTypes)
+                {
+                    var interfaceType = mapperType.GetInterfaces()
+                                                  .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType);
+                    services.AddTransient(interfaceType, mapperType);
+                }
+            }
 
 			return services;
 		}

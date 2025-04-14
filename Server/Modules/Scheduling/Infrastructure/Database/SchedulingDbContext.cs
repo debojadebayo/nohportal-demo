@@ -11,7 +11,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database
 		public DbSet<Referral> Referrals { get; set; }
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.HasDefaultSchema(Schema.Schedule);
+			modelBuilder.HasDefaultSchema(Schema.Scheduling);
 			modelBuilder.ApplyConfigurationsFromAssembly(typeof(SchedulingDbContext).Assembly);
 		}
 	}
