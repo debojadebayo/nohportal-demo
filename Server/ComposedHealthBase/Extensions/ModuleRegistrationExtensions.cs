@@ -25,22 +25,22 @@ namespace ComposedHealthBase.Server.Extensions
 				registeredModules.Add(module);
 			}
 
-            var mapperInterfaceType = typeof(IMapper<,>);
-            var moduleAssemblies = moduleTypes.Select(t => t.Assembly).Distinct();
+			var mapperInterfaceType = typeof(IMapper<,>);
+			var moduleAssemblies = moduleTypes.Select(t => t.Assembly).Distinct();
 
-            foreach (var assembly in moduleAssemblies)
-            {
-                var mapperTypes = assembly.GetTypes()
-                                          .Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces()
-                                              .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType));
+			foreach (var assembly in moduleAssemblies)
+			{
+				var mapperTypes = assembly.GetTypes()
+										  .Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces()
+											  .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType));
 
-                foreach (var mapperType in mapperTypes)
-                {
-                    var interfaceType = mapperType.GetInterfaces()
-                                                  .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType);
-                    services.AddTransient(interfaceType, mapperType);
-                }
-            }
+				foreach (var mapperType in mapperTypes)
+				{
+					var interfaceType = mapperType.GetInterfaces()
+												  .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType);
+					services.AddTransient(interfaceType, mapperType);
+				}
+			}
 
 			return services;
 		}
@@ -50,13 +50,11 @@ namespace ComposedHealthBase.Server.Extensions
 			{
 				module.ConfigureModuleServices(app, isDevelopment);
 
-				var endpointTypes = module.GetType().Assembly.GetTypes().Where(x => x.IsAssignableTo(typeof(IEndpoints)) && x.IsClass)
-							.Select(Activator.CreateInstance)
-							.Cast<IEndpoints>();
-
-				foreach (var endpointClass in endpointTypes)
+				foreach (var endpointType in moduleTypes.Where(x => x.IsAssignableTo(typeof(IEndpoints)) && x.IsClass)
+											.Select(Activator.CreateInstance)
+											.Cast<IEndpoints>())
 				{
-					endpointClass.MapEndpoints(app);
+					endpointType.MapEndpoints(app);
 				}
 			}
 			return app;
