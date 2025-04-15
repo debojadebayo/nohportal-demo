@@ -1,12 +1,12 @@
-﻿using ComposedHealthBase.Server.BaseModule.Entities;
+﻿using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Product : BaseEntity<Product>
+	public class Product : BaseEntity<Product>, IEntity
 	{
-		public string Name { get; set; }
 		public ProductType ProductType { get; set; }
 		public decimal Price { get; set; }
-		public HashSet<NOHCustomer> NOHCustomers { get; set; }
+		public DateTime StartTime { get; set; }
+		public DateTime EndTime { get; set; }
 	}
 }
