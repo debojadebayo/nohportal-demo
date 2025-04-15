@@ -14,7 +14,7 @@ namespace Server.Modules.Scheduling.Infrastructure
 		public IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration)
 		{
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-			services.AddDbContext<SchedulingDbContext>(options =>
+			services.AddDbContext<IDbContext<SchedulingDbContext>, SchedulingDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
 			return services;

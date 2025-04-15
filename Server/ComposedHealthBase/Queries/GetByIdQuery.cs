@@ -10,19 +10,20 @@ using ComposedHealthBase.Shared.DTOs;
 
 namespace ComposedHealthBase.Server.Queries
 {
-    public interface IGetByIdQuery<T, TDto>
+    public interface IGetByIdQuery<T, TDto, TContext>
     {
         Task<TDto> Handle(long id);
     }
 
-    public class GetByIdQuery<T, TDto> : IGetByIdQuery<T, TDto>
+    public class GetByIdQuery<T, TDto, TContext> : IGetByIdQuery<T, TDto, TContext>
     where T : BaseEntity<T>
     where TDto : BaseDto<TDto>
+    where TContext : IDbContext<TContext>
     {
-        public IDbContext _dbContext { get; }
+        public IDbContext<TContext> _dbContext { get; }
         public IMapper<T, TDto> _mapper { get; }
 
-        public GetByIdQuery(IDbContext dbContext, IMapper<T, TDto> mapper)
+        public GetByIdQuery(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;

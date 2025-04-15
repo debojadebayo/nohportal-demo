@@ -4,7 +4,7 @@ using Server.Modules.Scheduling.Entities;
 
 namespace Server.Modules.Scheduling.Infrastructure.Database
 {
-	public sealed class SchedulingDbContext(DbContextOptions<SchedulingDbContext> options) : BaseDbContext<SchedulingDbContext>(options), IDbContext
+	public sealed class SchedulingDbContext(DbContextOptions<SchedulingDbContext> options) : BaseDbContext<SchedulingDbContext>(options), IDbContext<SchedulingDbContext>
 	{
 		public DbSet<Clinician> Clinicians { get; set; }
 		public DbSet<Schedule> Schedules { get; set; }

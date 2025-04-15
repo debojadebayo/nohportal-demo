@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ComposedHealthBase.Server.Database
 {
-	public class BaseDbContext<TContext> : DbContext
+	public class BaseDbContext<TContext> : DbContext, IDbContext<TContext>
 	where TContext : DbContext
 	{
 		public BaseDbContext(DbContextOptions<TContext> options) : base(options) { }

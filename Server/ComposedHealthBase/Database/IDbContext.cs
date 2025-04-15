@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ComposedHealthBase.Server.Database
 {
-    public interface IDbContext
+    public interface IDbContext<TContext>
     {
         DbSet<T> Set<T>() where T : class;
         int SaveChanges();

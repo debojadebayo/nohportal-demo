@@ -6,12 +6,13 @@ namespace ComposedHealthBase.Server.Commands
     {
         Task<bool> Handle(long id);
     }
-    public class DeleteCommand<T> : IDeleteCommand
+    public class DeleteCommand<T, TContext> : IDeleteCommand
     where T : class
+    where TContext : IDbContext<TContext>
     {
-        private readonly IDbContext _dbContext;
+        private readonly IDbContext<TContext> _dbContext;
 
-        public DeleteCommand(IDbContext dbContext)
+        public DeleteCommand(IDbContext<TContext> dbContext)
         {
             _dbContext = dbContext;
         }

@@ -6,19 +6,20 @@ using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
 namespace ComposedHealthBase.Server.Commands
 {
-    public interface ICreateCommand<T, TDto>
+    public interface ICreateCommand<T, TDto, TContext>
     {
         Task<long> Handle(TDto dto);
     }
 
-    public class CreateCommand<T, TDto> : ICreateCommand<T, TDto>
+    public class CreateCommand<T, TDto, TContext> : ICreateCommand<T, TDto, TContext>
     where T : BaseEntity<T>
     where TDto : BaseDto<TDto>
+    where TContext : IDbContext<TContext>
     {
-        private IDbContext _dbContext { get; }
+        private IDbContext<TContext> _dbContext { get; }
         private IMapper<T, TDto> _mapper { get; }
 
-        public CreateCommand(IDbContext dbContext, IMapper<T, TDto> mapper)
+        public CreateCommand(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;

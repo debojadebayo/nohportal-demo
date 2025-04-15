@@ -6,19 +6,20 @@ using ComposedHealthBase.Server.Modules;
 using ComposedHealthBase.Shared.DTOs;
 namespace ComposedHealthBase.Server.Commands
 {
-    public interface IUpdateCommand<T, TDto>
+    public interface IUpdateCommand<T, TDto, TContext>
     {
         Task<long> Handle(TDto dto);
     }
 
-    public class UpdateCommand<T, TDto> : IUpdateCommand<T, TDto>
+    public class UpdateCommand<T, TDto, TContext> : IUpdateCommand<T, TDto, TContext>
     where T : BaseEntity<T>
     where TDto : BaseDto<TDto>
+    where TContext : IDbContext<TContext>
     {
-        private IDbContext _dbContext { get; }
+        private IDbContext<TContext> _dbContext { get; }
         private IMapper<T, TDto> _mapper { get; }
 
-        public UpdateCommand(IDbContext dbContext, IMapper<T, TDto> mapper)
+        public UpdateCommand(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
