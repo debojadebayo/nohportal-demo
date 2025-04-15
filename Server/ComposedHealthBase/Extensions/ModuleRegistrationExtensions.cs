@@ -50,9 +50,19 @@ namespace ComposedHealthBase.Server.Extensions
 			{
 				module.ConfigureModuleServices(app, isDevelopment);
 
-				foreach (var endpointType in moduleTypes.Where(x => x.IsAssignableTo(typeof(IEndpoints)) && x.IsClass)
-											.Select(Activator.CreateInstance)
-											.Cast<IEndpoints>())
+				if (module.GetType().Name == "BaseModule")
+				{
+					continue;
+				}
+
+				var endpointAssemblyName = $"Server.Modules.{module.GetType().Name.Replace("Module", "")}.Endpoints";
+				var endpointAssembly = Assembly.Load(endpointAssemblyName);
+
+				var endpointTypes = endpointAssembly.GetTypes()
+												.Where(x => x.IsAssignableTo(typeof(IEndpoints)) && x.IsClass)
+												.Select(Activator.CreateInstance)
+												.Cast<IEndpoints>();
+				foreach (var endpointType in endpointTypes)
 				{
 					endpointType.MapEndpoints(app);
 				}

@@ -10,6 +10,7 @@ using Shared.DTOs.CRM;
 using ComposedHealthBase.Server.Mappers;
 using Server.Modules.CRM.Entities;
 using ComposedHealthBase.Server.Modules;
+using System.Reflection;
 
 namespace Server.Modules.CRM.Infrastructure
 {
