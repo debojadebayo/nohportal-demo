@@ -1,0 +1,35 @@
+@using MudBlazor
+@using Shared.DTOs.Scheduling
+
+<MudForm Model="@model" @ref="@form" ValidationDelay="0">
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="model.Id" For="@(() => model.Id)" Immediate="true" Label="ID" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.CustomerId" For="@(() => model.CustomerId)" Immediate="true" Label="Customer ID" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.ReferralId" For="@(() => model.ReferralId)" Immediate="true" Label="Referral ID" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.PatientId" For="@(() => model.PatientId)" Immediate="true" Label="Patient ID" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.ClinicianId" For="@(() => model.ClinicianId)" Immediate="true" Label="Clinician ID" Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudDatePicker Date="model.StartTime" Label="Start Time" Variant="Variant.Outlined" />
+            <MudDatePicker Date="model.EndTime" Label="End Time" Variant="Variant.Outlined" />
+        </MudItem>
+    </MudGrid>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Submit</MudButton>
+    </MudCardActions>
+</MudForm>
+
+@code {
+    [Inject] ISnackbar Snackbar { get; set; }
+    MudForm form;
+    ScheduleDto model = new ScheduleDto();
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            Snackbar.Add("Submitted!");
+        }
+    }
+}
