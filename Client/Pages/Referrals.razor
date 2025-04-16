@@ -3,6 +3,7 @@
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @inject IHttpClientFactory HttpClientFactory
+@using Client.Pages.Forms
 @* @attribute [Authorize] *@
 
 <PageTitle>Referrals</PageTitle>
@@ -19,13 +20,7 @@
 	</Columns>
 </MudDataGrid>
 <MudText Typo="Typo.h2">Add Referral</MudText>
-<MudForm>
-	<MudTextField Variant="Variant.Outlined" T="string" Label="Referral Details" @bind-Value=@newReferral.ReferralDetails />
-	<MudTextField Variant="Variant.Outlined" T="string" Label="Document ID" @bind-Value=@newReferral.DocumentId />
-	<MudTextField Variant="Variant.Outlined" T="long" Label="Customer ID" @bind-Value=@newReferral.CustomerId />
-	<MudTextField Variant="Variant.Outlined" T="long" Label="Patient ID" @bind-Value=@newReferral.PatientId />
-	<MudButton @onclick=AddReferral>Add Referral</MudButton>
-</MudForm>
+<ReferralDetails></ReferralDetails>
 
 @code {
 	private ReferralDto newReferral = new();
