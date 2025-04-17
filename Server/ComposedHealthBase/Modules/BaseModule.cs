@@ -16,12 +16,12 @@ namespace ComposedHealthBase.Server.Modules
 			services.AddDatabaseDeveloperPageExceptionFilter();
 			services.AddCors(options =>
 			{
-				options.AddDefaultPolicy(builder =>
-				{
-					builder.AllowAnyOrigin()
+				options.AddPolicy("Client",
+					policy => policy
+						.WithOrigins("http://localhost:5002")
+						.AllowAnyHeader()
 						.AllowAnyMethod()
-						.AllowAnyHeader();
-				});
+						.AllowCredentials());
 			});
 
 			bool.TryParse(configuration["Jwt:RequireHttpsMetadata"], out bool requireHttpsMetadata);
@@ -50,14 +50,16 @@ namespace ComposedHealthBase.Server.Modules
 
 		public WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment)
 		{
-			app.UseHttpsRedirection();
-			app.UseCors();
+			app.UseCors("Client");
 			app.UseAuthentication();
 			app.UseAuthorization();
 			if (isDevelopment)
 			{
 				app.MapOpenApi();
 				app.MapScalarApiReference();
+			}
+			else
+			{
 				app.UseHttpsRedirection();
 			}
 			return app;

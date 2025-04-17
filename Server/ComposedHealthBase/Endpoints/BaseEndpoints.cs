@@ -12,8 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class BaseEndpoints<T, TDto, TContext>
-    where T : BaseEntity<T>
-    where TDto : BaseDto<TDto>
+	where T : BaseEntity<T>
+	where TDto : BaseDto<TDto>
 	where TContext : IDbContext<TContext>
 	{
 		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
@@ -23,6 +23,7 @@ namespace ComposedHealthBase.Server.Endpoints
 
 			group.MapGet("/GetAll", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper) => GetAll(dbContext, mapper));
 			group.MapGet("/GetById/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long id) => GetById(dbContext, mapper, id));
+			group.MapPost("/GetByIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, List<long> ids) => GetByIds(dbContext, mapper, ids));
 			group.MapPost("/Create", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, TDto dto) => Create(dbContext, mapper, dto));
 			group.MapPut("/Update", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, TDto dto) => Update(dbContext, mapper, dto));
 			group.MapPost("/Delete/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long id) => Delete(dbContext, mapper, id));
@@ -67,6 +68,26 @@ namespace ComposedHealthBase.Server.Endpoints
 			{
 				Console.Error.WriteLine($"An error occurred: {ex.Message}");
 				return Results.Problem($"An error occurred while retrieving the {typeof(T).Name} details.");
+			}
+		}
+
+		protected async Task<IResult> GetByIds(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, List<long> ids)
+		{
+			try
+			{
+				var entities = await new GetByIdsQuery<T, TDto, TContext>(dbContext, mapper).Handle(ids);
+
+				if (entities == null || !entities.Any())
+				{
+					return Results.NotFound($"No {typeof(T).Name} entities found with the provided IDs.");
+				}
+
+				return Results.Ok(entities);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while retrieving the {typeof(T).Name} entities.");
 			}
 		}
 

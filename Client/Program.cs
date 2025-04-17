@@ -10,28 +10,24 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("api", client => client.BaseAddress = new Uri("https://localhost:7107/"))
+builder.Services.AddHttpClient("api", client => client.BaseAddress = new Uri("http://localhost:5003/"))
    .AddHttpMessageHandler(sp =>
    {
 	   var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
-		   .ConfigureHandler(authorizedUrls: new[] { "https://localhost:7107" });
+		   .ConfigureHandler(authorizedUrls: new[] { "http://localhost:5003" });
 	   return handler;
    });
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("api"));
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
 builder.Services.AddOidcAuthentication(options =>
 {
-	options.ProviderOptions.Authority = "http://localhost:8080/realms/ComposedHealthBase";
-	options.ProviderOptions.ClientId = "chbase_client";
+	options.ProviderOptions.Authority = "http://localhost:8180/realms/NationOH";
+	options.ProviderOptions.ClientId = "nationoh_client";
 	options.ProviderOptions.ResponseType = "code";
-	options.ProviderOptions.DefaultScopes.Add("chbase_api-scope");
+	options.ProviderOptions.DefaultScopes.Add("nationoh_webapi-scope");
 	options.UserOptions.RoleClaim = "role";
 }).AddAccountClaimsPrincipalFactory<ParseRoleClaimsPrincipalFactory>();
-
-
 
 builder.Services.AddMudServices();
 

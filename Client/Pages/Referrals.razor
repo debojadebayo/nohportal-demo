@@ -9,15 +9,17 @@
 <PageTitle>Referrals</PageTitle>
 
 <MudText Typo="Typo.h1">Referrals</MudText>
-<MudText Typo="Typo.h2">Referral list</MudText>
-<MudDataGrid Items="@referrals">
+<MudDataGrid Items="@referralViews" Filterable="true" Groupable="true">
 	<Columns>
-		<PropertyColumn Property="x => x.CustomerId" Title="Customer" />
-		<PropertyColumn Property="x => x.Id" Title="Referral ID" />
-		<PropertyColumn Property="x => x.PatientId" Title="Patient ID" />
+		<PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+		<PropertyColumn Property="x => x.CustomerName" Title="Customer" />
+		<PropertyColumn Property="x => x.PatientName" Title="Patient Name" />
 		<PropertyColumn Property="x => x.ReferralDetails" Title="Details" />
 		<PropertyColumn Property="x => x.DocumentId" Title="Document ID" />
 	</Columns>
+	    <PagerContent>
+        <MudDataGridPager T="ReferralView" />
+    </PagerContent>
 </MudDataGrid>
 <MudText Typo="Typo.h2">Add Referral</MudText>
 <ReferralDetails></ReferralDetails>
@@ -25,26 +27,69 @@
 @code {
 	private ReferralDto newReferral = new();
 	private IEnumerable<ReferralDto>? referrals;
+	private List<ReferralView> referralViews = new();
 	private HttpClient? httpClient;
+
+	private Dictionary<long, CustomerDto> customersById = new();
+	private Dictionary<long, EmployeeDto> employeesById = new();
 
 	protected override async Task OnInitializedAsync()
 	{
 		try
 		{
 			httpClient = HttpClientFactory.CreateClient("api");
-			referrals = await httpClient.GetFromJsonAsync<ReferralDto[]>("api/referrals");
+
+			referrals = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>("api/referral/getall");
+			if (referrals == null) return;
+
+			var patientIds = referrals.Select(r => r.PatientId).Distinct().ToList();
+			var customerIds = referrals.Select(r => r.CustomerId).Distinct().ToList();
+
+			var empResponse = await httpClient.PostAsJsonAsync("api/employee/getbyids", patientIds);
+			if (empResponse.IsSuccessStatusCode)
+			{
+				var employees = await empResponse.Content.ReadFromJsonAsync<List<EmployeeDto>>();
+				if (employees != null)
+					employeesById = employees.ToDictionary(e => e.Id);
+			}
+
+			var custResponse = await httpClient.PostAsJsonAsync("Api/Customer/GetByIds", customerIds);
+			if (custResponse.IsSuccessStatusCode)
+			{
+				var customers = await custResponse.Content.ReadFromJsonAsync<List<CustomerDto>>();
+				if (customers != null)
+					customersById = customers.ToDictionary(c => c.Id);
+			}
+
+			referralViews = referrals.Select(r => new ReferralView {
+				ReferralId = r.Id,
+				CustomerName = customersById.TryGetValue(r.CustomerId, out var cust) ? cust.Name : $"ID: {r.CustomerId}",
+				PatientName = employeesById.TryGetValue(r.PatientId, out var emp) ? $"{emp.FirstName} {emp.LastName}" : $"ID: {r.PatientId}",
+				ReferralDetails = r.ReferralDetails,
+				DocumentId = r.DocumentId
+			}).ToList();
 		}
 		catch (Exception ex)
 		{
 			Console.WriteLine($"Error fetching referral data: {ex.Message}");
 		}
 	}
+
 	private async Task AddReferral(){
 		var response = await httpClient.PostAsJsonAsync("api/referrals", newReferral);
 		if (response != null)
 		{
 			newReferral = new();
-			referrals = await httpClient.GetFromJsonAsync<ReferralDto[]>("api/referrals");
+			await OnInitializedAsync();
 		}
+	}
+
+	private class ReferralView
+	{
+		public long ReferralId { get; set; }
+		public string CustomerName { get; set; } = string.Empty;
+		public string PatientName { get; set; } = string.Empty;
+		public string ReferralDetails { get; set; } = string.Empty;
+		public string DocumentId { get; set; } = string.Empty;
 	}
 }
