@@ -1,56 +1,87 @@
 @using Shared.Validators
 @using Shared.DTOs.CRM
+@inject IHttpClientFactory HttpClientFactory
+
+<MudAutocomplete T="CustomerDto"
+                 @bind-Value="model"
+                 SearchFunc="Search"
+                 ToStringFunc="@(e => e is null ? string.Empty : $"{e.Name}")"
+                 Variant="Variant.Outlined"
+                 Label="Look up Employee"
+                 Clearable="true" />
 
 <MudForm Model="@model" @ref="@form" Validation="@(customerValidator.ValidateValue)" ValidationDelay="0">
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="model.Id" For="@(() => model.Id)" Immediate="true"
-                        Label="Company ID" Variant="Variant.Outlined" />
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="model.Id" For="@(() => model.Id)" Immediate="true" Label="Company ID"
+                Variant="Variant.Outlined" />
 
-                    <MudTextField @bind-Value="model.Name" For="@(() => model.Name)" Immediate="true" Label="Name"
-                        Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.Name" For="@(() => model.Name)" Immediate="true" Label="Name"
+                Variant="Variant.Outlined" />
 
-                    <MudTextField @bind-Value="model.Telephone" For="@(() => model.Telephone)" Immediate="true"
-                        Label="Phone Number" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.Telephone" For="@(() => model.Telephone)" Immediate="true"
+                Label="Phone Number" Variant="Variant.Outlined" />
 
-                    <MudTextField @bind-Value="model.Email" For="@(() => model.Email)" Immediate="true" Label="Email"
-                        Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.Email" For="@(() => model.Email)" Immediate="true" Label="Email"
+                Variant="Variant.Outlined" />
 
-                    <MudTextField @bind-Value="model.InvoiceEmail" For="@(() => model.InvoiceEmail)" Immediate="true"
-                        Label="Invoice Email" Variant="Variant.Outlined" />
-                    <MudTextField @bind-Value="model.Address" For="@(() => model.Address)" Immediate="true"
-                        Label="Address" Variant="Variant.Outlined" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="model.Postcode" For="@(() => model.Postcode)" Immediate="true"
-                        Label="Postcode" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.InvoiceEmail" For="@(() => model.InvoiceEmail)" Immediate="true"
+                Label="Invoice Email" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.Address" For="@(() => model.Address)" Immediate="true" Label="Address"
+                Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="model.Postcode" For="@(() => model.Postcode)" Immediate="true" Label="Postcode"
+                Variant="Variant.Outlined" />
 
-                    <MudTextField @bind-Value="model.Site" For="@(() => model.Site)" Immediate="true" Label="Site"
-                        Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.Site" For="@(() => model.Site)" Immediate="true" Label="Site"
+                Variant="Variant.Outlined" />
 
-                    <MudTextField @bind-Value="model.Industry" For="@(() => model.Industry)" Immediate="true"
-                        Label="Industry" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.Industry" For="@(() => model.Industry)" Immediate="true" Label="Industry"
+                Variant="Variant.Outlined" />
 
-                    <MudTextField @bind-Value="model.OHServicesRequired" For="@(() => model.OHServicesRequired)"
-                        Immediate="true" Label="OH Services Required" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="model.OHServicesRequired" For="@(() => model.OHServicesRequired)"
+                Immediate="true" Label="OH Services Required" Variant="Variant.Outlined" />
 
-                    <MudNumericField @bind-Value="model.NumberOfEmployees" For="@(() => model.NumberOfEmployees)"
-                        Immediate="true" Label="Number of Employees" Variant="Variant.Outlined" />
+            <MudNumericField @bind-Value="model.NumberOfEmployees" For="@(() => model.NumberOfEmployees)"
+                Immediate="true" Label="Number of Employees" Variant="Variant.Outlined" />
 
-                </MudItem>
-            </MudGrid>
-            <MudCardActions>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"
-                    OnClick="@(async () => await Submit())">Submit
-                </MudButton>
-            </MudCardActions>
-        </MudForm>
+        </MudItem>
+    </MudGrid>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"
+            OnClick="@(async () => await Submit())">Submit
+        </MudButton>
+    </MudCardActions>
+</MudForm>
 
-        @code {
+@code {
     [Inject] ISnackbar Snackbar { get; set; }
     MudForm form;
     CustomerDto model = new CustomerDto();
     CustomerValidator customerValidator = new CustomerValidator();
+    private HttpClient? httpClient;
+    IEnumerable<CustomerDto> customerSearchList = new List<CustomerDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            httpClient = HttpClientFactory.CreateClient("api");
+            customerSearchList = await httpClient.GetFromJsonAsync<IEnumerable<CustomerDto>>("api/customer/getall");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching employee data: {ex.Message}");
+        }
+    }
+
+    private async Task<IEnumerable<CustomerDto>> Search(string value, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(value))
+            return new List<CustomerDto>();
+        return customerSearchList.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
     private async Task Submit()
     {
         await form.Validate();
