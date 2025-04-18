@@ -1,0 +1,104 @@
+@namespace Client.Pages.Components.Calendar.CustomWorkWeekView
+@using Heron.MudCalendar
+@inherits WorkWeekView
+
+@Render
+
+@code {
+    [Parameter]
+    public bool HideTimeColumn { get; set; } = false;
+    private const int MinutesInDay = 24 * 60;
+    private int CellsInDay => MinutesInDay / (int)Calendar.DayTimeInterval;
+
+    private bool IsHourCell(int row)
+    {
+        return (int)Calendar.DayTimeInterval >= 60 || row % (60 / (int)Calendar.DayTimeInterval) == 0;
+    }
+
+    /// <summary>
+    /// Renders the header that contains the day names.
+    /// </summary>
+    protected override RenderFragment RenderHeader =>
+    @<div>
+    <div class="@HeaderClass">
+        <div></div>
+        @foreach (var cell in Cells)
+        {
+        <div class="vertical-abbreviated-date-title">
+            <div aria-label="@($"{cell.Date:dddd} {cell.Date.Day}")">
+                @RenderDayTitle(cell)
+            </div>
+            <div aria-label="@($"{cell.Date:dddd} {cell.Date.Day}")">
+                <p>@cell.Date.Day</p>
+            </div>
+        </div>
+        }
+        </div>
+    </div>;
+
+/// <summary>
+/// Renders the title of a day.
+/// </summary>
+protected override RenderFragment RenderDayTitle(CalendarCell cell) => __builder =>
+{
+    __builder.AddContent(1, cell.Date.ToString("ddd")[0]);
+};
+
+    /// <summary>
+    /// Renders the day/week structure.
+    /// </summary>
+    protected override RenderFragment RenderTimes =>
+    @<div class="d-block relative outertime">
+    <div class="@GridClass innertime">
+        @for (var row = 0; row<CellsInDay; row++)
+        {
+            <div class="@TimeCellClassname(row) time-cell" style="@CellHeightStyle()">
+            </div>
+            @foreach (var cell in Cells)
+            {
+            <div class="@DayCellClassname(cell, row)" style="@DayStyle(cell, row)">
+                @if (Calendar.ShowCurrentTime && TimelineRow() == row)
+                {
+                <hr class="mud-cal-current-time" style="@TimelineStyle()" />
+                }
+            </div>
+            }
+        }
+    </div>
+</div>;
+
+/// <summary>
+/// Renders the cells.
+/// </summary>
+protected override RenderFragment RenderCells =>
+@<div class="mud-cal-week-layer">
+    <div></div>
+    <div class="@GridClass">
+        @foreach (var cell in Cells)
+        {
+            @RenderCell(cell)
+        }
+    </div>
+</div>;
+
+/// <summary>
+/// Renders an individual cell.
+/// </summary>
+protected override RenderFragment RenderCell(CalendarCell cell) =>
+@<div class="mud-cal-week-cell-holder">
+@for (var i = 0; i < CellsInDay; i++)
+{
+    var row = i;
+        <MudDropZone T="WeekView" OnlyZone="true" Style="@CellHeightStyle()"
+            Identifier="@string.Concat(cell.Date.Date.ToString("d"), "_", row.ToString())">
+            @if (Calendar.CellClicked.HasDelegate)
+            {
+                <MudLink @onclick="() => OnCellLinkClicked(cell, row)" Class="mud-cal-week-cell-link">
+                    <div class="mud-cal-week-link"></div>
+                </MudLink>
+            }
+        </MudDropZone>
+}
+@RenderCellContents(cell)
+</div>;
+}

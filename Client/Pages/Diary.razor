@@ -1,6 +1,8 @@
 ﻿@page "/"
+@using Client.Pages.Components
 @using Microsoft.AspNetCore.Authorization
 @using Shared.DTOs.CRM
+@using Client.Pages.Components.Calendar
 @inject IHttpClientFactory HttpClientFactory
 @* @attribute [Authorize] *@
 
@@ -26,7 +28,7 @@
     {
         <MudItem xs="12" sm="6" md="4" lg="3">
             <MudText Typo="Typo.h6">@resource.Name</MudText>
-            <MudCalendar CurrentDay=@CurrentDay Height="2000" ShowDay="CalendarView == CalendarView.Day"
+            <CustomMudCalendar CurrentDay=@CurrentDay Height="2000" ShowDay="CalendarView == CalendarView.Day"
                 ShowWeek="CalendarView == CalendarView.Week" ShowWorkWeek="CalendarView == CalendarView.WorkWeek"
                 ShowMonth="CalendarView == CalendarView.Month" ShowCurrentTime="true" Items="@Events[resource.Name]" FirstDayOfWorkWeek="DayOfWeek.Monday" FirstDayOfWeek="DayOfWeek.Monday" ShowToolbar="false"/>
         </MudItem>

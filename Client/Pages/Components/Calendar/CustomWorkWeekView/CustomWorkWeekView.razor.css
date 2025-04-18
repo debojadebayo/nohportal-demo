@@ -1,0 +1,20 @@
+.vertical-abbreviated-date-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.mud-cal-grid.mud-cal-work-week-grid {
+  grid-template-columns: 0px repeat(5, 1fr);
+}
+
+.mud-cal-grid-header.mud-cal-work-week-header {
+  grid-template-columns: 0px repeat(5, 1fr);
+}
+
+.mud-cal-work-week-scroll {
+  overflow-y: auto;
+}
+
+/*# sourceMappingURL=CustomWorkWeekView.razor.css.map */
