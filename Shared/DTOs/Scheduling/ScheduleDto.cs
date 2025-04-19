@@ -11,5 +11,6 @@ namespace Shared.DTOs.Scheduling
 		public long ClinicianId { get; set; }
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
+		
 	}
 }

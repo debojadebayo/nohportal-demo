@@ -3,17 +3,20 @@
 @using Heron.MudCalendar;
 @using Client.Pages.Components.Calendar.CustomWeekView;
 @using Client.Pages.Components.Calendar.CustomWorkWeekView;
+@using Client.Pages.Components.Calendar.CustomMonthView;
+@using Client.Pages.Components.Calendar.CustomDayView;
 
 @inherits MudCalendar
 
 @Render
 
 @code {
-    [Parameter]
-    public bool HideTimeColumn { get; set; } = false;
-
     protected override RenderFragment RenderWeekView =>
-        @<CustomWeekView HideTimeColumn=HideTimeColumn />;
+        @<WeekView />;
     protected override RenderFragment RenderWorkWeekView =>
-        @<CustomWorkWeekView HideTimeColumn=HideTimeColumn />;
+        @<WorkWeekView />;
+    protected override RenderFragment RenderMonthView =>
+        @<MonthView />;
+    protected override RenderFragment RenderDayView =>
+        @<DayView />;
 }

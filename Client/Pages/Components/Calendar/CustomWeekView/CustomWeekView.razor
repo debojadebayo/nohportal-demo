@@ -5,8 +5,6 @@
 @Render
 
 @code {
-    [Parameter]
-    public bool HideTimeColumn { get; set; } = false;
     private const int MinutesInDay = 24 * 60;
     private int CellsInDay => MinutesInDay / (int)Calendar.DayTimeInterval;
     protected virtual int DaysInView => 7;
@@ -54,7 +52,7 @@ protected override RenderFragment RenderDayTitle(CalendarCell cell) => __builder
                 @for (var row = 0; row < CellsInDay; row++)
                 {
                     <div class="@TimeCellClassname(row)" style="@CellHeightStyle()">
-                        @if (IsHourCell(row) && !HideTimeColumn)
+                        @if (IsHourCell(row))
                         {
                             @DrawTime(row)
                         }

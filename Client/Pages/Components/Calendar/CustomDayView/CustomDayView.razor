@@ -5,10 +5,9 @@
 @Render
 
 @code {
-    [Parameter]
-    public bool HideTimeColumn { get; set; } = false;
     private const int MinutesInDay = 24 * 60;
     private int CellsInDay => MinutesInDay / (int)Calendar.DayTimeInterval;
+    protected virtual int DaysInView => 1;
 
     private bool IsHourCell(int row)
     {
@@ -16,32 +15,36 @@
     }
 
     /// <summary>
-    /// Renders the header for the day view.
+    /// Renders the header that contains the day names.
     /// </summary>
     protected override RenderFragment RenderHeader =>
     @<div>
-        <div class="@HeaderClass">
-            <div class="vertical-abbreviated-date-title">
-                <div aria-label="@($"{Cells[0].Date:dddd} {Cells[0].Date.Day}")">
-                    @RenderDayTitle(Cells[0])
-                </div>
-                <div aria-label="@($"{Cells[0].Date:dddd} {Cells[0].Date.Day}")">
-                    <p>@Cells[0].Date.Day</p>
-                </div>
+    <div class="@HeaderClass">
+        <div></div>
+        @foreach (var cell in Cells)
+        {
+        <div class="vertical-abbreviated-date-title">
+            <div aria-label="@($"{cell.Date:dddd} {cell.Date.Day}")">
+                @RenderDayTitle(cell)
             </div>
+            <div aria-label="@($"{cell.Date:dddd} {cell.Date.Day}")">
+                <p>@cell.Date.Day</p>
+            </div>
+        </div>
+        }
         </div>
     </div>;
 
-    /// <summary>
-    /// Renders the title of the day.
-    /// </summary>
-    protected override RenderFragment RenderDayTitle(CalendarCell cell) => __builder =>
-    {
-        __builder.AddContent(1, cell.Date.ToString("ddd"));
-    };
+/// <summary>
+/// Renders the title of a day.
+/// </summary>
+protected override RenderFragment RenderDayTitle(CalendarCell cell) => __builder =>
+{
+    __builder.AddContent(1, cell.Date.ToString("ddd")[0]);
+};
 
     /// <summary>
-    /// Renders the time structure for the day.
+    /// Renders the day/week structure.
     /// </summary>
     protected override RenderFragment RenderTimes =>
         @<div class="d-block relative">
@@ -49,49 +52,56 @@
                 @for (var row = 0; row < CellsInDay; row++)
                 {
                     <div class="@TimeCellClassname(row)" style="@CellHeightStyle()">
-                        @if (IsHourCell(row) && !HideTimeColumn)
+                        @if (IsHourCell(row))
                         {
                             @DrawTime(row)
                         }
                     </div>
-                    <div class="@DayCellClassname(Cells[0], row)" style="@DayStyle(Cells[0], row)">
-                        @if (Calendar.ShowCurrentTime && TimelineRow() == row)
-                        {
-                            <hr class="mud-cal-current-time" style="@TimelineStyle()"/>
-                        }
-                    </div>
+                    @foreach (var cell in Cells)
+                    {
+                        <div class="@DayCellClassname(cell, row)" style="@DayStyle(cell, row)">
+                            @if (Calendar.ShowCurrentTime && TimelineRow() == row)
+                            {
+                                <hr class="mud-cal-current-time" style="@TimelineStyle()"/>
+                            }
+                        </div>
+                    }
                 }
             </div>
         </div>;
 
-    /// <summary>
-    /// Renders the cells for the day.
-    /// </summary>
-    protected override RenderFragment RenderCells =>
-    @<div class="mud-cal-day-layer">
-        <div class="@GridClass">
-            @RenderCell(Cells[0])
-        </div>
-    </div>;
-
-    /// <summary>
-    /// Renders an individual cell for the day.
-    /// </summary>
-    protected override RenderFragment RenderCell(CalendarCell cell) =>
-    @<div class="mud-cal-day-cell-holder">
-        @for (var i = 0; i < CellsInDay; i++)
+/// <summary>
+/// Renders the cells.
+/// </summary>
+protected override RenderFragment RenderCells =>
+@<div class="mud-cal-week-layer">
+    <div></div>
+    <div class="@GridClass">
+        @foreach (var cell in Cells)
         {
-            var row = i;
-            <MudDropZone T="DayView" OnlyZone="true" Style="@CellHeightStyle()"
-                Identifier="@string.Concat(cell.Date.Date.ToString("d"), "_", row.ToString())">
-                @if (Calendar.CellClicked.HasDelegate)
-                {
-                    <MudLink @onclick="() => OnCellLinkClicked(cell, row)" Class="mud-cal-day-cell-link">
-                        <div class="mud-cal-day-link"></div>
-                    </MudLink>
-                }
-            </MudDropZone>
+            @RenderCell(cell)
         }
-        @RenderCellContents(cell)
-    </div>;
+    </div>
+</div>;
+
+/// <summary>
+/// Renders an individual cell.
+/// </summary>
+protected override RenderFragment RenderCell(CalendarCell cell) =>
+@<div class="mud-cal-week-cell-holder">
+@for (var i = 0; i < CellsInDay; i++)
+{
+    var row = i;
+        <MudDropZone T="WeekView" OnlyZone="true" Style="@CellHeightStyle()"
+            Identifier="@string.Concat(cell.Date.Date.ToString("d"), "_", row.ToString())">
+            @if (Calendar.CellClicked.HasDelegate)
+            {
+                <MudLink @onclick="() => OnCellLinkClicked(cell, row)" Class="mud-cal-week-cell-link">
+                    <div class="mud-cal-week-link"></div>
+                </MudLink>
+            }
+        </MudDropZone>
+}
+@RenderCellContents(cell)
+</div>;
 }

@@ -1,0 +1,127 @@
+@using Heron.MudCalendar
+@using Shared.DTOs.Scheduling
+@using Client.Pages.Components.Calendar
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudButton OnClick="() => CurrentDay = DateTime.Today">Today</MudButton>
+        <MudButton OnClick="() => PrevClicked()">Prev</MudButton>
+        <MudButton OnClick="() => NextClicked()">Next</MudButton>
+        <MudButton Variant="@(CalendarView == CalendarView.Day ? Variant.Filled : Variant.Outlined)"
+            OnClick="SwitchToDayView">Day</MudButton>
+        <MudButton Variant="@(CalendarView == CalendarView.Week ? Variant.Filled : Variant.Outlined)"
+            OnClick="SwitchToWeekView">Week</MudButton>
+        <MudButton Variant="@(CalendarView == CalendarView.WorkWeek ? Variant.Filled : Variant.Outlined)"
+            OnClick="SwitchToWorkWeekView">Workweek</MudButton>
+        <MudButton Variant="@(CalendarView == CalendarView.Month ? Variant.Filled : Variant.Outlined)"
+            OnClick="SwitchToMonthView">Month</MudButton>
+    </MudItem>
+</MudGrid>
+<div class="calendar-resource-group">
+    @foreach (var resource in Resources)
+    {
+        <div class="calendar-resource">
+            <MudCard>
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudAvatar Color="Color.Secondary">I</MudAvatar>
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1">Istra Croatia</MudText>
+            <MudText Typo="Typo.body2">Peninsula in Europe</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+                    <CustomMudCalendar 
+                Height=2000 
+                CurrentDay=@CurrentDay
+                ShowDay="CalendarView == CalendarView.Day" 
+                ShowWeek="CalendarView == CalendarView.Week"
+                ShowWorkWeek="CalendarView == CalendarView.WorkWeek" 
+                ShowMonth="CalendarView == CalendarView.Month"
+                ShowCurrentTime="true" 
+                Items="@resource.Value" 
+                FirstDayOfWorkWeek="DayOfWeek.Monday"
+                FirstDayOfWeek="DayOfWeek.Monday" 
+                ShowToolbar="false" />
+    </MudCardContent>
+</MudCard>
+
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Dictionary<int, List<CustomCalendarItem<ScheduleDto>>> Resources { get; set; } = new Dictionary<int, List<CustomCalendarItem<ScheduleDto>>>();
+
+    private DateTime CurrentDay = DateTime.Today;
+
+    private CalendarView CalendarView { get; set; } = CalendarView.WorkWeek;
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    private void SwitchToDayView()
+    {
+        CalendarView = CalendarView.Day;
+    }
+
+    private void SwitchToWeekView()
+    {
+        CalendarView = CalendarView.Week;
+    }
+
+    private void SwitchToWorkWeekView()
+    {
+        CalendarView = CalendarView.WorkWeek;
+    }
+
+    private void SwitchToMonthView()
+    {
+        CalendarView = CalendarView.Month;
+    }
+
+    private void PrevClicked()
+    {
+        switch (CalendarView)
+        {
+            case CalendarView.Day:
+                CurrentDay = CurrentDay.AddDays(-1);
+                break;
+            case CalendarView.Week:
+                CurrentDay = CurrentDay.AddDays(-7);
+                break;
+            case CalendarView.WorkWeek:
+                CurrentDay = CurrentDay.AddDays(-7);
+                break;
+            case CalendarView.Month:
+                CurrentDay = CurrentDay.AddMonths(-1);
+                break;
+        }
+    }
+
+    private void NextClicked()
+    {
+        switch (CalendarView)
+        {
+            case CalendarView.Day:
+                CurrentDay = CurrentDay.AddDays(1);
+                break;
+            case CalendarView.Week:
+                CurrentDay = CurrentDay.AddDays(7);
+                break;
+            case CalendarView.WorkWeek:
+                CurrentDay = CurrentDay.AddDays(7);
+                break;
+            case CalendarView.Month:
+                CurrentDay = CurrentDay.AddMonths(1);
+                break;
+        }
+    }
+}

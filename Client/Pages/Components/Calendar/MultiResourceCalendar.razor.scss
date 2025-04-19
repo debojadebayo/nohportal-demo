@@ -1,0 +1,32 @@
+.calendar-resource-group {
+    display: flex;
+    width: 100%;
+    gap: 0;
+    height: 500px;
+    overflow: scroll;
+}
+
+.calendar-resource-group>.calendar-resource {
+    flex: 1 1 0;
+    max-width: 100%;
+    margin-left: 10px;
+}
+
+.calendar-resource-group :not(:first-child) {
+    ::deep .mud-cal-grid-header.mud-cal-work-week-header,
+    ::deep .mud-cal-grid.mud-cal-work-week-grid {
+        grid-template-columns: 0px repeat(5, 1fr);
+    }
+    ::deep .mud-cal-grid-header.mud-cal-week-header,
+    ::deep .mud-cal-grid.mud-cal-week-grid {
+        grid-template-columns: 0px repeat(7, 1fr);
+    }
+    ::deep .mud-cal-grid-header.mud-cal-day-header,
+    ::deep .mud-cal-grid.mud-cal-day-grid {
+        grid-template-columns: 0px repeat(1, 1fr);
+    }
+
+    ::deep .mud-cal-time-cell {
+        color: transparent;
+    }
+}

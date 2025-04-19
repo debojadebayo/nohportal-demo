@@ -5,62 +5,21 @@
 @Render
 
 @code {
-    [Parameter]
-    public bool HideTimeColumn { get; set; } = false;
-    protected virtual int DaysInView => 42; // 6 weeks x 7 days
-
     /// <summary>
-    /// Renders the header for the month view.
+    /// Renders the header of the grid.
     /// </summary>
     protected override RenderFragment RenderHeader =>
-    @<div>
-        <div class="@HeaderClass">
-            @foreach (var day in Enumerable.Range(0, 7))
+        @<div class="mud-cal-grid-header mud-cal-month-grid-header" style="@GridStyle">
+            @for (var i = 0; i < Columns; i++)
             {
-                <div class="vertical-abbreviated-date-title">
-                    <div aria-label="@(((DayOfWeek)day).ToString())">
-                        @RenderDayTitle(day)
-                    </div>
+                <div class="mud-cal-month-header" aria-label="@Cells[i].Date.ToString("dddd")">
+                    @RenderDayTitle(i)
                 </div>
             }
-        </div>
-    </div>;
+        </div>;
 
     /// <summary>
-    /// Renders the title of a day of week.
+    /// Renders the day name.
     /// </summary>
-    protected RenderFragment RenderDayTitle(int dayOfWeek) => __builder =>
-    {
-        __builder.AddContent(1, ((DayOfWeek)dayOfWeek).ToString().Substring(0, 3));
-    };
-
-    /// <summary>
-    /// Renders the month grid.
-    /// </summary>
-    protected override RenderFragment RenderCells =>
-    @<div class="mud-cal-month-layer">
-        <div class="@GridClass">
-            @foreach (var cell in Cells)
-            {
-                @RenderCell(cell)
-            }
-        </div>
-    </div>;
-
-    /// <summary>
-    /// Renders an individual cell for the month.
-    /// </summary>
-    protected override RenderFragment RenderCell(CalendarCell cell) =>
-    @<div class="mud-cal-month-cell-holder">
-        <MudDropZone T="MonthView" OnlyZone="true"
-            Identifier="@cell.Date.Date.ToString("d")">
-            @if (Calendar.CellClicked.HasDelegate)
-            {
-                <MudLink @onclick="() => OnCellLinkClicked(cell, 0)" Class="mud-cal-month-cell-link">
-                    <div class="mud-cal-month-link"></div>
-                </MudLink>
-            }
-        </MudDropZone>
-        @RenderCellContents(cell)
-    </div>;
+    protected override RenderFragment RenderDayTitle(int day) => __builder => { __builder.AddContent(1, Cells[day].Date.ToString("ddd")); };
 }
