@@ -1,0 +1,16 @@
+.vertical-abbreviated-date-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mud-cal-grid.mud-cal-month-grid {
+    grid-template-columns: repeat(7, 1fr);
+}
+.mud-cal-grid-header.mud-cal-month-header {
+    grid-template-columns: repeat(7, 1fr);
+}
+.mud-cal-month-scroll {
+    overflow-y: auto;
+}

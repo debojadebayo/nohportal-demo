@@ -1,0 +1,16 @@
+.vertical-abbreviated-date-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mud-cal-grid.mud-cal-day-grid.hide-time-column {
+    grid-template-columns: 0px 1fr;
+}
+.mud-cal-grid-header.mud-cal-day-header.hide-time-column {
+    grid-template-columns: 0px 1fr;
+}
+.mud-cal-day-scroll {
+    overflow-y: auto;
+}

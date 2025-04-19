@@ -1,0 +1,66 @@
+@namespace Client.Pages.Components.Calendar.CustomMonthView
+@using Heron.MudCalendar
+@inherits MonthView
+
+@Render
+
+@code {
+    [Parameter]
+    public bool HideTimeColumn { get; set; } = false;
+    protected virtual int DaysInView => 42; // 6 weeks x 7 days
+
+    /// <summary>
+    /// Renders the header for the month view.
+    /// </summary>
+    protected override RenderFragment RenderHeader =>
+    @<div>
+        <div class="@HeaderClass">
+            @foreach (var day in Enumerable.Range(0, 7))
+            {
+                <div class="vertical-abbreviated-date-title">
+                    <div aria-label="@(((DayOfWeek)day).ToString())">
+                        @RenderDayTitle(day)
+                    </div>
+                </div>
+            }
+        </div>
+    </div>;
+
+    /// <summary>
+    /// Renders the title of a day of week.
+    /// </summary>
+    protected RenderFragment RenderDayTitle(int dayOfWeek) => __builder =>
+    {
+        __builder.AddContent(1, ((DayOfWeek)dayOfWeek).ToString().Substring(0, 3));
+    };
+
+    /// <summary>
+    /// Renders the month grid.
+    /// </summary>
+    protected override RenderFragment RenderCells =>
+    @<div class="mud-cal-month-layer">
+        <div class="@GridClass">
+            @foreach (var cell in Cells)
+            {
+                @RenderCell(cell)
+            }
+        </div>
+    </div>;
+
+    /// <summary>
+    /// Renders an individual cell for the month.
+    /// </summary>
+    protected override RenderFragment RenderCell(CalendarCell cell) =>
+    @<div class="mud-cal-month-cell-holder">
+        <MudDropZone T="MonthView" OnlyZone="true"
+            Identifier="@cell.Date.Date.ToString("d")">
+            @if (Calendar.CellClicked.HasDelegate)
+            {
+                <MudLink @onclick="() => OnCellLinkClicked(cell, 0)" Class="mud-cal-month-cell-link">
+                    <div class="mud-cal-month-link"></div>
+                </MudLink>
+            }
+        </MudDropZone>
+        @RenderCellContents(cell)
+    </div>;
+}

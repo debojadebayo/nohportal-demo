@@ -49,24 +49,28 @@ protected override RenderFragment RenderDayTitle(CalendarCell cell) => __builder
     /// Renders the day/week structure.
     /// </summary>
     protected override RenderFragment RenderTimes =>
-    @<div class="d-block relative outertime">
-    <div class="@GridClass innertime">
-        @for (var row = 0; row<CellsInDay; row++)
-        {
-            <div class="@TimeCellClassname(row) time-cell" style="@CellHeightStyle()">
-            </div>
-            @foreach (var cell in Cells)
-            {
-            <div class="@DayCellClassname(cell, row)" style="@DayStyle(cell, row)">
-                @if (Calendar.ShowCurrentTime && TimelineRow() == row)
+        @<div class="d-block relative">
+            <div class="@GridClass">
+                @for (var row = 0; row < CellsInDay; row++)
                 {
-                <hr class="mud-cal-current-time" style="@TimelineStyle()" />
+                    <div class="@TimeCellClassname(row)" style="@CellHeightStyle()">
+                        @if (IsHourCell(row) && !HideTimeColumn)
+                        {
+                            @DrawTime(row)
+                        }
+                    </div>
+                    @foreach (var cell in Cells)
+                    {
+                        <div class="@DayCellClassname(cell, row)" style="@DayStyle(cell, row)">
+                            @if (Calendar.ShowCurrentTime && TimelineRow() == row)
+                            {
+                                <hr class="mud-cal-current-time" style="@TimelineStyle()"/>
+                            }
+                        </div>
+                    }
                 }
             </div>
-            }
-        }
-    </div>
-</div>;
+        </div>;
 
 /// <summary>
 /// Renders the cells.
