@@ -16,7 +16,9 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             ClinicianType = entity.ClinicianType,
             RegulatorType = entity.RegulatorType,
             LicenceNumber = entity.LicenceNumber,
-            ProfilePictureUrl = entity.ProfilePictureUrl,
+            AvatarImage = entity.AvatarImage,
+            AvatarTitle = entity.AvatarTitle,
+            AvatarDescription = entity.AvatarDescription,
             // Schedules mapping can be handled with a ScheduleMapper if needed
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
@@ -37,7 +39,9 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             ClinicianType = dto.ClinicianType,
             RegulatorType = dto.RegulatorType,
             LicenceNumber = dto.LicenceNumber,
-            ProfilePictureUrl = dto.ProfilePictureUrl,
+            AvatarImage = dto.AvatarImage,
+            AvatarTitle = dto.AvatarTitle,
+            AvatarDescription = dto.AvatarDescription,
             // Schedules mapping can be handled with a ScheduleMapper if needed
             CreatedBy = dto.CreatedBy,
             LastModifiedBy = dto.LastModifiedBy,
@@ -66,7 +70,9 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         entity.ClinicianType = dto.ClinicianType;
         entity.RegulatorType = dto.RegulatorType;
         entity.LicenceNumber = dto.LicenceNumber;
-        entity.ProfilePictureUrl = dto.ProfilePictureUrl;
+        entity.AvatarImage = dto.AvatarImage;
+        entity.AvatarTitle = dto.AvatarTitle;
+        entity.AvatarDescription = dto.AvatarDescription;
         // Schedules mapping can be handled with a ScheduleMapper if needed
         entity.CreatedBy = dto.CreatedBy;
         entity.LastModifiedBy = dto.LastModifiedBy;
@@ -84,7 +90,9 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         dto.ClinicianType = entity.ClinicianType;
         dto.RegulatorType = entity.RegulatorType;
         dto.LicenceNumber = entity.LicenceNumber;
-        dto.ProfilePictureUrl = entity.ProfilePictureUrl;
+        dto.AvatarImage = entity.AvatarImage;
+        dto.AvatarTitle = entity.AvatarTitle;
+        dto.AvatarDescription = entity.AvatarDescription;
         // Schedules mapping can be handled with a ScheduleMapper if needed
         dto.CreatedBy = entity.CreatedBy;
         dto.LastModifiedBy = entity.LastModifiedBy;

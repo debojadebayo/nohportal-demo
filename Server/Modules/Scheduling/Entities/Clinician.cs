@@ -12,7 +12,9 @@ namespace Server.Modules.Scheduling.Entities
 		public ClinicianTypeEnum ClinicianType { get; set; }
 		public RegulatorTypeEnum RegulatorType { get; set; }
 		public string LicenceNumber { get; set; }
-		public string ProfilePictureUrl { get; set; }
+		public string AvatarImage { get; set; }
+		public string AvatarTitle { get; set; }
+		public string AvatarDescription { get; set; }
 		public HashSet<Schedule> Schedules { get; set; } = new HashSet<Schedule>();
 	}
 }
