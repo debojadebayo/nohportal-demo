@@ -14,31 +14,28 @@
 <MultiResourceCalendar Resources="@Resources" />
 
 @code {
-    private Dictionary<int, List<CustomCalendarItem<ScheduleDto>>> Resources { get; set; } = new Dictionary<int, List<CustomCalendarItem<ScheduleDto>>>()
-        {
-            [1] = new List<CustomCalendarItem<ScheduleDto>>()
-            {
-                new CustomCalendarItem<ScheduleDto>
+    private List<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
+    private Dictionary<int, List<CustomCalendarItem<ScheduleDto>>> Resources { get; set; } = new Dictionary<int, List<CustomCalendarItem<ScheduleDto>>>();
+    
+    protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			httpClient = HttpClientFactory.CreateClient("api");
+
+			Clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getall");
+			if (Clinicians == null) return;
+            Resources = Clinicians.ToDictionary(
+                key => c.Id,
+                value => c.Schedule.Select(s => new CustomCalendarItem<ScheduleDto>
                 {
-                Start = DateTime.Today.AddHours(1),
-                End = DateTime.Today.AddHours(2),
-                Data = new ScheduleDto { }
-                },
-                new CustomCalendarItem<ScheduleDto>
-                {
-                Start = DateTime.Today.AddHours(11),
-                End = DateTime.Today.AddHours(12),
-                Data = new ScheduleDto { }
-                }
-            },
-            [2] = new List<CustomCalendarItem<ScheduleDto>>()
-            {
-                new CustomCalendarItem<ScheduleDto>
-                {
-                Start = DateTime.Today.AddDays(1).AddHours(13),
-                End = DateTime.Today.AddDays(1).AddHours(14),
-                Data = new ScheduleDto { }
-                }
-            }
-        };
+                    Data = s
+                }).ToList()
+            );
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error fetching Clinician data: {ex.Message}");
+		}
+	}
 }
