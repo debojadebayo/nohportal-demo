@@ -56,7 +56,7 @@
 
 @code {
     [Parameter]
-    public Dictionary<int, List<CustomCalendarItem<ScheduleDto>>> Resources { get; set; } = new Dictionary<int, List<CustomCalendarItem<ScheduleDto>>>();
+    public Dictionary<long, List<CustomCalendarItem<ScheduleDto>>> Resources { get; set; } = new Dictionary<long, List<CustomCalendarItem<ScheduleDto>>>();
 
     private DateTime CurrentDay = DateTime.Today;
 

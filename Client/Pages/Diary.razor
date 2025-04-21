@@ -14,9 +14,10 @@
 <MultiResourceCalendar Resources="@Resources" />
 
 @code {
-    private List<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
-    private Dictionary<int, List<CustomCalendarItem<ScheduleDto>>> Resources { get; set; } = new Dictionary<int, List<CustomCalendarItem<ScheduleDto>>>();
-    
+    private IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
+    private Dictionary<long, List<CustomCalendarItem<ScheduleDto>>> Resources { get; set; } = new Dictionary<long, List<CustomCalendarItem<ScheduleDto>>>();
+    private HttpClient? httpClient;
+
     protected override async Task OnInitializedAsync()
 	{
 		try
@@ -26,8 +27,8 @@
 			Clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getall");
 			if (Clinicians == null) return;
             Resources = Clinicians.ToDictionary(
-                key => c.Id,
-                value => c.Schedule.Select(s => new CustomCalendarItem<ScheduleDto>
+                c => c.Id,
+                c => c.Schedules.Select(s => new CustomCalendarItem<ScheduleDto>
                 {
                     Data = s
                 }).ToList()
