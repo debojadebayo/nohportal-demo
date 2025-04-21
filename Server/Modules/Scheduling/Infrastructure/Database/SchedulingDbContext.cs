@@ -14,6 +14,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database
 			modelBuilder.HasDefaultSchema(Schema.Scheduling);
 			modelBuilder.ApplyConfigurationsFromAssembly(typeof(SchedulingDbContext).Assembly);
 			modelBuilder.Entity<Clinician>()
+				
 				.HasData(
 					new Clinician { Id = 1, FirstName = "Alice", LastName = "Smith", Telephone = "555-1001", Email = "alice.smith@example.com", ClinicianType = Shared.Enums.ClinicianTypeEnum.SeniorDoctor, RegulatorType = Shared.Enums.RegulatorTypeEnum.GMC, LicenceNumber = "GMC1001", AvatarImage = "https://randomuser.me/api/portraits/women/1.jpg", AvatarTitle = "Dr. Alice Smith", AvatarDescription = "Senior Doctor, GMC" },
 					new Clinician { Id = 2, FirstName = "Bob", LastName = "Johnson", Telephone = "555-1002", Email = "bob.johnson@example.com", ClinicianType = Shared.Enums.ClinicianTypeEnum.JuniorDoctor, RegulatorType = Shared.Enums.RegulatorTypeEnum.GMC, LicenceNumber = "GMC1002", AvatarImage = "https://randomuser.me/api/portraits/men/2.jpg", AvatarTitle = "Dr. Bob Johnson", AvatarDescription = "Junior Doctor, GMC" },
@@ -38,7 +39,13 @@ namespace Server.Modules.Scheduling.Infrastructure.Database
 					new Referral { Id = 8, CustomerId = 3, PatientId = 8, ReferralDetails = "Post-operative follow-up.", DocumentId = "DOC-1008" },
 					new Referral { Id = 9, CustomerId = 3, PatientId = 9, ReferralDetails = "Referral for physical therapy.", DocumentId = "DOC-1009" },
 					new Referral { Id = 10, CustomerId = 3, PatientId = 10, ReferralDetails = "Consultation for migraine headaches.", DocumentId = "DOC-1010" }
-					);
+						);
+			modelBuilder.Entity<Schedule>()
+				.HasData(
+					new Schedule { Id = 1, ClinicianId = 1, CustomerId = 1, ReferralId = 1, PatientId = 1, Start = new DateTime(2025, 4, 22, 9, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 10, 0, 0, DateTimeKind.Utc) },
+					new Schedule { Id = 2, ClinicianId = 2, CustomerId = 1, ReferralId = 2, PatientId = 2, Start = new DateTime(2025, 4, 22, 10, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 11, 0, 0, DateTimeKind.Utc) },
+					new Schedule { Id = 3, ClinicianId = 3, CustomerId = 1, ReferralId = 3, PatientId = 3, Start = new DateTime(2025, 4, 22, 11, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 12, 0, 0, DateTimeKind.Utc) }
+				);
 		}
 	}
 }

@@ -17,6 +17,6 @@ namespace Shared.DTOs.Scheduling
 		public string AvatarImage { get; set; }
 		public string AvatarTitle { get; set; }
 		public string AvatarDescription { get; set; }
-		public HashSet<ScheduleDto> Schedules { get; set; } = new HashSet<ScheduleDto>();
+		public IEnumerable<ScheduleDto> Schedules { get; set; } = new List<ScheduleDto>();
 	}
 }

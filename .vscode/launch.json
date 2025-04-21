@@ -1,7 +1,6 @@
 {
     "version": "0.2.0",
     "configurations": [
-
         {
             "name": "Docker .NET Attach (Preview)",
             "type": "docker",
@@ -20,13 +19,13 @@
             "preLaunchTask": "build",
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
-            },
+            }
         },
         {
             "name": "Launch and Debug Web API",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/Server/WebApi/bin/Debug/net9.0/WebApi.dll", // Adjust path and framework version
+            "program": "${workspaceFolder}/Server/WebApi/bin/Debug/net9.0/WebApi.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Server/WebApi",
             "stopAtEntry": false,
@@ -36,6 +35,15 @@
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Docker .NET Launch",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/Server/WebApi/WebApi.csproj"
             }
         }
     ]

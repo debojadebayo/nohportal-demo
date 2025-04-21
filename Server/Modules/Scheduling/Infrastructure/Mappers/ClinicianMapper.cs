@@ -4,6 +4,11 @@ using Shared.DTOs.Scheduling;
 
 public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
 {
+    private readonly IMapper<Schedule, ScheduleDto> _mapper;
+    public ClinicianMapper(IMapper<Schedule, ScheduleDto> mapper)
+    {
+        _mapper = mapper;
+    }
     public ClinicianDto Map(Clinician entity)
     {
         return new ClinicianDto
@@ -19,11 +24,11 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             AvatarImage = entity.AvatarImage,
             AvatarTitle = entity.AvatarTitle,
             AvatarDescription = entity.AvatarDescription,
-            // Schedules mapping can be handled with a ScheduleMapper if needed
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
-            ModifiedDate = entity.ModifiedDate
+            ModifiedDate = entity.ModifiedDate,
+            Schedules = _mapper.Map(entity.Schedules).ToList()
         };
     }
 

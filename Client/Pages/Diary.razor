@@ -24,7 +24,7 @@
 		{
 			httpClient = HttpClientFactory.CreateClient("api");
 
-			Clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getall");
+			Clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getallclinicianswithschedules");
 			if (Clinicians == null) return;
             Resources = Clinicians.ToDictionary(
                 c => c.Id,
