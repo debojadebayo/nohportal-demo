@@ -17,7 +17,7 @@ namespace Server.Modules.Scheduling.Endpoints
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/clinician");
 
-			group.MapGet("/GetAllCliniciansWithSchedules", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<Clinician, ClinicianDto> mapper) => GetAll(dbContext, mapper));
+			group.MapGet("/GetAllCliniciansWithSchedules", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<Clinician, ClinicianDto> mapper) => GetAllCliniciansWithSchedules(dbContext, mapper));
 
 			return endpoints;
 		}

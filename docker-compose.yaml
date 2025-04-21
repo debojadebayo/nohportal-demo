@@ -22,6 +22,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     depends_on:
       - app.database
+    volumes:
+      - ./:/app
 
   app.database:
     container_name: app.database
