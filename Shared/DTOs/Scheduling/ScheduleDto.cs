@@ -1,18 +1,23 @@
 ﻿using ComposedHealthBase.Shared.DTOs;
 using Shared.DTOs;
+using ComposedHealthBase.Shared.Models;
 using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.Scheduling
 {
-	public class ScheduleDto : BaseDto<ScheduleDto>, ICalendarItem
+	public class ScheduleDto : BaseCalendarItem, IDto
 	{
+		public long Id { get; set; }
+		public bool IsActive { get; set; }
+		public int CreatedBy { get; set; }
+		public int LastModifiedBy { get; set; }
+		public DateTime CreatedDate { get; set; }
+		public DateTime ModifiedDate { get; set; }
 		public long CustomerId { get; set; }
 		public long ReferralId { get; set; }
 		public long PatientId { get; set; }
 		public long ClinicianId { get; set; }
 		public string Title { get; set; }
 		public string Description { get; set; }
-		public DateTime Start { get; set; }
-		public DateTime End { get; set; }
 	}
 }

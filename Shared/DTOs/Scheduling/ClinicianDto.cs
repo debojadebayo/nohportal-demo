@@ -5,8 +5,14 @@ using Shared.Enums;
 
 namespace Shared.DTOs.Scheduling
 {
-	public class ClinicianDto : BaseDto<ClinicianDto>, ICalendarResource
+	public class ClinicianDto : IDto, ICalendarResource
 	{
+		public long Id { get; set; }
+		public bool IsActive { get; set; }
+		public int CreatedBy { get; set; }
+		public int LastModifiedBy { get; set; }
+		public DateTime CreatedDate { get; set; }
+		public DateTime ModifiedDate { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 		public string Telephone { get; set; }
@@ -17,6 +23,6 @@ namespace Shared.DTOs.Scheduling
 		public string AvatarImage { get; set; }
 		public string AvatarTitle { get; set; }
 		public string AvatarDescription { get; set; }
-		public IEnumerable<ScheduleDto> Schedules { get; set; } = new List<ScheduleDto>();
+		public IEnumerable<ICalendarItem> Schedules { get; set; } = new List<ICalendarItem>();
 	}
 }

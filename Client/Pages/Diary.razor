@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Client.Pages.Components
+@using ComposedHealthBase.Shared.Interfaces
 @using Microsoft.AspNetCore.Authorization
 @using Shared.DTOs.CRM
 @using Client.Pages.Components.Calendar
@@ -11,11 +12,10 @@
 
 <MudText Typo="Typo.h1">Diary</MudText>
 
-<MultiResourceCalendar Resources="@Resources" />
+<MultiResourceCalendar Resources="@Clinicians" />
 
 @code {
-    private IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
-    private Dictionary<long, List<CustomCalendarItem<ScheduleDto>>> Resources { get; set; } = new Dictionary<long, List<CustomCalendarItem<ScheduleDto>>>();
+    private IEnumerable<ICalendarResource> Clinicians { get; set; } = new List<ClinicianDto>();
     private HttpClient? httpClient;
 
     protected override async Task OnInitializedAsync()
@@ -25,14 +25,6 @@
 			httpClient = HttpClientFactory.CreateClient("api");
 
 			Clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getallclinicianswithschedules");
-			if (Clinicians == null) return;
-            Resources = Clinicians.ToDictionary(
-                c => c.Id,
-                c => c.Schedules.Select(s => new CustomCalendarItem<ScheduleDto>
-                {
-                    Data = s
-                }).ToList()
-            );
 		}
 		catch (Exception ex)
 		{
