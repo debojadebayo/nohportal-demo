@@ -15,7 +15,7 @@
 <MultiResourceCalendar Resources="@Clinicians" />
 
 @code {
-    private IEnumerable<ICalendarResource> Clinicians { get; set; } = new List<ClinicianDto>();
+    private IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
     private HttpClient? httpClient;
 
     protected override async Task OnInitializedAsync()

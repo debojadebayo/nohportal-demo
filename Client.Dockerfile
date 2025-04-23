@@ -1,16 +1,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-
-RUN apt-get update \
-    && apt-get install unzip \
-    && curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
-
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /app
 
-COPY Client/ ./Client/
-COPY Shared/ ./Shared/
+COPY Client/Client.sln ./Client/
+COPY ./Client/Client.csproj ./Client/
+COPY ./Shared/Shared.csproj ./Shared/
 
-ENV ASPNETCORE_ENVIRONMENT=Development
-
+RUN dotnet restore ./Client/Client.sln
+COPY . .
 WORKDIR /app/Client
+RUN dotnet publish "./Client.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
-ENTRYPOINT ["dotnet", "watch", "run", "--project", "Client.csproj"]
+FROM nginx:stable-perl
+WORKDIR /app
+EXPOSE 8080
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/publish/wwwroot /usr/share/nginx/html

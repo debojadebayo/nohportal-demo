@@ -3,6 +3,7 @@
 @using Heron.MudCalendar
 @using Shared.DTOs.Scheduling
 @using Client.Pages.Components.Calendar
+@typeparam TCalendarResource where TCalendarResource : class, ICalendarResource
 
 <MudGrid>
     <MudItem xs="12">
@@ -58,7 +59,7 @@
 
 @code {
     [Parameter]
-    public IEnumerable<ICalendarResource> Resources { get; set; } = new List<ICalendarResource>();
+    public IEnumerable<TCalendarResource> Resources { get; set; } = new List<TCalendarResource>();
 
     private DateTime CurrentDay = DateTime.Today;
 

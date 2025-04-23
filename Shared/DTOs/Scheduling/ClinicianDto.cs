@@ -1,11 +1,12 @@
 ﻿using ComposedHealthBase.Shared.DTOs;
+using ComposedHealthBase.Shared.Models;
 using ComposedHealthBase.Shared.Interfaces;
 using Shared.DTOs;
 using Shared.Enums;
 
 namespace Shared.DTOs.Scheduling
 {
-	public class ClinicianDto : IDto, ICalendarResource
+	public class ClinicianDto : CalendarResource<ScheduleDto>, IDto
 	{
 		public long Id { get; set; }
 		public bool IsActive { get; set; }
@@ -20,9 +21,5 @@ namespace Shared.DTOs.Scheduling
 		public ClinicianTypeEnum ClinicianType { get; set; }
 		public RegulatorTypeEnum RegulatorType { get; set; }
 		public string LicenceNumber { get; set; }
-		public string AvatarImage { get; set; }
-		public string AvatarTitle { get; set; }
-		public string AvatarDescription { get; set; }
-		public IEnumerable<ICalendarItem> Schedules { get; set; } = new List<ICalendarItem>();
 	}
 }
