@@ -6,7 +6,7 @@ using Shared.Enums;
 
 namespace Shared.DTOs.Scheduling
 {
-	public class ClinicianDto : CalendarResource<ScheduleDto>, IDto
+	public class ClinicianDto : ICalendarResource<ScheduleDto>, IDto
 	{
 		public long Id { get; set; }
 		public bool IsActive { get; set; }
@@ -21,5 +21,9 @@ namespace Shared.DTOs.Scheduling
 		public ClinicianTypeEnum ClinicianType { get; set; }
 		public RegulatorTypeEnum RegulatorType { get; set; }
 		public string LicenceNumber { get; set; }
+		public IEnumerable<ScheduleDto> CalendarItems { get; set; } = new List<ScheduleDto>();
+		public string AvatarImage { get; set; }
+		public string AvatarTitle { get; set; }
+		public string AvatarDescription { get; set; }
 	}
 }

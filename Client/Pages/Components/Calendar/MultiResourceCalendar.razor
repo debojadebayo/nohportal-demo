@@ -3,7 +3,8 @@
 @using Heron.MudCalendar
 @using Shared.DTOs.Scheduling
 @using Client.Pages.Components.Calendar
-@typeparam TCalendarResource where TCalendarResource : class, ICalendarResource
+@typeparam TResource where TResource : ICalendarResource<TCalendarItem>
+@typeparam TCalendarItem where TCalendarItem : BaseCalendarItem
 
 <MudGrid>
     <MudItem xs="12">
@@ -18,24 +19,29 @@
             OnClick="SwitchToWorkWeekView">Workweek</MudButton>
         <MudButton Variant="@(CalendarView == CalendarView.Month ? Variant.Filled : Variant.Outlined)"
             OnClick="SwitchToMonthView">Month</MudButton>
+        <MudSelect MultiSelectionTextFunc="@(new Func<List<TResource>, string>(GetMultiSelectionText))" T="TResource" Label="Select Resources" MultiSelection="true" @bind-Value="_value" @bind-SelectedValues="_selectedResources">
+            @foreach (var resource in Resources)
+            {
+                <MudSelectItem T="TResource" Value="@resource">@resource.AvatarTitle</MudSelectItem>
+            }
+        </MudSelect>
     </MudItem>
 </MudGrid>
 <div class="calendar-resource-group">
-    @foreach (var resource in Resources)
+    @foreach (var resource in _selectedResources)
     {
         <div class="calendar-resource">
             <MudCard>
     <MudCardHeader>
         <CardHeaderAvatar>
-            <MudAvatar Color="Color.Secondary">I</MudAvatar>
+            <MudAvatar>
+                <MudImage Src="@resource.AvatarImage"></MudImage>
+            </MudAvatar>
         </CardHeaderAvatar>
         <CardHeaderContent>
-            <MudText Typo="Typo.body1">Istra Croatia</MudText>
-            <MudText Typo="Typo.body2">Peninsula in Europe</MudText>
+            <MudText Typo="Typo.body1">@resource.AvatarTitle</MudText>
+            <MudText Typo="Typo.body2">@resource.AvatarDescription</MudText>
         </CardHeaderContent>
-        <CardHeaderActions>
-            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
-        </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent>
                     <CustomMudCalendar 
@@ -46,7 +52,7 @@
                 ShowWorkWeek="CalendarView == CalendarView.WorkWeek" 
                 ShowMonth="CalendarView == CalendarView.Month"
                 ShowCurrentTime="true" 
-                Items="@(resource.Schedules as IEnumerable<BaseCalendarItem>)" 
+                Items="@resource.CalendarItems" 
                 FirstDayOfWorkWeek="DayOfWeek.Monday"
                 FirstDayOfWeek="DayOfWeek.Monday" 
                 ShowToolbar="false" />
@@ -58,12 +64,12 @@
 </div>
 
 @code {
-    [Parameter]
-    public IEnumerable<TCalendarResource> Resources { get; set; } = new List<TCalendarResource>();
-
+    [Parameter] public IEnumerable<TResource> Resources { get; set; }
     private DateTime CurrentDay = DateTime.Today;
-
     private CalendarView CalendarView { get; set; } = CalendarView.WorkWeek;
+
+    private TResource _value = default;
+    private IEnumerable<TResource> _selectedResources = new List<TResource>();
 
     protected override void OnInitialized()
     {
@@ -126,5 +132,9 @@
                 CurrentDay = CurrentDay.AddMonths(1);
                 break;
         }
+    }
+    private string GetMultiSelectionText(List<TResource> selectedValues)
+    {
+        return $"Selected state{(selectedValues.Count > 1 ? "s" : "")}: {string.Join(", ", selectedValues.Select(x => x.AvatarTitle))}";
     }
 }

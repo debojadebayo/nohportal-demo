@@ -12,7 +12,7 @@
 
 <MudText Typo="Typo.h1">Diary</MudText>
 
-<MultiResourceCalendar Resources="@Clinicians" />
+<MultiResourceCalendar Resources="@Clinicians" TResource="ClinicianDto" TCalendarItem="ScheduleDto" />
 
 @code {
     private IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
