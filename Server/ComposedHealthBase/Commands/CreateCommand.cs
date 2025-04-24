@@ -13,7 +13,7 @@ namespace ComposedHealthBase.Server.Commands
 
     public class CreateCommand<T, TDto, TContext> : ICreateCommand<T, TDto, TContext>
     where T : BaseEntity<T>
-    where TDto : BaseDto<TDto>
+    where TDto : IDto
     where TContext : IDbContext<TContext>
     {
         private IDbContext<TContext> _dbContext { get; }

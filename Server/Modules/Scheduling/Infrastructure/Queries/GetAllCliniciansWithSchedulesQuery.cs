@@ -25,7 +25,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Queries
         public async Task<IEnumerable<ClinicianDto>> Handle()
         {
             var clinicians = await _dbContext.Set<Clinician>()
-                .Include(c => c.Schedules)
+                .Include(c => c.CalendarItems)
                 .ToListAsync();
 
             return _mapper.Map(clinicians);

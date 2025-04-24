@@ -3,8 +3,14 @@ using Shared.DTOs;
 
 namespace Shared.DTOs.CRM
 {
-    public class EmployeeDto : BaseDto<EmployeeDto>
+    public class EmployeeDto : IDto
     {
+        public long Id { get; set; }
+        public bool IsActive { get; set; }
+        public int CreatedBy { get; set; }
+        public int LastModifiedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime DOB { get; set; }

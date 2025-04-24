@@ -13,7 +13,7 @@ namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class BaseEndpoints<T, TDto, TContext>
 	where T : BaseEntity<T>
-	where TDto : BaseDto<TDto>
+	where TDto : IDto
 	where TContext : IDbContext<TContext>
 	{
 		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)

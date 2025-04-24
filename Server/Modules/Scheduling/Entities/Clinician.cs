@@ -15,6 +15,6 @@ namespace Server.Modules.Scheduling.Entities
 		public string AvatarImage { get; set; }
 		public string AvatarTitle { get; set; }
 		public string AvatarDescription { get; set; }
-		public HashSet<Schedule> Schedules { get; set; } = new HashSet<Schedule>();
+		public HashSet<Schedule> CalendarItems { get; set; } = new HashSet<Schedule>();
 	}
 }

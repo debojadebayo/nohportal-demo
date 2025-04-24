@@ -17,7 +17,7 @@ namespace ComposedHealthBase.Server.Queries
 
     public class GetByIdsQuery<T, TDto, TContext> : IGetByIdsQuery<T, TDto, TContext>
     where T : BaseEntity<T>
-    where TDto : BaseDto<TDto>
+    where TDto : IDto
     where TContext : IDbContext<TContext>
     {
         public IDbContext<TContext> _dbContext { get; }

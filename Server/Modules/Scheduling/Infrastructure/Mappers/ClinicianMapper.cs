@@ -28,7 +28,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
             ModifiedDate = entity.ModifiedDate,
-            Schedules = _mapper.Map(entity.Schedules).ToList()
+            CalendarItems = _mapper.Map(entity.CalendarItems).ToList()
         };
     }
 
