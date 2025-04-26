@@ -19,45 +19,40 @@
             OnClick="SwitchToWorkWeekView">Workweek</MudButton>
         <MudButton Variant="@(CalendarView == CalendarView.Month ? Variant.Filled : Variant.Outlined)"
             OnClick="SwitchToMonthView">Month</MudButton>
-        <MudSelect MultiSelectionTextFunc="@(new Func<List<TResource>, string>(GetMultiSelectionText))" T="TResource" Label="Select Resources" MultiSelection="true" @bind-Value="_value" @bind-SelectedValues="_selectedResources">
+        <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" T="string"
+            Label="Select Resources" MultiSelection="true" @bind-Value="_value"
+            @bind-SelectedValues="_selectedResources">
             @foreach (var resource in Resources)
             {
-                <MudSelectItem T="TResource" Value="@resource">@resource.AvatarTitle</MudSelectItem>
+                <MudSelectItem T="string" Value="@resource.AvatarTitle">@resource.AvatarTitle</MudSelectItem>
             }
         </MudSelect>
     </MudItem>
 </MudGrid>
 <div class="calendar-resource-group">
-    @foreach (var resource in _selectedResources)
+    @foreach (var resource in Resources.Where(r => _selectedResources.Contains(r.AvatarTitle)))
     {
         <div class="calendar-resource">
             <MudCard>
-    <MudCardHeader>
-        <CardHeaderAvatar>
-            <MudAvatar>
-                <MudImage Src="@resource.AvatarImage"></MudImage>
-            </MudAvatar>
-        </CardHeaderAvatar>
-        <CardHeaderContent>
-            <MudText Typo="Typo.body1">@resource.AvatarTitle</MudText>
-            <MudText Typo="Typo.body2">@resource.AvatarDescription</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
-    <MudCardContent>
-                    <CustomMudCalendar 
-                Height=2000 
-                CurrentDay=@CurrentDay
-                ShowDay="CalendarView == CalendarView.Day" 
-                ShowWeek="CalendarView == CalendarView.Week"
-                ShowWorkWeek="CalendarView == CalendarView.WorkWeek" 
-                ShowMonth="CalendarView == CalendarView.Month"
-                ShowCurrentTime="true" 
-                Items="@resource.CalendarItems" 
-                FirstDayOfWorkWeek="DayOfWeek.Monday"
-                FirstDayOfWeek="DayOfWeek.Monday" 
-                ShowToolbar="false" />
-    </MudCardContent>
-</MudCard>
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar>
+                            <MudImage Src="@resource.AvatarImage"></MudImage>
+                        </MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">@resource.AvatarTitle</MudText>
+                        <MudText Typo="Typo.body2">@resource.AvatarDescription</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <CustomMudCalendar Height=2000 CurrentDay=@CurrentDay ShowDay="CalendarView == CalendarView.Day"
+                        ShowWeek="CalendarView == CalendarView.Week" ShowWorkWeek="CalendarView == CalendarView.WorkWeek"
+                        ShowMonth="CalendarView == CalendarView.Month" ShowCurrentTime="true"
+                        Items="@resource.CalendarItems" FirstDayOfWorkWeek="DayOfWeek.Monday"
+                        FirstDayOfWeek="DayOfWeek.Monday" ShowToolbar="false" />
+                </MudCardContent>
+            </MudCard>
 
         </div>
     }
@@ -68,8 +63,8 @@
     private DateTime CurrentDay = DateTime.Today;
     private CalendarView CalendarView { get; set; } = CalendarView.WorkWeek;
 
-    private TResource _value = default;
-    private IEnumerable<TResource> _selectedResources = new List<TResource>();
+    private string _value = default;
+    private IEnumerable<string> _selectedResources = new List<string>();
 
     protected override void OnInitialized()
     {
@@ -133,8 +128,8 @@
                 break;
         }
     }
-    private string GetMultiSelectionText(List<TResource> selectedValues)
+    private string GetMultiSelectionText(List<string> selectedValues)
     {
-        return $"Selected state{(selectedValues.Count > 1 ? "s" : "")}: {string.Join(", ", selectedValues.Select(x => x.AvatarTitle))}";
+        return $"Selected state{(selectedValues.Count > 1 ? "s" : "")}: {string.Join(", ", selectedValues.Select(x => x))}";
     }
 }
