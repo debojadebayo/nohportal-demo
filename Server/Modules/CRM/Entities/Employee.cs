@@ -13,7 +13,7 @@ namespace Server.Modules.CRM.Entities
         public string Postcode { get; set; }
         public string Email { get; set; }
         public string Telephone { get; set; }
-        public string CompanyName { get; set; }
+        public long CustomerId { get; set; }
         public string JobRole { get; set; }
         public string Department { get; set; }
         public string LineManager { get; set; }

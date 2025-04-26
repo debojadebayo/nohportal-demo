@@ -18,7 +18,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Postcode = entity.Postcode,
             Email = entity.Email,
             Telephone = entity.Telephone,
-            CompanyName = entity.CompanyName,
+            CustomerId = entity.CustomerId,
             JobRole = entity.JobRole,
             Department = entity.Department,
             LineManager = entity.LineManager
@@ -39,7 +39,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Postcode = dto.Postcode,
             Email = dto.Email,
             Telephone = dto.Telephone,
-            CompanyName = dto.CompanyName,
+            CustomerId = dto.CustomerId,
             JobRole = dto.JobRole,
             Department = dto.Department,
             LineManager = dto.LineManager
@@ -67,7 +67,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         entity.Postcode = dto.Postcode;
         entity.Email = dto.Email;
         entity.Telephone = dto.Telephone;
-        entity.CompanyName = dto.CompanyName;
+        entity.CustomerId = dto.CustomerId;
         entity.JobRole = dto.JobRole;
         entity.Department = dto.Department;
         entity.LineManager = dto.LineManager;
@@ -84,7 +84,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         dto.Postcode = entity.Postcode;
         dto.Email = entity.Email;
         dto.Telephone = entity.Telephone;
-        dto.CompanyName = entity.CompanyName;
+        dto.CustomerId = entity.CustomerId;
         dto.JobRole = entity.JobRole;
         dto.Department = entity.Department;
         dto.LineManager = entity.LineManager;

@@ -34,17 +34,21 @@
     {
         <div class="calendar-resource">
             <MudCard>
-                <MudCardHeader>
-                    <CardHeaderAvatar>
-                        <MudAvatar>
-                            <MudImage Src="@resource.AvatarImage"></MudImage>
-                        </MudAvatar>
-                    </CardHeaderAvatar>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.body1">@resource.AvatarTitle</MudText>
-                        <MudText Typo="Typo.body2">@resource.AvatarDescription</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
+                <div class="calendar-resource-header">
+                    <div class="calendar-resource-header-inner">
+                        <MudCardHeader>
+                            <CardHeaderAvatar>
+                                <MudAvatar>
+                                    <MudImage Src="@resource.AvatarImage"></MudImage>
+                                </MudAvatar>
+                            </CardHeaderAvatar>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1">@resource.AvatarTitle</MudText>
+                                <MudText Typo="Typo.body2">@resource.AvatarDescription</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                    </div>
+                </div>
                 <MudCardContent>
                     <CustomMudCalendar Height=2000 CurrentDay=@CurrentDay ShowDay="CalendarView == CalendarView.Day"
                         ShowWeek="CalendarView == CalendarView.Week" ShowWorkWeek="CalendarView == CalendarView.WorkWeek"
@@ -53,7 +57,7 @@
                         FirstDayOfWeek="DayOfWeek.Monday" ShowToolbar="false" />
                 </MudCardContent>
             </MudCard>
-
+            
         </div>
     }
 </div>
@@ -130,6 +134,6 @@
     }
     private string GetMultiSelectionText(List<string> selectedValues)
     {
-        return $"Selected state{(selectedValues.Count > 1 ? "s" : "")}: {string.Join(", ", selectedValues.Select(x => x))}";
+        return $"Selected clinicians: {(selectedValues.Count() == 0 ? "(None)" : string.Join(", ", selectedValues.Select(x => x)))}";
     }
 }
