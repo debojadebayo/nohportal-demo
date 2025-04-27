@@ -7,8 +7,8 @@
 <h1>Employees</h1>
 
 <MudAutocomplete 
-T="string" 
-Label="Employee Name or DOB" @bind-Value="searchTerm" SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
+T="EmployeeDto" ToStringFunc="@EmployeeToString"
+Label="Employee Name or DOB" @bind-Value="selectedEmployee" SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
     
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
     @if (selectedEmployee != null)
@@ -61,11 +61,11 @@ Label="Employee Name or DOB" @bind-Value="searchTerm" SearchFunc="@Search" Varia
         httpClient = HttpClientFactory.CreateClient("api");
     }
 
-    private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
+    private async Task<IEnumerable<EmployeeDto>> Search(string value, CancellationToken token)
     {
         var result = await httpClient.GetFromJsonAsync<IEnumerable<EmployeeDto>>("api/employee/search?term=" + value, token);
         employeeList.AddRange(result);
-        return result.Select(e => EmployeeToString(e));
+        return result;
     }
 
     private Task HandleSubmit(EmployeeDto employee)
