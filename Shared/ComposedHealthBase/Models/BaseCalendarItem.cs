@@ -4,4 +4,5 @@ namespace ComposedHealthBase.Shared.Models;
 
 public class BaseCalendarItem : CalendarItem
 {
+    public new DateTime? Start { get; set; }
 }
