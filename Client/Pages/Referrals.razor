@@ -16,6 +16,11 @@
 		<PropertyColumn Property="x => x.PatientName" Title="Patient Name" />
 		<PropertyColumn Property="x => x.ReferralDetails" Title="Details" />
 		<PropertyColumn Property="x => x.DocumentId" Title="Document ID" />
+		<PropertyColumn Title="Schedule">
+			<Template>
+				<MudButton Color="Color.Primary" OnClick="@((e) => ScheduleReferral(item))">Schedule</MudButton>
+			</Template>
+		</PropertyColumn>
 	</Columns>
 	    <PagerContent>
         <MudDataGridPager T="ReferralView" />
@@ -81,6 +86,25 @@
 		{
 			newReferral = new();
 			await OnInitializedAsync();
+		}
+	}
+	private async Task ScheduleReferral(ReferralView referral)
+	{
+		var schedule = new ScheduleDto
+		{
+			CustomerId = referral.ReferralId,
+			PatientId = referral.ReferralId,
+			ReferralId = referral.ReferralId
+		};
+
+		var response = await httpClient.PostAsJsonAsync("api/schedule", schedule);
+		if (response.IsSuccessStatusCode)
+		{
+			Console.WriteLine("Referral scheduled successfully.");
+		}
+		else
+		{
+			Console.WriteLine("Error scheduling referral.");
 		}
 	}
 
