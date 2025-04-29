@@ -23,20 +23,22 @@
 		<MudSpacer />
 		<AuthorizeView>
 			<Authorized>
-				<MudAvatar Class="mr-2">
+				<MudAvatar>
 					<MudImage Src="https://mudblazor.com/images/mony.jpg"></MudImage>
 				</MudAvatar>
-				<MudButton @onclick="Logout" EndIcon="@Icons.Material.Filled.Logout" Class="mr-2">Log out</MudButton>
+				<MudButton @onclick="Logout" EndIcon="@Icons.Material.Filled.Logout">Log out</MudButton>
 			</Authorized>
 			<NotAuthorized>
-				@* this is where to input the login component *@
-				<MudButton Href="authentication/login" StartIcon="@Icons.Material.Filled.Login" Class="mr-2">Log in</MudButton>
+				<MudButton Href="authentication/login" StartIcon="@Icons.Material.Filled.Login">Log in</MudButton>
 			</NotAuthorized>
 		</AuthorizeView>
 	</MudAppBar>
 	<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
 		<MudNavMenu Class="ma-2">
-			<NavMenu />
+			<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/" Match="NavLinkMatch.All">Diary</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/referrals" Match="NavLinkMatch.All">Referrals</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.Business" Href="/customers" Match="NavLinkMatch.All">Customers</MudNavLink>
+			<MudNavLink Icon="@Icons.Material.Filled.People" Href="/employees" Match="NavLinkMatch.All">Employees</MudNavLink>
 		</MudNavMenu>
 	</MudDrawer>
 	<MudMainContent>

@@ -1,0 +1,60 @@
+@page "/login"
+@layout EmptyLayout
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center" Style="height: 100vh;">
+    <MudPaper  Elevation="3" Class="pa-4" Style="width: 400px;">
+        <MudText Typo="Typo.h5" Align="Align.Center">Welcome to NationOH</MudText>
+        <MudImage Src="images/logo500.png" Alt="Logo" Width="200" Class="mb-4" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="BeginLogin">
+            Login 
+        </MudButton>
+        @* <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="Login">">
+            Sign Up
+        </MudButton> *@
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private bool authenticated;
+
+    <!-- username not needed here -->
+    @* private string? userName; *@
+
+    [CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+        try {
+            var authState = await authenticationStateTask;
+            var user = authState.User;
+            authenticated = user.Identity?.IsAuthenticated ?? false;
+            if (authenticated)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error during authentication: " + ex.Message, Severity.Error);
+        }
+	}
+
+    private void BeginLogin()
+    {
+        NavigationManager.NavigateTo("authentication/login", true);
+    }
+
+	private void Logout(MouseEventArgs args)
+	{
+		NavigationManager.NavigateToLogout("authentication/logout");
+	}
+}
