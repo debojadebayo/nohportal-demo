@@ -35,15 +35,12 @@
 	</MudAppBar>
 	<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
 		<MudNavMenu Class="ma-2">
-			<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/" Match="NavLinkMatch.All">Diary</MudNavLink>
-			<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/referrals" Match="NavLinkMatch.All">Referrals</MudNavLink>
-			<MudNavLink Icon="@Icons.Material.Filled.Business" Href="/customers" Match="NavLinkMatch.All">Customers</MudNavLink>
-			<MudNavLink Icon="@Icons.Material.Filled.People" Href="/employees" Match="NavLinkMatch.All">Employees</MudNavLink>
+			<NavMenu />
 		</MudNavMenu>
 	</MudDrawer>
 	<MudMainContent>
 		<MudContainer>
-			<MudPaper Class="pa-8 ma-2">
+			<MudPaper Class="pa-8 ma-2 max-w-xl">
 				@Body
 			</MudPaper>
 		</MudContainer>
