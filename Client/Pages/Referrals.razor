@@ -1,5 +1,4 @@
-﻿@page "/referrals"
-@using Microsoft.AspNetCore.Authorization
+﻿@using Microsoft.AspNetCore.Authorization
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @inject IHttpClientFactory HttpClientFactory
@@ -8,107 +7,76 @@
 
 <PageTitle>Referrals</PageTitle>
 
-<MudText Typo="Typo.h1">Referrals</MudText>
-<MudDataGrid Items="@referralViews" Filterable="true" Groupable="true">
-	<Columns>
-		<PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
-		<PropertyColumn Property="x => x.CustomerName" Title="Customer" />
-		<PropertyColumn Property="x => x.PatientName" Title="Patient Name" />
-		<PropertyColumn Property="x => x.ReferralDetails" Title="Details" />
-		<PropertyColumn Property="x => x.DocumentId" Title="Document ID" />
-	</Columns>
-	    <PagerContent>
-        <MudDataGridPager T="ReferralView" />
-    </PagerContent>
-</MudDataGrid>
-<MudText Typo="Typo.h2">Add Referral</MudText>
-<ReferralDetails></ReferralDetails>
+<MudTabs Rounded="true" Centered="true" Class="mb-4">
+    <MudTabPanel Text="New Case Referrals">
+        <MudDataGrid Items="@newCaseReferrals" Filterable="true" Hover="true" Bordered="true" Dense="true">
+            <Columns>
+                <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+                <PropertyColumn Property="x => x.Employee" Title="Employee" />
+                <PropertyColumn Property="x => x.AppointmentType" Title="Appointment type" />
+                <PropertyColumn Property="x => x.Duration" Title="Duration" />
+                <PropertyColumn Property="x => x.Location" Title="Location" />
+                <Column Title="Book">
+                    <CellTemplate Context="row">
+                        <MudIconButton Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" />
+                    </CellTemplate>
+                </Column>
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="NewCaseReferralView" />
+            </PagerContent>
+        </MudDataGrid>
+    </MudTabPanel>
+    <MudTabPanel Text="Processed Referrals">
+        <MudDataGrid Items="@processedReferrals" Filterable="true" Hover="true" Bordered="true" Dense="true">
+            <Columns>
+                <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+                <PropertyColumn Property="x => x.Date" Title="Date" />
+                <PropertyColumn Property="x => x.Manager" Title="Manager" />
+                <PropertyColumn Property="x => x.Employee" Title="Employee" />
+                <PropertyColumn Property="x => x.EmployeeDOB" Title="Employee DOB" />
+                <PropertyColumn Property="x => x.Status" Title="Status" />
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="ProcessedReferralView" />
+            </PagerContent>
+        </MudDataGrid>
+    </MudTabPanel>
+</MudTabs>
 
 @code {
-	private ReferralDto newReferral = new();
-	private IEnumerable<ReferralDto>? referrals;
-	private List<ReferralView> referralViews = new();
-	private HttpClient? httpClient;
+    private List<NewCaseReferralView> newCaseReferrals = new()
+    {
+        new NewCaseReferralView { ReferralId = 123456, Employee = "Nguyen Shanek", AppointmentType = "PPHA", Duration = "15 min", Location = "Client site" },
+        new NewCaseReferralView { ReferralId = 123456, Employee = "Nguyen Shanek", AppointmentType = "Case Management", Duration = "45 min", Location = "Remote" },
+        new NewCaseReferralView { ReferralId = 123456, Employee = "Nguyen Shanek", AppointmentType = "PPHA", Duration = "15 min", Location = "NOH site" },
+        new NewCaseReferralView { ReferralId = 123456, Employee = "Nguyen Shanek", AppointmentType = "PPHA", Duration = "1h 15 min", Location = "NOH site" },
+        new NewCaseReferralView { ReferralId = 123456, Employee = "Nguyen Shanek", AppointmentType = "PPHA", Duration = "15 min", Location = "Remote" },
+    };
 
-	private Dictionary<long, CustomerDto> customersById = new();
-	private Dictionary<long, EmployeeDto> employeesById = new();
+    private List<ProcessedReferralView> processedReferrals = new()
+    {
+        new ProcessedReferralView { ReferralId = 123456, Date = "10.03.2025", Manager = "Ronald Richards", Employee = "Theresa Webb", EmployeeDOB = "01.02.2020", Status = "App. booked" },
+        new ProcessedReferralView { ReferralId = 123456, Date = "10.03.2025", Manager = "Robert Fox", Employee = "Jenny Wilson", EmployeeDOB = "22.10.1986", Status = "Referred" },
+        new ProcessedReferralView { ReferralId = 123456, Date = "10.03.2025", Manager = "Jacob Jones", Employee = "Floyd Miles", EmployeeDOB = "17.10.2001", Status = "App. completed" },
+        new ProcessedReferralView { ReferralId = 123456, Date = "10.03.2025", Manager = "Guy Hawkins", Employee = "Jane Cooper", EmployeeDOB = "08.09.1993", Status = "Report completed" },
+    };
 
-	protected override async Task OnInitializedAsync()
-	{
-		try
-		{
-			httpClient = HttpClientFactory.CreateClient("api");
-
-			referrals = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>("api/referral/getall");
-			if (referrals == null) return;
-
-			var patientIds = referrals.Select(r => r.PatientId).Distinct().ToList();
-			var customerIds = referrals.Select(r => r.CustomerId).Distinct().ToList();
-
-			var empResponse = await httpClient.PostAsJsonAsync("api/employee/getbyids", patientIds);
-			if (empResponse.IsSuccessStatusCode)
-			{
-				var employees = await empResponse.Content.ReadFromJsonAsync<List<EmployeeDto>>();
-				if (employees != null)
-					employeesById = employees.ToDictionary(e => e.Id);
-			}
-
-			var custResponse = await httpClient.PostAsJsonAsync("Api/Customer/GetByIds", customerIds);
-			if (custResponse.IsSuccessStatusCode)
-			{
-				var customers = await custResponse.Content.ReadFromJsonAsync<List<CustomerDto>>();
-				if (customers != null)
-					customersById = customers.ToDictionary(c => c.Id);
-			}
-
-			referralViews = referrals.Select(r => new ReferralView {
-				ReferralId = r.Id,
-				CustomerName = customersById.TryGetValue(r.CustomerId, out var cust) ? cust.Name : $"ID: {r.CustomerId}",
-				PatientName = employeesById.TryGetValue(r.PatientId, out var emp) ? $"{emp.FirstName} {emp.LastName}" : $"ID: {r.PatientId}",
-				ReferralDetails = r.ReferralDetails,
-				DocumentId = r.DocumentId
-			}).ToList();
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Error fetching referral data: {ex.Message}");
-		}
-	}
-
-	private async Task AddReferral(){
-		var response = await httpClient.PostAsJsonAsync("api/referrals", newReferral);
-		if (response != null)
-		{
-			newReferral = new();
-			await OnInitializedAsync();
-		}
-	}
-	private async Task ScheduleReferral(ReferralView referral)
-	{
-		var schedule = new ScheduleDto
-		{
-			CustomerId = referral.ReferralId,
-			PatientId = referral.ReferralId,
-			ReferralId = referral.ReferralId
-		};
-
-		var response = await httpClient.PostAsJsonAsync("api/schedule", schedule);
-		if (response.IsSuccessStatusCode)
-		{
-			Console.WriteLine("Referral scheduled successfully.");
-		}
-		else
-		{
-			Console.WriteLine("Error scheduling referral.");
-		}
-	}
-
-	private class ReferralView
-	{
-		public long ReferralId { get; set; }
-		public string CustomerName { get; set; } = string.Empty;
-		public string PatientName { get; set; } = string.Empty;
-		public string ReferralDetails { get; set; } = string.Empty;
-		public string DocumentId { get; set; } = string.Empty;
-	}
+    private class NewCaseReferralView
+    {
+        public long ReferralId { get; set; }
+        public string Employee { get; set; } = string.Empty;
+        public string AppointmentType { get; set; } = string.Empty;
+        public string Duration { get; set; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
+    }
+    private class ProcessedReferralView
+    {
+        public long ReferralId { get; set; }
+        public string Date { get; set; } = string.Empty;
+        public string Manager { get; set; } = string.Empty;
+        public string Employee { get; set; } = string.Empty;
+        public string EmployeeDOB { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+    }
 }

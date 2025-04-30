@@ -1,0 +1,47 @@
+﻿@using MudBlazor
+@using Shared.DTOs.CRM
+
+<PageTitle>Services</PageTitle>
+
+<MudPaper Class="pa-4" Elevation="2" Style="max-width: 600px; margin-bottom: 32px;">
+    <MudText Typo="Typo.h6">Duration</MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudDatePicker @bind-Date="contractStart" Label="Contract starts" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudDatePicker @bind-Date="contractEnd" Label="Contract ends" />
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+<MudTable Items="products" Elevation="2" Dense="true">
+    <HeaderContent>
+        <MudTh>Description</MudTh>
+        <MudTh>Charge Code</MudTh>
+        <MudTh>Price</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.ProductType?.Name</MudTd>
+        <MudTd>@context.ProductType?.ChargeCode</MudTd>
+        <MudTd>@context.Price.ToString("C")</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private DateTime? contractStart = DateTime.Today;
+    private DateTime? contractEnd = DateTime.Today.AddYears(2);
+
+    // Example data, replace with real data source as needed
+    private List<ProductDto> products = new()
+    {
+        new ProductDto {
+            ProductType = new ProductTypeDto { Name = "OHP Full Day", ChargeCode = "OHPFULL" },
+            Price = 85
+        },
+        new ProductDto {
+            ProductType = new ProductTypeDto { Name = "OHP Half Day", ChargeCode = "OHPHALF" },
+            Price = 1000
+        }
+    };
+}
