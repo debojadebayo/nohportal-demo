@@ -13,7 +13,7 @@ namespace Shared.DTOs.CRM
 		public DateTime ModifiedDate { get; set; }
 		public ProductTypeDto ProductType { get; set; }
 		public decimal Price { get; set; }
-		public DateTime StartTime { get; set; }
-		public DateTime EndTime { get; set; }
+		public DateTime? StartTime { get; set; }
+		public DateTime? EndTime { get; set; }
 	}
 }

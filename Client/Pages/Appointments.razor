@@ -1,0 +1,73 @@
+﻿@page "/appointments"
+@using System.Collections.Generic
+@using MudBlazor
+
+<MudPaper Class="pa-4">
+    <MudExpansionPanels>
+        <MudExpansionPanel Text="Upcoming appointments">
+            <MudDataGrid Items="@UpcomingAppointments" Dense="true" Hover="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+                    <PropertyColumn Property="x => x.DatenTime" Title="Date & Time" />
+                    <PropertyColumn Property="x => x.BookedOn" Title="Booked On" />
+                    <PropertyColumn Property="x => x.Employee" Title="Employee" />
+                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                </Columns>
+            </MudDataGrid>
+        </MudExpansionPanel>
+        <MudExpansionPanel Text="Completed appointments">
+            <MudDataGrid Items="@CompletedAppointments" Dense="true" Hover="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+                    <PropertyColumn Property="x => x.DatenTime" Title="Date & Time" />
+                    <PropertyColumn Property="x => x.BookedOn" Title="Booked On" />
+                    <PropertyColumn Property="x => x.Employee" Title="Employee" />
+                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                </Columns>
+            </MudDataGrid>
+        </MudExpansionPanel>
+        <MudExpansionPanel Text="Missed appointments">
+            <MudDataGrid Items="@MissedAppointments" Dense="true" Hover="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+                    <PropertyColumn Property="x => x.DatenTime" Title="Date & Time" />
+                    <PropertyColumn Property="x => x.BookedOn" Title="Booked On" />
+                    <PropertyColumn Property="x => x.Employee" Title="Employee" />
+                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                </Columns>
+            </MudDataGrid>
+        </MudExpansionPanel>
+        <MudExpansionPanel Text="Cancelled appointments">
+            <MudDataGrid Items="@CancelledAppointments" Dense="true" Hover="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+                    <PropertyColumn Property="x => x.DatenTime" Title="Date & Time" />
+                    <PropertyColumn Property="x => x.BookedOn" Title="Booked On" />
+                    <PropertyColumn Property="x => x.Employee" Title="Employee" />
+                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                </Columns>
+            </MudDataGrid>
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+</MudPaper>
+
+@code {
+    public class Appointment
+    {
+        public string ReferralId { get; set; }
+        public string DatenTime { get; set; }
+        public string BookedOn { get; set; }
+        public string Employee { get; set; }
+        public string Location { get; set; }
+    }
+
+    List<Appointment> UpcomingAppointments = new()
+    {
+        new Appointment { ReferralId = "123456", DatenTime = "01.03.2025 08:00 - 08:30", BookedOn = "01.02.2025", Employee = "Nguyen Shane", Location = "NOH site" },
+        new Appointment { ReferralId = "123456", DatenTime = "01.03.2025 08:00 - 08:30", BookedOn = "01.02.2025", Employee = "Nguyen Shane", Location = "Remote" },
+        new Appointment { ReferralId = "123312", DatenTime = "01.03.2025 08:00 - 08:30", BookedOn = "01.02.2025", Employee = "Nguyen Shane", Location = "NOH site" }
+    };
+    List<Appointment> CompletedAppointments = new();
+    List<Appointment> MissedAppointments = new();
+    List<Appointment> CancelledAppointments = new();
+}

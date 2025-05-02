@@ -1,6 +1,7 @@
 ﻿@page "/customers"
 @using Shared.DTOs.CRM
 @using MudBlazor
+@using Client.Pages
 @using Client.Pages.Forms
 @inject IHttpClientFactory HttpClientFactory
 
@@ -17,22 +18,22 @@ Label="Customer Name or DOB" @bind-Value="selectedCustomer" SearchFunc="@Search"
             <CustomerDetails Model="selectedCustomer" OnSubmit="HandleSubmit"></CustomerDetails>
         </MudTabPanel>
         <MudTabPanel Text="Appointments">
-            <MudText>Appointments Content</MudText>
+            <Appointments />
         </MudTabPanel>
         <MudTabPanel Text="Referrals">
-            <MudText>Referrals Content</MudText>
+            <Referrals />
         </MudTabPanel>
         <MudTabPanel Text="Managers">
             <MudText>Managers Content</MudText>
         </MudTabPanel>
         <MudTabPanel Text="Services">
-            <MudText>Services Content</MudText>
+            <Services />
         </MudTabPanel>
         <MudTabPanel Text="Invoicing">
             <MudText>Invoicing Content</MudText>
         </MudTabPanel>
         <MudTabPanel Text="Documents">
-            <MudText>Documents Content</MudText>
+            <DocumentLibrary />
         </MudTabPanel>
         <MudTabPanel Text="Reports">
             <MudText>Reports Content</MudText>

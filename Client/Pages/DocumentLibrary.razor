@@ -1,0 +1,26 @@
+    <MudText Typo="Typo.h3" Align="Align.Center" Class="mb-6">Documents Library</MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="4" md="3">
+            <MudPaper Class="pa-4" Elevation="1">
+                <MudTextField T="string" Placeholder="Search Document" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="mb-2" />
+                <MudList T="string" Dense="true">
+                    <MudListItem>PPHA Form</MudListItem>
+                    <MudListItem>Deliberation</MudListItem>
+                    <MudListItem>Preliminary agreement 2023</MudListItem>
+                </MudList>
+                <MudButton StartIcon="@Icons.Material.Filled.Add" Class="mt-2">Add document</MudButton>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="8" md="9">
+            <MudPaper Class="pa-6" Elevation="1">
+                <MudText Typo="Typo.subtitle2" Align="Align.Right">01 March 2023</MudText>
+                <MudCard Class="mx-auto my-6" Style="max-width: 400px;">
+
+                </MudCard>
+                <MudStack Direction="Row" Spacing="2" JustifyContent="Center">
+                    <MudButton StartIcon="@Icons.Material.Filled.Download">Download Document</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Print">Print Document</MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
