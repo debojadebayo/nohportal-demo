@@ -52,6 +52,7 @@
 </MudPaper>
 
 @code {
+    [Parameter] public List<ScheduledDto> Appointments { get; set; } = new();
     public class Appointment
     {
         public string ReferralId { get; set; }
@@ -70,4 +71,7 @@
     List<Appointment> CompletedAppointments = new();
     List<Appointment> MissedAppointments = new();
     List<Appointment> CancelledAppointments = new();
+
+    protected override void OnInitialized(){
+    }
 }

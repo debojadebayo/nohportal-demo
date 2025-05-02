@@ -9,7 +9,7 @@
 
 <MudAutocomplete 
 T="CustomerDto" ToStringFunc="@CustomerToString"
-Label="Customer Name or DOB" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
+Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
     
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
     @if (selectedCustomer != null)
@@ -17,8 +17,8 @@ Label="Customer Name or DOB" @bind-Value="selectedCustomer" SearchFunc="@Search"
         <MudTabPanel Text="Customers">
             <CustomerDetails Model="selectedCustomer" OnSubmit="HandleSubmit"></CustomerDetails>
         </MudTabPanel>
-        <MudTabPanel Text="Appointments">
-            <Appointments />
+        <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsById">
+            <Appointments Appointments="appointments" />
         </MudTabPanel>
         <MudTabPanel Text="Referrals">
             <Referrals />
@@ -51,6 +51,7 @@ Label="Customer Name or DOB" @bind-Value="selectedCustomer" SearchFunc="@Search"
     private bool isLoading = true;
     private string? loadError;
     private HttpClient httpClient;
+    private List<ScheduledDto> appointments = new();
 
     private string CustomerToString(CustomerDto? e)
     {
@@ -66,6 +67,13 @@ Label="Customer Name or DOB" @bind-Value="selectedCustomer" SearchFunc="@Search"
     {
         var result = await httpClient.GetFromJsonAsync<IEnumerable<CustomerDto>>("api/customer/search?term=" + value, token);
         customerList.AddRange(result);
+        return result;
+    }
+
+    private async Task<IEnumerable<ScheduledDto>> GetAllAppointmentsById()
+    {
+        var result = await httpClient.GetFromJsonAsync<IEnumerable<ScheduledDto>>("api/schedule/GetAllSchedulesByCustomerId/" + selectedCustomer.Id, token);
+        appointments = result;
         return result;
     }
 

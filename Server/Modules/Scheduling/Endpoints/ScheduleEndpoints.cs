@@ -43,5 +43,34 @@ namespace Server.Modules.Scheduling.Endpoints
 		}
 	}
 	public class ReferralEndpoints : BaseEndpoints<Referral, ReferralDto, SchedulingDbContext>, IEndpoints { }
-	public class ScheduleEndpoints : BaseEndpoints<Schedule, ScheduleDto, SchedulingDbContext>, IEndpoints { }
+	public class ScheduleEndpoints : BaseEndpoints<Schedule, ScheduleDto, SchedulingDbContext>, IEndpoints {
+		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints){
+			endpoints = base.MapEndpoints(endpoints);
+			var group = endpoints.MapGroup($"/api/schedule");
+
+			group.MapGet($"/GetAllSchedulesByCustomerId/{customerId}", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<Schedule, ScheduleDto> mapper, long customerId) => GetAllSchedulesByCustomerId(dbContext, mapper, customerId));
+
+			return endpoints;
+		}
+
+		protected async Task<IResult> GetAllSchedulesByCustomerId(SchedulingDbContext dbContext, IMapper<Schedule, ScheduleDto> mapper, long customerId)
+		{
+			try
+			{
+				var allEntities = await new GetAllSchedulesByCustomerId(dbContext, mapper).Handle(customerId);
+
+				if (allEntities == null || !allEntities.Any())
+				{
+					return Results.NotFound($"No schedule entities found.");
+				}
+
+				return Results.Ok(allEntities);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while retrieving schedule entities.");
+			}
+		}
+	}
 }
