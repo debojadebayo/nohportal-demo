@@ -1,50 +1,52 @@
 ﻿@page "/appointments"
 @using System.Collections.Generic
 @using MudBlazor
+@using Shared.DTOs.Scheduling
+@using Shared.Enums
 
 <MudPaper Class="pa-4">
     <MudExpansionPanels>
         <MudExpansionPanel Text="Upcoming appointments">
-            <MudDataGrid Items="@UpcomingAppointments" Dense="true" Hover="true">
+            <MudDataGrid Items="@_upcomingAppointments" Dense="true" Hover="true">
                 <Columns>
                     <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
-                    <PropertyColumn Property="x => x.DatenTime" Title="Date & Time" />
-                    <PropertyColumn Property="x => x.BookedOn" Title="Booked On" />
-                    <PropertyColumn Property="x => x.Employee" Title="Employee" />
-                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                    <PropertyColumn Property="x => x.Start" Title="Date & Time" />
+                    <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
+                    <PropertyColumn Property="x => x.PatientId" Title="Employee" />
+                    <PropertyColumn Property="x => x.ProductId" Title="Product" />
                 </Columns>
             </MudDataGrid>
         </MudExpansionPanel>
         <MudExpansionPanel Text="Completed appointments">
-            <MudDataGrid Items="@CompletedAppointments" Dense="true" Hover="true">
+            <MudDataGrid Items="@_completedAppointments" Dense="true" Hover="true">
                 <Columns>
                     <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
-                    <PropertyColumn Property="x => x.DatenTime" Title="Date & Time" />
-                    <PropertyColumn Property="x => x.BookedOn" Title="Booked On" />
-                    <PropertyColumn Property="x => x.Employee" Title="Employee" />
-                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                    <PropertyColumn Property="x => x.Start" Title="Date & Time" />
+                    <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
+                    <PropertyColumn Property="x => x.PatientId" Title="Employee" />
+                    <PropertyColumn Property="x => x.ProductId" Title="Product" />
                 </Columns>
             </MudDataGrid>
         </MudExpansionPanel>
         <MudExpansionPanel Text="Missed appointments">
-            <MudDataGrid Items="@MissedAppointments" Dense="true" Hover="true">
+            <MudDataGrid Items="@_missedAppointments" Dense="true" Hover="true">
                 <Columns>
                     <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
-                    <PropertyColumn Property="x => x.DatenTime" Title="Date & Time" />
-                    <PropertyColumn Property="x => x.BookedOn" Title="Booked On" />
-                    <PropertyColumn Property="x => x.Employee" Title="Employee" />
-                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                    <PropertyColumn Property="x => x.Start" Title="Date & Time" />
+                    <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
+                    <PropertyColumn Property="x => x.PatientId" Title="Employee" />
+                    <PropertyColumn Property="x => x.ProductId" Title="Product" />
                 </Columns>
             </MudDataGrid>
         </MudExpansionPanel>
         <MudExpansionPanel Text="Cancelled appointments">
-            <MudDataGrid Items="@CancelledAppointments" Dense="true" Hover="true">
+            <MudDataGrid Items="@_cancelledAppointments" Dense="true" Hover="true">
                 <Columns>
                     <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
-                    <PropertyColumn Property="x => x.DatenTime" Title="Date & Time" />
-                    <PropertyColumn Property="x => x.BookedOn" Title="Booked On" />
-                    <PropertyColumn Property="x => x.Employee" Title="Employee" />
-                    <PropertyColumn Property="x => x.Location" Title="Location" />
+                    <PropertyColumn Property="x => x.Start" Title="Date & Time" />
+                    <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
+                    <PropertyColumn Property="x => x.PatientId" Title="Employee" />
+                    <PropertyColumn Property="x => x.ProductId" Title="Product" />
                 </Columns>
             </MudDataGrid>
         </MudExpansionPanel>
@@ -52,26 +54,9 @@
 </MudPaper>
 
 @code {
-    [Parameter] public List<ScheduledDto> Appointments { get; set; } = new();
-    public class Appointment
-    {
-        public string ReferralId { get; set; }
-        public string DatenTime { get; set; }
-        public string BookedOn { get; set; }
-        public string Employee { get; set; }
-        public string Location { get; set; }
-    }
-
-    List<Appointment> UpcomingAppointments = new()
-    {
-        new Appointment { ReferralId = "123456", DatenTime = "01.03.2025 08:00 - 08:30", BookedOn = "01.02.2025", Employee = "Nguyen Shane", Location = "NOH site" },
-        new Appointment { ReferralId = "123456", DatenTime = "01.03.2025 08:00 - 08:30", BookedOn = "01.02.2025", Employee = "Nguyen Shane", Location = "Remote" },
-        new Appointment { ReferralId = "123312", DatenTime = "01.03.2025 08:00 - 08:30", BookedOn = "01.02.2025", Employee = "Nguyen Shane", Location = "NOH site" }
-    };
-    List<Appointment> CompletedAppointments = new();
-    List<Appointment> MissedAppointments = new();
-    List<Appointment> CancelledAppointments = new();
-
-    protected override void OnInitialized(){
-    }
+    [Parameter] public List<ScheduleDto> AllAppointments { get; set; } = new();
+    private List<ScheduleDto> _upcomingAppointments => AllAppointments.Where(x => x.Start > DateTime.UtcNow).ToList();
+    private List<ScheduleDto> _completedAppointments => AllAppointments.Where(x => x.Start < DateTime.UtcNow && x.Status == ScheduleStatusEnum.Entered).ToList();
+    private List<ScheduleDto> _missedAppointments => AllAppointments.Where(x => x.Start < DateTime.UtcNow && x.Status == ScheduleStatusEnum.Missed).ToList();
+    private List<ScheduleDto> _cancelledAppointments => AllAppointments.Where(x => x.Status == ScheduleStatusEnum.Cancelled).ToList();
 }

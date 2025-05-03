@@ -48,7 +48,7 @@ namespace Server.Modules.Scheduling.Endpoints
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/schedule");
 
-			group.MapGet($"/GetAllSchedulesByCustomerId/{customerId}", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<Schedule, ScheduleDto> mapper, long customerId) => GetAllSchedulesByCustomerId(dbContext, mapper, customerId));
+			group.MapGet("/GetAllSchedulesByCustomerId/{customerId}", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<Schedule, ScheduleDto> mapper, long customerId) => GetAllSchedulesByCustomerId(dbContext, mapper, customerId));
 
 			return endpoints;
 		}
@@ -57,7 +57,7 @@ namespace Server.Modules.Scheduling.Endpoints
 		{
 			try
 			{
-				var allEntities = await new GetAllSchedulesByCustomerId(dbContext, mapper).Handle(customerId);
+				var allEntities = await new GetAllSchedulesByCustomerId(dbContext, mapper, customerId).Handle();
 
 				if (allEntities == null || !allEntities.Any())
 				{

@@ -3,6 +3,7 @@
 @using MudBlazor
 @using Client.Pages
 @using Client.Pages.Forms
+@using Shared.DTOs.Scheduling
 @inject IHttpClientFactory HttpClientFactory
 
 <h1>Customers</h1>
@@ -18,7 +19,7 @@ Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant
             <CustomerDetails Model="selectedCustomer" OnSubmit="HandleSubmit"></CustomerDetails>
         </MudTabPanel>
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsById">
-            <Appointments Appointments="appointments" />
+            <Appointments AllAppointments="appointments" />
         </MudTabPanel>
         <MudTabPanel Text="Referrals">
             <Referrals />
@@ -44,14 +45,14 @@ Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant
     }
 </MudTabs>
 
-@code {
+    @code {
     private string searchTerm;
     private List<CustomerDto> customerList = new();
     private CustomerDto? selectedCustomer = null;
     private bool isLoading = true;
     private string? loadError;
     private HttpClient httpClient;
-    private List<ScheduledDto> appointments = new();
+    private List<ScheduleDto> appointments = new List<ScheduleDto>();
 
     private string CustomerToString(CustomerDto? e)
     {
@@ -70,11 +71,10 @@ Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant
         return result;
     }
 
-    private async Task<IEnumerable<ScheduledDto>> GetAllAppointmentsById()
+    private async Task GetAllAppointmentsById()
     {
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<ScheduledDto>>("api/schedule/GetAllSchedulesByCustomerId/" + selectedCustomer.Id, token);
-        appointments = result;
-        return result;
+        var result = await httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>("api/schedule/GetAllSchedulesByCustomerId/" + selectedCustomer.Id);
+        appointments = result.ToList();
     }
 
     private Task HandleSubmit(CustomerDto customer)

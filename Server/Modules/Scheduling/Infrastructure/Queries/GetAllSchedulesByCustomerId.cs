@@ -15,17 +15,19 @@ namespace Server.Modules.Scheduling.Infrastructure.Queries
     {
         private readonly IDbContext<SchedulingDbContext> _dbContext;
         private readonly IMapper<Schedule, ScheduleDto> _mapper;
+        private readonly long _customerId;
 
-        public GetAllSchedulesByCustomerId(IDbContext<SchedulingDbContext> dbContext, IMapper<Schedule, ScheduleDto> mapper)
+        public GetAllSchedulesByCustomerId(IDbContext<SchedulingDbContext> dbContext, IMapper<Schedule, ScheduleDto> mapper, long customerId)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _customerId = customerId;
         }
 
-        public async Task<IEnumerable<ScheduleDto>> Handle(long customerId)
+        public async Task<IEnumerable<ScheduleDto>> Handle()
         {
             var schedules = await _dbContext.Set<Schedule>()
-                .Where(s => s.CustomerId == customerId)
+                .Where(s => s.CustomerId == _customerId)
                 .ToListAsync();
 
             return _mapper.Map(schedules);

@@ -67,8 +67,8 @@
     {
         var newSchedule = new ScheduleDto
         {
-            Start = DateTime.Now,
-            End = DateTime.Now.AddHours(1)
+            Start = DateTime.UtcNow,
+            End = DateTime.UtcNow.AddHours(1)
         };
         var dialogReference = await DialogService.ShowAsync<ScheduleDetails>("Add Appointment", new DialogParameters
         {
