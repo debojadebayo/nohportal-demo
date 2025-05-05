@@ -97,5 +97,64 @@ namespace Server.Modules.CRM.Endpoints
 	public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints { }
 	public class ProductEndpoints : BaseEndpoints<Product, ProductDto, CRMDbContext>, IEndpoints { }
 	public class ProductTypeEndpoints : BaseEndpoints<ProductType, ProductTypeDto, CRMDbContext>, IEndpoints { }
-	public class DocumentEndpoints : BaseEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints { }
+	public class DocumentEndpoints : BaseEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints
+	{
+		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		{
+			endpoints = base.MapEndpoints(endpoints);
+			var group = endpoints.MapGroup($"/api/document");
+
+			// New upload endpoint
+			group.MapPost("/upload", async (
+				[FromServices] CRMDbContext dbContext,
+				[FromServices] IMapper<Document, DocumentDto> mapper,
+				[FromServices] Azure.Storage.Blobs.BlobServiceClient blobServiceClient,
+				[FromForm] DocumentDto documentDto,
+				[FromForm] IFormFile file
+			) => await UploadDocument(dbContext, mapper, blobServiceClient, documentDto, file));
+
+			return endpoints;
+		}
+
+		// New method for uploading document and file to Azure Blob Storage
+		protected async Task<IResult> UploadDocument(
+			CRMDbContext dbContext,
+			IMapper<Document, DocumentDto> mapper,
+			Azure.Storage.Blobs.BlobServiceClient blobServiceClient,
+			DocumentDto documentDto,
+			IFormFile file)
+		{
+			if (file == null || file.Length == 0)
+				return Results.BadRequest("File is required.");
+
+			try
+			{
+				var containerClient = blobServiceClient.GetBlobContainerClient("documents");
+				await containerClient.CreateIfNotExistsAsync();
+
+				var blobName = $"{Guid.NewGuid()}_{file.FileName}";
+				var blobClient = containerClient.GetBlobClient(blobName);
+
+				using (var stream = file.OpenReadStream())
+				{
+					await blobClient.UploadAsync(stream, overwrite: true);
+				}
+
+				// Optionally, update the DocumentDto with the blob URL
+				documentDto.FilePath = blobClient.Uri.ToString();
+
+				// Map and save the Document entity as needed
+				var entity = mapper.Map(documentDto);
+				dbContext.Documents.Add(entity);
+				await dbContext.SaveChangesAsync();
+
+				return Results.Ok(new { url = blobClient.Uri.ToString() });
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem("An error occurred while uploading the document.");
+			}
+		}
+	}
 }
