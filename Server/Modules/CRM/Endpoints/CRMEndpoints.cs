@@ -8,6 +8,7 @@ using ComposedHealthBase.Server.Mappers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Server.Modules.CRM.Infrastructure.Queries;
+using ComposedHealthBase.Server.Queries;
 
 namespace Server.Modules.CRM.Endpoints
 {
@@ -30,7 +31,7 @@ namespace Server.Modules.CRM.Endpoints
 		{
 			try
 			{
-				var allEntities = await new GetEmployeesByCustomerQuery(dbContext, mapper, id).Handle();
+				var allEntities = await new GetByPredicateQuery<Employee, EmployeeDto, CRMDbContext>(dbContext, mapper).Handle(e => e.CustomerId == id);
 
 				if (allEntities == null || !allEntities.Any())
 				{
@@ -96,4 +97,5 @@ namespace Server.Modules.CRM.Endpoints
 	public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints { }
 	public class ProductEndpoints : BaseEndpoints<Product, ProductDto, CRMDbContext>, IEndpoints { }
 	public class ProductTypeEndpoints : BaseEndpoints<ProductType, ProductTypeDto, CRMDbContext>, IEndpoints { }
+	public class DocumentEndpoints : BaseEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints { }
 }

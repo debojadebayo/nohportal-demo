@@ -8,6 +8,7 @@ using ComposedHealthBase.Server.Mappers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Server.Modules.Scheduling.Infrastructure.Queries;
+using ComposedHealthBase.Server.Queries;
 
 namespace Server.Modules.Scheduling.Endpoints
 {
@@ -57,7 +58,7 @@ namespace Server.Modules.Scheduling.Endpoints
 		{
 			try
 			{
-				var allEntities = await new GetAllSchedulesByCustomerId(dbContext, mapper, customerId).Handle();
+				var allEntities = await new GetByPredicateQuery<Schedule, ScheduleDto, SchedulingDbContext>(dbContext, mapper).Handle(s => s.CustomerId == customerId);
 
 				if (allEntities == null || !allEntities.Any())
 				{

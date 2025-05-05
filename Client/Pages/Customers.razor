@@ -12,40 +12,40 @@
 T="CustomerDto" ToStringFunc="@CustomerToString"
 Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
     
-    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-    @if (selectedCustomer != null)
-    {
-        <MudTabPanel Text="Customers">
-            <CustomerDetails Model="selectedCustomer" OnSubmit="HandleSubmit"></CustomerDetails>
-        </MudTabPanel>
-        <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsById">
-            <Appointments AllAppointments="appointments" />
-        </MudTabPanel>
-        <MudTabPanel Text="Referrals">
-            <Referrals />
-        </MudTabPanel>
-        <MudTabPanel Text="Managers">
-            <MudText>Managers Content</MudText>
-        </MudTabPanel>
-        <MudTabPanel Text="Services">
-            <Services />
-        </MudTabPanel>
-        <MudTabPanel Text="Invoicing">
-            <MudText>Invoicing Content</MudText>
-        </MudTabPanel>
-        <MudTabPanel Text="Documents">
-            <DocumentLibrary />
-        </MudTabPanel>
-        <MudTabPanel Text="Reports">
-            <MudText>Reports Content</MudText>
-        </MudTabPanel>
-        <MudTabPanel Text="Notes">
-            <MudText>Notes Content</MudText>
-        </MudTabPanel>
-    }
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+@if (selectedCustomer != null)
+{
+    <MudTabPanel Text="Customers">
+        <CustomerDetails Model="selectedCustomer" OnSubmit="HandleSubmit"></CustomerDetails>
+    </MudTabPanel>
+    <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByCustomerId">
+        <Appointments AllAppointments="appointments" />
+    </MudTabPanel>
+    <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByCustomerId">
+        <Referrals ReferralsList="referrals" />
+    </MudTabPanel>
+    <MudTabPanel Text="Managers" OnClick="GetAllManagersByCustomerId">
+        <Managers ManagersList="managers" />
+    </MudTabPanel>
+    <MudTabPanel Text="Services" OnClick="GetAllServicesByCustomerId">
+        <Services ServicesList="services" />
+    </MudTabPanel>
+    <MudTabPanel Text="Invoicing">
+        <MudText>Invoicing Content</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByCustomerId">
+        <DocumentLibrary DocumentsList="documents" />
+    </MudTabPanel>
+    <MudTabPanel Text="Reports">
+        <MudText>Reports Content</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Notes">
+        <Notes NotesItem="@selectedCustomer.Notes" />
+    </MudTabPanel>
+}
 </MudTabs>
 
-    @code {
+@code {
     private string searchTerm;
     private List<CustomerDto> customerList = new();
     private CustomerDto? selectedCustomer = null;
@@ -53,6 +53,10 @@ Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant
     private string? loadError;
     private HttpClient httpClient;
     private List<ScheduleDto> appointments = new List<ScheduleDto>();
+    private List<ReferralDto> referrals = new();
+    private List<ManagerDto> managers = new();
+    private List<ServiceDto> services = new();
+    private List<DocumentDto> documents = new();
 
     private string CustomerToString(CustomerDto? e)
     {
@@ -71,10 +75,34 @@ Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant
         return result;
     }
 
-    private async Task GetAllAppointmentsById()
+    private async Task GetAllAppointmentsByCustomerId()
     {
         var result = await httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>("api/schedule/GetAllSchedulesByCustomerId/" + selectedCustomer.Id);
         appointments = result.ToList();
+    }
+
+    private async Task GetAllReferralsByCustomerId()
+    {
+        var result = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>($"api/referral/GetAllByCustomerId/{selectedCustomer.Id}");
+        referrals = result.ToList();
+    }
+
+    private async Task GetAllManagersByCustomerId()
+    {
+        var result = await httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByCustomerId/{selectedCustomer.Id}");
+        managers = result.ToList();
+    }
+
+    private async Task GetAllServicesByCustomerId()
+    {
+        var result = await httpClient.GetFromJsonAsync<IEnumerable<ServiceDto>>($"api/service/GetAllByCustomerId/{selectedCustomer.Id}");
+        services = result.ToList();
+    }
+
+    private async Task GetAllDocumentsByCustomerId()
+    {
+        var result = await httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"api/document/GetAllByCustomerId/{selectedCustomer.Id}");
+        documents = result.ToList();
     }
 
     private Task HandleSubmit(CustomerDto customer)
