@@ -66,6 +66,15 @@ services:
     depends_on:
       - keycloak.database
 
+  app.blobstorage:
+    container_name: Blobstorage
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    ports:
+      - "9000:9000"
+    command: azurite-blob --blobHost 0.0.0.0 -l /data
+    volumes:
+      - ./.containers/blob_storage/data:/data
+
 volumes:
   keycloak-db:
   app-db:
