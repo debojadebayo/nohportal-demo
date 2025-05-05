@@ -24,8 +24,8 @@ Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant
     <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByCustomerId">
         <Referrals ReferralsList="referrals" />
     </MudTabPanel>
-    <MudTabPanel Text="Managers" OnClick="GetAllManagersByCustomerId">
-        <Managers ManagersList="managers" />
+    <MudTabPanel Text="Managers">
+
     </MudTabPanel>
     <MudTabPanel Text="Services" OnClick="GetAllServicesByCustomerId">
         <Services ServicesList="services" />
@@ -54,8 +54,7 @@ Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant
     private HttpClient httpClient;
     private List<ScheduleDto> appointments = new List<ScheduleDto>();
     private List<ReferralDto> referrals = new();
-    private List<ManagerDto> managers = new();
-    private List<ServiceDto> services = new();
+    private List<ProductDto> services = new();
     private List<DocumentDto> documents = new();
 
     private string CustomerToString(CustomerDto? e)
@@ -87,15 +86,9 @@ Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant
         referrals = result.ToList();
     }
 
-    private async Task GetAllManagersByCustomerId()
-    {
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByCustomerId/{selectedCustomer.Id}");
-        managers = result.ToList();
-    }
-
     private async Task GetAllServicesByCustomerId()
     {
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<ServiceDto>>($"api/service/GetAllByCustomerId/{selectedCustomer.Id}");
+        var result = await httpClient.GetFromJsonAsync<IEnumerable<ProductDto>>($"api/product/GetAllByCustomerId/{selectedCustomer.Id}");
         services = result.ToList();
     }
 

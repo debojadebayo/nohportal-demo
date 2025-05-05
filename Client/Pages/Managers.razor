@@ -1,7 +1,7 @@
 @using MudBlazor
 @using Shared.DTOs.CRM
 
-<MudDataGrid Items="@ManagersList" Hover="true" Dense="true" Bordered="false" Striped="true">
+@* <MudDataGrid Items="@ManagersList" Hover="true" Dense="true" Bordered="false" Striped="true">
     <Columns>
         <PropertyColumn Property="UserName" Title="User Name" />
         <PropertyColumn Property="Role" Title="Role" />
@@ -18,4 +18,4 @@
 @code {
     [Parameter]
     public List<ManagerDto> ManagersList { get; set; } = new();
-}
+} *@
