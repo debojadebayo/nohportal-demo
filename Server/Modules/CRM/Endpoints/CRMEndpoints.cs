@@ -94,7 +94,35 @@ namespace Server.Modules.CRM.Endpoints
 			}
 		}
 	}
-	public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints { }
+	public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints
+	{
+		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		{
+			endpoints = base.MapEndpoints(endpoints); // Call the base class method first
+			var group = endpoints.MapGroup($"/api/contract");
+
+			group.MapGet("/GetByCustomerId/{customerId}", async ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<Contract, ContractDto> mapper, long customerId) =>
+			{
+				try
+				{
+					var query = new GetContractsByCustomerIdQuery(dbContext, mapper, customerId);
+					var result = await query.Handle();
+					if (result == null || !result.Any())
+					{
+						return Results.NotFound($"No contracts found for customer ID {customerId}.");
+					}
+					return Results.Ok(result);
+				}
+				catch (Exception ex)
+				{
+					Console.Error.WriteLine($"An error occurred while retrieving contracts by customer ID: {ex.Message}");
+					return Results.Problem($"An error occurred while retrieving contracts for customer ID {customerId}.");
+				}
+			});
+
+			return endpoints;
+		}
+	}
 	public class ProductEndpoints : BaseEndpoints<Product, ProductDto, CRMDbContext>, IEndpoints { }
 	public class ProductTypeEndpoints : BaseEndpoints<ProductType, ProductTypeDto, CRMDbContext>, IEndpoints { }
 	public class DocumentEndpoints : BaseEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints
@@ -157,5 +185,5 @@ namespace Server.Modules.CRM.Endpoints
 			}
 		}
 	}
-	public class ManagerEndpoints : BaseEndpoints<Manager, ManagerDto, CRMDbContext>, IEndpoints { }
+	public class ManagerEndpoints : BaseEndpoints<Manager, Shared.DTOs.CRM.ManagerDto, CRMDbContext>, IEndpoints { }
 }

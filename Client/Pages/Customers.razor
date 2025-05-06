@@ -61,7 +61,10 @@
     private HttpClient httpClient;
     private List<ScheduleDto> appointments = new();
     private List<ReferralDto> referrals = new();
-    private List<ProductDto> services = new();
+    private List<ContractDto> contracts = new();
+    private List<ProductDto> products = new();
+    private List<ManagerDto> managers = new();
+    private List<ProductTypeDto> productTypes = new();
     private List<DocumentDto> documents = new();
 
     // Product dialog state
@@ -78,9 +81,17 @@
 
     private async Task<IEnumerable<CustomerDto>> Search(string value, CancellationToken token)
     {
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<CustomerDto>>("api/customer/search?term=" + value, token);
-        customerList = result.ToList();
-        return result;
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<CustomerDto>>("api/customer/search?term=" + value, token);
+            customerList = result?.ToList() ?? new List<CustomerDto>();
+            return customerList;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to search customers: {ex.Message}", Severity.Error);
+            return new List<CustomerDto>();
+        }
     }
 
     // --- Customer CRUD ---
@@ -91,20 +102,32 @@
         {
             if (customer.Id == 0)
             {
-                var response = await httpClient.PostAsJsonAsync("api/customer/update", customer);
+                var response = await httpClient.PostAsJsonAsync("api/customer", customer);
                 if (response.IsSuccessStatusCode)
                 {
                     Snackbar.Add("Customer created.", Severity.Success);
                 }
+                else
+                {
+                    Snackbar.Add($"Failed to create customer: {response.StatusCode}", Severity.Error);
+                }
             }
             else
             {
-                var response = await httpClient.PutAsJsonAsync($"api/customer/update", customer);
+                var response = await httpClient.PutAsJsonAsync($"api/customer", customer);
                 if (response.IsSuccessStatusCode)
                 {
                     Snackbar.Add("Customer updated.", Severity.Success);
                 }
+                else
+                {
+                    Snackbar.Add($"Failed to update customer: {response.StatusCode}", Severity.Error);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to save customer: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -124,6 +147,14 @@
                 Snackbar.Add("Customer deleted.", Severity.Success);
                 selectedCustomer = null;
             }
+            else
+            {
+                Snackbar.Add($"Failed to delete customer: {response.StatusCode}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to delete customer: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -135,8 +166,16 @@
     private async Task GetAllAppointmentsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>($"api/schedule/GetAllByCustomerId/{selectedCustomer.Id}");
-        appointments = result.ToList();
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>($"api/schedule/GetAllByCustomerId/{selectedCustomer.Id}");
+            appointments = result?.ToList() ?? new List<ScheduleDto>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load appointments: {ex.Message}", Severity.Error);
+            appointments = new List<ScheduleDto>();
+        }
     }
 
     private async Task GetAllReferralsByCustomerId()
@@ -157,27 +196,68 @@
     private async Task GetAllManagersByCustomerId()
     {
         if (selectedCustomer == null) return;
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByCustomerId/{selectedCustomer.Id}");
-        managers = result.ToList();
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByCustomerId/{selectedCustomer.Id}");
+            managers = result?.ToList() ?? new List<ManagerDto>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load managers: {ex.Message}", Severity.Error);
+            managers = new List<ManagerDto>();
+        }
     }
 
     // --- Services (Products) CRUD ---
     private async Task GetAllProductsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<ProductDto>>($"api/product/GetAllByCustomerId/{selectedCustomer.Id}");
-        products = result.ToList();
+        try
+        {
+            // Get contracts for the customer using the new endpoint
+            var contractsResult = await httpClient.GetFromJsonAsync<IEnumerable<ContractDto>>($"api/contract/GetByCustomerId/{selectedCustomer.Id}");
+            contracts = contractsResult?.ToList() ?? new List<ContractDto>();
+            
+            // Then, extract all products from the contracts
+            products = new List<ProductDto>();
+            foreach (var contract in contracts)
+            {
+                if (contract.Products != null)
+                {
+                    products.AddRange(contract.Products);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load products: {ex.Message}", Severity.Error);
+            contracts = new List<ContractDto>();
+            products = new List<ProductDto>();
+        }
     }
 
     private async Task LoadProductTypes()
     {
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<ProductTypeDto>>("api/producttype");
-        productTypes = result.ToList();
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<ProductTypeDto>>("api/producttype");
+            productTypes = result?.ToList() ?? new List<ProductTypeDto>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load product types: {ex.Message}", Severity.Error);
+            productTypes = new List<ProductTypeDto>();
+        }
     }
 
     private void ShowAddProductDialog()
     {
-        editingProduct = new ProductDto { ProductType = productTypes.FirstOrDefault() };
+        editingProduct = new ProductDto {
+            ProductType = productTypes.FirstOrDefault(),
+            Price = 0,
+            StartTime = DateTime.Now,
+            EndTime = DateTime.Now.AddMonths(12)
+        };
         productDialogOpen = true;
     }
 
@@ -197,39 +277,101 @@
     private async Task SaveProduct(ProductDto product)
     {
         if (selectedCustomer == null) return;
-        productDialogOpen = false;
-        product.ProductType = productTypes.FirstOrDefault(pt => pt.Id == product.ProductType.Id);
-
-        if (product.Id == 0)
+        if (contracts.Count == 0)
         {
-            // Create
-            var response = await httpClient.PostAsJsonAsync($"api/product?customerId={selectedCustomer.Id}", product);
-            if (response.IsSuccessStatusCode)
+            Snackbar.Add("No contracts available for this customer. Please create a contract first.", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            // Get the first contract for simplicity
+            // In a real application, you might want to let the user select which contract to add the product to
+            var contract = contracts.First();
+            
+            if (product.Id == 0)
             {
-                Snackbar.Add("Service added.", Severity.Success);
-                await GetAllProductsByCustomerId();
+                // Add the new product to the contract
+                contract.Products.Add(product);
+                
+                // Update the contract with the new product
+                var response = await httpClient.PutAsJsonAsync($"api/contract", contract);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Service added to contract.", Severity.Success);
+                    await GetAllProductsByCustomerId();
+                }
+                else
+                {
+                    Snackbar.Add($"Failed to add service to contract: {response.StatusCode}", Severity.Error);
+                }
+            }
+            else
+            {
+                // For existing products, update directly
+                var response = await httpClient.PutAsJsonAsync($"api/product", product);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Service updated.", Severity.Success);
+                    await GetAllProductsByCustomerId();
+                }
+                else
+                {
+                    Snackbar.Add($"Failed to update service: {response.StatusCode}", Severity.Error);
+                }
             }
         }
-        else
+        catch (Exception ex)
         {
-            // Update
-            var response = await httpClient.PutAsJsonAsync($"api/product/{product.Id}", product);
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Service updated.", Severity.Success);
-                await GetAllProductsByCustomerId();
-            }
+            Snackbar.Add($"Failed to save service: {ex.Message}", Severity.Error);
         }
     }
 
     private async Task DeleteProduct(ProductDto product)
     {
         if (product.Id == 0) return;
-        var response = await httpClient.DeleteAsync($"api/product/{product.Id}");
-        if (response.IsSuccessStatusCode)
+        
+        try
         {
-            Snackbar.Add("Service deleted.", Severity.Success);
-            await GetAllProductsByCustomerId();
+            // Find which contract contains this product
+            ContractDto? contractWithProduct = null;
+            foreach (var contract in contracts)
+            {
+                if (contract.Products != null && contract.Products.Any(p => p.Id == product.Id))
+                {
+                    contractWithProduct = contract;
+                    break;
+                }
+            }
+            
+            if (contractWithProduct == null)
+            {
+                Snackbar.Add("Could not find the contract containing this service.", Severity.Error);
+                return;
+            }
+            
+            // Remove the product from the contract
+            var productToRemove = contractWithProduct.Products.FirstOrDefault(p => p.Id == product.Id);
+            if (productToRemove != null)
+            {
+                contractWithProduct.Products.Remove(productToRemove);
+            }
+            
+            // Update the contract
+            var response = await httpClient.PutAsJsonAsync($"api/contract", contractWithProduct);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Service removed from contract.", Severity.Success);
+                await GetAllProductsByCustomerId();
+            }
+            else
+            {
+                Snackbar.Add($"Failed to remove service from contract: {response.StatusCode}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to delete service: {ex.Message}", Severity.Error);
         }
     }
 
@@ -237,18 +379,37 @@
     private async Task GetAllDocumentsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"api/document/GetAllByCustomerId/{selectedCustomer.Id}");
-        documents = result.ToList();
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"api/document/GetAllByCustomerId/{selectedCustomer.Id}");
+            documents = result?.ToList() ?? new List<DocumentDto>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load documents: {ex.Message}", Severity.Error);
+            documents = new List<DocumentDto>();
+        }
     }
 
     // --- Notes ---
     private async Task SaveNotes()
     {
         if (selectedCustomer == null) return;
-        var response = await httpClient.PutAsJsonAsync($"api/customer", selectedCustomer);
-        if (response.IsSuccessStatusCode)
+        try
         {
-            Snackbar.Add("Notes saved.", Severity.Success);
+            var response = await httpClient.PutAsJsonAsync($"api/customer", selectedCustomer);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Notes saved.", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Failed to save notes: {response.StatusCode}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to save notes: {ex.Message}", Severity.Error);
         }
     }
 }
