@@ -3,16 +3,16 @@
 
 @* <MudDataGrid Items="@ManagersList" Hover="true" Dense="true" Bordered="false" Striped="true">
     <Columns>
-        <PropertyColumn Property="UserName" Title="User Name" />
-        <PropertyColumn Property="Role" Title="Role" />
-        <PropertyColumn Property="Phone" Title="Phone" />
-        <PropertyColumn Property="Email" Title="E-Mail" />
-        <PropertyColumn Property="UserType" Title="User Type" />
+        <PropertyColumn Property="@(x => x.Name)" Title="Name" />
+        <PropertyColumn Property="@(x => x.Email)" Title="E-Mail" />
+        <PropertyColumn Property="@(x => x.Phone)" Title="Phone" />
+        <PropertyColumn Property="@(x => x.Department)" Title="Department" />
+        <PropertyColumn Property="@(x => x.IsActive)" Title="Active" />
     </Columns>
 </MudDataGrid>
 
 <MudText Class="mt-4" Color="Color.Primary" Style="cursor:pointer;">
-    <MudIcon Icon="@Icons.Material.Filled.Add" /> Add New User
+    <MudIcon Icon="@Icons.Material.Filled.Add" /> Add New Manager
 </MudText>
 
 @code {

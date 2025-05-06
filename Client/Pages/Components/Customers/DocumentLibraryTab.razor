@@ -1,0 +1,24 @@
+@using Shared.DTOs.CRM
+@using MudBlazor
+
+<MudPaper Class="pa-4">
+    <MudTable Items="Documents ?? new List<DocumentDto>()" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>File Path</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Created</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.FilePath</MudTd>
+            <MudTd>@context.Description</MudTd>
+            <MudTd>@context.CreatedDate.ToString("g")</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No documents found.</MudText>
+        </NoRecordsContent>
+    </MudTable>
+</MudPaper>
+
+@code {
+    [Parameter] public List<DocumentDto> Documents { get; set; }
+}

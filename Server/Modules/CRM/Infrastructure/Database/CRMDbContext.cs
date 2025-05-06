@@ -12,6 +12,7 @@ namespace Server.Modules.CRM.Infrastructure.Database
 		public DbSet<Employee> Employees { get; set; }
 		public DbSet<Customer> Customers { get; set; }
 		public DbSet<Document> Documents { get; set; }
+		public DbSet<Manager> Managers { get; set; }
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.HasDefaultSchema(Schema.CRM);

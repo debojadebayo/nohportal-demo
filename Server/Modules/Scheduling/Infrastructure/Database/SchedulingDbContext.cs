@@ -29,22 +29,22 @@ namespace Server.Modules.Scheduling.Infrastructure.Database
 					);
 			modelBuilder.Entity<Referral>()
 				.HasData(
-					new Referral { Id = 1, CustomerId = 1, PatientId = 1, ReferralDetails = "Routine checkup for hypertension.", DocumentId = "DOC-1001" },
-					new Referral { Id = 2, CustomerId = 1, PatientId = 2, ReferralDetails = "Follow-up for diabetes management.", DocumentId = "DOC-1002" },
-					new Referral { Id = 3, CustomerId = 1, PatientId = 3, ReferralDetails = "Initial consultation for back pain.", DocumentId = "DOC-1003" },
-					new Referral { Id = 4, CustomerId = 2, PatientId = 4, ReferralDetails = "Annual physical examination.", DocumentId = "DOC-1004" },
-					new Referral { Id = 5, CustomerId = 2, PatientId = 5, ReferralDetails = "Referral for allergy testing.", DocumentId = "DOC-1005" },
-					new Referral { Id = 6, CustomerId = 2, PatientId = 6, ReferralDetails = "Consultation for asthma symptoms.", DocumentId = "DOC-1006" },
-					new Referral { Id = 7, CustomerId = 3, PatientId = 7, ReferralDetails = "Pre-surgery evaluation.", DocumentId = "DOC-1007" },
-					new Referral { Id = 8, CustomerId = 3, PatientId = 8, ReferralDetails = "Post-operative follow-up.", DocumentId = "DOC-1008" },
-					new Referral { Id = 9, CustomerId = 3, PatientId = 9, ReferralDetails = "Referral for physical therapy.", DocumentId = "DOC-1009" },
-					new Referral { Id = 10, CustomerId = 3, PatientId = 10, ReferralDetails = "Consultation for migraine headaches.", DocumentId = "DOC-1010" }
+					new Referral { Id = 1, CustomerId = 1, EmployeeId = 1, ReferralDetails = "Routine checkup for hypertension.", DocumentId = "DOC-1001" },
+					new Referral { Id = 2, CustomerId = 1, EmployeeId = 2, ReferralDetails = "Follow-up for diabetes management.", DocumentId = "DOC-1002" },
+					new Referral { Id = 3, CustomerId = 1, EmployeeId = 3, ReferralDetails = "Initial consultation for back pain.", DocumentId = "DOC-1003" },
+					new Referral { Id = 4, CustomerId = 2, EmployeeId = 4, ReferralDetails = "Annual physical examination.", DocumentId = "DOC-1004" },
+					new Referral { Id = 5, CustomerId = 2, EmployeeId = 5, ReferralDetails = "Referral for allergy testing.", DocumentId = "DOC-1005" },
+					new Referral { Id = 6, CustomerId = 2, EmployeeId = 6, ReferralDetails = "Consultation for asthma symptoms.", DocumentId = "DOC-1006" },
+					new Referral { Id = 7, CustomerId = 3, EmployeeId = 7, ReferralDetails = "Pre-surgery evaluation.", DocumentId = "DOC-1007" },
+					new Referral { Id = 8, CustomerId = 3, EmployeeId = 8, ReferralDetails = "Post-operative follow-up.", DocumentId = "DOC-1008" },
+					new Referral { Id = 9, CustomerId = 3, EmployeeId = 9, ReferralDetails = "Referral for physical therapy.", DocumentId = "DOC-1009" },
+					new Referral { Id = 10, CustomerId = 3, EmployeeId = 10, ReferralDetails = "Consultation for migraine headaches.", DocumentId = "DOC-1010" }
 						);
 			modelBuilder.Entity<Schedule>()
 				.HasData(
-					new Schedule { Id = 1, ClinicianId = 1, CustomerId = 1, ReferralId = 1, PatientId = 1, Start = new DateTime(2025, 4, 22, 9, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 10, 0, 0, DateTimeKind.Utc) },
-					new Schedule { Id = 2, ClinicianId = 2, CustomerId = 1, ReferralId = 2, PatientId = 2, Start = new DateTime(2025, 4, 22, 10, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 11, 0, 0, DateTimeKind.Utc) },
-					new Schedule { Id = 3, ClinicianId = 3, CustomerId = 1, ReferralId = 3, PatientId = 3, Start = new DateTime(2025, 4, 22, 11, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 12, 0, 0, DateTimeKind.Utc) }
+					new Schedule { Id = 1, ClinicianId = 1, CustomerId = 1, ReferralId = 1, EmployeeId = 1, Start = new DateTime(2025, 4, 22, 9, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 10, 0, 0, DateTimeKind.Utc) },
+					new Schedule { Id = 2, ClinicianId = 2, CustomerId = 1, ReferralId = 2, EmployeeId = 2, Start = new DateTime(2025, 4, 22, 10, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 11, 0, 0, DateTimeKind.Utc) },
+					new Schedule { Id = 3, ClinicianId = 3, CustomerId = 1, ReferralId = 3, EmployeeId = 3, Start = new DateTime(2025, 4, 22, 11, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 12, 0, 0, DateTimeKind.Utc) }
 				);
 		}
 	}

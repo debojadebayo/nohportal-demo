@@ -157,4 +157,5 @@ namespace Server.Modules.CRM.Endpoints
 			}
 		}
 	}
+	public class ManagerEndpoints : BaseEndpoints<Manager, ManagerDto, CRMDbContext>, IEndpoints { }
 }

@@ -7,12 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 using ComposedHealthBase.Server.Mappers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Server.Modules.Scheduling.Infrastructure.Queries;
 using ComposedHealthBase.Server.Queries;
+using ComposedHealthBase.Server.Database;
+using ComposedHealthBase.Shared.DTOs;
+using ComposedHealthBase.Server.Entities;
+using Server.Modules.Scheduling.Infrastructure.Queries;
 
 namespace Server.Modules.Scheduling.Endpoints
 {
-	public class ClinicianEndpoints : BaseEndpoints<Clinician, ClinicianDto, SchedulingDbContext>, IEndpoints { 
+	public class ClinicianEndpoints : BaseEndpoints<Clinician, ClinicianDto, SchedulingDbContext>, IEndpoints
+	{
 		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			endpoints = base.MapEndpoints(endpoints);
@@ -43,26 +47,35 @@ namespace Server.Modules.Scheduling.Endpoints
 			}
 		}
 	}
-	public class ReferralEndpoints : BaseEndpoints<Referral, ReferralDto, SchedulingDbContext>, IEndpoints { }
-	public class ScheduleEndpoints : BaseEndpoints<Schedule, ScheduleDto, SchedulingDbContext>, IEndpoints {
-		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints){
+	public class ReferralEndpoints : CommonScheduleEndpoints<Referral, ReferralDto, SchedulingDbContext>, IEndpoints { }
+	public class ScheduleEndpoints : CommonScheduleEndpoints<Schedule, ScheduleDto, SchedulingDbContext>, IEndpoints { }
+	public abstract class CommonScheduleEndpoints<T, TDto, SchedulingDbContext> : BaseEndpoints<T, TDto, SchedulingDbContext>
+		where T : BaseEntity<T>, IScheduleEntity
+		where TDto : IDto
+		where SchedulingDbContext : IDbContext<SchedulingDbContext>
+	{
+		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		{
 			endpoints = base.MapEndpoints(endpoints);
-			var group = endpoints.MapGroup($"/api/schedule");
 
-			group.MapGet("/GetAllSchedulesByCustomerId/{customerId}", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<Schedule, ScheduleDto> mapper, long customerId) => GetAllSchedulesByCustomerId(dbContext, mapper, customerId));
+			var entityName = typeof(T).Name.ToLower();
+
+			var group = endpoints.MapGroup($"/api/{entityName}");
+
+			group.MapGet("/GetAllByCustomerId/{customerId}", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<T, TDto> mapper, long customerId) => GetAllByCustomerId(dbContext, mapper, customerId));
+			group.MapGet("/GetAllByEmployeeId/{employeeId}", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<T, TDto> mapper, long employeeId) => GetAllByEmployeeId(dbContext, mapper, employeeId));
 
 			return endpoints;
 		}
-
-		protected async Task<IResult> GetAllSchedulesByCustomerId(SchedulingDbContext dbContext, IMapper<Schedule, ScheduleDto> mapper, long customerId)
+		protected async Task<IResult> GetAllByCustomerId(SchedulingDbContext dbContext, IMapper<T, TDto> mapper, long customerId)
 		{
 			try
 			{
-				var allEntities = await new GetByPredicateQuery<Schedule, ScheduleDto, SchedulingDbContext>(dbContext, mapper).Handle(s => s.CustomerId == customerId);
+				var allEntities = await new GetByPredicateQuery<T, TDto, SchedulingDbContext>(dbContext, mapper).Handle(s => s.CustomerId == customerId);
 
 				if (allEntities == null || !allEntities.Any())
 				{
-					return Results.NotFound($"No schedule entities found.");
+					return Results.NotFound($"No records found.");
 				}
 
 				return Results.Ok(allEntities);
@@ -70,7 +83,26 @@ namespace Server.Modules.Scheduling.Endpoints
 			catch (Exception ex)
 			{
 				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving schedule entities.");
+				return Results.Problem($"An error occurred while retrieving records.");
+			}
+		}
+		protected async Task<IResult> GetAllByEmployeeId(SchedulingDbContext dbContext, IMapper<T, TDto> mapper, long employeeId)
+		{
+			try
+			{
+				var allEntities = await new GetByPredicateQuery<T, TDto, SchedulingDbContext>(dbContext, mapper).Handle(s => s.EmployeeId == employeeId);
+
+				if (allEntities == null || !allEntities.Any())
+				{
+					return Results.NotFound($"No records found.");
+				}
+
+				return Results.Ok(allEntities);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while retrieving records.");
 			}
 		}
 	}

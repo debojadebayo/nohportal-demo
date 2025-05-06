@@ -1,0 +1,50 @@
+@using Shared.DTOs.CRM
+@using MudBlazor
+
+<MudPaper Class="pa-4">
+    <MudForm @ref="form" Model="Model" Validated="OnValidated">
+        <MudTextField @bind-Value="Model.Name" Label="Name" Required="true" />
+        <MudTextField @bind-Value="Model.Address" Label="Address" />
+        <MudTextField @bind-Value="Model.Telephone" Label="Telephone" />
+        <MudTextField @bind-Value="Model.Email" Label="Email" />
+        <MudTextField @bind-Value="Model.Site" Label="Site" />
+        <MudTextField @bind-Value="Model.OHServicesRequired" Label="OH Services Required" />
+        <MudTextField @bind-Value="Model.Industry" Label="Industry" />
+        <MudTextField @bind-Value="Model.Postcode" Label="Postcode" />
+        <MudTextField @bind-Value="Model.Website" Label="Website" />
+        <MudTextField @bind-Value="Model.InvoiceEmail" Label="Invoice Email" />
+        <MudNumericField @bind-Value="Model.NumberOfEmployees" Label="Number of Employees" />
+        <MudTextField @bind-Value="Model.Notes" Label="Notes" Lines="3" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save" Disabled="IsLoading">Save</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="Delete" Disabled="IsLoading" Class="ml-2">Delete</MudButton>
+        <MudProgressCircular Indeterminate="true" Style="margin-left:16px;" Color="Color.Primary" Size="Size.Medium" Class="@((IsLoading ? "" : "d-none"))" />
+    </MudForm>
+</MudPaper>
+
+@code {
+    [Parameter] public CustomerDto Model { get; set; }
+    [Parameter] public EventCallback<CustomerDto> OnSave { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+
+    private MudForm form;
+
+    private async Task Save()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            await OnSave.InvokeAsync(Model);
+        }
+    }
+
+    private async Task Delete()
+    {
+        await OnDelete.InvokeAsync();
+    }
+
+    private void OnValidated()
+    {
+        // No-op, handled in Save
+    }
+}

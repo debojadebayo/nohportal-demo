@@ -10,7 +10,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
         {
             Id = entity.Id,
             CustomerId = entity.CustomerId,
-            PatientId = entity.PatientId,
+            EmployeeId = entity.EmployeeId,
             ReferralDetails = entity.ReferralDetails,
             DocumentId = entity.DocumentId,
             CreatedBy = entity.CreatedBy,
@@ -26,7 +26,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
         {
             Id = dto.Id,
             CustomerId = dto.CustomerId,
-            PatientId = dto.PatientId,
+            EmployeeId = dto.EmployeeId,
             ReferralDetails = dto.ReferralDetails,
             DocumentId = dto.DocumentId,
             CreatedBy = dto.CreatedBy,
@@ -50,7 +50,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
     {
         entity.Id = dto.Id;
         entity.CustomerId = dto.CustomerId;
-        entity.PatientId = dto.PatientId;
+        entity.EmployeeId = dto.EmployeeId;
         entity.ReferralDetails = dto.ReferralDetails;
         entity.DocumentId = dto.DocumentId;
         entity.CreatedBy = dto.CreatedBy;
@@ -63,7 +63,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
     {
         dto.Id = entity.Id;
         dto.CustomerId = entity.CustomerId;
-        dto.PatientId = entity.PatientId;
+        dto.EmployeeId = entity.EmployeeId;
         dto.ReferralDetails = entity.ReferralDetails;
         dto.DocumentId = entity.DocumentId;
         dto.CreatedBy = entity.CreatedBy;

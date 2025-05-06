@@ -26,7 +26,7 @@
         <MudTextField @bind-Value="_editingSchedule.Description" Label="Description" />
         <MudTextField @bind-Value="_editingSchedule.CustomerId" Label="Customer Id" />
         <MudTextField @bind-Value="_editingSchedule.ReferralId" Label="Referral Id" />
-        <MudTextField @bind-Value="_editingSchedule.PatientId" Label="Patient Id" />
+        <MudTextField @bind-Value="_editingSchedule.EmployeeId" Label="Patient Id" />
         <MudTextField @bind-Value="_editingSchedule.ClinicianId" Label="Clinician Id" />
         <MudDatePicker @bind-Date="_editingSchedule.Start" Label="Start" />
         <MudDatePicker @bind-Date="_editingSchedule.End" Label="End" />
@@ -91,7 +91,7 @@
             Description = item.Description,
             CustomerId = item.CustomerId,
             ReferralId = item.ReferralId,
-            PatientId = item.PatientId,
+            EmployeeId = item.EmployeeId,
             ClinicianId = item.ClinicianId,
             Start = item.Start,
             End = item.End

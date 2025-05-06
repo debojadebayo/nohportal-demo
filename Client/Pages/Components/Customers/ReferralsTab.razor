@@ -1,0 +1,24 @@
+@using Shared.DTOs.Scheduling
+@using MudBlazor
+
+<MudPaper Class="pa-4">
+    <MudTable Items="Referrals ?? new List<ReferralDto>()" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Created</MudTh>
+            <MudTh>Referral Details</MudTh>
+            <MudTh>Document Id</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.CreatedDate.ToString("g")</MudTd>
+            <MudTd>@context.ReferralDetails</MudTd>
+            <MudTd>@context.DocumentId</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No referrals found.</MudText>
+        </NoRecordsContent>
+    </MudTable>
+</MudPaper>
+
+@code {
+    [Parameter] public List<ReferralDto> Referrals { get; set; }
+}

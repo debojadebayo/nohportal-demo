@@ -15,7 +15,7 @@
             </MudSelect>
             @if (_model.CustomerId != 0)
             {
-                <MudSelect T="long" Label="Patient" @bind-Value="_model.PatientId">
+                <MudSelect T="long" Label="Patient" @bind-Value="_model.EmployeeId">
                     @foreach (var employee in _employees)
                     {
                         <MudSelectItem T="long" Value="@employee.Id">@employee.FirstName @employee.LastName</MudSelectItem>
@@ -61,7 +61,7 @@
     private async Task OnCustomerChanged(long customerId)
     {
         _model.CustomerId = customerId;
-        _model.PatientId = 0;
+        _model.EmployeeId = 0;
         _employees = new List<EmployeeDto>();
 
         if (customerId != 0)
