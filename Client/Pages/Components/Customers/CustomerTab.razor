@@ -1,25 +1,49 @@
 @using Shared.DTOs.CRM
 @using MudBlazor
 
-<MudPaper Class="pa-4">
-    <MudForm @ref="form" Model="Model" Validated="OnValidated">
-        <MudTextField @bind-Value="Model.Name" Label="Name" Required="true" />
-        <MudTextField @bind-Value="Model.Address" Label="Address" />
-        <MudTextField @bind-Value="Model.Telephone" Label="Telephone" />
-        <MudTextField @bind-Value="Model.Email" Label="Email" />
-        <MudTextField @bind-Value="Model.Site" Label="Site" />
-        <MudTextField @bind-Value="Model.OHServicesRequired" Label="OH Services Required" />
-        <MudTextField @bind-Value="Model.Industry" Label="Industry" />
-        <MudTextField @bind-Value="Model.Postcode" Label="Postcode" />
-        <MudTextField @bind-Value="Model.Website" Label="Website" />
-        <MudTextField @bind-Value="Model.InvoiceEmail" Label="Invoice Email" />
-        <MudNumericField @bind-Value="Model.NumberOfEmployees" Label="Number of Employees" />
-        <MudTextField @bind-Value="Model.Notes" Label="Notes" Lines="3" />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save" Disabled="IsLoading">Save</MudButton>
-        <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="Delete" Disabled="IsLoading" Class="ml-2">Delete</MudButton>
-        <MudProgressCircular Indeterminate="true" Style="margin-left:16px;" Color="Color.Primary" Size="Size.Medium" Class="@((IsLoading ? "" : "d-none"))" />
-    </MudForm>
-</MudPaper>
+<MudForm @ref="form" Model="Model" Validated="OnValidated">
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="Model.Id" For="@(() => Model.Id)" Immediate="true" Label="Company ID"
+                Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Immediate="true" Label="Name"
+                Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="Model.Telephone" For="@(() => Model.Telephone)" Immediate="true"
+                Label="Phone Number" Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="Model.Email" For="@(() => Model.Email)" Immediate="true" Label="Email"
+                Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="Model.InvoiceEmail" For="@(() => Model.InvoiceEmail)" Immediate="true"
+                Label="Invoice Email" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="Model.Address" For="@(() => Model.Address)" Immediate="true" Label="Address"
+                Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="Model.Postcode" For="@(() => Model.Postcode)" Immediate="true" Label="Postcode"
+                Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="Model.Site" For="@(() => Model.Site)" Immediate="true" Label="Site"
+                Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="Model.Industry" For="@(() => Model.Industry)" Immediate="true" Label="Industry"
+                Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="Model.OHServicesRequired" For="@(() => Model.OHServicesRequired)"
+                Immediate="true" Label="OH Services Required" Variant="Variant.Outlined" />
+
+            <MudNumericField @bind-Value="Model.NumberOfEmployees" For="@(() => Model.NumberOfEmployees)"
+                Immediate="true" Label="Number of Employees" Variant="Variant.Outlined" />
+        </MudItem>
+    </MudGrid>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"
+            OnClick="@(async () => await Save())">Save Changes
+        </MudButton>
+    </MudCardActions>
+</MudForm>
 
 @code {
     [Parameter] public CustomerDto Model { get; set; }

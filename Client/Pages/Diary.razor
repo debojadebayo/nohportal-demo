@@ -1,12 +1,12 @@
 ﻿@page "/"
 @using Client.Pages.Components
 @using ComposedHealthBase.Shared.Interfaces
-@using Microsoft.AspNetCore.Authorization
 @using Shared.DTOs.CRM
 @using Client.Pages.Components.Calendar
 @using Shared.DTOs.Scheduling
 @inject IHttpClientFactory HttpClientFactory
 @inject IDialogService DialogService
+@attribute [Authorize]
 
 <PageTitle>Diary</PageTitle>
 

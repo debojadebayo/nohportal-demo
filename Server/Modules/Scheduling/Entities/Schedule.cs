@@ -1,9 +1,10 @@
 ﻿using ComposedHealthBase.Server.Entities;
 using Shared.Enums;
+using Server.Modules.CommonModule.Interfaces;
 
 namespace Server.Modules.Scheduling.Entities
 {
-	public class Schedule : BaseEntity<Schedule>, IEntity, IScheduleEntity
+	public class Schedule : BaseEntity<Schedule>, IEntity, IFilterByEmployee, IFilterByCustomer
 	{
 		public long CustomerId { get; set; }
 		public long ReferralId { get; set; }

@@ -4,54 +4,52 @@
 @using MudBlazor
 @inject IHttpClientFactory HttpClientFactory
 @inject ISnackbar Snackbar
+@attribute [Authorize]
 
 @using Client.Pages.Components.Customers
 <h1>Customers</h1>
+<MudText Typo="Typo.body1">Select a customer to view details</MudText>
+<MudAutocomplete T="CustomerDto" ToStringFunc="@CustomerToString" Label="Company Name" @bind-Value="selectedCustomer"
+    SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true"
+    ProgressIndicatorColor="Color.Default" />
 
-<MudAutocomplete 
-    T="CustomerDto" ToStringFunc="@CustomerToString"
-    Label="Company Name" @bind-Value="selectedCustomer" SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
 
-<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
 @if (selectedCustomer != null)
 {
-    <MudTabPanel Text="Customers">
-        <CustomerTab Model="selectedCustomer" OnSave="HandleCustomerSave" OnDelete="DeleteCustomer" IsLoading="isLoading" />
-    </MudTabPanel>
-    <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByCustomerId">
-        <AppointmentsTab Appointments="appointments" />
-    </MudTabPanel>
-    <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByCustomerId">
-        <ReferralsTab Referrals="referrals" />
-    </MudTabPanel>
-    <MudTabPanel Text="Managers" OnClick="GetAllManagersByCustomerId">
-        <ManagersTab Managers="managers" />
-    </MudTabPanel>
-    <MudTabPanel Text="Services" OnClick="GetAllProductsByCustomerId">
-        <ServicesTab Products="products"
-                    ProductTypes="productTypes"
-                    OnAdd="ShowAddProductDialog"
-                    OnEdit="EditProduct"
-                    OnDelete="DeleteProduct"
-                    OnSave="SaveProduct"
-                    EditingProduct="editingProduct"
-                    ProductDialogOpen="productDialogOpen"
-                    SetProductDialogOpen="(v) => productDialogOpen = v" />
-    </MudTabPanel>
-    <MudTabPanel Text="Invoicing">
-        <InvoicingTab />
-    </MudTabPanel>
-    <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByCustomerId">
-        <DocumentLibraryTab Documents="documents" />
-    </MudTabPanel>
-    <MudTabPanel Text="Reports">
-        <ReportsTab />
-    </MudTabPanel>
-    <MudTabPanel Text="Notes">
-        <NotesTab Notes="@selectedCustomer.Notes" OnSave="SaveNotes" />
-    </MudTabPanel>
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="Customers">
+            <CustomerTab Model="selectedCustomer" OnSave="HandleCustomerSave" OnDelete="DeleteCustomer"
+                IsLoading="isLoading" />
+        </MudTabPanel>
+        <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByCustomerId">
+            <AppointmentsTab Appointments="appointments" />
+        </MudTabPanel>
+        <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByCustomerId">
+            <ReferralsTab Referrals="referrals" />
+        </MudTabPanel>
+        <MudTabPanel Text="Managers" OnClick="GetAllManagersByCustomerId">
+            <ManagersTab Managers="managers" />
+        </MudTabPanel>
+        <MudTabPanel Text="Services" OnClick="GetAllProductsByCustomerId">
+            <ServicesTab Products="products" ProductTypes="productTypes" OnAdd="ShowAddProductDialog" OnEdit="EditProduct"
+                OnDelete="DeleteProduct" OnSave="SaveProduct" EditingProduct="editingProduct"
+                ProductDialogOpen="productDialogOpen" SetProductDialogOpen="(v) => productDialogOpen = v" />
+        </MudTabPanel>
+        <MudTabPanel Text="Invoicing">
+            <InvoicingTab />
+        </MudTabPanel>
+        <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByCustomerId">
+            <DocumentLibraryTab Documents="documents" />
+        </MudTabPanel>
+        <MudTabPanel Text="Reports">
+            <ReportsTab />
+        </MudTabPanel>
+        <MudTabPanel Text="Notes">
+            <NotesTab Notes="@selectedCustomer.Notes" OnSave="SaveNotes" />
+        </MudTabPanel>
+    </MudTabs>
 }
-</MudTabs>
+
 
 @code {
     private List<CustomerDto> customerList = new();
@@ -76,11 +74,14 @@
     protected override async Task OnInitializedAsync()
     {
         httpClient = HttpClientFactory.CreateClient("api");
-        await LoadProductTypes();
     }
 
     private async Task<IEnumerable<CustomerDto>> Search(string value, CancellationToken token)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return customerList;
+        }
         try
         {
             var result = await httpClient.GetFromJsonAsync<IEnumerable<CustomerDto>>("api/customer/search?term=" + value, token);
@@ -168,7 +169,8 @@
         if (selectedCustomer == null) return;
         try
         {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>($"api/schedule/GetAllByCustomerId/{selectedCustomer.Id}");
+            var result = await
+            httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>($"api/schedule/GetAllByCustomerId/{selectedCustomer.Id}");
             appointments = result?.ToList() ?? new List<ScheduleDto>();
         }
         catch (Exception ex)
@@ -183,7 +185,8 @@
         if (selectedCustomer == null) return;
         try
         {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>($"api/referral/GetAllByCustomerId/{selectedCustomer.Id}");
+            var result = await
+            httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>($"api/referral/GetAllByCustomerId/{selectedCustomer.Id}");
             referrals = result?.ToList() ?? new List<ReferralDto>();
         }
         catch (Exception ex)
@@ -198,7 +201,8 @@
         if (selectedCustomer == null) return;
         try
         {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByCustomerId/{selectedCustomer.Id}");
+            var result = await
+            httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByCustomerId/{selectedCustomer.Id}");
             managers = result?.ToList() ?? new List<ManagerDto>();
         }
         catch (Exception ex)
@@ -215,9 +219,10 @@
         try
         {
             // Get contracts for the customer using the new endpoint
-            var contractsResult = await httpClient.GetFromJsonAsync<IEnumerable<ContractDto>>($"api/contract/GetByCustomerId/{selectedCustomer.Id}");
+            var contractsResult = await
+            httpClient.GetFromJsonAsync<IEnumerable<ContractDto>>($"api/contract/GetByCustomerId/{selectedCustomer.Id}");
             contracts = contractsResult?.ToList() ?? new List<ContractDto>();
-            
+
             // Then, extract all products from the contracts
             products = new List<ProductDto>();
             foreach (var contract in contracts)
@@ -252,7 +257,8 @@
 
     private void ShowAddProductDialog()
     {
-        editingProduct = new ProductDto {
+        editingProduct = new ProductDto
+        {
             ProductType = productTypes.FirstOrDefault(),
             Price = 0,
             StartTime = DateTime.Now,
@@ -288,12 +294,12 @@
             // Get the first contract for simplicity
             // In a real application, you might want to let the user select which contract to add the product to
             var contract = contracts.First();
-            
+
             if (product.Id == 0)
             {
                 // Add the new product to the contract
                 contract.Products.Add(product);
-                
+
                 // Update the contract with the new product
                 var response = await httpClient.PutAsJsonAsync($"api/contract", contract);
                 if (response.IsSuccessStatusCode)
@@ -330,7 +336,7 @@
     private async Task DeleteProduct(ProductDto product)
     {
         if (product.Id == 0) return;
-        
+
         try
         {
             // Find which contract contains this product
@@ -343,20 +349,20 @@
                     break;
                 }
             }
-            
+
             if (contractWithProduct == null)
             {
                 Snackbar.Add("Could not find the contract containing this service.", Severity.Error);
                 return;
             }
-            
+
             // Remove the product from the contract
             var productToRemove = contractWithProduct.Products.FirstOrDefault(p => p.Id == product.Id);
             if (productToRemove != null)
             {
                 contractWithProduct.Products.Remove(productToRemove);
             }
-            
+
             // Update the contract
             var response = await httpClient.PutAsJsonAsync($"api/contract", contractWithProduct);
             if (response.IsSuccessStatusCode)
@@ -381,7 +387,8 @@
         if (selectedCustomer == null) return;
         try
         {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"api/document/GetAllByCustomerId/{selectedCustomer.Id}");
+            var result = await
+            httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"api/document/GetAllByCustomerId/{selectedCustomer.Id}");
             documents = result?.ToList() ?? new List<DocumentDto>();
         }
         catch (Exception ex)

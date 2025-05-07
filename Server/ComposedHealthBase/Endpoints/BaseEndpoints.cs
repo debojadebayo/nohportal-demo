@@ -96,12 +96,6 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var result = await new CreateCommand<T, TDto, TContext>(dbContext, mapper).Handle(dto);
-
-				if (result == null || result <= 0)
-				{
-					return Results.BadRequest($"Failed to create the {typeof(T).Name}.");
-				}
-
 				return Results.Ok(result);
 			}
 			catch (Exception ex)
@@ -116,12 +110,6 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var result = await new UpdateCommand<T, TDto, TContext>(dbContext, mapper).Handle(dto);
-
-				if (result == null || result <= 0)
-				{
-					return Results.BadRequest(result);
-				}
-
 				return Results.Ok(result);
 			}
 			catch (Exception ex)

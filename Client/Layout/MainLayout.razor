@@ -12,7 +12,12 @@
 
 <MudLayout>
 	<MudAppBar Elevation="1">
-		<MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+		<AuthorizeView>
+			<Authorized>
+				<MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start"
+					OnClick="@((e) => DrawerToggle())" />
+			</Authorized>
+		</AuthorizeView>
 		<img src="images/logo500.png" asp-append-version="true" width="150px" />
 		<MudSpacer />
 		<AuthorizeView>
@@ -27,14 +32,22 @@
 			</NotAuthorized>
 		</AuthorizeView>
 	</MudAppBar>
-	<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-		<MudNavMenu Class="ma-2">
-			<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/" Match="NavLinkMatch.All">Diary</MudNavLink>
-			<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/referrals" Match="NavLinkMatch.All">Referrals</MudNavLink>
-			<MudNavLink Icon="@Icons.Material.Filled.Business" Href="/customers" Match="NavLinkMatch.All">Customers</MudNavLink>
-			<MudNavLink Icon="@Icons.Material.Filled.People" Href="/employees" Match="NavLinkMatch.All">Employees</MudNavLink>
-		</MudNavMenu>
-	</MudDrawer>
+	<AuthorizeView>
+		<Authorized>
+			<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+				<MudNavMenu Class="ma-2">
+					<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/" Match="NavLinkMatch.All">Diary
+					</MudNavLink>
+					<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/referrals" Match="NavLinkMatch.All">
+						Referrals</MudNavLink>
+					<MudNavLink Icon="@Icons.Material.Filled.Business" Href="/customers" Match="NavLinkMatch.All">
+						Customers</MudNavLink>
+					<MudNavLink Icon="@Icons.Material.Filled.People" Href="/employees" Match="NavLinkMatch.All">
+						Employees</MudNavLink>
+				</MudNavMenu>
+			</MudDrawer>
+		</Authorized>
+	</AuthorizeView>
 	<MudMainContent>
 		<MudContainer>
 			<MudPaper Class="pa-8 ma-2">
@@ -53,75 +66,75 @@
 	}
 
 	.mud-navmenu.mud-navmenu-default .mud-nav-link:hover:not(.mud-nav-link-disabled) {
-		background-color: rgba(255,255,255,0.3);
+		background-color: rgba(255, 255, 255, 0.3);
 		border-top-left-radius: 20px;
 		border-bottom-left-radius: 20px;
 	}
 
-	a.mud-nav-link.mud-ripple.active svg.mud-icon-root.mud-icon-default.mud-svg-icon.mud-icon-size-medium.mud-nav-link-icon.mud-nav-link-icon-default{
+	a.mud-nav-link.mud-ripple.active svg.mud-icon-root.mud-icon-default.mud-svg-icon.mud-icon-size-medium.mud-nav-link-icon.mud-nav-link-icon-default {
 		color: black;
 	}
 </style>
 
 @code {
 	MudTheme MyCustomTheme = new MudTheme()
+	{
+		PaletteLight = new PaletteLight()
 		{
-			PaletteLight = new PaletteLight()
-			{
-				Black = Colors.Shades.Black,
-				White = Colors.Shades.Black,
+			Black = Colors.Shades.Black,
+			White = Colors.Shades.Black,
 
-				Primary = Colors.Blue.Darken4,
-				TextPrimary = Colors.Shades.Black,
-				PrimaryContrastText = Colors.Shades.White,
-				Secondary = Colors.Red.Lighten5,
-				TextSecondary = Colors.Shades.Black,
-				SecondaryContrastText = Colors.Shades.White,
+			Primary = Colors.Blue.Darken4,
+			TextPrimary = Colors.Shades.Black,
+			PrimaryContrastText = Colors.Shades.White,
+			Secondary = Colors.Red.Lighten5,
+			TextSecondary = Colors.Shades.Black,
+			SecondaryContrastText = Colors.Shades.White,
 
-				Background = Colors.Gray.Lighten4,
-				DrawerBackground = Colors.Blue.Darken4,
-				AppbarBackground = Colors.Shades.White,
-				DrawerText = Colors.Shades.White,
-				DrawerIcon = Colors.Shades.White,
-				ActionDefault = Colors.Shades.Black,
-			},
-			PaletteDark = new PaletteDark()
+			Background = Colors.Gray.Lighten4,
+			DrawerBackground = Colors.Blue.Darken4,
+			AppbarBackground = Colors.Shades.White,
+			DrawerText = Colors.Shades.White,
+			DrawerIcon = Colors.Shades.White,
+			ActionDefault = Colors.Shades.Black,
+		},
+		PaletteDark = new PaletteDark()
+		{
+			Primary = Colors.Blue.Lighten1
+		},
+		Typography = new Typography()
+		{
+			H1 = new H6Typography()
 			{
-				Primary = Colors.Blue.Lighten1
+				FontSize = "2.25rem",
 			},
-			Typography = new Typography()
+			H2 = new H6Typography()
 			{
-				H1 = new H6Typography()
-				{
-					FontSize = "2.25rem",
-				},
-				H2 = new H6Typography()
-				{
-					FontSize = "2rem",
-				},
-				H3 = new H6Typography()
-				{
-					FontSize = "1.75rem",
-				},
-				H4 = new H6Typography()
-				{
-					FontSize = "1.5rem",
-				},
-				H5 = new H6Typography()
-				{
-					FontSize = "1.25rem",
-				},
-				H6 = new H6Typography()
-				{
-					FontSize = "1rem",
-				}
+				FontSize = "2rem",
 			},
-			LayoutProperties = new LayoutProperties()
+			H3 = new H6Typography()
 			{
-				DrawerWidthLeft = "260px",
-				DrawerWidthRight = "300px",
+				FontSize = "1.75rem",
+			},
+			H4 = new H6Typography()
+			{
+				FontSize = "1.5rem",
+			},
+			H5 = new H6Typography()
+			{
+				FontSize = "1.25rem",
+			},
+			H6 = new H6Typography()
+			{
+				FontSize = "1rem",
 			}
-		};
+		},
+		LayoutProperties = new LayoutProperties()
+		{
+			DrawerWidthLeft = "260px",
+			DrawerWidthRight = "300px",
+		}
+	};
 
 	bool _drawerOpen = true;
 

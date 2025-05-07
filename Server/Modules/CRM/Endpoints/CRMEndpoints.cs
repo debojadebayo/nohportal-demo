@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Server.Modules.CRM.Infrastructure.Queries;
 using ComposedHealthBase.Server.Queries;
+using ComposedHealthBase.Server.Entities;
+using ComposedHealthBase.Server.Database;
+using Server.Modules.CommonModule.Interfaces;
+using ComposedHealthBase.Shared.DTOs;
 
 namespace Server.Modules.CRM.Endpoints
 {
@@ -32,12 +36,6 @@ namespace Server.Modules.CRM.Endpoints
 			try
 			{
 				var allEntities = await new GetByPredicateQuery<Employee, EmployeeDto, CRMDbContext>(dbContext, mapper).Handle(e => e.CustomerId == id);
-
-				if (allEntities == null || !allEntities.Any())
-				{
-					return Results.NotFound($"No employee entities found.");
-				}
-
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
@@ -52,9 +50,6 @@ namespace Server.Modules.CRM.Endpoints
 		{
 			try
 			{
-				if (string.IsNullOrWhiteSpace(term))
-					return Results.BadRequest("Search term is required.");
-
 				var results = await new SearchEmployeesQuery(dbContext, mapper, term).Handle();
 				return Results.Ok(results);
 			}
@@ -81,9 +76,6 @@ namespace Server.Modules.CRM.Endpoints
 		{
 			try
 			{
-				if (string.IsNullOrWhiteSpace(term))
-					return Results.BadRequest("Search term is required.");
-
 				var results = await new SearchCustomersQuery(dbContext, mapper, term).Handle();
 				return Results.Ok(results);
 			}
@@ -123,9 +115,7 @@ namespace Server.Modules.CRM.Endpoints
 			return endpoints;
 		}
 	}
-	public class ProductEndpoints : BaseEndpoints<Product, ProductDto, CRMDbContext>, IEndpoints { }
-	public class ProductTypeEndpoints : BaseEndpoints<ProductType, ProductTypeDto, CRMDbContext>, IEndpoints { }
-	public class DocumentEndpoints : BaseEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints
+	public class DocumentEndpoints : CommonCRMEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints
 	{
 		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
@@ -185,5 +175,62 @@ namespace Server.Modules.CRM.Endpoints
 			}
 		}
 	}
-	public class ManagerEndpoints : BaseEndpoints<Manager, Shared.DTOs.CRM.ManagerDto, CRMDbContext>, IEndpoints { }
+	public class ManagerEndpoints : CommonCRMEndpoints<Manager, Shared.DTOs.CRM.ManagerDto, CRMDbContext>, IEndpoints { }
+	public abstract class CommonCRMEndpoints<T, TDto, CRMDbContext> : BaseEndpoints<T, TDto, CRMDbContext>
+		where T : BaseEntity<T>, IFilterByEmployee, IFilterByCustomer
+		where TDto : IDto
+		where CRMDbContext : IDbContext<CRMDbContext>
+	{
+		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		{
+			endpoints = base.MapEndpoints(endpoints);
+
+			var entityName = typeof(T).Name.ToLower();
+
+			var group = endpoints.MapGroup($"/api/{entityName}");
+
+			group.MapGet("/GetAllByCustomerId/{customerId}", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<T, TDto> mapper, long customerId) => GetAllByCustomerId(dbContext, mapper, customerId));
+			group.MapGet("/GetAllByEmployeeId/{employeeId}", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<T, TDto> mapper, long employeeId) => GetAllByEmployeeId(dbContext, mapper, employeeId));
+
+			return endpoints;
+		}
+		protected async Task<IResult> GetAllByCustomerId(CRMDbContext dbContext, IMapper<T, TDto> mapper, long customerId)
+		{
+			try
+			{
+				var allEntities = await new GetByPredicateQuery<T, TDto, CRMDbContext>(dbContext, mapper).Handle(s => s.CustomerId == customerId);
+
+				if (allEntities == null || !allEntities.Any())
+				{
+					return Results.NotFound($"No records found.");
+				}
+
+				return Results.Ok(allEntities);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while retrieving records.");
+			}
+		}
+		protected async Task<IResult> GetAllByEmployeeId(CRMDbContext dbContext, IMapper<T, TDto> mapper, long employeeId)
+		{
+			try
+			{
+				var allEntities = await new GetByPredicateQuery<T, TDto, CRMDbContext>(dbContext, mapper).Handle(s => s.EmployeeId == employeeId);
+
+				if (allEntities == null || !allEntities.Any())
+				{
+					return Results.NotFound($"No records found.");
+				}
+
+				return Results.Ok(allEntities);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while retrieving records.");
+			}
+		}
+	}
 }

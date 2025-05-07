@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Modules.Scheduling.I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Modules.Scheduling.Application", "Modules\Scheduling\Application\Server.Modules.Scheduling.Application.csproj", "{08F4B609-849C-4DB7-891B-EEA8EAD28862}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Modules.CommonModule", "Modules\CommonModule\Server.Modules.CommonModule.csproj", "{448766C3-536C-40C8-9248-23DE51374EAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,10 @@ Global
 		{08F4B609-849C-4DB7-891B-EEA8EAD28862}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08F4B609-849C-4DB7-891B-EEA8EAD28862}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08F4B609-849C-4DB7-891B-EEA8EAD28862}.Release|Any CPU.Build.0 = Release|Any CPU
+		{448766C3-536C-40C8-9248-23DE51374EAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{448766C3-536C-40C8-9248-23DE51374EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{448766C3-536C-40C8-9248-23DE51374EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{448766C3-536C-40C8-9248-23DE51374EAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DCC9D874-8EC5-42E6-9DD3-983AFA7094F6} = {2B4606D8-1C11-49F3-95C0-ECFC56DB560E}
@@ -104,5 +110,6 @@ Global
 		{1D1C9907-AA90-45CB-89F2-D48F3FFE1D2E} = {15117C33-8F47-47CA-BD74-2C55D0CCD4AD}
 		{62B92503-F4EF-467C-B949-C3BA74F6BD02} = {15117C33-8F47-47CA-BD74-2C55D0CCD4AD}
 		{08F4B609-849C-4DB7-891B-EEA8EAD28862} = {15117C33-8F47-47CA-BD74-2C55D0CCD4AD}
+		{448766C3-536C-40C8-9248-23DE51374EAF} = {2B4606D8-1C11-49F3-95C0-ECFC56DB560E}
 	EndGlobalSection
 EndGlobal

@@ -12,6 +12,7 @@ using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Shared.DTOs;
 using ComposedHealthBase.Server.Entities;
 using Server.Modules.Scheduling.Infrastructure.Queries;
+using Server.Modules.CommonModule.Interfaces;
 
 namespace Server.Modules.Scheduling.Endpoints
 {
@@ -50,7 +51,7 @@ namespace Server.Modules.Scheduling.Endpoints
 	public class ReferralEndpoints : CommonScheduleEndpoints<Referral, ReferralDto, SchedulingDbContext>, IEndpoints { }
 	public class ScheduleEndpoints : CommonScheduleEndpoints<Schedule, ScheduleDto, SchedulingDbContext>, IEndpoints { }
 	public abstract class CommonScheduleEndpoints<T, TDto, SchedulingDbContext> : BaseEndpoints<T, TDto, SchedulingDbContext>
-		where T : BaseEntity<T>, IScheduleEntity
+		where T : BaseEntity<T>, IFilterByEmployee, IFilterByCustomer
 		where TDto : IDto
 		where SchedulingDbContext : IDbContext<SchedulingDbContext>
 	{
