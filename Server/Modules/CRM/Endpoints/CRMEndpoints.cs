@@ -13,6 +13,7 @@ using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Database;
 using Server.Modules.CommonModule.Interfaces;
 using ComposedHealthBase.Shared.DTOs;
+using Microsoft.AspNetCore.Antiforgery;
 
 namespace Server.Modules.CRM.Endpoints
 {
@@ -128,7 +129,8 @@ namespace Server.Modules.CRM.Endpoints
 				[FromServices] IMapper<Document, DocumentDto> mapper,
 				[FromServices] Azure.Storage.Blobs.BlobServiceClient blobServiceClient,
 				[FromForm] DocumentDto documentDto,
-				[FromForm] IFormFile file
+				[FromForm] IFormFile file,
+				IAntiforgery antiforgery
 			) => await UploadDocument(dbContext, mapper, blobServiceClient, documentDto, file));
 
 			return endpoints;
@@ -176,6 +178,7 @@ namespace Server.Modules.CRM.Endpoints
 		}
 	}
 	public class ManagerEndpoints : CommonCRMEndpoints<Manager, Shared.DTOs.CRM.ManagerDto, CRMDbContext>, IEndpoints { }
+	//public class DocumentEndpoints : CommonCRMEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints { } //This line is now handled by the specific DocumentEndpoints class
 	public abstract class CommonCRMEndpoints<T, TDto, CRMDbContext> : BaseEndpoints<T, TDto, CRMDbContext>
 		where T : BaseEntity<T>, IFilterByEmployee, IFilterByCustomer
 		where TDto : IDto

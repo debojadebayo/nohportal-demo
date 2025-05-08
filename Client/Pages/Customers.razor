@@ -39,7 +39,7 @@
             <InvoicingTab />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByCustomerId">
-            <DocumentLibraryTab Documents="documents" />
+            <DocumentLibraryTab Documents="documents" OnSave="UploadDocument" />
         </MudTabPanel>
         <MudTabPanel Text="Reports">
             <ReportsTab />
@@ -49,7 +49,6 @@
         </MudTabPanel>
     </MudTabs>
 }
-
 
 @code {
     private List<CustomerDto> customerList = new();
@@ -395,6 +394,49 @@
         {
             Snackbar.Add($"Failed to load documents: {ex.Message}", Severity.Error);
             documents = new List<DocumentDto>();
+        }
+    }
+
+    private async Task UploadDocument(Tuple<DocumentDto,IBrowserFile> document)
+    {
+        if (selectedCustomer == null)
+        {
+            Snackbar.Add("Customer must be selected.", Severity.Error);
+            return;
+        }
+
+        isLoading = true;
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(document.Item1.Name ?? string.Empty), "Name");
+            content.Add(new StringContent(document.Item1.Description ?? string.Empty), "Description");
+            content.Add(new StringContent(selectedCustomer.Id.ToString()), "CustomerId");
+
+            var fileContent = new StreamContent(document.Item2.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // Max 10MB file
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(document.Item2.ContentType);
+            content.Add(fileContent, "file", document.Item2.Name);
+
+            var response = await httpClient.PostAsync("api/document/upload", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Document uploaded successfully.", Severity.Success);
+                await GetAllDocumentsByCustomerId(); // Refresh the list
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to upload document: {response.StatusCode} - {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error uploading document: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
