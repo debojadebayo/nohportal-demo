@@ -129,9 +129,8 @@ namespace Server.Modules.CRM.Endpoints
 				[FromServices] IMapper<Document, DocumentDto> mapper,
 				[FromServices] Azure.Storage.Blobs.BlobServiceClient blobServiceClient,
 				[FromForm] DocumentDto documentDto,
-				[FromForm] IFormFile file,
-				IAntiforgery antiforgery
-			) => await UploadDocument(dbContext, mapper, blobServiceClient, documentDto, file));
+				[FromForm] IFormFile file
+			) => await UploadDocument(dbContext, mapper, blobServiceClient, documentDto, file)).DisableAntiforgery();
 
 			return endpoints;
 		}
