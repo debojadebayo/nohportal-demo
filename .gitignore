@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 .containers/
 __azurite*
+# Azurite local storage files
+__azurite_db_blob__.json
+__azurite_db_blob_extent__.json
