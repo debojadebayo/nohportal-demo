@@ -14,6 +14,7 @@ using ComposedHealthBase.Server.Database;
 using Server.Modules.CommonModule.Interfaces;
 using ComposedHealthBase.Shared.DTOs;
 using Microsoft.AspNetCore.Antiforgery;
+using Azure.Storage.Blobs.Models;
 
 namespace Server.Modules.CRM.Endpoints
 {
@@ -156,7 +157,7 @@ namespace Server.Modules.CRM.Endpoints
 
 				using (var stream = file.OpenReadStream())
 				{
-					await blobClient.UploadAsync(stream, overwrite: true);
+					await blobClient.UploadAsync(stream, new BlobUploadOptions { HttpHeaders = new BlobHttpHeaders { ContentType = file.ContentType },  Overwrite = true });
 				}
 
 				// Optionally, update the DocumentDto with the blob URL
