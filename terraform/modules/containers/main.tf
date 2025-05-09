@@ -21,8 +21,8 @@ resource "azurerm_container_app" "server" {
         container {
             name = "server"
             image = ""
-            cpu = 0.25 
-            memory = "0.5Gi"
+            cpu = 0.5 
+            memory = "1Gi"
 
             env {
                 name = "ASPNETCORE_ENVIRONMENT"
@@ -32,7 +32,7 @@ resource "azurerm_container_app" "server" {
     }
 
     ingress {
-        external_enabled = true
+        external_enabled = false
         target_port = 5003
         transport = "Http"
 
@@ -89,7 +89,7 @@ resource "azurerm_container_app" "keycloak" {
     }
 
     ingress {
-        external_enabled = true
+        external_enabled = false
         target_port = 8080
         transport = "Http"
 
@@ -99,5 +99,43 @@ resource "azurerm_container_app" "keycloak" {
     }
 }
     
+# Frontend 
 
+resource "azurerm_container_app" "frontend" {
+    name = "ComposedHealth-frontend"
+    container_app_environment_id = azurerm_container_app_environment.container_env.id
+    resource_group_name = var.resource_group_name
+    revision_mode = "Single"
 
+    template {
+        container {
+            name = "frontend"
+            image = "${var.container_registry}/composedhealth/frontend:${var.image_tags["frontend"]}"
+            cpu = 1.0
+            memory = "2Gi"
+
+            env {
+                name = "ASPNETCORE_ENVIRONMENT"
+                value = "Production"
+            }
+            env {
+                name = "API_URL"
+                value = "https://api.${var.domain_name}"
+            }
+            env {
+                name = "KEYCLOAK_URL"
+                value = "https://auth.${var.domain_name}"
+            }
+        }
+    }
+
+    ingress {
+        external_enabled = true
+        target_port = 5002
+        transport = "Http"
+
+        traffic_weight {
+            percentage = 100
+        }
+    }
+}

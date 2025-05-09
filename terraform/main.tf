@@ -22,6 +22,7 @@ module "networking" {
     source = "./modules/networking"
     location = var.location
     resource_group_name = azurerm_resource_group.rg.name
+    container_app_urls = module.containers.container_app_urls
 }
 
 module "containers" {
@@ -29,4 +30,7 @@ module "containers" {
     location = var.location
     resource_group_name = azurerm_resource_group.rg.name
     subnet_ids = module.networking.subnets_ids
+    container_registry = var.container_registry
+    image_tags = var.image_tags
+    domain_name = var.domain_name
 }
