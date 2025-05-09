@@ -6,13 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Server.Modules.CRM.Infrastructure.Database;
 using ComposedHealthBase.Server.Database;
-using Shared.DTOs.CRM;
-using ComposedHealthBase.Server.Mappers;
-using Server.Modules.CRM.Entities;
 using ComposedHealthBase.Server.Modules;
-using Server.Modules.CRM.Infrastructure.Mappers;
-using System.Reflection;
-using Azure.Storage.Blobs; // Added using directive
+using Azure.Storage.Blobs;
 
 namespace Server.Modules.CRM.Infrastructure
 {
@@ -24,8 +19,6 @@ namespace Server.Modules.CRM.Infrastructure
 			services.AddDbContext<IDbContext<CRMDbContext>, CRMDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-			// Register BlobServiceClient
-			// Register BlobServiceClient
 			var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");
 			services.AddSingleton(x => new BlobServiceClient(azureStorageConnectionString));
 

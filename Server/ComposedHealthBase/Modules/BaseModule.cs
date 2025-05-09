@@ -42,7 +42,6 @@ namespace ComposedHealthBase.Server.Modules
 				});
 
 			services.AddAuthorization();
-			services.AddAntiforgery();
 			services.AddOpenApi();
 
 			return services;
@@ -53,7 +52,6 @@ namespace ComposedHealthBase.Server.Modules
 			app.UseCors("Client");
 			app.UseAuthentication();
 			app.UseAuthorization();
-			app.UseAntiforgery();
 			if (isDevelopment)
 			{
 				app.MapOpenApi();
