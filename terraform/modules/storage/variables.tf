@@ -23,3 +23,8 @@ variable "vnet_id" {
   description = "ID of the virtual network"
   type        = string
 }
+
+variable "key_vault_id" {
+  description = "ID of the key vault"
+  type        = string
+}

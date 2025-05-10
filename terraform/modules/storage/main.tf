@@ -7,7 +7,6 @@ resource "azurerm_storage_account" "main" {
   account_replication_type = "GRS"  # Geo-redundant storage for production
   account_kind             = "StorageV2"
   access_tier              = "Hot"
-  enable_https_traffic_only = true
   min_tls_version          = "TLS1_2"
   
   # Network rules to restrict access
@@ -43,20 +42,48 @@ resource "azurerm_storage_account" "main" {
 # Create storage containers for different purposes
 resource "azurerm_storage_container" "app_data" {
   name                  = "app-data"
-  storage_account_name  = azurerm_storage_account.main.name
+  storage_account_id    = azurerm_storage_account.main.id
   container_access_type = "private"
+  
+  metadata = {
+    "data_classification" = "phi"  # Protected Health Information
+    "compliance_regime"   = "hipaa"
+    "department"          = "clinical"
+    "purpose"             = "patient_documents"
+    "encryption_key"      = "key_vault_managed"
+    "key_vault_reference" = var.key_vault_id
+  }
 }
 
 resource "azurerm_storage_container" "backups" {
   name                  = "backups"
-  storage_account_name  = azurerm_storage_account.main.name
+  storage_account_id = azurerm_storage_account.main.id
   container_access_type = "private"
+  
+  metadata = {
+    "data_classification" = "system"
+    "compliance_regime"   = "hipaa"
+    "department"          = "it"
+    "purpose"             = "database_backups"
+    "retention_policy"    = "30_days"
+    "encryption_key"      = "key_vault_managed"
+    "key_vault_reference" = var.key_vault_id
+  }
 }
 
 resource "azurerm_storage_container" "media" {
   name                  = "media"
-  storage_account_name  = azurerm_storage_account.main.name
+  storage_account_id = azurerm_storage_account.main.id
   container_access_type = "private"
+  
+  metadata = {
+    "data_classification" = "phi"  # Protected Health Information
+    "compliance_regime"   = "hipaa"
+    "department"          = "clinical"
+    "purpose"             = "medical_imaging"
+    "encryption_key"      = "key_vault_managed"
+    "key_vault_reference" = var.key_vault_id
+  }
 }
 
 # Private endpoint for secure access

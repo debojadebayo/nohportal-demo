@@ -30,3 +30,24 @@ variable "domain_name" {
     type = string
     # default = "composedhealth.com"
 }
+
+variable "ssl_certificate_password" {
+    description = "Password for the SSL certificate"
+    type = string
+}
+
+variable "ssl_certificate_path" {
+    description = "Path to the SSL certificate"
+    type = string
+}
+
+variable "db_admin_username" {
+    description = "Database admin username"
+    type = string
+}
+
+variable "db_admin_password" {
+    description = "Database admin password"
+    type = string
+}
+    
