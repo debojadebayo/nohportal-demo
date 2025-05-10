@@ -25,13 +25,24 @@ resource "azurerm_subnet" "subnets" {
       }
     }
   }
-
-  dynamic "service_endpoints" {
-    for_each = each.value == "data" ? [1] : []
-    content {
-      service = "Microsoft.Storage"
+    dynamic "delegation" {
+      for_each = each.value == "data" ? [1] : []
+      content {
+        name = "postgres-delegation"
+        service_delegation {
+          name    = "Microsoft.DBforPostgreSQL/flexibleServers"
+          actions = ["Microsoft.DBforPostgreSQL/flexibleServers/join/action"]
+        }
+      }
     }
-  }
+
+    # Service endpoints for data subnet
+    dynamic "service_endpoints" {
+      for_each = each.value == "data" ? [1] : []
+      content {
+        service = "Microsoft.Storage"
+      }
+    }
 }
 
 # Network Security Group
