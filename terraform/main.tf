@@ -34,8 +34,9 @@ module "containers" {
     subnet_ids = module.networking.subnets_ids
     container_registry = var.container_registry
     image_tags = var.image_tags
-    domain_name = var.domain_name
     container_app_urls = module.networking.container_app_urls
+    domain_name = var.domain_name
+    log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
 }
 
 module "database" {
@@ -63,4 +64,27 @@ module "storage" {
   subnet_ids          = module.networking.subnets_ids
   vnet_id             = module.networking.vnet_id
   storage_account_name = "composedhealth${random_string.suffix.result}"
+  key_vault_id = module.secrets.key_vault_id
 }
+
+module "registry" {
+  source              = "./modules/registry"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  registry_name       = "composedhealth${random_string.suffix.result}"
+  key_vault_id        = module.secrets.key_vault_id
+  key_vault_key_id    = module.secrets.key_vault_encryption_key_id
+  allowed_ip_range    = "YOUR_OFFICE_IP_RANGE"
+  geo_replica_location = "northeurope" # Secondary UK region for disaster recovery
+  insights_name = "composedhealth-insights"
+  vnet_id = module.networking.vnet_id
+}
+
+module "monitoring" {
+  source              = "./modules/monitoring"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  insights_name       = "composedhealth-insights"
+  key_vault_id        = module.secrets.key_vault_id
+}
+
