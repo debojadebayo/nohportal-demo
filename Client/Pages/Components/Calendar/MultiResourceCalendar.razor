@@ -66,7 +66,8 @@
                         ShowWeek="CalendarView == CalendarView.Week" ShowWorkWeek="CalendarView == CalendarView.WorkWeek"
                         ShowMonth="CalendarView == CalendarView.Month" ShowCurrentTime="true"
                         Items="@resource.CalendarItems" FirstDayOfWorkWeek="DayOfWeek.Monday"
-                        FirstDayOfWeek="DayOfWeek.Monday" ShowToolbar="false" />
+                        FirstDayOfWeek="DayOfWeek.Monday" ShowToolbar="false" 
+                        CellClicked="CellClicked" ItemClicked="ItemClicked"/>
                 </MudCardContent>
             </MudCard>
             
@@ -148,5 +149,15 @@
     {
         return $"Selected clinicians: {(selectedValues.Count() == 0 ? "(None)" : string.Join(", ", selectedValues.Select(x => x)))}";
     }
-    
+        [Inject]
+    private IDialogService DialogService { get; set; }
+    private Task CellClicked(DateTime dateTime)
+    {
+        return DialogService.ShowMessageBox("Cell Clicked", dateTime.ToString(Thread.CurrentThread.CurrentCulture));
+    }
+
+    private Task ItemClicked(TCalendarItem item)
+    {
+        return DialogService.ShowMessageBox("Item Clicked", item.Text);
+    }
 }
