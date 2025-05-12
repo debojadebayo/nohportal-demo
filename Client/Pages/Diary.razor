@@ -28,8 +28,8 @@
         <MudTextField @bind-Value="_editingSchedule.ReferralId" Label="Referral Id" />
         <MudTextField @bind-Value="_editingSchedule.EmployeeId" Label="Patient Id" />
         <MudTextField @bind-Value="_editingSchedule.ClinicianId" Label="Clinician Id" />
-        <MudDatePicker @bind-Date="_editingSchedule.Start" Label="Start" />
-        <MudDatePicker @bind-Date="_editingSchedule.End" Label="End" />
+        <MudDatePicker @bind-Date="_editingSchedule.StartTime" Label="Start" />
+        <MudDatePicker @bind-Date="_editingSchedule.EndTime" Label="End" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="SaveAppointment" Color="Color.Primary">Save</MudButton>

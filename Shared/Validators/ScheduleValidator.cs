@@ -11,8 +11,8 @@ namespace Shared.Validators
             RuleFor(x => x.ReferralId).GreaterThan(0);
             RuleFor(x => x.EmployeeId).GreaterThan(0);
             RuleFor(x => x.ClinicianId).GreaterThan(0);
-            RuleFor(x => x.Start).NotEmpty();
-            RuleFor(x => x.End).NotEmpty().GreaterThan(x => x.Start);
+            RuleFor(x => x.StartTime).NotEmpty();
+            RuleFor(x => x.EndTime).NotEmpty().GreaterThan(x => x.StartTime);
         }
     }
 }

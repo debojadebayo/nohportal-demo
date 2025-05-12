@@ -4,6 +4,34 @@ namespace ComposedHealthBase.Shared.Models;
 
 public class BaseCalendarItem : CalendarItem
 {
-    public new DateTime? Start { get; set; }
-    public new DateTime? End { get; set; }
+    public DateTime? StartTime
+    {
+        get
+        {
+            return Start;
+        }
+        set
+        {
+            if (value != null)
+            {
+                Start = value.Value;
+            }
+            else
+            {
+                Start = DateTime.Now;
+                StartTime = Start;
+            }
+        }
+    }
+    public DateTime? EndTime 
+    {
+        get
+        {
+            return End;
+        }
+        set
+        {
+            End = value;
+        }
+    }
 }

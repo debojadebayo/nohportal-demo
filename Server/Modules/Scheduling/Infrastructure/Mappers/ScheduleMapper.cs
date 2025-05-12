@@ -13,8 +13,8 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
             ReferralId = entity.ReferralId,
             EmployeeId = entity.EmployeeId,
             ClinicianId = entity.ClinicianId,
-            Start = entity.Start,
-            End = entity.End,
+            StartTime = entity.Start,
+            EndTime = entity.End,
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
@@ -31,8 +31,8 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
             ReferralId = dto.ReferralId,
             EmployeeId = dto.EmployeeId,
             ClinicianId = dto.ClinicianId,
-            Start = dto.Start,
-            End = dto.End,
+            Start = dto.StartTime,
+            End = dto.EndTime,
             CreatedBy = dto.CreatedBy,
             LastModifiedBy = dto.LastModifiedBy,
             CreatedDate = dto.CreatedDate,
@@ -57,8 +57,8 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
         entity.ReferralId = dto.ReferralId;
         entity.EmployeeId = dto.EmployeeId;
         entity.ClinicianId = dto.ClinicianId;
-        entity.Start = dto.Start;
-        entity.End = dto.End;
+        entity.Start = dto.StartTime;
+        entity.End = dto.EndTime;
         entity.CreatedBy = dto.CreatedBy;
         entity.LastModifiedBy = dto.LastModifiedBy;
         entity.CreatedDate = dto.CreatedDate;
@@ -72,7 +72,7 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
         dto.ReferralId = entity.ReferralId;
         dto.EmployeeId = entity.EmployeeId;
         dto.ClinicianId = entity.ClinicianId;
-        dto.Start = entity.Start;
+        dto.StartTime = entity.Start;
         dto.End = entity.End;
         dto.CreatedBy = entity.CreatedBy;
         dto.LastModifiedBy = entity.LastModifiedBy;
