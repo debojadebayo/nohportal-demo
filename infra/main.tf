@@ -124,6 +124,7 @@ module "registry" {
   allowed_ip_range     = "YOUR_OFFICE_IP_RANGE"
   subnet_ids           = module.networking.subnets_ids
   vnet_id              = module.networking.vnet_id
+  insights_name        = "nationoh-insights"
 }
 
 
