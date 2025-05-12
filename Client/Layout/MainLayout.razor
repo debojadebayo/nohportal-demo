@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using MudBlazor
+
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inherits LayoutComponentBase
@@ -36,45 +37,19 @@
 		<Authorized>
 			<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
 				<MudNavMenu Class="ma-2">
-					<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/" Match="NavLinkMatch.All">Diary
-					</MudNavLink>
-					<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/referrals" Match="NavLinkMatch.All">
-						Referrals</MudNavLink>
-					<MudNavLink Icon="@Icons.Material.Filled.Business" Href="/customers" Match="NavLinkMatch.All">
-						Customers</MudNavLink>
-					<MudNavLink Icon="@Icons.Material.Filled.People" Href="/employees" Match="NavLinkMatch.All">
-						Employees</MudNavLink>
+					<NavMenu />
 				</MudNavMenu>
 			</MudDrawer>
 		</Authorized>
 	</AuthorizeView>
 	<MudMainContent>
 		<MudContainer>
-			<MudPaper Class="pa-8 ma-2">
+			<MudPaper Class="pa-8 ma-2 max-w-xl">
 				@Body
 			</MudPaper>
 		</MudContainer>
 	</MudMainContent>
 </MudLayout>
-
-<style>
-	.mud-navmenu.mud-navmenu-default .mud-nav-link.active:not(.mud-nav-link-disabled) {
-		background-color: white;
-		color: black;
-		border-top-left-radius: 20px;
-		border-bottom-left-radius: 20px;
-	}
-
-	.mud-navmenu.mud-navmenu-default .mud-nav-link:hover:not(.mud-nav-link-disabled) {
-		background-color: rgba(255, 255, 255, 0.3);
-		border-top-left-radius: 20px;
-		border-bottom-left-radius: 20px;
-	}
-
-	a.mud-nav-link.mud-ripple.active svg.mud-icon-root.mud-icon-default.mud-svg-icon.mud-icon-size-medium.mud-nav-link-icon.mud-nav-link-icon-default {
-		color: black;
-	}
-</style>
 
 @code {
 	MudTheme MyCustomTheme = new MudTheme()
@@ -104,6 +79,10 @@
 		},
 		Typography = new Typography()
 		{
+			Default = new DefaultTypography()
+			{
+				FontFamily = new[] { "Montserrat", "sans-serif" }
+			},
 			H1 = new H6Typography()
 			{
 				FontSize = "2.25rem",

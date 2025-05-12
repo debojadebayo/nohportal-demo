@@ -7,28 +7,40 @@
 @typeparam TCalendarItem where TCalendarItem : BaseCalendarItem
 
 <MudGrid>
-    <MudItem xs="12">
+    <MudItem xs="12" Class="d-flex align-center">
+        <MudButton OnClick="() => PrevClicked()">
+            <MudIcon Icon="@Icons.Material.TwoTone.ChevronLeft" Variant="Variant.Filled" Color="Color.Primary" />
+        </MudButton>
         <MudButton OnClick="() => CurrentDay = DateTime.Today">Today</MudButton>
-        <MudButton OnClick="() => PrevClicked()">Prev</MudButton>
-        <MudButton OnClick="() => NextClicked()">Next</MudButton>
-        <MudButton Variant="@(CalendarView == CalendarView.Day ? Variant.Filled : Variant.Outlined)"
-            OnClick="SwitchToDayView">Day</MudButton>
-        <MudButton Variant="@(CalendarView == CalendarView.Week ? Variant.Filled : Variant.Outlined)"
-            OnClick="SwitchToWeekView">Week</MudButton>
-        <MudButton Variant="@(CalendarView == CalendarView.WorkWeek ? Variant.Filled : Variant.Outlined)"
-            OnClick="SwitchToWorkWeekView">Workweek</MudButton>
-        <MudButton Variant="@(CalendarView == CalendarView.Month ? Variant.Filled : Variant.Outlined)"
-            OnClick="SwitchToMonthView">Month</MudButton>
-        <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" T="string"
-            Label="Select Resources" MultiSelection="true" @bind-Value="_value"
-            @bind-SelectedValues="_selectedResources">
-            @foreach (var resource in Resources)
-            {
-                <MudSelectItem T="string" Value="@resource.AvatarTitle">@resource.AvatarTitle</MudSelectItem>
-            }
-        </MudSelect>
+        <MudButton OnClick="() => NextClicked()">
+            <MudIcon Icon="@Icons.Material.TwoTone.ChevronRight" Variant="Variant.Filled" Color="Color.Primary" />
+        </MudButton>
+        
+        <div class="d-flex mx-auto">
+            <MudButton Class="@($"{(CalendarView == CalendarView.Day ? "mud-button-filled" : "mud-button-outlined")} mx-2")"
+                OnClick="SwitchToDayView">Day</MudButton>
+            <MudButton Class="@($"{(CalendarView == CalendarView.Week ? "mud-button-filled" : "mud-button-outlined")} mx-2")"
+                OnClick="SwitchToWeekView">Week</MudButton>
+            <MudButton Class="@($"{(CalendarView == CalendarView.WorkWeek ? "mud-button-filled" : "mud-button-outlined")} mx-2")"
+                OnClick="SwitchToWorkWeekView">Workweek</MudButton>
+            <MudButton Class="@($"{(CalendarView == CalendarView.Month ? "mud-button-filled" : "mud-button-outlined")} mx-2")"
+                OnClick="SwitchToMonthView">Month</MudButton>
+        </div>
+
+        <div class="ml-auto" style="min-width: 200px;">
+            <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" T="string"
+                Label="Select Resources" MultiSelection="true" @bind-Value="_value"
+                @bind-SelectedValues="_selectedResources">
+                @foreach (var resource in Resources)
+                {
+                    <MudSelectItem T="string" Value="@resource.AvatarTitle">@resource.AvatarTitle</MudSelectItem>
+                }
+            </MudSelect>
+        </div>
     </MudItem>
 </MudGrid>
+
+
 <div class="calendar-resource-group">
     @foreach (var resource in Resources.Where(r => _selectedResources.Contains(r.AvatarTitle)))
     {
@@ -136,4 +148,5 @@
     {
         return $"Selected clinicians: {(selectedValues.Count() == 0 ? "(None)" : string.Join(", ", selectedValues.Select(x => x)))}";
     }
+    
 }

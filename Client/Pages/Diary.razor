@@ -10,11 +10,12 @@
 
 <PageTitle>Diary</PageTitle>
 
-<MudText Typo="Typo.h1">Diary</MudText>
+<div class="d-flex justify-center align-center">
+    <MudText Typo="Typo.h1">Diary</MudText>
+</div>
 
-<div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenAddAppointmentModal">Add Appointment
-    </MudButton>
+<div class="d-flex justify-end mb-4">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenAddAppointmentModal">Add Appointment</MudButton>
 </div>
 
 <MultiResourceCalendar Resources="@Clinicians" TResource="ClinicianDto" TCalendarItem="ScheduleDto" />
