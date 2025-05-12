@@ -22,7 +22,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     depends_on:
       - app.database
-      - app.blobstorage
+      - blobstorage
     volumes:
       - ./:/app
 
@@ -67,8 +67,8 @@ services:
     depends_on:
       - keycloak.database
 
-  app.blobstorage:
-    container_name: app.blobstorage
+  blobstorage:
+    container_name: blobstorage
     image: mcr.microsoft.com/azure-storage/azurite:latest
     command: "azurite --loose --blobHost 0.0.0.0 --blobPort 10000 --queueHost 0.0.0.0 --queuePort 10001 --location /workspace --debug /workspace/debug.log"
     ports:

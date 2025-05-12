@@ -14,6 +14,7 @@ using ComposedHealthBase.Server.Database;
 using Server.Modules.CommonModule.Interfaces;
 using ComposedHealthBase.Shared.DTOs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs;
 
 namespace Server.Modules.CRM.Endpoints
 {
@@ -100,10 +101,6 @@ namespace Server.Modules.CRM.Endpoints
 				{
 					var query = new GetContractsByCustomerIdQuery(dbContext, mapper, customerId);
 					var result = await query.Handle();
-					if (result == null || !result.Any())
-					{
-						return Results.NotFound($"No contracts found for customer ID {customerId}.");
-					}
 					return Results.Ok(result);
 				}
 				catch (Exception ex)
@@ -148,9 +145,13 @@ namespace Server.Modules.CRM.Endpoints
 
 			try
 			{
-				var containerClient = blobServiceClient.GetBlobContainerClient("documents");
+				var containerName = $"documents";
 
-				var blobName = $"{Guid.NewGuid()}_{file.FileName}";
+				var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+				containerClient.CreateIfNotExists();
+
+				var blobName = $"{file.FileName}_{Guid.NewGuid()}";
 				var blobClient = containerClient.GetBlobClient(blobName);
 
 				using (var stream = file.OpenReadStream())
@@ -200,12 +201,6 @@ namespace Server.Modules.CRM.Endpoints
 			try
 			{
 				var allEntities = await new GetByPredicateQuery<T, TDto, CRMDbContext>(dbContext, mapper).Handle(s => s.CustomerId == customerId);
-
-				if (allEntities == null || !allEntities.Any())
-				{
-					return Results.NotFound($"No records found.");
-				}
-
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
@@ -219,12 +214,6 @@ namespace Server.Modules.CRM.Endpoints
 			try
 			{
 				var allEntities = await new GetByPredicateQuery<T, TDto, CRMDbContext>(dbContext, mapper).Handle(s => s.EmployeeId == employeeId);
-
-				if (allEntities == null || !allEntities.Any())
-				{
-					return Results.NotFound($"No records found.");
-				}
-
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)

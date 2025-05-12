@@ -33,12 +33,6 @@ namespace Server.Modules.Scheduling.Endpoints
 			try
 			{
 				var allEntities = await new GetAllCliniciansWithSchedulesQuery(dbContext, mapper).Handle();
-
-				if (allEntities == null || !allEntities.Any())
-				{
-					return Results.NotFound($"No clinician entities found.");
-				}
-
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
@@ -73,12 +67,6 @@ namespace Server.Modules.Scheduling.Endpoints
 			try
 			{
 				var allEntities = await new GetByPredicateQuery<T, TDto, SchedulingDbContext>(dbContext, mapper).Handle(s => s.CustomerId == customerId);
-
-				if (allEntities == null || !allEntities.Any())
-				{
-					return Results.NotFound($"No records found.");
-				}
-
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
@@ -92,12 +80,6 @@ namespace Server.Modules.Scheduling.Endpoints
 			try
 			{
 				var allEntities = await new GetByPredicateQuery<T, TDto, SchedulingDbContext>(dbContext, mapper).Handle(s => s.EmployeeId == employeeId);
-
-				if (allEntities == null || !allEntities.Any())
-				{
-					return Results.NotFound($"No records found.");
-				}
-
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
