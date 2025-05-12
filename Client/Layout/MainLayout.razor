@@ -33,11 +33,15 @@
 			</NotAuthorized>
 		</AuthorizeView>
 	</MudAppBar>
-	<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-		<MudNavMenu Class="ma-2">
-			<NavMenu />
-		</MudNavMenu>
-	</MudDrawer>
+	<AuthorizeView>
+		<Authorized>
+			<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+				<MudNavMenu Class="ma-2">
+					<NavMenu />
+				</MudNavMenu>
+			</MudDrawer>
+		</Authorized>
+	</AuthorizeView>
 	<MudMainContent>
 		<MudContainer>
 			<MudPaper Class="pa-8 ma-2 max-w-xl">
@@ -62,53 +66,54 @@
 			TextSecondary = Colors.Shades.Black,
 			SecondaryContrastText = Colors.Shades.White,
 
-				Background = Colors.Gray.Lighten4,
-				DrawerBackground = Colors.Blue.Darken4,
-				AppbarBackground = Colors.Shades.White,
-				DrawerText = Colors.Shades.White,
-				DrawerIcon = Colors.Shades.White,
-				ActionDefault = Colors.Shades.Black,
-			},
-			PaletteDark = new PaletteDark()
+			Background = Colors.Gray.Lighten4,
+			DrawerBackground = Colors.Blue.Darken4,
+			AppbarBackground = Colors.Shades.White,
+			DrawerText = Colors.Shades.White,
+			DrawerIcon = Colors.Shades.White,
+			ActionDefault = Colors.Shades.Black,
+		},
+		PaletteDark = new PaletteDark()
+		{
+			Primary = Colors.Blue.Lighten1
+		},
+		Typography = new Typography()
+		{
+			Default = new DefaultTypography()
 			{
-				Primary = Colors.Blue.Lighten1
+				FontFamily = new[] { "Montserrat", "sans-serif" }
 			},
-			Typography = new Typography()
+			H1 = new H6Typography()
 			{
-				Default = new DefaultTypography(){
-					FontFamily= new[] {"Montserrat", "sans-serif"}
-				},
-				H1 = new H6Typography()
-				{
-					FontSize = "2.25rem",
-				},
-				H2 = new H6Typography()
-				{
-					FontSize = "2rem",
-				},
-				H3 = new H6Typography()
-				{
-					FontSize = "1.75rem",
-				},
-				H4 = new H6Typography()
-				{
-					FontSize = "1.5rem",
-				},
-				H5 = new H6Typography()
-				{
-					FontSize = "1.25rem",
-				},
-				H6 = new H6Typography()
-				{
-					FontSize = "1rem",
-				}
+				FontSize = "2.25rem",
 			},
-			LayoutProperties = new LayoutProperties()
+			H2 = new H6Typography()
 			{
-				DrawerWidthLeft = "260px",
-				DrawerWidthRight = "300px",
+				FontSize = "2rem",
+			},
+			H3 = new H6Typography()
+			{
+				FontSize = "1.75rem",
+			},
+			H4 = new H6Typography()
+			{
+				FontSize = "1.5rem",
+			},
+			H5 = new H6Typography()
+			{
+				FontSize = "1.25rem",
+			},
+			H6 = new H6Typography()
+			{
+				FontSize = "1rem",
 			}
-		};
+		},
+		LayoutProperties = new LayoutProperties()
+		{
+			DrawerWidthLeft = "260px",
+			DrawerWidthRight = "300px",
+		}
+	};
 
 	bool _drawerOpen = true;
 
