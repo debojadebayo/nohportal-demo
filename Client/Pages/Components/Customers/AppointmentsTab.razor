@@ -1,0 +1,28 @@
+@using Shared.DTOs.Scheduling
+@using MudBlazor
+
+<MudPaper Class="pa-4">
+    <MudTable Items="Appointments ?? new List<ScheduleDto>()" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Start</MudTh>
+            <MudTh>End</MudTh>
+            <MudTh>Title</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Status</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Start?.ToString("g")</MudTd>
+            <MudTd>@context.End?.ToString("g")</MudTd>
+            <MudTd>@context.Title</MudTd>
+            <MudTd>@context.Description</MudTd>
+            <MudTd>@context.Status</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No appointments found.</MudText>
+        </NoRecordsContent>
+    </MudTable>
+</MudPaper>
+
+@code {
+    [Parameter] public List<ScheduleDto> Appointments { get; set; }
+}

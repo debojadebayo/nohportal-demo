@@ -12,7 +12,7 @@ namespace Shared.DTOs.Scheduling
 		public DateTime CreatedDate { get; set; }
 		public DateTime ModifiedDate { get; set; }
 		public long CustomerId { get; set; }
-		public long PatientId { get; set; }
+		public long EmployeeId { get; set; }
 		public string ReferralDetails { get; set; } = string.Empty;
 		public string DocumentId { get; set; } = string.Empty;
 	}

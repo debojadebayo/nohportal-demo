@@ -212,6 +212,54 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Document", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Documents", "crm");
+                });
+
             modelBuilder.Entity("Server.Modules.CRM.Entities.Employee", b =>
                 {
                     b.Property<long>("Id")
@@ -510,6 +558,58 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Postcode = "EMP10 0JJ",
                             Telephone = "07000 000000"
                         });
+                });
+
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Manager", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Managers", "crm");
                 });
 
             modelBuilder.Entity("Server.Modules.CRM.Entities.Product", b =>
@@ -1037,6 +1137,26 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .HasForeignKey("CustomerId");
                 });
 
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Document", b =>
+                {
+                    b.HasOne("Server.Modules.CRM.Entities.Customer", null)
+                        .WithMany("Documents")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Manager", b =>
+                {
+                    b.HasOne("Server.Modules.CRM.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("Server.Modules.CRM.Entities.Product", b =>
                 {
                     b.HasOne("Server.Modules.CRM.Entities.Contract", null)
@@ -1060,6 +1180,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
             modelBuilder.Entity("Server.Modules.CRM.Entities.Customer", b =>
                 {
                     b.Navigation("Contracts");
+
+                    b.Navigation("Documents");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,7 +8,7 @@ namespace Shared.Validators
         public ReferralValidator()
         {
             RuleFor(x => x.CustomerId).GreaterThan(0);
-            RuleFor(x => x.PatientId).GreaterThan(0);
+            RuleFor(x => x.EmployeeId).GreaterThan(0);
             RuleFor(x => x.ReferralDetails).NotEmpty();
         }
     }

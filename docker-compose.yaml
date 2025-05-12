@@ -22,6 +22,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     depends_on:
       - app.database
+      - blobstorage
     volumes:
       - ./:/app
 
@@ -59,12 +60,23 @@ services:
       KC_DB_URL: jdbc:postgresql://keycloak.database:5432/keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: 123
-      KC_FEATURES: organization
+      KC_FEATURES: organization,admin-fine-grained-authz
     ports:
       - "8180:8080"
     command: start-dev
     depends_on:
       - keycloak.database
+
+  blobstorage:
+    container_name: blobstorage
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    command: "azurite --loose --blobHost 0.0.0.0 --blobPort 10000 --queueHost 0.0.0.0 --queuePort 10001 --location /workspace --debug /workspace/debug.log"
+    ports:
+      - 10010:10000
+      - 10011:10001
+      - 10012:10002
+    volumes:
+      - ./.containers/blob_storage/data:/workspace
 
 volumes:
   keycloak-db:

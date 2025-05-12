@@ -11,7 +11,7 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
             Id = entity.Id,
             CustomerId = entity.CustomerId,
             ReferralId = entity.ReferralId,
-            PatientId = entity.PatientId,
+            EmployeeId = entity.EmployeeId,
             ClinicianId = entity.ClinicianId,
             Start = entity.Start,
             End = entity.End,
@@ -29,7 +29,7 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
             Id = dto.Id,
             CustomerId = dto.CustomerId,
             ReferralId = dto.ReferralId,
-            PatientId = dto.PatientId,
+            EmployeeId = dto.EmployeeId,
             ClinicianId = dto.ClinicianId,
             Start = dto.Start,
             End = dto.End,
@@ -55,7 +55,7 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
         entity.Id = dto.Id;
         entity.CustomerId = dto.CustomerId;
         entity.ReferralId = dto.ReferralId;
-        entity.PatientId = dto.PatientId;
+        entity.EmployeeId = dto.EmployeeId;
         entity.ClinicianId = dto.ClinicianId;
         entity.Start = dto.Start;
         entity.End = dto.End;
@@ -70,7 +70,7 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
         dto.Id = entity.Id;
         dto.CustomerId = entity.CustomerId;
         dto.ReferralId = entity.ReferralId;
-        dto.PatientId = entity.PatientId;
+        dto.EmployeeId = entity.EmployeeId;
         dto.ClinicianId = entity.ClinicianId;
         dto.Start = entity.Start;
         dto.End = entity.End;

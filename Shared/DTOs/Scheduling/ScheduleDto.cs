@@ -1,5 +1,6 @@
 ﻿using ComposedHealthBase.Shared.DTOs;
 using Shared.DTOs;
+using Shared.Enums;
 using ComposedHealthBase.Shared.Models;
 using ComposedHealthBase.Shared.Interfaces;
 
@@ -15,9 +16,11 @@ namespace Shared.DTOs.Scheduling
 		public DateTime ModifiedDate { get; set; }
 		public long CustomerId { get; set; }
 		public long ReferralId { get; set; }
-		public long PatientId { get; set; }
+		public long EmployeeId { get; set; }
 		public long ClinicianId { get; set; }
+		public long ProductId { get; set; }
 		public string Title { get; set; }
 		public string Description { get; set; }
+		public ScheduleStatusEnum Status { get; set; }
 	}
 }

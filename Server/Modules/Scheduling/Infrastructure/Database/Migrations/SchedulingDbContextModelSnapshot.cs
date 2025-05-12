@@ -302,6 +302,9 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -310,9 +313,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("PatientId")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("ReferralDetails")
                         .IsRequired()
@@ -330,10 +330,10 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 1L,
                             DocumentId = "DOC-1001",
+                            EmployeeId = 1L,
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 1L,
                             ReferralDetails = "Routine checkup for hypertension."
                         },
                         new
@@ -343,10 +343,10 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 1L,
                             DocumentId = "DOC-1002",
+                            EmployeeId = 2L,
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 2L,
                             ReferralDetails = "Follow-up for diabetes management."
                         },
                         new
@@ -356,10 +356,10 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 1L,
                             DocumentId = "DOC-1003",
+                            EmployeeId = 3L,
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 3L,
                             ReferralDetails = "Initial consultation for back pain."
                         },
                         new
@@ -369,10 +369,10 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 2L,
                             DocumentId = "DOC-1004",
+                            EmployeeId = 4L,
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 4L,
                             ReferralDetails = "Annual physical examination."
                         },
                         new
@@ -382,10 +382,10 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 2L,
                             DocumentId = "DOC-1005",
+                            EmployeeId = 5L,
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 5L,
                             ReferralDetails = "Referral for allergy testing."
                         },
                         new
@@ -395,10 +395,10 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 2L,
                             DocumentId = "DOC-1006",
+                            EmployeeId = 6L,
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 6L,
                             ReferralDetails = "Consultation for asthma symptoms."
                         },
                         new
@@ -408,10 +408,10 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 3L,
                             DocumentId = "DOC-1007",
+                            EmployeeId = 7L,
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 7L,
                             ReferralDetails = "Pre-surgery evaluation."
                         },
                         new
@@ -421,10 +421,10 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 3L,
                             DocumentId = "DOC-1008",
+                            EmployeeId = 8L,
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 8L,
                             ReferralDetails = "Post-operative follow-up."
                         },
                         new
@@ -434,10 +434,10 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 3L,
                             DocumentId = "DOC-1009",
+                            EmployeeId = 9L,
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 9L,
                             ReferralDetails = "Referral for physical therapy."
                         },
                         new
@@ -447,10 +447,10 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 3L,
                             DocumentId = "DOC-1010",
+                            EmployeeId = 10L,
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 10L,
                             ReferralDetails = "Consultation for migraine headaches."
                         });
                 });
@@ -475,6 +475,9 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("End")
                         .HasColumnType("timestamp with time zone");
 
@@ -487,7 +490,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("PatientId")
+                    b.Property<long>("ProductId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("ReferralId")
@@ -495,6 +498,9 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
 
                     b.Property<DateTime?>("Start")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -510,13 +516,15 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 1L,
+                            EmployeeId = 1L,
                             End = new DateTime(2025, 4, 22, 10, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 1L,
+                            ProductId = 0L,
                             ReferralId = 1L,
-                            Start = new DateTime(2025, 4, 22, 9, 0, 0, 0, DateTimeKind.Utc)
+                            Start = new DateTime(2025, 4, 22, 9, 0, 0, 0, DateTimeKind.Utc),
+                            Status = 0
                         },
                         new
                         {
@@ -525,13 +533,15 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 1L,
+                            EmployeeId = 2L,
                             End = new DateTime(2025, 4, 22, 11, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 2L,
+                            ProductId = 0L,
                             ReferralId = 2L,
-                            Start = new DateTime(2025, 4, 22, 10, 0, 0, 0, DateTimeKind.Utc)
+                            Start = new DateTime(2025, 4, 22, 10, 0, 0, 0, DateTimeKind.Utc),
+                            Status = 0
                         },
                         new
                         {
@@ -540,13 +550,15 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 1L,
+                            EmployeeId = 3L,
                             End = new DateTime(2025, 4, 22, 12, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PatientId = 3L,
+                            ProductId = 0L,
                             ReferralId = 3L,
-                            Start = new DateTime(2025, 4, 22, 11, 0, 0, 0, DateTimeKind.Utc)
+                            Start = new DateTime(2025, 4, 22, 11, 0, 0, 0, DateTimeKind.Utc),
+                            Status = 0
                         });
                 });
 

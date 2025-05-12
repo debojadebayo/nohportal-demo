@@ -1,0 +1,86 @@
+@using Shared.DTOs.CRM
+@using MudBlazor
+
+<MudPaper Class="pa-4">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnAddClicked" StartIcon="@Icons.Material.Filled.Add">Add Service</MudButton>
+    <MudTable Items="Products ?? new List<ProductDto>()" Dense="true" Hover="true" Class="mt-4">
+        <HeaderContent>
+            <MudTh>Type</MudTh>
+            <MudTh>Price</MudTh>
+            <MudTh>Start</MudTh>
+            <MudTh>End</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.ProductType?.Name</MudTd>
+            <MudTd>@context.Price.ToString("C")</MudTd>
+            <MudTd>@context.StartTime?.ToShortDateString()</MudTd>
+            <MudTd>@context.EndTime?.ToShortDateString()</MudTd>
+            <MudTd>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => OnEditClicked(context))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => OnDeleteClicked(context))" />
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No services found.</MudText>
+        </NoRecordsContent>
+    </MudTable>
+
+    <MudDialog Open="ProductDialogOpen" MaxWidth="MaxWidth.Small" CloseOnEscapeKey="true" OnClose="() => SetProductDialogOpen(false)">
+        <DialogContent>
+            <MudForm @ref="form" Model="EditingProduct">
+                <MudSelect T="ProductTypeDto" Label="Product Type" @bind-Value="EditingProduct.ProductType" Required="true">
+                    @foreach (var pt in ProductTypes ?? new List<ProductTypeDto>())
+                    {
+                        <MudSelectItem Value="pt">@pt.Name</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudTextField @bind-Value="EditingProduct.Price" Label="Price" Required="true" />
+                <MudDatePicker @bind-Date="EditingProduct.StartTime" Label="Start Date" />
+                <MudDatePicker @bind-Date="EditingProduct.EndTime" Label="End Date" />
+            </MudForm>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSaveClicked">Save</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="() => SetProductDialogOpen(false)">Cancel</MudButton>
+        </DialogActions>
+    </MudDialog>
+</MudPaper>
+
+@code {
+    [Parameter] public List<ProductDto> Products { get; set; }
+    [Parameter] public List<ProductTypeDto> ProductTypes { get; set; }
+    [Parameter] public EventCallback OnAdd { get; set; }
+    [Parameter] public EventCallback<ProductDto> OnEdit { get; set; }
+    [Parameter] public EventCallback<ProductDto> OnDelete { get; set; }
+    [Parameter] public EventCallback<ProductDto> OnSave { get; set; }
+    [Parameter] public ProductDto EditingProduct { get; set; }
+    [Parameter] public bool ProductDialogOpen { get; set; }
+    [Parameter] public Action<bool> SetProductDialogOpen { get; set; }
+
+    private MudForm form;
+
+    private async Task OnAddClicked()
+    {
+        await OnAdd.InvokeAsync();
+    }
+
+    private async Task OnEditClicked(ProductDto product)
+    {
+        await OnEdit.InvokeAsync(product);
+    }
+
+    private async Task OnDeleteClicked(ProductDto product)
+    {
+        await OnDelete.InvokeAsync(product);
+    }
+
+    private async Task OnSaveClicked()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            await OnSave.InvokeAsync(EditingProduct);
+        }
+    }
+}

@@ -1,8 +1,7 @@
-@using Shared.Validators
 @using Shared.DTOs.CRM
-@inject IHttpClientFactory HttpClientFactory
+@using MudBlazor
 
-<MudForm Model="@Model" @ref="@form" Validation="@(customerValidator.ValidateValue)" ValidationDelay="0">
+<MudForm @ref="form" Model="Model" Validated="OnValidated">
     <MudGrid>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="Model.Id" For="@(() => Model.Id)" Immediate="true" Label="Company ID"
@@ -37,30 +36,39 @@
 
             <MudNumericField @bind-Value="Model.NumberOfEmployees" For="@(() => Model.NumberOfEmployees)"
                 Immediate="true" Label="Number of Employees" Variant="Variant.Outlined" />
-
         </MudItem>
     </MudGrid>
     <MudCardActions>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"
-            OnClick="@(async () => await Submit())">Submit
+            OnClick="@(async () => await Save())">Save Changes
         </MudButton>
     </MudCardActions>
 </MudForm>
 
 @code {
-    [Parameter] public CustomerDto Model { get; set; } = new CustomerDto();
-    [Parameter] public EventCallback<CustomerDto> OnSubmit { get; set; }
-    [Inject] ISnackbar Snackbar { get; set; } = default!;
-    MudForm form = default!;
-    CustomerValidator customerValidator = new CustomerValidator();
+    [Parameter] public CustomerDto Model { get; set; }
+    [Parameter] public EventCallback<CustomerDto> OnSave { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
 
-    private async Task Submit()
+    private MudForm form;
+
+    private async Task Save()
     {
         await form.Validate();
         if (form.IsValid)
         {
-            Snackbar.Add("Submitted!");
-            await OnSubmit.InvokeAsync(Model);
+            await OnSave.InvokeAsync(Model);
         }
+    }
+
+    private async Task Delete()
+    {
+        await OnDelete.InvokeAsync();
+    }
+
+    private void OnValidated()
+    {
+        // No-op, handled in Save
     }
 }

@@ -16,6 +16,7 @@ namespace Server.Modules.CRM.Entities
 		public string Email { get; set; } = string.Empty;
 		public string InvoiceEmail { get; set; } = string.Empty;
 		public string? Notes { get; set; }
-		public HashSet<Contract> Contracts { get; set; }
+		public HashSet<Contract> Contracts { get; set; } = new();
+		public HashSet<Document> Documents { get; set; } = new();
 	}
 }

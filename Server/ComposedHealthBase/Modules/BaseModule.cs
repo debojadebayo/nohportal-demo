@@ -42,7 +42,6 @@ namespace ComposedHealthBase.Server.Modules
 				});
 
 			services.AddAuthorization();
-			services.AddControllers();
 			services.AddOpenApi();
 
 			return services;

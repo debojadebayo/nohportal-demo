@@ -36,12 +36,6 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var allEntities = await new GetAllQuery<T, TDto, TContext>(dbContext, mapper).Handle();
-
-				if (allEntities == null || !allEntities.Any())
-				{
-					return Results.NotFound($"No {typeof(T).Name} entities found.");
-				}
-
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
@@ -56,12 +50,6 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var entity = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(id);
-
-				if (entity == null)
-				{
-					return Results.NotFound($"{typeof(T).Name} with ID {id} not found.");
-				}
-
 				return Results.Ok(entity);
 			}
 			catch (Exception ex)
@@ -76,12 +64,6 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var entities = await new GetByIdsQuery<T, TDto, TContext>(dbContext, mapper).Handle(ids);
-
-				if (entities == null || !entities.Any())
-				{
-					return Results.NotFound($"No {typeof(T).Name} entities found with the provided IDs.");
-				}
-
 				return Results.Ok(entities);
 			}
 			catch (Exception ex)
@@ -96,12 +78,6 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var result = await new CreateCommand<T, TDto, TContext>(dbContext, mapper).Handle(dto);
-
-				if (result == null || result <= 0)
-				{
-					return Results.BadRequest($"Failed to create the {typeof(T).Name}.");
-				}
-
 				return Results.Ok(result);
 			}
 			catch (Exception ex)
@@ -116,12 +92,6 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var result = await new UpdateCommand<T, TDto, TContext>(dbContext, mapper).Handle(dto);
-
-				if (result == null || result <= 0)
-				{
-					return Results.BadRequest(result);
-				}
-
 				return Results.Ok(result);
 			}
 			catch (Exception ex)
