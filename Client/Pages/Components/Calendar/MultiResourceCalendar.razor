@@ -62,12 +62,12 @@
                     </div>
                 </div>
                 <MudCardContent>
-                    <CustomMudCalendar Height=2000 CurrentDay=@CurrentDay ShowDay="CalendarView == CalendarView.Day"
+                    <CustomMudCalendar TCalendarItem="TCalendarItem" Height=2000 CurrentDay=@CurrentDay ShowDay="CalendarView == CalendarView.Day"
                         ShowWeek="CalendarView == CalendarView.Week" ShowWorkWeek="CalendarView == CalendarView.WorkWeek"
                         ShowMonth="CalendarView == CalendarView.Month" ShowCurrentTime="true"
                         Items="@resource.CalendarItems" FirstDayOfWorkWeek="DayOfWeek.Monday"
-                        FirstDayOfWeek="DayOfWeek.Monday" ShowToolbar="false" 
-                        CellClicked="CellClicked" ItemClicked="ItemClicked"/>
+                        FirstDayOfWeek="DayOfWeek.Monday" ShowToolbar="false"
+                        CellClicked="CellClicked" ItemClicked="ItemClicked" />
                 </MudCardContent>
             </MudCard>
             
@@ -77,6 +77,7 @@
 
 @code {
     [Parameter] public IEnumerable<TResource> Resources { get; set; }
+    [Parameter] public EventCallback<TCalendarItem> ItemClickedCallback { get; set; }
     private DateTime CurrentDay = DateTime.Today;
     private CalendarView CalendarView { get; set; } = CalendarView.WorkWeek;
 
@@ -156,8 +157,9 @@
         return DialogService.ShowMessageBox("Cell Clicked", dateTime.ToString(Thread.CurrentThread.CurrentCulture));
     }
 
-    private Task ItemClicked(CalendarItem item)
+    private Task ItemClicked(TCalendarItem item)
     {
+        ItemClickedCallback.InvokeAsync(item);
         return DialogService.ShowMessageBox("Item Clicked", item.Text);
     }
 }
