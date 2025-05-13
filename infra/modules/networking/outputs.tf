@@ -1,6 +1,6 @@
 output "subnets_ids" {
-  description = "Map of subnet names to subnet IDs"
-  value       = { for subnet_name, subnet in azurerm_subnet.subnets : subnet_name => subnet.id }
+  description = "List of subnet IDs"
+  value       = [for subnet in azurerm_subnet.subnets : subnet.id]
 }
 
 output "vnet_id" {
@@ -21,9 +21,4 @@ output "container_subnet_cidr_end" {
 output "postgres_dns_zone_name" {
   description = "Name of the PostgreSQL private DNS zone"
   value       = "nationoh.postgres.database.azure.com"
-}
-
-output "container_app_urls" {
-  description = "URLs for the deployed container apps"
-  value       = var.container_app_urls
 }

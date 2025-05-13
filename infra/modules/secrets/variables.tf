@@ -24,62 +24,72 @@ variable "vnet_id" {
 }
 
 
-variable "db_admin_username" {
-  description = "Database admin username"
-  type        = string
-  default = ""
-}
+# variable "db_admin_username" {
+#   description = "Database admin username"
+#   type        = string
+#   sensitive = true
+#   default = ""
+# }
 
-variable "db_admin_password" {
-  description = "Database admin password"
-  type        = string
-  default = ""
-}
+# variable "db_admin_password" {
+#   description = "Database admin password"
+#   type        = string
+#   sensitive = true
+#   default = ""
+# }
 
-variable "ssl_certificate_password" {
-  description = "SSL certificate password"
-  type        = string
-  default = ""
-}
+# variable "ssl_certificate_password" {
+#   description = "SSL certificate password"
+#   type        = string
+#   sensitive = true
+#   default = ""
+# }
 
-variable "keycloak_db_username" {
-  description = "Keycloak database username"
-  type        = string
-  default = ""
-}
+# variable "keycloak_db_username" {
+#   description = "Keycloak database username"
+#   type        = string
+#   sensitive = true
+#   default = ""
+# }
 
-variable "keycloak_db_password" {
-  description = "Keycloak database password"
-  type        = string
-  default = ""
-}
+# variable "keycloak_db_password" {
+#   description = "Keycloak database password"
+#   type        = string
+#   sensitive = true
+#   default = ""
+# }
 
-variable "keycloak_admin_username" {
-  description = "Keycloak admin username"
-  type        = string
-  default = ""
-}
+# variable "keycloak_admin_username" {
+#   description = "Keycloak admin username"
+#   type        = string
+#   default = ""
+#   sensitive = true
+# }
 
-variable "keycloak_admin_password" {
-  description = "Keycloak admin password"
-  type        = string
-  default = ""
-}
+# variable "keycloak_admin_password" {
+#   description = "Keycloak admin password"
+#   type        = string
+#   sensitive = true
+#   default = ""
+# }
 
-variable "patient_db_username" {
-  description = "Patient database username"
-  type        = string
-  default = ""
-}
+# variable "patient_db_username" {
+#   description = "Patient database username"
+#   type        = string
+#   sensitive = true
+#   default = ""
+# }
 
-variable "patient_db_password" {
-  description = "Patient database password"
-  type        = string
-  default = ""
-}
+# variable "patient_db_password" {
+#   description = "Patient database password"
+#   type        = string
+#   sensitive = true
+#   default = ""
+# }
 
-variable "jwt_signing_key" {
-  description = "JWT signing key for secure token validation"
-  type        = string
-  default     = "" # Will be generated if not provided
-}
+# variable "jwt_signing_key" {
+#   description = "JWT signing key for secure token validation"
+#   type        = string
+#   sensitive = true
+#   default     = "" # Will be generated if not provided
+# }

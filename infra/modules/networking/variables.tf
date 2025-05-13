@@ -149,18 +149,3 @@ variable "nsg_rules" {
     ]
   }
 }
-
-variable "container_app_urls" {
-  description = "URLs for the deployed container apps"
-  type        = map(string)
-}
-
-variable "ssl_certificate_password" {
-  description = "Password for the SSL certificate"
-  type        = string
-}
-
-variable "ssl_certificate_path" {
-  description = "Path to the SSL certificate"
-  type        = string
-}

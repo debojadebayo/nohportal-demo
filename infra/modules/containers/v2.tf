@@ -11,7 +11,7 @@ variable "resource_group_name" {
 variable "container_env_name" {
   description = "Name of the Container App Environment"
   type        = string
-  default     = "ComposedHealth-env"
+  default     = "nationoh-env"
 }
 
 variable "subnet_ids" {
@@ -48,5 +48,15 @@ variable "log_analytics_workspace_id" {
 
 variable "domain_name" {
   description = "domain names of the application"
+  type        = string
+}
+
+variable "postgresql_server_fqdn" {
+  description = "FQDN of the PostgreSQL flexible server"
+  type        = string
+}
+
+variable "keycloak_db_name" {
+  description = "Name of the Keycloak database"
   type        = string
 }

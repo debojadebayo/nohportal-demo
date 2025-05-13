@@ -13,7 +13,7 @@ output "app_database_name" {
   value       = azurerm_postgresql_flexible_server_database.app_db.name
 }
 
-output "keycloak_database_name" {
+output "keycloak_db_name" {
   description = "Name of the Keycloak database"
   value       = azurerm_postgresql_flexible_server_database.keycloak_db.name
 }

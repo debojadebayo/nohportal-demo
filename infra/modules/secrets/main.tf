@@ -6,7 +6,7 @@ resource "azurerm_key_vault" "kv" {
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_retention_days  = 90
   purge_protection_enabled    = true
-  sku_name                    = "Standard"
+  sku_name                    = "standard"
 
   # Network ACLs for restricting access
   network_acls {
@@ -22,15 +22,38 @@ resource "azurerm_key_vault" "kv" {
     object_id = data.azurerm_client_config.current.object_id
 
     key_permissions = [
-      "Get", "List", "Create", "Delete", "Update", "Recover", "Purge", "GetRotationPolicy", "SetRotationPolicy"
+      "Get", 
+      "List", 
+      "Create", 
+      "Delete", 
+      "Update", 
+      "Recover", 
+      "Purge", 
+      "GetRotationPolicy", 
+      "SetRotationPolicy"
     ]
     secret_permissions = [
-      "Get", "List", "Set", "Delete", "Recover", "Backup", "Restore", "Purge"
+      "Get", 
+      "List", 
+      "Set", 
+      "Delete", 
+      "Recover", 
+      "Backup", 
+      "Restore", 
+      "Purge"
     ]
 
     certificate_permissions = [
-      "Get", "List", "Create", "Import", "Update", "Delete", "Recover",
-      "Backup", "Restore", "Purge"
+      "Get", 
+      "List", 
+      "Create", 
+      "Import", 
+      "Update", 
+      "Delete", 
+      "Recover",
+      "Backup", 
+      "Restore", 
+      "Purge"
     ]
   }
 
@@ -80,107 +103,116 @@ resource "azurerm_private_dns_zone_virtual_network_link" "keyvault" {
   virtual_network_id    = var.vnet_id
 }
 
-# Storage encryption key
-resource "azurerm_key_vault_key" "storage_key" {
-  name         = "storage-encryption-key"
-  key_vault_id = azurerm_key_vault.kv.id
-  key_type     = "RSA"
-  key_size     = 2048
+# # Storage encryption key
+# resource "azurerm_key_vault_key" "storage_key" {
+#   name         = "storage-encryption-key"
+#   key_vault_id = azurerm_key_vault.kv.id
+#   key_type     = "RSA"
+#   key_size     = 2048
 
-  key_opts = [
-    "decrypt",
-    "encrypt",
-    "sign",
-    "unwrapKey",
-    "verify",
-    "wrapKey",
-  ]
+#   key_opts = [
+#     "decrypt",
+#     "encrypt",
+#     "sign",
+#     "unwrapKey",
+#     "verify",
+#     "wrapKey",
+#   ]
 
-  rotation_policy {
-    automatic {
-      time_before_expiry = "P30D" # 30 days before expiry
-    }
+#   rotation_policy {
+#     automatic {
+#       time_before_expiry = "P30D" # 30 days before expiry
+#     }
 
-    expire_after         = "P90D" # 90 days
-    notify_before_expiry = "P29D" # 29 days before expiry
-  }
-}
+#     expire_after         = "P90D" # 90 days
+#     notify_before_expiry = "P29D" # 29 days before expiry
+#   }
+# }
 
 # Secrets for the application
 
 # Database admin credentials
-resource "azurerm_key_vault_secret" "db_admin_username" {
-  count        = var.db_admin_username != "" ? 1 : 0
-  name         = "db-admin-username"
-  value        = var.db_admin_username
+
+resource "random_password" "postgresql_admin_username" {
+    length  = 24
+    special = true
+}
+
+resource "random_password" "postgresql_admin_password" {
+    length  = 24
+    special = true
+}
+
+resource "azurerm_key_vault_secret" "postgresql_admin_username" {
+  name         = "postgresql-admin-username"
+  value        = random_password.postgresql_admin_username.result
   key_vault_id = azurerm_key_vault.kv.id
 }
 
-resource "azurerm_key_vault_secret" "db_admin_password" {
-  count        = var.db_admin_password != "" ? 1 : 0
-  name         = "db-admin-password"
-  value        = var.db_admin_password
+resource "azurerm_key_vault_secret" "postgresql_admin_password" {
+  name         = "postgresql-admin-password"
+  value        = random_password.postgresql_admin_password.result
   key_vault_id = azurerm_key_vault.kv.id
 }
 
-# SSL certificate password
-resource "azurerm_key_vault_secret" "ssl_certificate_password" {
-  count        = var.ssl_certificate_password != "" ? 1 : 0
-  name         = "ssl-certificate-password"
-  value        = var.ssl_certificate_password
-  key_vault_id = azurerm_key_vault.kv.id
-}
+# # SSL certificate password
+# resource "azurerm_key_vault_secret" "ssl_certificate_password" {
+#   count        = var.ssl_certificate_password != "" ? 1 : 0
+#   name         = "ssl-certificate-password"
+#   value        = var.ssl_certificate_password
+#   key_vault_id = azurerm_key_vault.kv.id
+# }
 
-# Keycloak database credentials
-resource "azurerm_key_vault_secret" "keycloak_db_username" {
-  count        = var.keycloak_db_username != "" ? 1 : 0
-  name         = "keycloak-db-username"
-  value        = var.keycloak_db_username
-  key_vault_id = azurerm_key_vault.kv.id
-}
+# # Keycloak database credentials
+# resource "azurerm_key_vault_secret" "keycloak_db_username" {
+#   count        = var.keycloak_db_username != "" ? 1 : 0
+#   name         = "keycloak-db-username"
+#   value        = var.keycloak_db_username
+#   key_vault_id = azurerm_key_vault.kv.id
+# }
 
-resource "azurerm_key_vault_secret" "keycloak_db_password" {
-  count        = var.keycloak_db_password != "" ? 1 : 0
-  name         = "keycloak-db-password"
-  value        = var.keycloak_db_password
-  key_vault_id = azurerm_key_vault.kv.id
-}
+# resource "azurerm_key_vault_secret" "keycloak_db_password" {
+#   count        = var.keycloak_db_password != "" ? 1 : 0
+#   name         = "keycloak-db-password"
+#   value        = var.keycloak_db_password
+#   key_vault_id = azurerm_key_vault.kv.id
+# }
 
-# Keycloak admin credentials
-resource "azurerm_key_vault_secret" "keycloak_admin_username" {
-  count        = var.keycloak_admin_username != "" ? 1 : 0
-  name         = "keycloak-admin-username"
-  value        = var.keycloak_admin_username
-  key_vault_id = azurerm_key_vault.kv.id
-}
+# # Keycloak admin credentials
+# resource "azurerm_key_vault_secret" "keycloak_admin_username" {
+#   count        = var.keycloak_admin_username != "" ? 1 : 0
+#   name         = "keycloak-admin-username"
+#   value        = var.keycloak_admin_username
+#   key_vault_id = azurerm_key_vault.kv.id
+# }
 
-resource "azurerm_key_vault_secret" "keycloak_admin_password" {
-  count        = var.keycloak_admin_password != "" ? 1 : 0
-  name         = "keycloak-admin-password"
-  value        = var.keycloak_admin_password
-  key_vault_id = azurerm_key_vault.kv.id
-}
+# resource "azurerm_key_vault_secret" "keycloak_admin_password" {
+#   count        = var.keycloak_admin_password != "" ? 1 : 0
+#   name         = "keycloak-admin-password"
+#   value        = var.keycloak_admin_password
+#   key_vault_id = azurerm_key_vault.kv.id
+# }
 
-# Patient database application credentials
-resource "azurerm_key_vault_secret" "patient_db_username" {
-  count        = var.patient_db_username != "" ? 1 : 0
-  name         = "patient-db-username"
-  value        = var.patient_db_username
-  key_vault_id = azurerm_key_vault.kv.id
-}
+# # Patient database application credentials
+# resource "azurerm_key_vault_secret" "patient_db_username" {
+#   count        = var.patient_db_username != "" ? 1 : 0
+#   name         = "patient-db-username"
+#   value        = var.patient_db_username
+#   key_vault_id = azurerm_key_vault.kv.id
+# }
 
-resource "azurerm_key_vault_secret" "patient_db_password" {
-  count        = var.patient_db_password != "" ? 1 : 0
-  name         = "patient-db-password"
-  value        = var.patient_db_password
-  key_vault_id = azurerm_key_vault.kv.id
-}
+# resource "azurerm_key_vault_secret" "patient_db_password" {
+#   count        = var.patient_db_password != "" ? 1 : 0
+#   name         = "patient-db-password"
+#   value        = var.patient_db_password
+#   key_vault_id = azurerm_key_vault.kv.id
+# }
 
-resource "azurerm_key_vault_secret" "jwt_signing_key" {
-  count        = var.jwt_signing_key != "" ? 1 : 0
-  name         = "jwt-signing-key"
-  value        = var.jwt_signing_key
-  key_vault_id = azurerm_key_vault.kv.id
-}
+# resource "azurerm_key_vault_secret" "jwt_signing_key" {
+#   count        = var.jwt_signing_key != "" ? 1 : 0
+#   name         = "jwt-signing-key"
+#   value        = var.jwt_signing_key
+#   key_vault_id = azurerm_key_vault.kv.id
+# }
 
 

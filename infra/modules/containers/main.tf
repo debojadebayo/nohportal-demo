@@ -12,7 +12,7 @@ resource "azurerm_container_app_environment" "container_env" {
 # Server API Container 
 
 resource "azurerm_container_app" "server" {
-  name                         = "ComposedHealth-server"
+  name                         = "nationoh-server"
   container_app_environment_id = azurerm_container_app_environment.container_env.id
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
@@ -34,7 +34,7 @@ resource "azurerm_container_app" "server" {
   ingress {
     external_enabled = false
     target_port      = 5003
-    transport        = "Http"
+    transport        = "http"
 
     traffic_weight {
       percentage = 100
@@ -45,7 +45,7 @@ resource "azurerm_container_app" "server" {
 # Keycloak 
 
 resource "azurerm_container_app" "keycloak" {
-  name                         = "ComposedHealth-keycloak"
+  name                         = "nationoh-keycloak"
   container_app_environment_id = azurerm_container_app_environment.container_env.id
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
@@ -71,7 +71,7 @@ resource "azurerm_container_app" "keycloak" {
       }
       env {
         name  = "KC_DB_URL"
-        value = "jdbc:postgresql://${azurerm_postgresql_server.keycloak_db.fqdn}:5432/keycloak"
+        value = "jdbc:postgresql://${var.postgresql_server_fqdn}:5432/${var.keycloak_db_name}"
       }
       env {
         name  = "KC_DB_USERNAME"
@@ -91,7 +91,7 @@ resource "azurerm_container_app" "keycloak" {
   ingress {
     external_enabled = false
     target_port      = 8080
-    transport        = "Http"
+    transport        = "http"
 
     traffic_weight {
       percentage = 100
@@ -102,7 +102,7 @@ resource "azurerm_container_app" "keycloak" {
 # Frontend 
 
 resource "azurerm_container_app" "frontend" {
-  name                         = "ComposedHealth-frontend"
+  name                         = "nationoh-frontend"
   container_app_environment_id = azurerm_container_app_environment.container_env.id
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
@@ -110,7 +110,7 @@ resource "azurerm_container_app" "frontend" {
   template {
     container {
       name   = "frontend"
-      image  = "${var.container_registry}/composedhealth/frontend:${var.image_tags["frontend"]}"
+      image  = "${var.container_registry}/nationoh/frontend:${var.image_tags["frontend"]}"
       cpu    = 1.0
       memory = "2Gi"
 
@@ -132,7 +132,7 @@ resource "azurerm_container_app" "frontend" {
   ingress {
     external_enabled = true
     target_port      = 5002
-    transport        = "Http"
+    transport        = "http"
 
     traffic_weight {
       percentage = 100
