@@ -17,8 +17,3 @@ output "container_subnet_cidr_end" {
   description = "End IP address of the container subnet CIDR block"
   value       = cidrhost(azurerm_subnet.subnets["backend"].address_prefixes[0], 255)
 }
-
-output "postgres_dns_zone_name" {
-  description = "Name of the PostgreSQL private DNS zone"
-  value       = "nationoh.postgres.database.azure.com"
-}

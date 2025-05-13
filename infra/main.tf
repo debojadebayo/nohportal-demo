@@ -64,8 +64,9 @@ module "database"{
     db_admin_password        = module.secrets.postgresql_admin_password
     container_subnet_cidr_start = module.networking.container_subnet_cidr_start
     container_subnet_cidr_end   = module.networking.container_subnet_cidr_end
-    postgres_dns_zone_name = module.networking.postgres_dns_zone_name
-    postgresql_server_name = module.database.postgresql_server_name
-    postgresql_server_fqdn = module.database.postgresql_server_fqdn
+    postgresql_server_name   = "${var.resource_group_name}-postgresql"
+    private_dns_zone_name = "${var.resource_group_name}-postgres-dns-zone-name"
+    dns_link_name = "${var.resource_group_name}-postgres-dns-link"
+    firewall_rule_name = "${var.resource_group_name}-postgres-firewall-rule"
 }
 
