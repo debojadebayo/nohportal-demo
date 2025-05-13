@@ -1,11 +1,9 @@
-# Application Insights for monitoring
 resource "azurerm_application_insights" "insights" {
   name                = var.insights_name
   location            = var.location
   resource_group_name = var.resource_group_name
   application_type    = "web"
 
-  # Healthcare-specific settings
   retention_in_days   = 90  # Retain data for compliance
   sampling_percentage = 100 # Full data collection for healthcare auditing
 
@@ -21,14 +19,12 @@ resource "azurerm_application_insights" "insights" {
   }
 }
 
-# Store the instrumentation key in Key Vault
 resource "azurerm_key_vault_secret" "app_insights_key" {
   name         = "app-insights-key"
   value        = azurerm_application_insights.insights.instrumentation_key
   key_vault_id = var.key_vault_id
 }
 
-# Log Analytics workspace for advanced analytics
 resource "azurerm_log_analytics_workspace" "workspace" {
   name                = "${var.insights_name}-workspace"
   location            = var.location
@@ -37,33 +33,33 @@ resource "azurerm_log_analytics_workspace" "workspace" {
   retention_in_days   = 90 # Match Application Insights retention
 }
 
-# Link Application Insights to Log Analytics
-resource "azurerm_application_insights_analytics_item" "query_pack" {
-  name                    = "Healthcare-Queries"
-  application_insights_id = azurerm_application_insights.insights.id
-  content                 = <<QUERY
-// Sample healthcare monitoring queries
-// Patient data access audit
-requests
-| where url contains "patient" or url contains "medical"
-| project timestamp, url, success, user_Id, client_IP
-| order by timestamp desc
+# # Link Application Insights to Log Analytics
+# resource "azurerm_application_insights_analytics_item" "query_pack" {
+#   name                    = "Healthcare-Queries"
+#   application_insights_id = azurerm_application_insights.insights.id
+#   content                 = <<QUERY
+# // Sample healthcare monitoring queries
+# // Patient data access audit
+# requests
+# | where url contains "patient" or url contains "medical"
+# | project timestamp, url, success, user_Id, client_IP
+# | order by timestamp desc
 
-// Error monitoring for critical services
-exceptions
-| where cloud_RoleName in ("PatientPortal", "MedicalRecords")
-| summarize count() by type, cloud_RoleName
-| order by count_ desc
+# // Error monitoring for critical services
+# exceptions
+# | where cloud_RoleName in ("PatientPortal", "MedicalRecords")
+# | summarize count() by type, cloud_RoleName
+# | order by count_ desc
 
-// Performance monitoring
-requests
-| where success == "True"
-| summarize avg(duration), percentile(duration, 95), percentile(duration, 99) by name
-| order by percentile_duration_99 desc
-QUERY
-  type                    = "query"
-  scope                   = "shared"
-}
+# // Performance monitoring
+# requests
+# | where success == "True"
+# | summarize avg(duration), percentile(duration, 95), percentile(duration, 99) by name
+# | order by percentile_duration_99 desc
+# QUERY
+#   type                    = "query"
+#   scope                   = "shared"
+# }
 
 # Alert for potential data breaches
 resource "azurerm_monitor_scheduled_query_rules_alert" "data_access_alert" {

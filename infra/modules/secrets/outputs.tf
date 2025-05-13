@@ -8,12 +8,7 @@ output "key_vault_id" {
   value       = azurerm_key_vault.kv.id
 }
 
-output "key_vault_name" {
-  description = "The name of the Key Vault"
-  value       = azurerm_key_vault.kv.name
-}
-
-output "storage_key_id" {
-  description = "ID of the storage encryption key"
-  value       = azurerm_key_vault_key.storage_key.id
-}
+# output "key_vault_name" {
+#   description = "The name of the Key Vault"
+#   value       = azurerm_key_vault.kv.name
+# }

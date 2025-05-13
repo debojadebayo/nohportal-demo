@@ -93,7 +93,12 @@ variable "app_database_name" {
   default     = null # Let Azure generate a name if not specified
 }
 
-variable "keycloak_database_name" {
+variable "postgresql_server_fqdn" {
+  description = "FQDN of the PostgreSQL flexible server"
+  type        = string
+}
+
+variable "keycloak_db_name" {
   description = "Name of the Keycloak database"
   type        = string
   default     = null # Let Azure generate a name if not specified

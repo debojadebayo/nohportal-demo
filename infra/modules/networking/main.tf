@@ -25,6 +25,7 @@ resource "azurerm_subnet" "subnets" {
       }
     }
   }
+
   dynamic "delegation" {
     for_each = each.value == "data" ? [1] : []
     content {
@@ -36,13 +37,7 @@ resource "azurerm_subnet" "subnets" {
     }
   }
 
-  # Service endpoints for data subnet
-  dynamic "service_endpoints" {
-    for_each = each.value == "data" ? [1] : []
-    content {
-      service = "Microsoft.Storage"
-    }
-  }
+  service_endpoints = each.value == "data" ? ["Microsoft.Storage"] : []
 }
 
 # Network Security Group
@@ -50,7 +45,7 @@ resource "azurerm_subnet" "subnets" {
 resource "azurerm_network_security_group" "nsg" {
   for_each            = toset(var.subnet_names)
   name                = "${each.value}-nsg"
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = var.resource_group_name
   location            = var.location
 }
 
@@ -77,7 +72,7 @@ resource "azurerm_network_security_rule" "rule" {
   destination_port_range      = each.value.destination_port_range
   source_address_prefix       = each.value.source_address_prefix
   destination_address_prefix  = each.value.destination_address_prefix
-  resource_group_name         = azurerm_resource_group.rg.name
+  resource_group_name         = var.resource_group_name
   network_security_group_name = azurerm_network_security_group.nsg[each.value.subnet_name].name
 }
 

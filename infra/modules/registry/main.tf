@@ -23,7 +23,6 @@ resource "azurerm_container_registry" "acr" {
 
   # Enable features for healthcare compliance
   encryption {
-    enabled            = true
     key_vault_key_id   = var.key_vault_key_id
     identity_client_id = azurerm_user_assigned_identity.acr_identity.client_id
   }
