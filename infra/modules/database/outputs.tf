@@ -24,7 +24,7 @@
 #   sensitive   = true
 # }
 
-output "postgresql_server_name" {
-    description = "Name of the PostgreSQL flexible server"
-    value       = azurerm_postgresql_flexible_server.postgresql_main.name
-}
+# output "postgresql_server_name" {
+#     description = "Name of the PostgreSQL flexible server"
+#     value       = azurerm_postgresql_flexible_server.postgresql_main.name
+# }

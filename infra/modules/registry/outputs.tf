@@ -3,10 +3,10 @@
 #   value       = azurerm_container_registry.acr.id
 # }
 
-# output "registry_login_server" {
-#   description = "Login server URL for the container registry"
-#   value       = azurerm_container_registry.acr.login_server
-# }
+output "registry_login_server" {
+  description = "Login server URL for the container registry"
+  value       = azurerm_container_registry.acr.login_server
+}
 
 # output "registry_admin_username" {
 #   description = "Admin username for the container registry"

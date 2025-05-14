@@ -138,20 +138,66 @@ resource "random_password" "postgresql_admin_username" {
     special = true
 }
 
-resource "random_password" "postgresql_admin_password" {
-    length  = 24
-    special = true
-}
-
 resource "azurerm_key_vault_secret" "postgresql_admin_username" {
   name         = "postgresql-admin-username"
   value        = random_password.postgresql_admin_username.result
   key_vault_id = azurerm_key_vault.kv.id
 }
 
+resource "random_password" "postgresql_admin_password" {
+    length  = 24
+    special = true
+}
+
 resource "azurerm_key_vault_secret" "postgresql_admin_password" {
   name         = "postgresql-admin-password"
   value        = random_password.postgresql_admin_password.result
+  key_vault_id = azurerm_key_vault.kv.id
+}
+
+# Keycloak admin credentials
+
+resource "random_password" "keycloak_admin_username" {
+    length  = 24
+    special = true
+}
+
+resource "azurerm_key_vault_secret" "keycloak_admin_username"{
+  name         = "keycloak-admin-username"
+  value        = random_password.keycloak_admin_username.result
+  key_vault_id = azurerm_key_vault.kv.id
+}
+
+resource "random_password" "keycloak_admin_password" {
+    length  = 24
+    special = true
+}
+
+resource "azurerm_key_vault_secret" "keycloak_admin_password"{
+  name         = "keycloak-admin-password"
+  value        = random_password.keycloak_admin_password.result
+  key_vault_id = azurerm_key_vault.kv.id
+}
+
+resource "random_password" "keycloak_db_username" {
+    length  = 24
+    special = true
+}
+
+resource "azurerm_key_vault_secret" "keycloak_db_username"{
+  name         = "keycloak-db-username"
+  value        = random_password.keycloak_db_username.result
+  key_vault_id = azurerm_key_vault.kv.id
+}
+
+resource "random_password" "keycloak_db_password" {
+    length  = 24
+    special = true
+}
+
+resource "azurerm_key_vault_secret" "keycloak_db_password"{
+  name         = "keycloak-db-password"
+  value        = random_password.keycloak_db_password.result
   key_vault_id = azurerm_key_vault.kv.id
 }
 
@@ -175,21 +221,6 @@ resource "azurerm_key_vault_secret" "postgresql_admin_password" {
 #   count        = var.keycloak_db_password != "" ? 1 : 0
 #   name         = "keycloak-db-password"
 #   value        = var.keycloak_db_password
-#   key_vault_id = azurerm_key_vault.kv.id
-# }
-
-# # Keycloak admin credentials
-# resource "azurerm_key_vault_secret" "keycloak_admin_username" {
-#   count        = var.keycloak_admin_username != "" ? 1 : 0
-#   name         = "keycloak-admin-username"
-#   value        = var.keycloak_admin_username
-#   key_vault_id = azurerm_key_vault.kv.id
-# }
-
-# resource "azurerm_key_vault_secret" "keycloak_admin_password" {
-#   count        = var.keycloak_admin_password != "" ? 1 : 0
-#   name         = "keycloak-admin-password"
-#   value        = var.keycloak_admin_password
 #   key_vault_id = azurerm_key_vault.kv.id
 # }
 
