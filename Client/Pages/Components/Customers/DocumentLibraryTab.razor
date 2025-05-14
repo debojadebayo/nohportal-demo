@@ -27,7 +27,14 @@
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Description">@context.Description</MudTd>
             <MudTd DataLabel="File Path">
-                <MudLink Href="@context.FilePath" Target="_blank">View Document</MudLink>
+                @if (!string.IsNullOrEmpty(context.FilePath))
+                {
+                    <MudLink Href="@context.FilePath" Target="_blank">View Document</MudLink>
+                }
+                else
+                {
+                    <MudText>No file available</MudText>
+                }
             </MudTd>
             <MudTd DataLabel="Active">@context.IsActive</MudTd>
             <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
@@ -79,20 +86,25 @@
 </MudDialog>
 
 @code {
-    [Parameter] public List<DocumentDto> Documents { get; set; }
+    [Parameter] public List<DocumentDto> Documents { get; set; } = new();
     [Parameter] public EventCallback<Tuple<DocumentDto, IBrowserFile>> OnSave { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
     private bool _uploadDocumentDialogOpen = false;
-    private DocumentDto _newDocument = new();
+    private DocumentDto _newDocument = default!;
     private IBrowserFile? _fileToUpload;
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
     private void ShowDocumentUploadDialog()
     {
-        _newDocument = new DocumentDto();
+        _newDocument = new DocumentDto
+        { 
+            FilePath = "placeholder",  // Temporary placeholder
+            Name = "", 
+            Description = "" 
+        };
         _fileToUpload = null;
         _uploadDocumentDialogOpen = true;
     }
-    private async Task HandleFileSelected(IBrowserFile file)
+    private void HandleFileSelected(IBrowserFile file)
     {
         _fileToUpload = file;
     }

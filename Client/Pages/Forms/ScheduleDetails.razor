@@ -35,15 +35,16 @@
 
 @code {
     [Inject]
-    ISnackbar Snackbar { get; set; }
+    private ISnackbar Snackbar { get; set; } = default!;
     [Inject]
-    private IDialogService DialogService { get; set; } // for MessageBox
+    private IDialogService DialogService { get; set; } = default!;
 
     [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
-    private HttpClient httpClient;
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    private HttpClient httpClient = default!;
     private IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
     private IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
+
     protected override async Task OnInitializedAsync()
     {
         httpClient = HttpClientFactory.CreateClient("api");
@@ -63,14 +64,19 @@
 
     private async Task Submit()
     {
+        if (form is null) return;
         await form.Validate();
         if (form.IsValid)
         {
-            MudDialog.Close(DialogResult.Ok(model));
+            MudDialog?.Close(DialogResult.Ok(model));
         }
     }
-    private void Cancel() => MudDialog.Cancel();
-    MudForm form;
+    private void Cancel() => MudDialog?.Cancel();
+    private MudForm? form;
     [Parameter]
-    public ScheduleDto model { get; set; } = new ScheduleDto();
+    public ScheduleDto model { get; set; } = new ScheduleDto
+    {
+        Title = string.Empty,
+        Description = string.Empty
+    };
 }

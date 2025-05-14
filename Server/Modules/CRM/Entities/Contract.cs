@@ -4,8 +4,8 @@ namespace Server.Modules.CRM.Entities
 {
 	public class Contract : BaseEntity<Contract>, IEntity
 	{
-		public string Reference { get; set; }
-		public string Notes { get; set; }
+		public required string Reference { get; set; }
+		public string? Notes { get; set; }
 		public long RepresentativeId { get; set; }
 		public DateTime? StartTime { get; set; }
 		public DateTime? EndTime { get; set; }

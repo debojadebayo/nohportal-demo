@@ -42,9 +42,9 @@ namespace Server.Modules.Scheduling.Infrastructure.Database
 						);
 			modelBuilder.Entity<Schedule>()
 				.HasData(
-					new Schedule { Id = 1, ClinicianId = 1, CustomerId = 1, ReferralId = 1, EmployeeId = 1, Start = new DateTime(2025, 4, 22, 9, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 10, 0, 0, DateTimeKind.Utc) },
-					new Schedule { Id = 2, ClinicianId = 2, CustomerId = 1, ReferralId = 2, EmployeeId = 2, Start = new DateTime(2025, 4, 22, 10, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 11, 0, 0, DateTimeKind.Utc) },
-					new Schedule { Id = 3, ClinicianId = 3, CustomerId = 1, ReferralId = 3, EmployeeId = 3, Start = new DateTime(2025, 4, 22, 11, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 12, 0, 0, DateTimeKind.Utc) }
+					new Schedule { Id = 1, ClinicianId = 1, CustomerId = 1, ReferralId = 1, EmployeeId = 1, Start = new DateTime(2025, 4, 22, 9, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 10, 0, 0, DateTimeKind.Utc), Title = "Blood Pressure Check-up", Description = "Regular blood pressure monitoring and medication review" },
+					new Schedule { Id = 2, ClinicianId = 2, CustomerId = 1, ReferralId = 2, EmployeeId = 2, Start = new DateTime(2025, 4, 22, 10, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 11, 0, 0, DateTimeKind.Utc), Title = "Diabetes Follow-up", Description = "Review of blood sugar levels and medication adjustment" },
+					new Schedule { Id = 3, ClinicianId = 3, CustomerId = 1, ReferralId = 3, EmployeeId = 3, Start = new DateTime(2025, 4, 22, 11, 0, 0, DateTimeKind.Utc), End = new DateTime(2025, 4, 22, 12, 0, 0, DateTimeKind.Utc), Title = "Back Pain Assessment", Description = "Initial evaluation of chronic lower back pain" }
 				);
 		}
 	}

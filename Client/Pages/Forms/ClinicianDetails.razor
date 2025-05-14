@@ -33,9 +33,18 @@
 </MudForm>
 
 @code {
-    [Inject] ISnackbar Snackbar { get; set; }
-    MudForm form;
-    ClinicianDto model = new ClinicianDto();
+    [Inject] ISnackbar Snackbar { get; set; } = default!;
+    MudForm form = default!;
+    ClinicianDto model = new ClinicianDto{
+        AvatarImage = "",
+        AvatarTitle = "",
+        AvatarDescription = "",
+        LicenceNumber = "",
+        FirstName = "",
+        LastName = "",
+        Telephone = "",
+        Email = ""
+        };
     private async Task Submit()
     {
         await form.Validate();

@@ -1,7 +1,7 @@
 @using Shared.DTOs.CRM
 @using MudBlazor
 
-<MudForm @ref="form" Model="Model" Validated="OnValidated">
+<MudForm @ref="form" Model="Model" validated="OnValidated">
     <MudGrid>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="Model.Id" For="@(() => Model.Id)" Immediate="true" Label="Company ID"
@@ -46,12 +46,12 @@
 </MudForm>
 
 @code {
-    [Parameter] public CustomerDto Model { get; set; }
+    [Parameter] public CustomerDto Model { get; set; } = new CustomerDto();
     [Parameter] public EventCallback<CustomerDto> OnSave { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
     [Parameter] public bool IsLoading { get; set; }
 
-    private MudForm form;
+    private MudForm form = default!;
 
     private async Task Save()
     {

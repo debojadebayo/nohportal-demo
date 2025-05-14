@@ -8,10 +8,9 @@ namespace Server.Modules.CRM.Entities
     {
         public long CustomerId { get; set; }
         public long EmployeeId { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
-        public string Department { get; set; } = string.Empty;
-        public Customer Customer { get; set; }
+        public required string Name { get; set; }
+        public required string Email { get; set; }
+        public required string Phone { get; set; }
+        public required string Department { get; set; }
     }
 }

@@ -9,7 +9,7 @@
 @code {
     private const int MinutesInDay = 24 * 60;
     private int CellsInDay => MinutesInDay / (int)Calendar.DayTimeInterval;
-    protected virtual int DaysInView => 7;
+    protected override int DaysInView => 7;
 
     private bool IsHourCell(int row)
     {

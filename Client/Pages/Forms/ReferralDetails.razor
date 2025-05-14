@@ -37,13 +37,13 @@
 </MudForm>
 
 @code {
-    MudForm form;
+    MudForm form = default!;
     ReferralDto _model = new ReferralDto();
 
     private IEnumerable<CustomerDto> _customers = new List<CustomerDto>();
     private IEnumerable<EmployeeDto> _employees = new List<EmployeeDto>();
 
-    private HttpClient httpClient;
+    private HttpClient httpClient = default!;
 
     protected override async Task OnInitializedAsync()
     {

@@ -6,21 +6,21 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.Scheduling
 {
-	public class ScheduleDto : BaseCalendarItem, IDto
-	{
-		public long Id { get; set; }
-		public bool IsActive { get; set; }
-		public int CreatedBy { get; set; }
-		public int LastModifiedBy { get; set; }
-		public DateTime CreatedDate { get; set; }
-		public DateTime ModifiedDate { get; set; }
-		public long CustomerId { get; set; }
-		public long ReferralId { get; set; }
-		public long EmployeeId { get; set; }
-		public long ClinicianId { get; set; }
-		public long ProductId { get; set; }
-		public string Title { get; set; }
-		public string Description { get; set; }
-		public ScheduleStatusEnum Status { get; set; }
-	}
+    public class ScheduleDto : BaseCalendarItem, IDto
+    {
+        public new long Id { get; set; }
+        public bool IsActive { get; set; }
+        public int CreatedBy { get; set; }
+        public int LastModifiedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
+        public long CustomerId { get; set; }
+        public long ReferralId { get; set; }
+        public long EmployeeId { get; set; }
+        public long ClinicianId { get; set; }
+        public long ProductId { get; set; }
+        public required string Title { get; set; }
+        public required string Description { get; set; }
+        public ScheduleStatusEnum Status { get; set; }
+    }
 }

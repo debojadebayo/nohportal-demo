@@ -12,8 +12,8 @@ namespace Shared.DTOs.CRM
         public DateTime ModifiedDate { get; set; }
         public long CustomerId { get; set; }
         public long EmployeeId { get; set; }
-        public string FilePath { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public required string FilePath { get; set; }
+        public required string Name { get; set; }
+        public string? Description { get; set; }
     }
 }

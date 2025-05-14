@@ -20,7 +20,7 @@ namespace Server.Modules.CRM.Endpoints
 {
 	public class EmployeeEndpoints : BaseEndpoints<Employee, EmployeeDto, CRMDbContext>, IEndpoints
 	{
-		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/employee");
@@ -64,7 +64,7 @@ namespace Server.Modules.CRM.Endpoints
 	}
 	public class CustomerEndpoints : BaseEndpoints<Customer, CustomerDto, CRMDbContext>, IEndpoints
 	{
-		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/customer");
@@ -90,7 +90,7 @@ namespace Server.Modules.CRM.Endpoints
 	}
 	public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints
 	{
-		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			endpoints = base.MapEndpoints(endpoints); // Call the base class method first
 			var group = endpoints.MapGroup($"/api/contract");
@@ -115,7 +115,7 @@ namespace Server.Modules.CRM.Endpoints
 	}
 	public class DocumentEndpoints : CommonCRMEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints
 	{
-		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/document");
@@ -183,7 +183,7 @@ namespace Server.Modules.CRM.Endpoints
 		where TDto : IDto
 		where CRMDbContext : IDbContext<CRMDbContext>
 	{
-		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			endpoints = base.MapEndpoints(endpoints);
 

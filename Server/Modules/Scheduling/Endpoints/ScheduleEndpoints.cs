@@ -18,7 +18,7 @@ namespace Server.Modules.Scheduling.Endpoints
 {
 	public class ClinicianEndpoints : BaseEndpoints<Clinician, ClinicianDto, SchedulingDbContext>, IEndpoints
 	{
-		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/clinician");
@@ -49,7 +49,7 @@ namespace Server.Modules.Scheduling.Endpoints
 		where TDto : IDto
 		where SchedulingDbContext : IDbContext<SchedulingDbContext>
 	{
-		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			endpoints = base.MapEndpoints(endpoints);
 

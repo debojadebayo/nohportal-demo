@@ -18,7 +18,9 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
-            ModifiedDate = entity.ModifiedDate
+            ModifiedDate = entity.ModifiedDate,
+            Title = entity.Title,
+            Description = entity.Description,
         };
     }
 
@@ -36,7 +38,9 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
             CreatedBy = dto.CreatedBy,
             LastModifiedBy = dto.LastModifiedBy,
             CreatedDate = dto.CreatedDate,
-            ModifiedDate = dto.ModifiedDate
+            ModifiedDate = dto.ModifiedDate,
+            Title = dto.Title,
+            Description = dto.Description,
         };
     }
 
@@ -63,6 +67,8 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
         entity.LastModifiedBy = dto.LastModifiedBy;
         entity.CreatedDate = dto.CreatedDate;
         entity.ModifiedDate = dto.ModifiedDate;
+        entity.Title = dto.Title;
+        entity.Description = dto.Description;
     }
 
     public void Map(Schedule entity, ScheduleDto dto)
@@ -78,6 +84,8 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
         dto.LastModifiedBy = entity.LastModifiedBy;
         dto.CreatedDate = entity.CreatedDate;
         dto.ModifiedDate = entity.ModifiedDate;
+        dto.Title = entity.Title;
+        dto.Description = entity.Description;
     }
 
     public void Map(IEnumerable<ScheduleDto> dtos, IEnumerable<Schedule> entities)
