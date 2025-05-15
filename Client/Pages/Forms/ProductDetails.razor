@@ -19,9 +19,9 @@
 </MudForm>
 
 @code {
-    [Inject] ISnackbar Snackbar { get; set; }
-    MudForm form;
-    ProductDto model = new ProductDto { ProductType = new ProductTypeDto() };
+    [Inject] ISnackbar Snackbar { get; set; } = default!;
+    MudForm form = default!;
+    ProductDto model = new ProductDto { ProductType = new ProductTypeDto{ Name = "", Description= "", ChargeCode = ""} };
     private async Task Submit()
     {
         await form.Validate();

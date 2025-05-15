@@ -20,9 +20,9 @@
 </MudForm>
 
 @code {
-    [Inject] ISnackbar Snackbar { get; set; }
-    MudForm form;
-    ContractDto model = new ContractDto();
+    [Inject] ISnackbar Snackbar { get; set; } = default!;
+    MudForm form = default!;
+    ContractDto model = new ContractDto{ Reference = "", Notes = "" };
     private async Task Submit()
     {
         await form.Validate();

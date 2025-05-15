@@ -38,7 +38,7 @@ namespace Server.Modules.CRM.Infrastructure.Queries
                 (!string.IsNullOrEmpty(e.FirstName) && e.FirstName.ToLower().Contains(term)) ||
                 (!string.IsNullOrEmpty(e.LastName) && e.LastName.ToLower().Contains(term)) ||
                 (isId && e.Id == idValue) ||
-                (isDate && e.DOB != null && e.DOB.Date == dobValue.Date)
+                (isDate && e.DOB.Date == dobValue.Date)
             );
 
             var results = await query.ToListAsync();

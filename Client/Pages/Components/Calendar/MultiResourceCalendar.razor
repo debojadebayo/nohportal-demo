@@ -1,3 +1,4 @@
+@namespace Client.Pages.Components.Calendar
 @using ComposedHealthBase.Shared.Interfaces
 @using ComposedHealthBase.Shared.Models
 @using Heron.MudCalendar
@@ -9,11 +10,11 @@
 <MudGrid>
     <MudItem xs="12" Class="d-flex align-center">
         <MudButton OnClick="() => PrevClicked()">
-            <MudIcon Icon="@Icons.Material.TwoTone.ChevronLeft" Variant="Variant.Filled" Color="Color.Primary" />
+            <MudIcon Icon="@Icons.Material.TwoTone.ChevronLeft" Color="Color.Primary" />
         </MudButton>
         <MudButton OnClick="() => CurrentDay = DateTime.Today">Today</MudButton>
         <MudButton OnClick="() => NextClicked()">
-            <MudIcon Icon="@Icons.Material.TwoTone.ChevronRight" Variant="Variant.Filled" Color="Color.Primary" />
+            <MudIcon Icon="@Icons.Material.TwoTone.ChevronRight" Color="Color.Primary" />
         </MudButton>
         
         <div class="d-flex mx-auto">
@@ -40,8 +41,15 @@
     </MudItem>
 </MudGrid>
 
-
-<div class="calendar-resource-group">
+@if (_selectedResources.Count() == 0)
+{
+    <MudPaper Class="pa-8 ma-2 max-w-xl">
+        <MudText Typo="Typo.h6">Please select some resources to start.</MudText>
+    </MudPaper>
+}
+else
+{
+    <div class="calendar-resource-group">
     @foreach (var resource in Resources.Where(r => _selectedResources.Contains(r.AvatarTitle)))
     {
         <div class="calendar-resource">
@@ -62,24 +70,27 @@
                     </div>
                 </div>
                 <MudCardContent>
-                    <CustomMudCalendar Height=2000 CurrentDay=@CurrentDay ShowDay="CalendarView == CalendarView.Day"
+                    <CustomMudCalendar TCalendarItem="TCalendarItem" Height=2000 CurrentDay=@CurrentDay ShowDay="CalendarView == CalendarView.Day"
                         ShowWeek="CalendarView == CalendarView.Week" ShowWorkWeek="CalendarView == CalendarView.WorkWeek"
                         ShowMonth="CalendarView == CalendarView.Month" ShowCurrentTime="true"
                         Items="@resource.CalendarItems" FirstDayOfWorkWeek="DayOfWeek.Monday"
-                        FirstDayOfWeek="DayOfWeek.Monday" ShowToolbar="false" />
+                        FirstDayOfWeek="DayOfWeek.Monday" ShowToolbar="false"
+                        CellClicked="CellClicked" ItemClicked="ItemClicked" />
                 </MudCardContent>
             </MudCard>
             
         </div>
     }
 </div>
+}
 
 @code {
-    [Parameter] public IEnumerable<TResource> Resources { get; set; }
+    [Parameter] public IEnumerable<TResource> Resources { get; set; } = new List<TResource>();
+    [Parameter] public EventCallback<TCalendarItem> ItemClickedCallback { get; set; }
     private DateTime CurrentDay = DateTime.Today;
     private CalendarView CalendarView { get; set; } = CalendarView.WorkWeek;
 
-    private string _value = default;
+    private string _value = string.Empty;
     private IEnumerable<string> _selectedResources = new List<string>();
 
     protected override void OnInitialized()
@@ -148,5 +159,16 @@
     {
         return $"Selected clinicians: {(selectedValues.Count() == 0 ? "(None)" : string.Join(", ", selectedValues.Select(x => x)))}";
     }
-    
+        [Inject]
+    private IDialogService DialogService { get; set; } = default!;
+    private Task CellClicked(DateTime dateTime)
+    {
+        return DialogService.ShowMessageBox("Cell Clicked", dateTime.ToString(Thread.CurrentThread.CurrentCulture));
+    }
+
+    private Task ItemClicked(TCalendarItem item)
+    {
+        ItemClickedCallback.InvokeAsync(item);
+        return DialogService.ShowMessageBox("Item Clicked", item.Text);
+    }
 }

@@ -13,7 +13,10 @@ public class ParseRoleClaimsPrincipalFactory : AccountClaimsPrincipalFactory<Rem
 	public async override ValueTask<ClaimsPrincipal> CreateUserAsync(RemoteUserAccount account, RemoteAuthenticationUserOptions options)
 	{
 		var user = await base.CreateUserAsync(account, options);
-
+		if (user.Identity is not ClaimsIdentity)
+		{
+			throw new InvalidOperationException("The user identity is not a ClaimsIdentity.");
+		}
 		var identity = (ClaimsIdentity)user.Identity;
 		if (account is not null)
 		{

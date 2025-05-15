@@ -5,16 +5,16 @@ namespace Server.Modules.Scheduling.Entities
 {
 	public class Clinician : BaseEntity<Clinician>, IEntity
 	{
-		public string FirstName { get; set; }
-		public string LastName { get; set; }
-		public string Telephone { get; set; }
-		public string Email { get; set; }
+		public required string FirstName { get; set; }
+		public required string LastName { get; set; }
+		public required string Telephone { get; set; }
+		public required string Email { get; set; }
 		public ClinicianTypeEnum ClinicianType { get; set; }
 		public RegulatorTypeEnum RegulatorType { get; set; }
-		public string LicenceNumber { get; set; }
-		public string AvatarImage { get; set; }
-		public string AvatarTitle { get; set; }
-		public string AvatarDescription { get; set; }
+		public required string LicenceNumber { get; set; }
+		public required string AvatarImage { get; set; }
+		public required string AvatarTitle { get; set; }
+		public required string AvatarDescription { get; set; }
 		public HashSet<Schedule> CalendarItems { get; set; } = new HashSet<Schedule>();
 	}
 }

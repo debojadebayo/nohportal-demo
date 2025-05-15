@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Modules.Scheduling.Infrastructure.Database;
@@ -11,9 +12,11 @@ using Server.Modules.Scheduling.Infrastructure.Database;
 namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(SchedulingDbContext))]
-    partial class SchedulingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250514222448_AddressWarnings")]
+    partial class AddressWarnings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -318,10 +321,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("Referrals", "scheduling");
@@ -338,8 +337,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReferralDetails = "Routine checkup for hypertension.",
-                            Title = "Hypertension Checkup"
+                            ReferralDetails = "Routine checkup for hypertension."
                         },
                         new
                         {
@@ -352,8 +350,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReferralDetails = "Follow-up for diabetes management.",
-                            Title = "Diabetes Follow-up"
+                            ReferralDetails = "Follow-up for diabetes management."
                         },
                         new
                         {
@@ -366,8 +363,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReferralDetails = "Initial consultation for back pain.",
-                            Title = "Back Pain Consultation"
+                            ReferralDetails = "Initial consultation for back pain."
                         },
                         new
                         {
@@ -380,8 +376,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReferralDetails = "Annual physical examination.",
-                            Title = "Annual Physical Exam"
+                            ReferralDetails = "Annual physical examination."
                         },
                         new
                         {
@@ -394,8 +389,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReferralDetails = "Referral for allergy testing.",
-                            Title = "Allergy Testing"
+                            ReferralDetails = "Referral for allergy testing."
                         },
                         new
                         {
@@ -408,8 +402,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReferralDetails = "Consultation for asthma symptoms.",
-                            Title = "Asthma Consultation"
+                            ReferralDetails = "Consultation for asthma symptoms."
                         },
                         new
                         {
@@ -422,8 +415,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReferralDetails = "Pre-surgery evaluation.",
-                            Title = "Pre-Surgery Evaluation"
+                            ReferralDetails = "Pre-surgery evaluation."
                         },
                         new
                         {
@@ -436,8 +428,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReferralDetails = "Post-operative follow-up.",
-                            Title = "Post-Op Follow-up"
+                            ReferralDetails = "Post-operative follow-up."
                         },
                         new
                         {
@@ -450,8 +441,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReferralDetails = "Referral for physical therapy.",
-                            Title = "Physical Therapy Referral"
+                            ReferralDetails = "Referral for physical therapy."
                         },
                         new
                         {
@@ -464,8 +454,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             IsActive = false,
                             LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ReferralDetails = "Consultation for migraine headaches.",
-                            Title = "Migraine Consultation"
+                            ReferralDetails = "Consultation for migraine headaches."
                         });
                 });
 

@@ -1,6 +1,8 @@
 @namespace Client.Pages.Components.Calendar.CustomMonthView
+@using ComposedHealthBase.Shared.Models
 @using Heron.MudCalendar
-@inherits MonthView
+@inherits MonthView<TCalendarItem>
+@typeparam TCalendarItem where TCalendarItem : BaseCalendarItem
 
 @Render
 

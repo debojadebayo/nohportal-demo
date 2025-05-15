@@ -1,13 +1,15 @@
 @namespace Client.Pages.Components.Calendar.CustomDayView
+@using ComposedHealthBase.Shared.Models
 @using Heron.MudCalendar
-@inherits DayView
+@inherits DayView<TCalendarItem>
+@typeparam TCalendarItem where TCalendarItem : BaseCalendarItem
 
 @Render
 
 @code {
     private const int MinutesInDay = 24 * 60;
     private int CellsInDay => MinutesInDay / (int)Calendar.DayTimeInterval;
-    protected virtual int DaysInView => 1;
+    protected override int DaysInView => 1;
 
     private bool IsHourCell(int row)
     {
@@ -38,7 +40,7 @@
 /// <summary>
 /// Renders the title of a day.
 /// </summary>
-protected override RenderFragment RenderDayTitle(CalendarCell cell) => __builder =>
+protected override RenderFragment RenderDayTitle(CalendarCell<TCalendarItem> cell) => __builder =>
 {
     __builder.AddContent(1, cell.Date.ToString("ddd")[0]);
 };
@@ -87,12 +89,12 @@ protected override RenderFragment RenderCells =>
 /// <summary>
 /// Renders an individual cell.
 /// </summary>
-protected override RenderFragment RenderCell(CalendarCell cell) =>
+protected override RenderFragment RenderCell(CalendarCell<TCalendarItem> cell) =>
 @<div class="mud-cal-week-cell-holder">
 @for (var i = 0; i < CellsInDay; i++)
 {
     var row = i;
-        <MudDropZone T="WeekView" OnlyZone="true" Style="@CellHeightStyle()"
+        <MudDropZone T="WeekView<TCalendarItem>" OnlyZone="true" Style="@CellHeightStyle()"
             Identifier="@string.Concat(cell.Date.Date.ToString("d"), "_", row.ToString())">
             @if (Calendar.CellClicked.HasDelegate)
             {

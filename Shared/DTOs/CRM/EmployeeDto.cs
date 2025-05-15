@@ -11,18 +11,18 @@ namespace Shared.DTOs.CRM
         public int LastModifiedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
         public DateTime DOB { get; set; }
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
-        public string Address3 { get; set; }
-        public string Postcode { get; set; }
-        public string Email { get; set; }
-        public string Telephone { get; set; }
+        public string Address1 { get; set; } = string.Empty;
+        public string? Address2 { get; set; }
+        public string? Address3 { get; set; }
+        public string Postcode { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Telephone { get; set; } = string.Empty;
         public long CustomerId { get; set; }
-        public string JobRole { get; set; }
-        public string Department { get; set; }
-        public string LineManager { get; set; }
+        public string JobRole { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public string LineManager { get; set; } = string.Empty;
     }
 }

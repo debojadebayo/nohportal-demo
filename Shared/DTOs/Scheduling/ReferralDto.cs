@@ -15,5 +15,6 @@ namespace Shared.DTOs.Scheduling
 		public long EmployeeId { get; set; }
 		public string ReferralDetails { get; set; } = string.Empty;
 		public string DocumentId { get; set; } = string.Empty;
+		public string Title { get; set; } = string.Empty;
 	}
 }

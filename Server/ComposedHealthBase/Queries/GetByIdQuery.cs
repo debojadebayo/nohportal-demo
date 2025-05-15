@@ -1,4 +1,3 @@
-
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Entities;
 using Shared.DTOs;
@@ -32,6 +31,10 @@ namespace ComposedHealthBase.Server.Queries
         public async Task<TDto> Handle(long id)
         {
             var entity = await _dbContext.Set<T>().SingleOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
+            {
+                throw new KeyNotFoundException($"Entity of type {typeof(T).Name} with id {id} not found");
+            }
             return _mapper.Map(entity);
         }
     }

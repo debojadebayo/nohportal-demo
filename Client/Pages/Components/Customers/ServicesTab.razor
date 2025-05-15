@@ -26,7 +26,7 @@
         </NoRecordsContent>
     </MudTable>
 
-    <MudDialog Open="ProductDialogOpen" MaxWidth="MaxWidth.Small" CloseOnEscapeKey="true" OnClose="() => SetProductDialogOpen(false)">
+    <MudDialog open="ProductDialogOpen" max-width="MaxWidth.Small" close-on-escape-key="true" on-close="() => SetProductDialogOpen(false)">
         <DialogContent>
             <MudForm @ref="form" Model="EditingProduct">
                 <MudSelect T="ProductTypeDto" Label="Product Type" @bind-Value="EditingProduct.ProductType" Required="true">
@@ -48,17 +48,17 @@
 </MudPaper>
 
 @code {
-    [Parameter] public List<ProductDto> Products { get; set; }
-    [Parameter] public List<ProductTypeDto> ProductTypes { get; set; }
+    [Parameter] public List<ProductDto> Products { get; set; } = new List<ProductDto>();
+    [Parameter] public List<ProductTypeDto> ProductTypes { get; set; } = new List<ProductTypeDto>();
     [Parameter] public EventCallback OnAdd { get; set; }
     [Parameter] public EventCallback<ProductDto> OnEdit { get; set; }
     [Parameter] public EventCallback<ProductDto> OnDelete { get; set; }
     [Parameter] public EventCallback<ProductDto> OnSave { get; set; }
-    [Parameter] public ProductDto EditingProduct { get; set; }
+    [Parameter] public ProductDto EditingProduct { get; set; } = new ProductDto{ ProductType = new ProductTypeDto{ ChargeCode = "", Description = "", Name = ""} };
     [Parameter] public bool ProductDialogOpen { get; set; }
-    [Parameter] public Action<bool> SetProductDialogOpen { get; set; }
+    [Parameter] public Action<bool> SetProductDialogOpen { get; set; } = default!;
 
-    private MudForm form;
+    private MudForm form = default!;
 
     private async Task OnAddClicked()
     {

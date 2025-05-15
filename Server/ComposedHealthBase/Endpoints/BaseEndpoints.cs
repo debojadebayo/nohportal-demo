@@ -16,7 +16,7 @@ namespace ComposedHealthBase.Server.Endpoints
 	where TDto : IDto
 	where TContext : IDbContext<TContext>
 	{
-		public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			var endpointName = typeof(T).Name;
 			var group = endpoints.MapGroup($"/api/{endpointName}");

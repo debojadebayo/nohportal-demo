@@ -2,8 +2,6 @@
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @using MudBlazor
-@inject IHttpClientFactory HttpClientFactory
-@inject ISnackbar Snackbar
 @attribute [Authorize]
 
 @using Client.Pages.Components.Customers
@@ -52,10 +50,9 @@
 
 @code {
     private List<CustomerDto> customerList = new();
-    private CustomerDto? selectedCustomer = null;
-    private bool isLoading = false;
-    private string? loadError;
-    private HttpClient httpClient;
+    private CustomerDto? selectedCustomer;
+    private bool isLoading;
+    private HttpClient httpClient = default!;
     private List<ScheduleDto> appointments = new();
     private List<ReferralDto> referrals = new();
     private List<ContractDto> contracts = new();
@@ -64,13 +61,17 @@
     private List<ProductTypeDto> productTypes = new();
     private List<DocumentDto> documents = new();
 
-    // Product dialog state
-    private bool productDialogOpen = false;
-    private ProductDto editingProduct = new();
+    [Inject]
+    private IHttpClientFactory HttpClientFactory { get; set; } = default!;
+    [Inject]
+    private ISnackbar Snackbar { get; set; } = default!;
+
+    private bool productDialogOpen;
+    private ProductDto editingProduct = default!;
 
     private string CustomerToString(CustomerDto? e) => e is null ? string.Empty : $"{e.Name} - {e.Id}";
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         httpClient = HttpClientFactory.CreateClient("api");
     }
@@ -258,7 +259,7 @@
     {
         editingProduct = new ProductDto
         {
-            ProductType = productTypes.FirstOrDefault(),
+            ProductType = productTypes?.FirstOrDefault() ?? new ProductTypeDto{ ChargeCode = string.Empty, Description = string.Empty, Name = string.Empty },
             Price = 0,
             StartTime = DateTime.Now,
             EndTime = DateTime.Now.AddMonths(12)
@@ -411,6 +412,7 @@
             using var content = new MultipartFormDataContent();
             content.Add(new StringContent(document.Item1.Name ?? string.Empty), "Name");
             content.Add(new StringContent(document.Item1.Description ?? string.Empty), "Description");
+            content.Add(new StringContent(document.Item1.FilePath ?? string.Empty), "FilePath");
             content.Add(new StringContent(selectedCustomer.Id.ToString()), "CustomerId");
 
             var fileContent = new StreamContent(document.Item2.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // Max 10MB file

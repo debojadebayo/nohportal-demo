@@ -1,3 +1,4 @@
+@namespace Client.Pages.Forms
 @using MudBlazor
 @using Shared.DTOs.Scheduling
 @inject IHttpClientFactory HttpClientFactory
@@ -7,12 +8,14 @@
         <MudForm Model="@model" @ref="@form" ValidationDelay="0">
             <MudGrid>
                 <MudItem xs="12" sm="6">
-                    <MudSelect T="long" Label="Referral" @bind-Value="model.ReferralId">
+                    <MudSelect T="long" Label="Referral" Value="model.ReferralId" ValueChanged="OnReferralSelected">
                         @foreach (var referral in Referrals)
                         {
                             <MudSelectItem T="long" Value="@referral.Id">@referral.ReferralDetails</MudSelectItem>
                         }
                     </MudSelect>
+                    <MudTextField T="string" Label="Referral Title" Value="@model.Title" />
+                    <MudTextField T="string" Label="Referral Description" Value="@model.Description" />
                     <MudSelect T="long" Label="Clinician" @bind-Value="model.ClinicianId">
                         @foreach (var clinician in Clinicians)
                         {
@@ -21,8 +24,11 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12" sm="6">
-                    <MudDatePicker Date="model.Start" Label="Start " Variant="Variant.Outlined" />
-                    <MudDatePicker Date="model.End" Label="End " Variant="Variant.Outlined" />
+                    <MudDatePicker @bind-Date="@SelectedDate" Label="Appointment Date" Variant="Variant.Outlined" />
+                    <div class="d-flex gap-4">
+                        <MudTimePicker Label="Start Time" @bind-Time="StartTime" Variant="Variant.Outlined" />
+                        <MudTimePicker Label="End Time" @bind-Time="EndTime" Variant="Variant.Outlined" />
+                    </div>
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -35,42 +41,71 @@
 
 @code {
     [Inject]
-    ISnackbar Snackbar { get; set; }
+    private ISnackbar Snackbar { get; set; } = default!;
     [Inject]
-    private IDialogService DialogService { get; set; } // for MessageBox
+    private IDialogService DialogService { get; set; } = default!;
+
+    private MudForm? form;
+    [Parameter]
+    public ScheduleDto model { get; set; } = new ScheduleDto
+    {
+        Title = string.Empty,
+        Description = string.Empty
+    };
+    [Parameter]
+    public IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
+    [Parameter]
+    public IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
 
     [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; }
-    private HttpClient httpClient;
-    private IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
-    private IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
-    protected override async Task OnInitializedAsync()
-    {
-        httpClient = HttpClientFactory.CreateClient("api");
-        try
-        {
-            var clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getall");
-            Clinicians = clinicians ?? new List<ClinicianDto>();
+    private IMudDialogInstance MudDialog { get; set; } = default!;
 
-            var referrals = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>("api/referral/getall");
-            Referrals = referrals ?? new List<ReferralDto>();
-        }
-        catch (Exception ex)
+    private DateTime? SelectedDate { get; set; }
+    private TimeSpan? StartTime { get; set; }
+    private TimeSpan? EndTime { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (model.StartTime.HasValue)
         {
-            Console.WriteLine($"Error fetching data: {ex.Message}");
+            SelectedDate = model.StartTime.Value.Date;
+            StartTime = model.StartTime.Value.TimeOfDay;
+        }
+        if (model.EndTime.HasValue)
+        {
+            EndTime = model.EndTime.Value.TimeOfDay;
         }
     }
 
     private async Task Submit()
     {
+        if (form is null) return;
+
+        if (SelectedDate.HasValue)
+        {
+            model.StartTime = StartTime.HasValue ? SelectedDate.Value.Add(StartTime.Value) : null;
+            model.EndTime = EndTime.HasValue ? SelectedDate.Value.Add(EndTime.Value) : null;
+        }else
+        {
+            return;
+        }
+
         await form.Validate();
         if (form.IsValid)
         {
-            MudDialog.Close(DialogResult.Ok(model));
+            MudDialog?.Close(DialogResult.Ok(model));
         }
     }
-    private void Cancel() => MudDialog.Cancel();
-    MudForm form;
-    [Parameter]
-    public ScheduleDto model { get; set; } = new ScheduleDto();
+    private void Cancel() => MudDialog?.Cancel();
+
+    private void OnReferralSelected(long referralId)
+    {
+        model.ReferralId = referralId;
+        var selectedReferral = Referrals.FirstOrDefault(r => r.Id == referralId);
+        if (selectedReferral != null)
+        {
+            model.Title = selectedReferral.Title;
+            model.Description = selectedReferral.ReferralDetails;
+        }
+    }
 }

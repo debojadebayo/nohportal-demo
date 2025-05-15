@@ -11,7 +11,7 @@ namespace Shared.DTOs.CRM
 		public int LastModifiedBy { get; set; }
 		public DateTime CreatedDate { get; set; }
 		public DateTime ModifiedDate { get; set; }
-		public ProductTypeDto ProductType { get; set; }
+		public required ProductTypeDto ProductType { get; set; }
 		public decimal Price { get; set; }
 		public DateTime? StartTime { get; set; }
 		public DateTime? EndTime { get; set; }

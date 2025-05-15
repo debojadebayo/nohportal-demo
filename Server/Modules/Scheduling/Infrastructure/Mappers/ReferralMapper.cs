@@ -13,6 +13,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
             EmployeeId = entity.EmployeeId,
             ReferralDetails = entity.ReferralDetails,
             DocumentId = entity.DocumentId,
+            Title = entity.Title,
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
@@ -29,6 +30,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
             EmployeeId = dto.EmployeeId,
             ReferralDetails = dto.ReferralDetails,
             DocumentId = dto.DocumentId,
+            Title = dto.Title,
             CreatedBy = dto.CreatedBy,
             LastModifiedBy = dto.LastModifiedBy,
             CreatedDate = dto.CreatedDate,
@@ -53,6 +55,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
         entity.EmployeeId = dto.EmployeeId;
         entity.ReferralDetails = dto.ReferralDetails;
         entity.DocumentId = dto.DocumentId;
+        entity.Title = dto.Title;
         entity.CreatedBy = dto.CreatedBy;
         entity.LastModifiedBy = dto.LastModifiedBy;
         entity.CreatedDate = dto.CreatedDate;

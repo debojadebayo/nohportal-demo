@@ -21,7 +21,7 @@
         <MudTh>Charge Code</MudTh>
         <MudTh>Price</MudTh>
     </HeaderContent>
-    <RowTemplate>
+    <RowTemplate Context="context">
         <MudTd>@context.ProductType?.Name</MudTd>
         <MudTd>@context.ProductType?.ChargeCode</MudTd>
         <MudTd>@context.Price.ToString("C")</MudTd>
@@ -36,11 +36,11 @@
     private List<ProductDto> products = new()
     {
         new ProductDto {
-            ProductType = new ProductTypeDto { Name = "OHP Full Day", ChargeCode = "OHPFULL" },
+            ProductType = new ProductTypeDto { Name = "OHP Full Day", ChargeCode = "OHPFULL", Description = "" },
             Price = 85
         },
         new ProductDto {
-            ProductType = new ProductTypeDto { Name = "OHP Half Day", ChargeCode = "OHPHALF" },
+            ProductType = new ProductTypeDto { Name = "OHP Half Day", ChargeCode = "OHPHALF", Description = "" },
             Price = 1000
         }
     };

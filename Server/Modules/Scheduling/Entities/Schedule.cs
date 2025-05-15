@@ -14,5 +14,7 @@ namespace Server.Modules.Scheduling.Entities
 		public ScheduleStatusEnum Status { get; set; }
 		public DateTime? Start { get; set; }
 		public DateTime? End { get; set; }
+		public required string Title { get; set; }
+		public required string Description { get; set; }
 	}
 }
