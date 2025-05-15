@@ -29,16 +29,16 @@ namespace Server.Modules.Scheduling.Infrastructure.Database
 					);
 			modelBuilder.Entity<Referral>()
 				.HasData(
-					new Referral { Id = 1, CustomerId = 1, EmployeeId = 1, ReferralDetails = "Routine checkup for hypertension.", DocumentId = "DOC-1001" },
-					new Referral { Id = 2, CustomerId = 1, EmployeeId = 2, ReferralDetails = "Follow-up for diabetes management.", DocumentId = "DOC-1002" },
-					new Referral { Id = 3, CustomerId = 1, EmployeeId = 3, ReferralDetails = "Initial consultation for back pain.", DocumentId = "DOC-1003" },
-					new Referral { Id = 4, CustomerId = 2, EmployeeId = 4, ReferralDetails = "Annual physical examination.", DocumentId = "DOC-1004" },
-					new Referral { Id = 5, CustomerId = 2, EmployeeId = 5, ReferralDetails = "Referral for allergy testing.", DocumentId = "DOC-1005" },
-					new Referral { Id = 6, CustomerId = 2, EmployeeId = 6, ReferralDetails = "Consultation for asthma symptoms.", DocumentId = "DOC-1006" },
-					new Referral { Id = 7, CustomerId = 3, EmployeeId = 7, ReferralDetails = "Pre-surgery evaluation.", DocumentId = "DOC-1007" },
-					new Referral { Id = 8, CustomerId = 3, EmployeeId = 8, ReferralDetails = "Post-operative follow-up.", DocumentId = "DOC-1008" },
-					new Referral { Id = 9, CustomerId = 3, EmployeeId = 9, ReferralDetails = "Referral for physical therapy.", DocumentId = "DOC-1009" },
-					new Referral { Id = 10, CustomerId = 3, EmployeeId = 10, ReferralDetails = "Consultation for migraine headaches.", DocumentId = "DOC-1010" }
+					new Referral { Id = 1, CustomerId = 1, EmployeeId = 1, ReferralDetails = "Routine checkup for hypertension.", DocumentId = "DOC-1001", Title = "Hypertension Checkup" },
+					new Referral { Id = 2, CustomerId = 1, EmployeeId = 2, ReferralDetails = "Follow-up for diabetes management.", DocumentId = "DOC-1002", Title = "Diabetes Follow-up" },
+					new Referral { Id = 3, CustomerId = 1, EmployeeId = 3, ReferralDetails = "Initial consultation for back pain.", DocumentId = "DOC-1003", Title = "Back Pain Consultation" },
+					new Referral { Id = 4, CustomerId = 2, EmployeeId = 4, ReferralDetails = "Annual physical examination.", DocumentId = "DOC-1004", Title = "Annual Physical Exam" },
+					new Referral { Id = 5, CustomerId = 2, EmployeeId = 5, ReferralDetails = "Referral for allergy testing.", DocumentId = "DOC-1005", Title = "Allergy Testing" },
+					new Referral { Id = 6, CustomerId = 2, EmployeeId = 6, ReferralDetails = "Consultation for asthma symptoms.", DocumentId = "DOC-1006", Title = "Asthma Consultation" },
+					new Referral { Id = 7, CustomerId = 3, EmployeeId = 7, ReferralDetails = "Pre-surgery evaluation.", DocumentId = "DOC-1007", Title = "Pre-Surgery Evaluation" },
+					new Referral { Id = 8, CustomerId = 3, EmployeeId = 8, ReferralDetails = "Post-operative follow-up.", DocumentId = "DOC-1008", Title = "Post-Op Follow-up" },
+					new Referral { Id = 9, CustomerId = 3, EmployeeId = 9, ReferralDetails = "Referral for physical therapy.", DocumentId = "DOC-1009", Title = "Physical Therapy Referral" },
+					new Referral { Id = 10, CustomerId = 3, EmployeeId = 10, ReferralDetails = "Consultation for migraine headaches.", DocumentId = "DOC-1010", Title = "Migraine Consultation" }
 						);
 			modelBuilder.Entity<Schedule>()
 				.HasData(

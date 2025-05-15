@@ -9,5 +9,6 @@ namespace Server.Modules.Scheduling.Entities
 		public long EmployeeId { get; set; }
 		public required string ReferralDetails { get; set; }
 		public required string DocumentId { get; set; }
+		public required string Title { get; set; }
 	}
 }

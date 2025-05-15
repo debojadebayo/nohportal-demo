@@ -19,7 +19,17 @@ namespace Shared.DTOs.Scheduling
         public long EmployeeId { get; set; }
         public long ClinicianId { get; set; }
         public long ProductId { get; set; }
-        public required string Title { get; set; }
+        public required string Title
+        {
+            get
+            {
+                return base.Text;
+            }
+            set
+            {
+                base.Text = value;
+            }
+        }
         public required string Description { get; set; }
         public ScheduleStatusEnum Status { get; set; }
     }
