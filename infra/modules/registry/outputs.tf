@@ -19,3 +19,8 @@ output "registry_login_server" {
 #   value       = azurerm_container_registry.acr.admin_password
 #   sensitive   = true
 # }
+
+output "acr_url" {
+  description = "URL of the container registry"
+  value       = azurerm_container_registry.acr.login_server
+}

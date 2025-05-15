@@ -23,6 +23,8 @@ output "keycloak_admin_username_secret_id" {
     value       = azurerm_key_vault_secret.keycloak_admin_username.id
 }
 
+# workaround to use the URI as the secret ID does not appear to be picked up by the container app in terraform 4.0.1
+
 output "keycloak_admin_password_secret_id" {
     description = "Keycloak admin password secret ID"
     value       = azurerm_key_vault_secret.keycloak_admin_password.id
