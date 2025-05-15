@@ -22,7 +22,7 @@ resource "azurerm_container_app_environment" "container_env" {
 
 # Server API Container 
 
-resource "azurerm_container_app" "server" {
+resource "azurerm_container_app" "api_server" {
   name                         = var.server_container_app_name
   container_app_environment_id = azurerm_container_app_environment.container_env.id
   resource_group_name          = var.resource_group_name
@@ -32,12 +32,22 @@ resource "azurerm_container_app" "server" {
     container {
       name   = "server"
       image  = "${var.container_registry_url}/nationoh/server:${var.image_tags["server"]}"
-      cpu    = var.cpu
-      memory = var.memory
+      cpu    = var.container_cpu
+      memory = var.container_memory
 
       env {
         name  = "ASPNETCORE_ENVIRONMENT"
         value = var.aspnetcore_environment
+      }
+
+      liveness_probe {
+        path                = "/api-health"
+        port                = 5003
+        transport           = var.aspnetcore_environment == "Development" ? "http" : "https"
+        initial_delay       = 60
+        interval_seconds    = 15
+        timeout             = 5
+        failure_count_threshold   = 3
       }
     }
   }
@@ -49,13 +59,14 @@ resource "azurerm_container_app" "server" {
 
     traffic_weight {
       percentage = 100
+      latest_revision = true
     }
   }
 }
 
 # Keycloak 
 
-resource "azurerm_container_app" "keycloak" {
+resource "azurerm_container_app" "keycloak_server" {
   name                         = var.keycloak_container_app_name
   container_app_environment_id = azurerm_container_app_environment.container_env.id
   resource_group_name          = var.resource_group_name
@@ -68,21 +79,25 @@ resource "azurerm_container_app" "keycloak" {
 
   secret {
     name                 = "keycloak-admin-username"
-    key_vault_secret_id  = var.keycloak_admin_username_secret_id
+    identity = var.user_assigned_identity_id
+    key_vault_secret_id = var.keycloak_admin_username_secret_id
   }
 
   secret {
     name                 = "keycloak-admin-password"
-    key_vault_secret_id  = var.keycloak_admin_password_secret_id
+    identity = var.user_assigned_identity_id
+    key_vault_secret_id = var.keycloak_admin_password_secret_id
   }
 
   secret {
     name                 = "keycloak-db-username"
+    identity = var.user_assigned_identity_id
     key_vault_secret_id  = var.keycloak_db_username_secret_id
   }
 
   secret {
     name                 = "keycloak-db-password"
+    identity = var.user_assigned_identity_id
     key_vault_secret_id  = var.keycloak_db_password_secret_id
   }
 
@@ -123,6 +138,16 @@ resource "azurerm_container_app" "keycloak" {
         name  = "KC_FEATURES"
         value = var.keycloak_features
       }
+
+      liveness_probe {
+        path                = "/auth/realms/master"  
+        port                = 8080
+        transport           = var.aspnetcore_environment == "Development" ? "http" : "https"
+        initial_delay       = 120  
+        interval_seconds    = 30
+        timeout             = 10
+        failure_count_threshold   = 3
+      }
     }
   }
 
@@ -133,47 +158,61 @@ resource "azurerm_container_app" "keycloak" {
 
     traffic_weight {
       percentage = 100
+      latest_revision = true
     }
   }
 }
 
 # Frontend 
 
-# resource "azurerm_container_app" "frontend" {
-#   name                         = var.container_app_frontend_name
-#   container_app_environment_id = azurerm_container_app_environment.container_env.id
-#   resource_group_name          = var.resource_group_name
-#   revision_mode                = "Single"
+resource "azurerm_container_app" "frontend" {
+  name                         = var.frontend_container_app_name
+  container_app_environment_id = azurerm_container_app_environment.container_env.id
+  resource_group_name          = var.resource_group_name
+  revision_mode                = "Single"
 
-#   template {
-#     container {
-#       name   = "frontend"
-#       image  = "${var.container_registry_url}/nationoh/frontend:${var.image_tags["frontend"]}"
-#       cpu    = 1.0
-#       memory = "2Gi"
+  template {
+    container {
+      name   = "frontend"
+      image  = "${var.container_registry_url}/nationoh/frontend:${var.image_tags["frontend"]}"
+      cpu    = 1.0
+      memory = "2Gi"
 
-#       env {
-#         name  = "ASPNETCORE_ENVIRONMENT"
-#         value = "Production"
-#       }
-#       env {
-#         name  = "API_URL"
-#         value = "https://api.${var.domain_name}"
-#       }
-#       env {
-#         name  = "KEYCLOAK_URL"
-#         value = "https://auth.${var.domain_name}"
-#       }
-#     }
-#   }
+      env {
+        name  = "ASPNETCORE_ENVIRONMENT"
+        value = var.aspnetcore_environment
+      }
+      env {
+        name  = "API_URL"
+        value = var.api_url
+      }
+      env {
+        name  = "KEYCLOAK_URL"
+        value = var.keycloak_url
+      }
 
-#   ingress {
-#     external_enabled = true
-#     target_port      = 5002
-#     transport        = "http"
+    liveness_probe {
+          path                = "/health"  
+          port                = 5002
+          transport           = var.aspnetcore_environment == "Development" ? "http" : "https"
+          initial_delay       = 60
+          interval_seconds    = 15
+          timeout             = 5
+          failure_count_threshold   = 3
+        }
+    }
+    
+  }
 
-#     traffic_weight {
-#       percentage = 100
-#     }
-#   }
-# }
+
+  ingress {
+    external_enabled = false
+    target_port      = 5002
+    transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
+
+    traffic_weight {
+      percentage = 100
+      latest_revision = true
+    }
+  }
+}

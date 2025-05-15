@@ -30,16 +30,14 @@ variable "aspnetcore_environment" {
   default     = "Development"
 }
 
-variable "cpu" {
+variable "container_cpu" {
   description = "CPU for the container"
   type        = number
-  default     = 0.5
 }
 
-variable "memory" {
+variable "container_memory" {
   description = "Memory for the container"
   type        = string
-  default     = "1Gi"
 }
 
 
@@ -58,6 +56,11 @@ variable "keycloak_container_app_name" {
   type        = string
 }
 
+variable "frontend_container_app_name" {
+  description = "Name of the frontend container app"
+  type        = string
+}
+
 variable "log_analytics_workspace_name" {
   description = "Name of the Log Analytics workspace"
   type        = string
@@ -69,18 +72,16 @@ variable "keycloak_db_username" {
   default     = "keycloak"
 }
 
-# variable "keycloak_db_password" {
-#   description = "Keycloak DB password"
-#   type        = string
-#   sensitive   = true
-#   default     = "dev-db-password"
-# }
+variable "api_url" {
+  description = "API URL"
+  type        = string
+}
 
-# variable "keycloak_db_name" {
-#   description = "Keycloak DB name"
-#   type        = string
-#   default     = "keycloak"
-# }
+variable "keycloak_url" {
+  description = "Keycloak URL"
+  type        = string
+}
+
 
 variable "keycloak_admin_username_secret_id" {
     description = "Keycloak admin username secret ID"
@@ -111,19 +112,18 @@ variable "keycloak_features" {
 variable "keycloak_db_url" {
   description = "Keycloak DB JDBC URL"
   type        = string
-  # default     = "jdbc:postgresql://${var.postgresql_server_fqdn}:5432/${var.keycloak_db_name}"
 }
 
 
-# variable "image_tags" {
-#   description = "Map of image tags for each container"
-#   type        = map(string)
-#   default = {
-#     server   = "latest"
-#     frontend = "latest"
-#     keycloak = "latest"
-#   }
-# }
+variable "image_tags" {
+  description = "Map of image tags for each container"
+  type        = map(string)
+  default = {
+    server   = "1.0.0"
+    frontend = "1.0.0"
+    keycloak = "26.1"
+  }
+}
 
 # variable "container_app_server_name" {
 #   description = "Name of the container app server"
