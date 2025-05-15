@@ -4,9 +4,11 @@
 @using Shared.DTOs.CRM
 @using Client.Pages.Forms
 @using Shared.DTOs.Scheduling
+@using MudBlazor
 @using Client.Pages.Components.Calendar
 @inject IHttpClientFactory HttpClientFactory
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 @attribute [Authorize]
 
 <PageTitle>Diary</PageTitle>
@@ -45,7 +47,8 @@
 
 @code {
     private IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
-    private HttpClient? httpClient;
+    private IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
+    private HttpClient httpClient = default!;
 
     private bool _isModalOpen = false;
     private ScheduleDto _editingSchedule = new ScheduleDto
@@ -56,21 +59,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-        try
+        httpClient = HttpClientFactory.CreateClient("api");
+                try
         {
-            httpClient = HttpClientFactory.CreateClient("api");
-            var clinicians = await
-            httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getallclinicianswithschedules");
+            var clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getall");
             Clinicians = clinicians ?? new List<ClinicianDto>();
+
+            var referrals = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>("api/referral/getall");
+            Referrals = referrals ?? new List<ReferralDto>();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error fetching Clinician data: {ex.Message}");
+            Console.WriteLine($"Error fetching data: {ex.Message}");
         }
     }
-
+    
     private async Task OpenAddAppointmentModal()
     {
+        // Create a new schedule with default values
         var newSchedule = new ScheduleDto
         {
             Title = string.Empty,
@@ -78,21 +84,39 @@
             Start = DateTime.UtcNow,
             End = DateTime.UtcNow.AddHours(1)
         };
-        var dialogReference = await DialogService.ShowAsync<ScheduleDetails>("Add Appointment", new DialogParameters
-        {
-            { "model", newSchedule }
-        });
-        var dialogResult = await dialogReference.Result;
-        if (dialogResult == null)
-        {
-            Console.WriteLine("Dialog was closed without a result.");
-            return;
-        }
 
-        if (!dialogResult.Canceled && dialogResult.Data is ScheduleDto result)
+        // Show the dialog
+        var parameters = new DialogParameters
         {
-            // TODO: Add result to your list or send to server
-            Console.WriteLine($"Received new appointment: {result.Title}");
+            { "model", newSchedule },
+            { "Clinicians", Clinicians },
+            { "Referrals", Referrals }
+        };
+        var dialogReference = await DialogService.ShowAsync<Forms.ScheduleDetails>("Add Appointment", parameters);
+        var dialogResult = await dialogReference.Result;
+
+        if (dialogResult?.Data is ScheduleDto schedule)
+        {
+            try
+            {
+                var response = await httpClient.PostAsJsonAsync("api/schedule/create", schedule);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Appointment created successfully");
+                    
+                    // Refresh the clinicians data which includes their schedules
+                    var clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getallclinicianswithschedules");
+                    Clinicians = clinicians ?? new List<ClinicianDto>();
+                }
+                else
+                {
+                    Snackbar.Add($"Failed to create appointment: {response.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error creating appointment: {ex.Message}");
+            }
         }
     }
 

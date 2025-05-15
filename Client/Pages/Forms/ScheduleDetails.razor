@@ -1,3 +1,4 @@
+@namespace Client.Pages.Forms
 @using MudBlazor
 @using Shared.DTOs.Scheduling
 @inject IHttpClientFactory HttpClientFactory
@@ -21,8 +22,11 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12" sm="6">
-                    <MudDatePicker Date="model.Start" Label="Start " Variant="Variant.Outlined" />
-                    <MudDatePicker Date="model.End" Label="End " Variant="Variant.Outlined" />
+                    <MudDatePicker @bind-Date="@SelectedDate" Label="Appointment Date" Variant="Variant.Outlined" />
+                    <div class="d-flex gap-4">
+                        <MudTimePicker Label="Start Time" @bind-Time="StartTime" Variant="Variant.Outlined" />
+                        <MudTimePicker Label="End Time" @bind-Time="EndTime" Variant="Variant.Outlined" />
+                    </div>
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -39,39 +43,6 @@
     [Inject]
     private IDialogService DialogService { get; set; } = default!;
 
-    [CascadingParameter]
-    private IMudDialogInstance MudDialog { get; set; } = default!;
-    private HttpClient httpClient = default!;
-    private IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
-    private IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
-
-    protected override async Task OnInitializedAsync()
-    {
-        httpClient = HttpClientFactory.CreateClient("api");
-        try
-        {
-            var clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getall");
-            Clinicians = clinicians ?? new List<ClinicianDto>();
-
-            var referrals = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>("api/referral/getall");
-            Referrals = referrals ?? new List<ReferralDto>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching data: {ex.Message}");
-        }
-    }
-
-    private async Task Submit()
-    {
-        if (form is null) return;
-        await form.Validate();
-        if (form.IsValid)
-        {
-            MudDialog?.Close(DialogResult.Ok(model));
-        }
-    }
-    private void Cancel() => MudDialog?.Cancel();
     private MudForm? form;
     [Parameter]
     public ScheduleDto model { get; set; } = new ScheduleDto
@@ -79,4 +50,50 @@
         Title = string.Empty,
         Description = string.Empty
     };
+    [Parameter]
+    public IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
+    [Parameter]
+    public IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private DateTime? SelectedDate { get; set; }
+    private TimeSpan? StartTime { get; set; }
+    private TimeSpan? EndTime { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (model.StartTime.HasValue)
+        {
+            SelectedDate = model.StartTime.Value.Date;
+            StartTime = model.StartTime.Value.TimeOfDay;
+        }
+        if (model.EndTime.HasValue)
+        {
+            EndTime = model.EndTime.Value.TimeOfDay;
+        }
+    }
+
+    private async Task Submit()
+    {
+        if (form is null) return;
+
+        if (SelectedDate.HasValue)
+        {
+            model.StartTime = StartTime.HasValue ? SelectedDate.Value.Add(StartTime.Value) : null;
+            model.EndTime = EndTime.HasValue ? SelectedDate.Value.Add(EndTime.Value) : null;
+            model.Name = Referrals.FirstOrDefault(x => x.Id == model.ReferralId)?.ReferralDetails;
+        }else
+        {
+            return;
+        }
+
+        await form.Validate();
+        if (form.IsValid)
+        {
+            MudDialog?.Close(DialogResult.Ok(model));
+        }
+    }
+    private void Cancel() => MudDialog?.Cancel();
 }
