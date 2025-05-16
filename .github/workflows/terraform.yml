@@ -48,19 +48,19 @@ jobs:
         fi
 
     - name: Terraform Init
-      working-directory: ./NationOH/infra
+      working-directory: ./infra
       run: |
         terraform init \
           -backend-config="key=${{ steps.vars.outputs.TF_STATE_KEY }}"
     
     - name: Terraform Format
-      working-directory: ./NationOH/infra
+      working-directory: ./infra
       run: terraform fmt -check
 
     - name: Terraform Plan
-      working-directory: ./NationOH/infra
+      working-directory: ./infra
       run: terraform plan -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}" -out=tfplan
 
     - name: Terraform Apply
-      working-directory: ./NationOH/infra
+      working-directory: ./infra
       run: terraform apply -auto-approve tfplan
