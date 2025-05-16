@@ -148,7 +148,7 @@ resource "random_string" "postgresql_admin_username_suffix" {
 
 resource "azurerm_key_vault_secret" "postgresql_admin_username" {
   name         = "postgresql-admin-username"
-  value        = random_string.postgresql_admin_username_prefix.result + random_string.postgresql_admin_username_suffix.result
+  value        = "${random_string.postgresql_admin_username_prefix.result}${random_string.postgresql_admin_username_suffix.result}"
   key_vault_id = azurerm_key_vault.kv.id
 }
 
@@ -180,7 +180,7 @@ resource "random_string" "keycloak_admin_username_suffix" {
 
 resource "azurerm_key_vault_secret" "keycloak_admin_username" {
   name         = "keycloak-admin-username"
-  value        = random_string.keycloak_admin_username_prefix.result + random_string.keycloak_admin_username_suffix.result
+  value        = "${random_string.keycloak_admin_username_prefix.result}${random_string.keycloak_admin_username_suffix.result}"
   key_vault_id = azurerm_key_vault.kv.id
 }
 

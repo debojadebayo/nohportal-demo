@@ -182,6 +182,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     frontend_ip_configuration_name = "frontend-ip-config"
     frontend_port_name             = "http-port"
     protocol                       = "Http"
+    host_name                      = "${azurerm_public_ip.app_gateway_ip.domain_name_label}.${var.location}.cloudapp.azure.com"
   }
 
   #   HTTPS listener
@@ -193,6 +194,7 @@ resource "azurerm_application_gateway" "app_gateway" {
       frontend_port_name             = "https-port"
       protocol                       = "Https"
       ssl_certificate_name           = "nationoh-cert"
+      host_name                      = "${azurerm_public_ip.app_gateway_ip.domain_name_label}.${var.location}.cloudapp.azure.com"
     }
   }
 
@@ -236,4 +238,3 @@ resource "azurerm_application_gateway" "app_gateway" {
 
   firewall_policy_id = azurerm_web_application_firewall_policy.waf_policy.id
 }
-    
