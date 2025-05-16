@@ -1,68 +1,68 @@
 resource "azurerm_public_ip" "app_gateway_ip" {
-    name                = "ComposedHealth-app-gateway_ip"
-    location            = var.location
-    resource_group_name = var.resource_group_name
-    allocation_method = "Static"
-    sku = "Standard"
-    zones = ["1", "2", "3"]
+  name                = "ComposedHealth-app-gateway_ip"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  zones               = ["1", "2", "3"]
 }
 
 resource "azurerm_web_application_firewall_policy" "waf_policy" {
-    name                = "ComposedHealth-waf-policy"
-    location            = var.location
-    resource_group_name = var.resource_group_name
+  name                = "ComposedHealth-waf-policy"
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
-    policy_settings {
-      enabled = true 
-      mode = "Prevention"
-      request_body_check = true
-      file_upload_limit_in_mb = 100
-      max_request_body_size_in_kb = 128
-    }
+  policy_settings {
+    enabled                     = true
+    mode                        = "Prevention"
+    request_body_check          = true
+    file_upload_limit_in_mb     = 100
+    max_request_body_size_in_kb = 128
+  }
 
-    managed_rules {
-        managed_rule_set {
-            type = "OWASP"
-            version = "3.2"
+  managed_rules {
+    managed_rule_set {
+      type    = "OWASP"
+      version = "3.2"
 
-            rule_group_override {
-                rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
-                rule {
-                    id      = "942100"
-                    enabled = true
-                    action  = "Block"
-                }
-            }
+      rule_group_override {
+        rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
+        rule {
+          id      = "942100"
+          enabled = true
+          action  = "Block"
         }
-    }
-
-    custom_rules {
-      name = "BlockHighRiskCountries"
-      priority = 10
-      rule_type = "MatchRule"
-      action = "Block"
-      match_conditions {
-          match_variables {
-            variable_name = "RemoteAddr"
-          }
-          operator           = "GeoMatch"
-          negation_condition = false
-          match_values       = ["RU", "CN", "IR", "KP"]
       }
     }
+  }
+
+  custom_rules {
+    name      = "BlockHighRiskCountries"
+    priority  = 10
+    rule_type = "MatchRule"
+    action    = "Block"
+    match_conditions {
+      match_variables {
+        variable_name = "RemoteAddr"
+      }
+      operator           = "GeoMatch"
+      negation_condition = false
+      match_values       = ["RU", "CN", "IR", "KP"]
+    }
+  }
 }
 
 resource "azurerm_application_gateway" "app_gateway" {
-    name                = "NationOHAppGateway"
-    location            = var.location
-    resource_group_name = var.resource_group_name
-    sku {
-        name = var.app_gateway_sku_tier
-        tier = var.app_gateway_sku_tier
-        capacity = 2
-    }
-    
-    gateway_ip_configuration {
+  name                = "NationOHAppGateway"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  sku {
+    name     = var.app_gateway_sku_tier
+    tier     = var.app_gateway_sku_tier
+    capacity = 2
+  }
+
+  gateway_ip_configuration {
     name      = "gateway-ip-config"
     subnet_id = var.subnet_id
   }
@@ -83,17 +83,17 @@ resource "azurerm_application_gateway" "app_gateway" {
   }
 
   backend_address_pool {
-    name = "frontend-backend-pool"
+    name  = "frontend-backend-pool"
     fqdns = length(var.frontend_fqdn) > 0 ? [var.frontend_fqdn] : []
   }
 
   backend_address_pool {
-    name = "api-backend-pool"
+    name  = "api-backend-pool"
     fqdns = length(var.api_fqdn) > 0 ? [var.api_fqdn] : []
   }
 
   backend_address_pool {
-    name = "auth-backend-pool"
+    name  = "auth-backend-pool"
     fqdns = length(var.auth_fqdn) > 0 ? [var.auth_fqdn] : []
   }
 
@@ -106,14 +106,14 @@ resource "azurerm_application_gateway" "app_gateway" {
     }
   }
 
-#   Http to https redirect 
-redirect_configuration {
-    name = "http-to-https"
-    redirect_type = "Permanent"
+  #   Http to https redirect 
+  redirect_configuration {
+    name                 = "http-to-https"
+    redirect_type        = "Permanent"
     target_listener_name = "https-listener"
-    include_path = true
+    include_path         = true
     include_query_string = true
-}
+  }
 
   backend_http_settings {
     name                  = "frontend-http-settings"
@@ -173,7 +173,7 @@ redirect_configuration {
     unhealthy_threshold = 3
   }
 
-#   HTTP listener
+  #   HTTP listener
   http_listener {
     name                           = "http-listener"
     frontend_ip_configuration_name = "frontend-ip-config"
@@ -181,7 +181,7 @@ redirect_configuration {
     protocol                       = "Http"
   }
 
-#   HTTPS listener
+  #   HTTPS listener
   dynamic "http_listener" {
     for_each = length(var.ssl_certificate_path) > 0 ? [1] : []
     content {
@@ -198,14 +198,14 @@ redirect_configuration {
     name                               = "path-based-routing"
     default_backend_address_pool_name  = "frontend-backend-pool"
     default_backend_http_settings_name = "frontend-http-settings"
-    
+
     path_rule {
       name                       = "api-rule"
       paths                      = ["/api/*"]
       backend_address_pool_name  = "api-backend-pool"
       backend_http_settings_name = "api-http-settings"
     }
-    
+
     path_rule {
       name                       = "auth-rule"
       paths                      = ["/auth/*"]
@@ -229,7 +229,7 @@ redirect_configuration {
     http_listener_name = "https-listener"
     url_path_map_name  = "path-based-routing"
     priority           = 20
-  } 
+  }
 
   firewall_policy_id = azurerm_web_application_firewall_policy.waf_policy.id
 }

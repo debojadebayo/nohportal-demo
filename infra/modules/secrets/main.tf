@@ -22,37 +22,37 @@ resource "azurerm_key_vault" "kv" {
     object_id = data.azurerm_client_config.current.object_id
 
     key_permissions = [
-      "Get", 
-      "List", 
-      "Create", 
-      "Delete", 
-      "Update", 
-      "Recover", 
-      "Purge", 
-      "GetRotationPolicy", 
+      "Get",
+      "List",
+      "Create",
+      "Delete",
+      "Update",
+      "Recover",
+      "Purge",
+      "GetRotationPolicy",
       "SetRotationPolicy"
     ]
     secret_permissions = [
-      "Get", 
-      "List", 
-      "Set", 
-      "Delete", 
-      "Recover", 
-      "Backup", 
-      "Restore", 
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
       "Purge"
     ]
 
     certificate_permissions = [
-      "Get", 
-      "List", 
-      "Create", 
-      "Import", 
-      "Update", 
-      "Delete", 
+      "Get",
+      "List",
+      "Create",
+      "Import",
+      "Update",
+      "Delete",
       "Recover",
-      "Backup", 
-      "Restore", 
+      "Backup",
+      "Restore",
       "Purge"
     ]
   }
@@ -134,8 +134,8 @@ resource "azurerm_private_dns_zone_virtual_network_link" "keyvault" {
 # Database admin credentials
 
 resource "random_password" "postgresql_admin_username" {
-    length  = 24
-    special = true
+  length  = 24
+  special = true
 }
 
 resource "azurerm_key_vault_secret" "postgresql_admin_username" {
@@ -145,8 +145,8 @@ resource "azurerm_key_vault_secret" "postgresql_admin_username" {
 }
 
 resource "random_password" "postgresql_admin_password" {
-    length  = 24
-    special = true
+  length  = 24
+  special = true
 }
 
 resource "azurerm_key_vault_secret" "postgresql_admin_password" {
@@ -158,44 +158,44 @@ resource "azurerm_key_vault_secret" "postgresql_admin_password" {
 # Keycloak admin credentials
 
 resource "random_password" "keycloak_admin_username" {
-    length  = 24
-    special = true
+  length  = 24
+  special = true
 }
 
-resource "azurerm_key_vault_secret" "keycloak_admin_username"{
+resource "azurerm_key_vault_secret" "keycloak_admin_username" {
   name         = "keycloak-admin-username"
   value        = random_password.keycloak_admin_username.result
   key_vault_id = azurerm_key_vault.kv.id
 }
 
 resource "random_password" "keycloak_admin_password" {
-    length  = 24
-    special = true
+  length  = 24
+  special = true
 }
 
-resource "azurerm_key_vault_secret" "keycloak_admin_password"{
+resource "azurerm_key_vault_secret" "keycloak_admin_password" {
   name         = "keycloak-admin-password"
   value        = random_password.keycloak_admin_password.result
   key_vault_id = azurerm_key_vault.kv.id
 }
 
 resource "random_password" "keycloak_db_username" {
-    length  = 24
-    special = true
+  length  = 24
+  special = true
 }
 
-resource "azurerm_key_vault_secret" "keycloak_db_username"{
+resource "azurerm_key_vault_secret" "keycloak_db_username" {
   name         = "keycloak-db-username"
   value        = random_password.keycloak_db_username.result
   key_vault_id = azurerm_key_vault.kv.id
 }
 
 resource "random_password" "keycloak_db_password" {
-    length  = 24
-    special = true
+  length  = 24
+  special = true
 }
 
-resource "azurerm_key_vault_secret" "keycloak_db_password"{
+resource "azurerm_key_vault_secret" "keycloak_db_password" {
   name         = "keycloak-db-password"
   value        = random_password.keycloak_db_password.result
   key_vault_id = azurerm_key_vault.kv.id

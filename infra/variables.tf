@@ -43,7 +43,7 @@ variable "ssl_certificate_password" {
 variable "ssl_certificate_path" {
   description = "Path to the SSL certificate"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "app_gateway_sku_tier" {

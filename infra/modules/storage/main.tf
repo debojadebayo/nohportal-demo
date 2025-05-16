@@ -41,7 +41,7 @@ resource "azurerm_storage_account" "main" {
 
 # Create storage containers for different purposes
 resource "azurerm_storage_container" "app_data" {
-  storage_account_name = azurerm_storage_account.main.name
+  storage_account_name  = azurerm_storage_account.main.name
   name                  = "app-data"
   container_access_type = "private"
 
@@ -56,7 +56,7 @@ resource "azurerm_storage_container" "app_data" {
 }
 
 resource "azurerm_storage_container" "backups" {
-  storage_account_name = azurerm_storage_account.main.name
+  storage_account_name  = azurerm_storage_account.main.name
   name                  = "backups"
   container_access_type = "private"
 
@@ -72,7 +72,7 @@ resource "azurerm_storage_container" "backups" {
 }
 
 resource "azurerm_storage_container" "media" {
-  storage_account_name = azurerm_storage_account.main.name
+  storage_account_name  = azurerm_storage_account.main.name
   name                  = "media"
   container_access_type = "private"
 

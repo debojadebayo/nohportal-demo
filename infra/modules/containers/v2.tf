@@ -84,23 +84,23 @@ variable "keycloak_url" {
 
 
 variable "keycloak_admin_username_secret_id" {
-    description = "Keycloak admin username secret ID"
-    type        = string
+  description = "Keycloak admin username secret ID"
+  type        = string
 }
 
 variable "keycloak_admin_password_secret_id" {
-    description = "Keycloak admin password secret ID"
-    type        = string
+  description = "Keycloak admin password secret ID"
+  type        = string
 }
 
 variable "keycloak_db_username_secret_id" {
-    description = "Keycloak DB username secret ID"
-    type        = string
+  description = "Keycloak DB username secret ID"
+  type        = string
 }
 
 variable "keycloak_db_password_secret_id" {
-    description = "Keycloak DB password secret ID"
-    type        = string
+  description = "Keycloak DB password secret ID"
+  type        = string
 }
 
 variable "keycloak_features" {

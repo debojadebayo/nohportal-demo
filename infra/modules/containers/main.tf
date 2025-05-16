@@ -41,13 +41,13 @@ resource "azurerm_container_app" "api_server" {
       }
 
       liveness_probe {
-        path                = "/api-health"
-        port                = 5003
-        transport           = var.aspnetcore_environment == "Development" ? "http" : "https"
-        initial_delay       = 60
-        interval_seconds    = 15
-        timeout             = 5
-        failure_count_threshold   = 3
+        path                    = "/api-health"
+        port                    = 5003
+        transport               = var.aspnetcore_environment == "Development" ? "http" : "https"
+        initial_delay           = 60
+        interval_seconds        = 15
+        timeout                 = 5
+        failure_count_threshold = 3
       }
     }
   }
@@ -58,7 +58,7 @@ resource "azurerm_container_app" "api_server" {
     transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
 
     traffic_weight {
-      percentage = 100
+      percentage      = 100
       latest_revision = true
     }
   }
@@ -73,32 +73,32 @@ resource "azurerm_container_app" "keycloak_server" {
   revision_mode                = "Single"
 
   identity {
-    type = "UserAssigned"
+    type         = "UserAssigned"
     identity_ids = [var.user_assigned_identity_id]
   }
 
   secret {
-    name                 = "keycloak-admin-username"
-    identity = var.user_assigned_identity_id
+    name                = "keycloak-admin-username"
+    identity            = var.user_assigned_identity_id
     key_vault_secret_id = var.keycloak_admin_username_secret_id
   }
 
   secret {
-    name                 = "keycloak-admin-password"
-    identity = var.user_assigned_identity_id
+    name                = "keycloak-admin-password"
+    identity            = var.user_assigned_identity_id
     key_vault_secret_id = var.keycloak_admin_password_secret_id
   }
 
   secret {
-    name                 = "keycloak-db-username"
-    identity = var.user_assigned_identity_id
-    key_vault_secret_id  = var.keycloak_db_username_secret_id
+    name                = "keycloak-db-username"
+    identity            = var.user_assigned_identity_id
+    key_vault_secret_id = var.keycloak_db_username_secret_id
   }
 
   secret {
-    name                 = "keycloak-db-password"
-    identity = var.user_assigned_identity_id
-    key_vault_secret_id  = var.keycloak_db_password_secret_id
+    name                = "keycloak-db-password"
+    identity            = var.user_assigned_identity_id
+    key_vault_secret_id = var.keycloak_db_password_secret_id
   }
 
   template {
@@ -108,14 +108,14 @@ resource "azurerm_container_app" "keycloak_server" {
       cpu    = 0.5
       memory = "1Gi"
 
-      
+
 
       env {
-        name  = "KC_BOOTSTRAP_ADMIN_USERNAME"
+        name        = "KC_BOOTSTRAP_ADMIN_USERNAME"
         secret_name = "keycloak-admin-username"
       }
       env {
-        name  = "KC_BOOTSTRAP_ADMIN_PASSWORD"
+        name        = "KC_BOOTSTRAP_ADMIN_PASSWORD"
         secret_name = "keycloak-admin-password"
       }
       env {
@@ -127,11 +127,11 @@ resource "azurerm_container_app" "keycloak_server" {
         value = var.keycloak_db_url
       }
       env {
-        name  = "KC_DB_USERNAME"
+        name        = "KC_DB_USERNAME"
         secret_name = "keycloak-db-username"
       }
       env {
-        name  = "KC_DB_PASSWORD"
+        name        = "KC_DB_PASSWORD"
         secret_name = "keycloak-db-password"
       }
       env {
@@ -140,13 +140,13 @@ resource "azurerm_container_app" "keycloak_server" {
       }
 
       liveness_probe {
-        path                = "/auth/realms/master"  
-        port                = 8080
-        transport           = var.aspnetcore_environment == "Development" ? "http" : "https"
-        initial_delay       = 120  
-        interval_seconds    = 30
-        timeout             = 10
-        failure_count_threshold   = 3
+        path                    = "/auth/realms/master"
+        port                    = 8080
+        transport               = var.aspnetcore_environment == "Development" ? "http" : "https"
+        initial_delay           = 120
+        interval_seconds        = 30
+        timeout                 = 10
+        failure_count_threshold = 3
       }
     }
   }
@@ -157,7 +157,7 @@ resource "azurerm_container_app" "keycloak_server" {
     transport        = "http"
 
     traffic_weight {
-      percentage = 100
+      percentage      = 100
       latest_revision = true
     }
   }
@@ -191,17 +191,17 @@ resource "azurerm_container_app" "frontend" {
         value = var.keycloak_url
       }
 
-    liveness_probe {
-          path                = "/health"  
-          port                = 5002
-          transport           = var.aspnetcore_environment == "Development" ? "http" : "https"
-          initial_delay       = 60
-          interval_seconds    = 15
-          timeout             = 5
-          failure_count_threshold   = 3
-        }
+      liveness_probe {
+        path                    = "/health"
+        port                    = 5002
+        transport               = var.aspnetcore_environment == "Development" ? "http" : "https"
+        initial_delay           = 60
+        interval_seconds        = 15
+        timeout                 = 5
+        failure_count_threshold = 3
+      }
     }
-    
+
   }
 
 
@@ -211,7 +211,7 @@ resource "azurerm_container_app" "frontend" {
     transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
 
     traffic_weight {
-      percentage = 100
+      percentage      = 100
       latest_revision = true
     }
   }

@@ -1,14 +1,14 @@
 # Prod variables 
 
 resource_group_name = "nationohprod"
-location = "ukwest"
+location            = "ukwest"
 # domain_name = "" Official production domain name - app.nationoh.co.uk
 
 # ASPNETCORE
 aspnetcore_environment = "Production"
 
 # Container
-container_cpu = 1.0
+container_cpu    = 1.0
 container_memory = "2Gi"
 
 # Application Gateway
