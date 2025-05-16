@@ -43,7 +43,7 @@ resource "azurerm_container_app" "api_server" {
       liveness_probe {
         path                    = "/api-health"
         port                    = 5003
-        transport               = var.aspnetcore_environment == "Development" ? "http" : "https"
+        transport               = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
         initial_delay           = 60
         interval_seconds        = 15
         timeout                 = 5
@@ -55,7 +55,7 @@ resource "azurerm_container_app" "api_server" {
   ingress {
     external_enabled = false
     target_port      = 5003
-    transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
+    transport        = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
 
     traffic_weight {
       percentage      = 100
@@ -142,7 +142,7 @@ resource "azurerm_container_app" "keycloak_server" {
       liveness_probe {
         path                    = "/auth/realms/master"
         port                    = 8080
-        transport               = var.aspnetcore_environment == "Development" ? "http" : "https"
+        transport               = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
         initial_delay           = 120
         interval_seconds        = 30
         timeout                 = 10
@@ -194,7 +194,7 @@ resource "azurerm_container_app" "frontend" {
       liveness_probe {
         path                    = "/health"
         port                    = 5002
-        transport               = var.aspnetcore_environment == "Development" ? "http" : "https"
+        transport               = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
         initial_delay           = 60
         interval_seconds        = 15
         timeout                 = 5
@@ -208,7 +208,7 @@ resource "azurerm_container_app" "frontend" {
   ingress {
     external_enabled = false
     target_port      = 5002
-    transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
+    transport        = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
 
     traffic_weight {
       percentage      = 100
