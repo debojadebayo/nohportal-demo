@@ -1,14 +1,13 @@
-variable "location" {
-    description = "Location for the resources"
-    type = string
+output "container_app_urls" {
+  description = "URLs for the deployed container apps"
+  value = {
+    server = azurerm_container_app.server.latest_revision_fqdn
+    keycloak = azurerm_container_app.keycloak.latest_revision_fqdn
+    frontend = azurerm_container_app.frontend.latest_revision_fqdn
+  }
 }
 
-variable "resource_group_name" {
-    description = "Name of the resource group"  
-    type = string
-}
-
-variable "subnet_ids" {
-    description = "Map of subnet names to subnet IDs"
-    type = map(string)
+output "container_env_id" {
+  description = "ID of the container app environment"
+  value = azurerm_container_app_environment.container_env.id
 }

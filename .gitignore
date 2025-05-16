@@ -371,3 +371,7 @@ __azurite_db_blob_extent__.json
 CLAUDE.md 
 
 .DS_Store
+
+# Terraform
+.terraform
+.terraform.lock.hcl
