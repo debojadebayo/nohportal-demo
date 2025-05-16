@@ -2,7 +2,6 @@ name: Terraform Infrastructure
 
 on:
   push: 
-<<<<<<< HEAD
     branches: [master, production, devops-setup]
     paths:
       - "NationOH/infra/**"
@@ -11,16 +10,6 @@ on:
     branches: [master]
     paths:
       - "NationOH/infra/**"
-=======
-    branches: [master, production]
-    paths:
-      -"NationOH/infra/**"
-      -".github/workflows/terraform.yml"
-  pull_request:
-    branches: [master]
-    paths:
-      -"NationOH/infra/**"
->>>>>>> origin/devops-setup
       
 
 jobs:
