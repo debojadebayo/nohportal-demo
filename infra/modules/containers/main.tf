@@ -55,7 +55,7 @@ resource "azurerm_container_app" "api_server" {
   ingress {
     external_enabled = false
     target_port      = 5003
-    transport        = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
+    transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
 
     traffic_weight {
       percentage      = 100
@@ -208,7 +208,7 @@ resource "azurerm_container_app" "frontend" {
   ingress {
     external_enabled = false
     target_port      = 5002
-    transport        = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
+    transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
 
     traffic_weight {
       percentage      = 100
