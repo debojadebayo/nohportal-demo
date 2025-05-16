@@ -1,4 +1,3 @@
-
 # Virtual Network
 resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
@@ -41,7 +40,7 @@ resource "azurerm_subnet" "subnets" {
     }
   }
 
-  service_endpoints = each.value == "data" ? ["Microsoft.Storage"] : []
+  service_endpoints = each.value == "data" || each.value == "backend" ? ["Microsoft.Storage"] : []
 }
 
 # Network Security Group
