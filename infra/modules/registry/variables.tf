@@ -55,7 +55,7 @@ variable "acr_dns_zone_group_name" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "ID of the backend subnet"
-  type        = string
+variable "subnet_ids" {
+  description = "ID of the private link subnet"
+  type        = map(string)
 }
