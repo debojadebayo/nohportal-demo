@@ -39,9 +39,19 @@ resource "azurerm_storage_account" "main" {
   # }
 }
 
+# Get current client config for role assignments
+data "azurerm_client_config" "current" {}
+
+# Add role assignment for storage blob data contributor
+resource "azurerm_role_assignment" "storage_blob_contributor" {
+  scope                = azurerm_storage_account.main.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
 # Create storage containers for different purposes
 resource "azurerm_storage_container" "app_data" {
-  storage_account_name  = azurerm_storage_account.main.name
+  storage_account_id  = azurerm_storage_account.main.id
   name                  = "app-data"
   container_access_type = "private"
 
@@ -53,10 +63,12 @@ resource "azurerm_storage_container" "app_data" {
     "encryption_key"      = "key_vault_managed"
     "key_vault_reference" = var.key_vault_id
   }
+
+  depends_on = [azurerm_role_assignment.storage_blob_contributor]
 }
 
 resource "azurerm_storage_container" "backups" {
-  storage_account_name  = azurerm_storage_account.main.name
+  storage_account_id  = azurerm_storage_account.main.id
   name                  = "backups"
   container_access_type = "private"
 
@@ -69,10 +81,12 @@ resource "azurerm_storage_container" "backups" {
     "encryption_key"      = "key_vault_managed"
     "key_vault_reference" = var.key_vault_id
   }
+
+  depends_on = [azurerm_role_assignment.storage_blob_contributor]
 }
 
 resource "azurerm_storage_container" "media" {
-  storage_account_name  = azurerm_storage_account.main.name
+  storage_account_id  = azurerm_storage_account.main.id
   name                  = "media"
   container_access_type = "private"
 
@@ -84,17 +98,19 @@ resource "azurerm_storage_container" "media" {
     "encryption_key"      = "key_vault_managed"
     "key_vault_reference" = var.key_vault_id
   }
+
+  depends_on = [azurerm_role_assignment.storage_blob_contributor]
 }
 
 # Private endpoint for secure access
 resource "azurerm_private_endpoint" "storage" {
-  name                = "${var.storage_account_name}-endpoint"
+  name                = "${azurerm_storage_account.main.name}-endpoint"
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.subnet_ids["privatelink"]
 
   private_service_connection {
-    name                           = "${var.storage_account_name}-connection"
+    name                           = "${azurerm_storage_account.main.name}-connection"
     private_connection_resource_id = azurerm_storage_account.main.id
     is_manual_connection           = false
     subresource_names              = ["blob"]

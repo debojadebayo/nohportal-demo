@@ -8,10 +8,11 @@ variable "resource_group_name" {
   type        = string
 }
 
+
 variable "storage_account_name" {
   description = "Name of the storage account"
   type        = string
-  default     = null # Let Azure generate a name if not specified
+  default = null
 }
 
 variable "subnet_ids" {

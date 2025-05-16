@@ -121,6 +121,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     protocol              = "Http"
     request_timeout       = 60
     probe_name            = "frontend-health-probe"
+    pick_host_name_from_backend_address = true
   }
 
   backend_http_settings {
@@ -130,6 +131,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     protocol              = "Http"
     request_timeout       = 60
     probe_name            = "api-health-probe"
+    pick_host_name_from_backend_address = true
   }
 
   backend_http_settings {
@@ -139,6 +141,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     protocol              = "Http"
     request_timeout       = 60
     probe_name            = "auth-health-probe"
+    pick_host_name_from_backend_address = true
   }
 
   # Health probes

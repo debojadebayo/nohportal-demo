@@ -133,14 +133,22 @@ resource "azurerm_private_dns_zone_virtual_network_link" "keyvault" {
 
 # Database admin credentials
 
-resource "random_password" "postgresql_admin_username" {
-  length  = 24
-  special = true
+resource "random_string" "postgresql_admin_username_prefix" {
+  length  = 1
+  special = false
+  numeric = false
+  upper = false
+}
+
+resource "random_string" "postgresql_admin_username_suffix" {
+  length  = 23
+  special = false
+  upper = false
 }
 
 resource "azurerm_key_vault_secret" "postgresql_admin_username" {
   name         = "postgresql-admin-username"
-  value        = random_password.postgresql_admin_username.result
+  value        = random_string.postgresql_admin_username_prefix.result + random_string.postgresql_admin_username_suffix.result
   key_vault_id = azurerm_key_vault.kv.id
 }
 
@@ -157,14 +165,22 @@ resource "azurerm_key_vault_secret" "postgresql_admin_password" {
 
 # Keycloak admin credentials
 
-resource "random_password" "keycloak_admin_username" {
-  length  = 24
-  special = true
+resource "random_string" "keycloak_admin_username_prefix" {
+  length  = 1
+  special = false
+  numeric = false
+  upper = false
+}
+
+resource "random_string" "keycloak_admin_username_suffix" {
+  length  = 23
+  special = false
+  upper = false
 }
 
 resource "azurerm_key_vault_secret" "keycloak_admin_username" {
   name         = "keycloak-admin-username"
-  value        = random_password.keycloak_admin_username.result
+  value        = random_string.keycloak_admin_username_prefix.result + random_string.keycloak_admin_username_suffix.result
   key_vault_id = azurerm_key_vault.kv.id
 }
 
