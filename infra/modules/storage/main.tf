@@ -51,7 +51,7 @@ resource "azurerm_role_assignment" "storage_blob_contributor" {
 
 # Create storage containers for different purposes
 resource "azurerm_storage_container" "app_data" {
-  storage_account_id  = azurerm_storage_account.main.id
+  storage_account_name = var.storage_account_name
   name                  = "app-data"
   container_access_type = "private"
 
@@ -68,7 +68,7 @@ resource "azurerm_storage_container" "app_data" {
 }
 
 resource "azurerm_storage_container" "backups" {
-  storage_account_id  = azurerm_storage_account.main.id
+  storage_account_name = var.storage_account_name
   name                  = "backups"
   container_access_type = "private"
 
@@ -86,7 +86,7 @@ resource "azurerm_storage_container" "backups" {
 }
 
 resource "azurerm_storage_container" "media" {
-  storage_account_id  = azurerm_storage_account.main.id
+  storage_account_name = var.storage_account_name
   name                  = "media"
   container_access_type = "private"
 
