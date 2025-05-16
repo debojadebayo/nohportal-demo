@@ -4,12 +4,12 @@ on:
   push: 
     branches: [master, production, devops-setup]
     paths:
-      - "NationOH/infra/**"
+      - "infra/**"
       - ".github/workflows/terraform.yml"
   pull_request:
     branches: [master]
     paths:
-      - "NationOH/infra/**"
+      - "infra/**"
       
 
 jobs:
