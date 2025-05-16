@@ -2,14 +2,14 @@ name: Terraform Infrastructure
 
 on:
   push: 
-    branches: [master, production]
+    branches: [master, production, devops-setup]
     paths:
-      -"NationOH/infra/**"
-      -".github/workflows/terraform.yml"
+      - "NationOH/infra/**"
+      - ".github/workflows/terraform.yml"
   pull_request:
     branches: [master]
     paths:
-      -"NationOH/infra/**"
+      - "NationOH/infra/**"
       
 
 jobs:
@@ -38,6 +38,10 @@ jobs:
            echo "TF_VAR_FILE=prod.tfvars" >> $GITHUB_OUTPUT
            echo "TF_STATE_KEY=nationoh/prod.tfstate" >> $GITHUB_OUTPUT
         elif [[ ${{ github.ref }} == "refs/heads/master" ]]; then
+          echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
+          echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
+          echo "TF_STATE_KEY=nationoh/dev.tfstate" >> $GITHUB_OUTPUT
+        elif [[ ${{ github.ref }} == "refs/heads/devops-setup" ]]; then
           echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
           echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
           echo "TF_STATE_KEY=nationoh/dev.tfstate" >> $GITHUB_OUTPUT
