@@ -1,5 +1,5 @@
 resource "azurerm_public_ip" "app_gateway_ip" {
-  name                = "ComposedHealth-app-gateway_ip"
+  name                = "${var.resource_group_name}-app-gateway_ip"
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
@@ -8,7 +8,7 @@ resource "azurerm_public_ip" "app_gateway_ip" {
 }
 
 resource "azurerm_web_application_firewall_policy" "waf_policy" {
-  name                = "ComposedHealth-waf-policy"
+  name                = "${var.resource_group_name}-waf-policy"
   location            = var.location
   resource_group_name = var.resource_group_name
 

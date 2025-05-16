@@ -40,7 +40,7 @@ resource "azurerm_subnet" "subnets" {
     }
   }
 
-  service_endpoints = each.value == "data" || each.value == "backend" ? ["Microsoft.Storage"] : []
+  service_endpoints = each.value == "data" || each.value == "backend" ? ["Microsoft.Storage", "Microsoft.KeyVault"] : []
 }
 
 # Network Security Group

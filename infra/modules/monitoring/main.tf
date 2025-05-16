@@ -3,6 +3,7 @@ resource "azurerm_application_insights" "insights" {
   location            = var.location
   resource_group_name = var.resource_group_name
   application_type    = "web"
+  workspace_id        = azurerm_log_analytics_workspace.log_analytics.id
 
   retention_in_days   = 90  # Retain data for compliance
   sampling_percentage = 100 # Full data collection for healthcare auditing
@@ -25,10 +26,14 @@ resource "azurerm_key_vault_secret" "app_insights_key" {
   key_vault_id = var.key_vault_id
 }
 
-resource "azurerm_log_analytics_workspace" "workspace" {
+resource "azurerm_log_analytics_workspace" "log_analytics" {
   name                = "${var.insights_name}-workspace"
   location            = var.location
   resource_group_name = var.resource_group_name
-  sku                 = "PerGB2018"
   retention_in_days   = 90
+  
+  tags = {
+    environment = "production"
+    compliance  = "hipaa"
+  }
 }

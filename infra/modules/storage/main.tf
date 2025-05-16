@@ -91,7 +91,7 @@ resource "azurerm_private_endpoint" "storage" {
   name                = "${var.storage_account_name}-endpoint"
   location            = var.location
   resource_group_name = var.resource_group_name
-  subnet_id           = var.subnet_ids["data"]
+  subnet_id           = var.subnet_ids["backend"]
 
   private_service_connection {
     name                           = "${var.storage_account_name}-connection"
