@@ -27,7 +27,7 @@ resource "azurerm_key_vault_secret" "app_insights_key" {
 }
 
 resource "azurerm_log_analytics_workspace" "log_analytics" {
-  name                = "${var.insights_name}-workspace"
+  name                = "${var.insights_name}-workspace-tf"
   location            = var.location
   resource_group_name = var.resource_group_name
   retention_in_days   = 90

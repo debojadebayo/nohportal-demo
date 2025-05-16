@@ -1,10 +1,9 @@
 resource "azurerm_public_ip" "app_gateway_ip" {
-  name                = "${var.resource_group_name}-app-gateway_ip"
+  name                = "${var.resource_group_name}-app-gateway-ip"
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
-  zones               = ["1", "2", "3"]
 }
 
 resource "azurerm_web_application_firewall_policy" "waf_policy" {

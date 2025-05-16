@@ -23,7 +23,7 @@ resource "azurerm_postgresql_flexible_server" "postgresql_main" {
 
 # Private DNS Zone for PostgreSQL
 resource "azurerm_private_dns_zone" "postgres" {
-  name                = var.private_dns_zone_name
+  name                = "${var.private_dns_zone_name}.postgres.database.azure.com"
   resource_group_name = var.resource_group_name
 }
 

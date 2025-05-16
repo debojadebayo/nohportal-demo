@@ -10,7 +10,7 @@ resource "azurerm_key_vault" "kv" {
 
   # Network ACLs for restricting access
   network_acls {
-    default_action             = "Deny"
+    default_action             = "Allow"     # After initial deployment, change this back to "Deny" for production
     bypass                     = "AzureServices"
     virtual_network_subnet_ids = [var.subnet_ids["backend"], var.subnet_ids["data"]]
   }
@@ -74,7 +74,7 @@ resource "azurerm_private_endpoint" "keyvault" {
   name                = "${var.key_vault_name}-endpoint"
   location            = var.location
   resource_group_name = var.resource_group_name
-  subnet_id           = var.subnet_ids["data"]
+  subnet_id           = var.subnet_ids["privatelink"]
 
   private_service_connection {
     name                           = "${var.key_vault_name}-connection"

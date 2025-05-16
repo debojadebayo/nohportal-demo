@@ -78,7 +78,7 @@ module "database" {
   container_subnet_cidr_start = module.networking.container_subnet_cidr_start
   container_subnet_cidr_end   = module.networking.container_subnet_cidr_end
   postgresql_server_name      = "${var.resource_group_name}postgresql"
-  private_dns_zone_name       = "${var.resource_group_name}postgresdnszone"
+  private_dns_zone_name       = "${var.resource_group_name}"
   dns_link_name               = "${var.resource_group_name}postgresdnslink"
   firewall_rule_name          = "${var.resource_group_name}postgresfirewallrule"
 }
@@ -93,7 +93,7 @@ module "registry" {
   allowed_ip_range        = "10.0.2.0/24"
   acr_endpoint_name       = "${var.resource_group_name}acr-endpoint"
   acr_connection_name     = "${var.resource_group_name}acr-connection"
-  acr_dns_zone_name       = "${var.resource_group_name}acr-dnszone"
+  acr_dns_zone_name       = "${var.resource_group_name}"
   acr_dns_link_name       = "${var.resource_group_name}acr-dnslink"
   acr_dns_zone_group_name = "${var.resource_group_name}acr-dnszonegroup"
   subnet_id               = module.networking.subnets_ids["backend"]

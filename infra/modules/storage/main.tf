@@ -11,7 +11,7 @@ resource "azurerm_storage_account" "main" {
 
   # Network rules to restrict access
   network_rules {
-    default_action             = "Deny"
+    default_action             = "Allow"     # After initial deployment, change this back to "Deny" for production
     virtual_network_subnet_ids = [var.subnet_ids["data"], var.subnet_ids["backend"]]
     bypass                     = ["AzureServices"]
   }
@@ -91,7 +91,7 @@ resource "azurerm_private_endpoint" "storage" {
   name                = "${var.storage_account_name}-endpoint"
   location            = var.location
   resource_group_name = var.resource_group_name
-  subnet_id           = var.subnet_ids["backend"]
+  subnet_id           = var.subnet_ids["privatelink"]
 
   private_service_connection {
     name                           = "${var.storage_account_name}-connection"

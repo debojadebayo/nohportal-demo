@@ -9,11 +9,7 @@ resource "azurerm_container_registry" "acr" {
   # Network rules to restrict access
   network_rule_set {
     default_action = "Deny"
-
-    ip_rule {
-      action   = "Allow"
-      ip_range = var.allowed_ip_range
-    }
+    
   }
 
   # Geo-replication for disaster recovery
@@ -36,7 +32,7 @@ resource "azurerm_private_endpoint" "acr" {
   name                = var.acr_endpoint_name
   location            = var.location
   resource_group_name = var.resource_group_name
-  subnet_id           = var.subnet_id
+  subnet_id           = var.subnet_ids["privatelink"]
 
   private_service_connection {
     name                           = var.acr_connection_name
@@ -53,7 +49,7 @@ resource "azurerm_private_endpoint" "acr" {
 
 # Private DNS Zone for ACR
 resource "azurerm_private_dns_zone" "acr" {
-  name                = var.acr_dns_zone_name
+  name                = "${var.acr_dns_zone_name}.azurecr.io"
   resource_group_name = var.resource_group_name
 }
 

@@ -24,13 +24,13 @@ variable "address_space" {
 variable "subnet_names" {
   description = "List of subnet names"
   type        = list(string)
-  default     = ["appgateway", "backend", "data"]
+  default     = ["appgateway", "backend", "data", "privatelink"]
 }
 
 variable "subnet_prefixes" {
   description = "CIDR blocks for each subnet"
   type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24"]
 }
 
 variable "nsg_name" {
