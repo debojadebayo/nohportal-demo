@@ -30,7 +30,7 @@ variable "subnet_names" {
 variable "subnet_prefixes" {
   description = "CIDR blocks for each subnet"
   type        = list(string)
-  default     = ["10.0.1.0/23", "10.0.2.0/23", "10.0.3.0/23", "10.0.4.0/23"]
+  default     = ["10.0.1.0/24", "10.0.2.0/23", "10.0.3.0/24", "10.0.4.0/24"]
 }
 
 variable "nsg_name" {
@@ -108,7 +108,7 @@ variable "nsg_rules" {
         protocol                   = "Tcp"
         source_port_range          = "*"
         destination_port_range     = "5003"
-        source_address_prefix      = "10.0.1.0/23"
+        source_address_prefix      = "10.0.1.0/24"
         destination_address_prefix = "*"
       },
       {
@@ -130,7 +130,7 @@ variable "nsg_rules" {
         protocol                   = "Tcp"
         source_port_range          = "*"
         destination_port_range     = "5435"
-        source_address_prefix      = "10.0.3.0/23"
+        source_address_prefix      = "10.0.3.0/24"
         destination_address_prefix = "10.0.2.0/23"
       }
     ],
