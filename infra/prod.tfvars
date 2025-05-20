@@ -1,7 +1,7 @@
 # Prod variables 
 
 resource_group_name = "nationohprod"
-location            = "ukwest"
+location            = "uksouth"
 # domain_name = "" Official production domain name - app.nationoh.co.uk
 
 # ASPNETCORE

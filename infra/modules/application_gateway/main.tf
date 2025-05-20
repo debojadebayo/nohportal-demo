@@ -225,12 +225,14 @@ resource "azurerm_application_gateway" "app_gateway" {
 
   # Routing rules
   request_routing_rule {
-      name                        = "http-to-https-rule"
-      rule_type                   = "Basic"
-      http_listener_name          = "http-listener"
-      redirect_configuration_name = "http-to-https"
-      priority                    = 10
-    }
+    name                        = "default-routing-rule"
+    rule_type                   = "Basic"
+    http_listener_name          = "http-listener"
+    backend_address_pool_name   = length(var.ssl_certificate_path) > 0 ? null : "frontend-backend-pool"
+    backend_http_settings_name  = length(var.ssl_certificate_path) > 0 ? null : "frontend-http-settings"
+    redirect_configuration_name = length(var.ssl_certificate_path) > 0 ? "http-to-https" : null
+    priority                    = 10
+  }
 
   dynamic "request_routing_rule" {
     for_each = length(var.ssl_certificate_path) > 0 ? [1] : []

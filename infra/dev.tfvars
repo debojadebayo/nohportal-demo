@@ -1,7 +1,7 @@
 # Dev variables 
 
 resource_group_name = "nationohdev"
-location            = "ukwest"
+location            = "uksouth"
 domain_name         = ""
 # will need to add a domain main
 
