@@ -12,11 +12,13 @@ resource "azurerm_postgresql_flexible_server" "postgresql_main" {
   storage_mb             = 32768
   sku_name               = "GP_Standard_D2s_v3"
   backup_retention_days  = 7
+  zone = 1
   public_network_access_enabled = false
 
 # Allows for backup to minimise database downtime in the event of a failure
   high_availability {
-    mode = "SameZone"
+    mode = "ZoneRedundant"
+    standby_availability_zone = 2
   }
 
   depends_on = [azurerm_private_dns_zone_virtual_network_link.postgres]
