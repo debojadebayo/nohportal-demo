@@ -56,7 +56,7 @@ variable "nsg_rules" {
     appgateway = [
       {
         name                       = "allow-app-gateway-management"
-        priority                   = 90
+        priority                   = 100
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -67,7 +67,7 @@ variable "nsg_rules" {
       },
       {
         name                       = "Allow-HTTP"
-        priority                   = 100
+        priority                   = 110
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -78,7 +78,7 @@ variable "nsg_rules" {
       },
       {
         name                       = "Allow-HTTPS"
-        priority                   = 110
+        priority                   = 120
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -89,7 +89,7 @@ variable "nsg_rules" {
       },
       {
         name                       = "allow-outbound-to-backend"
-        priority                   = 120
+        priority                   = 130
         direction                  = "Outbound"
         access                     = "Allow"
         protocol                   = "Tcp"
