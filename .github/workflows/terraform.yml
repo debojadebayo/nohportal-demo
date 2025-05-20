@@ -45,7 +45,7 @@ jobs:
         elif [[ ${{ github.ref }} == "refs/heads/devops-setup" ]]; then
           echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
           echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
-          echo "TF_STATE_KEY=nationoh/dev_uksouth.tfstate" >> $GITHUB_OUTPUT
+          echo "TF_STATE_KEY=nationoh/dev.tfstate" >> $GITHUB_OUTPUT
         fi
 
     - name: Clear Terraform Cache
