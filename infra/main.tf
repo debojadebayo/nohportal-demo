@@ -110,7 +110,7 @@ module "application_gateway" {
   subnet_id                = module.networking.subnets_ids["appgateway"]
   ssl_certificate_path     = var.ssl_certificate_path
   ssl_certificate_password = var.ssl_certificate_password
-  app_gateway_sku_tier     = "WAF_v2"
+  app_gateway_sku_tier     = var.app_gateway_sku_tier
 }
 
 module "containers" {

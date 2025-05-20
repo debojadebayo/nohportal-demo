@@ -45,3 +45,8 @@ variable "ssl_certificate_path" {
   type        = string
   default     = ""
 }
+
+variable "app_gateway_sku_tier" {
+  description = "SKU tier for the Application Gateway"
+  type        = string
+}

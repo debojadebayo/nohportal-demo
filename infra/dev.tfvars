@@ -13,4 +13,4 @@ container_cpu    = 0.5
 container_memory = "1Gi"
 
 # Application Gateway
-app_gateway_sku_tier = "Standard_v2"
+app_gateway_sku_tier = "WAF_v2"
