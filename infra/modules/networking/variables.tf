@@ -55,6 +55,17 @@ variable "nsg_rules" {
   default = {
     appgateway = [
       {
+        name                       = "allow-app-gateway-management"
+        priority                   = 90
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "65200-65535"
+        source_address_prefix      = "GatewayManager"
+        destination_address_prefix = "*"
+      },
+      {
         name                       = "Allow-HTTP"
         priority                   = 100
         direction                  = "Inbound"
@@ -86,18 +97,7 @@ variable "nsg_rules" {
         destination_port_range     = "5003"
         source_address_prefix      = "*"
         destination_address_prefix = "10.0.2.0/24"
-      }, 
-      {
-      name                       = "allow-app-gateway-management"
-      priority                   = 100
-      direction                  = "Inbound"
-      access                     = "Allow"
-      protocol                   = "Tcp"
-      source_port_range          = "*"
-      destination_port_range     = "65200-65535"
-      source_address_prefix      = "GatewayManager"
-      destination_address_prefix = "*"
-    }
+      }
     ],
     backend = [
       {
