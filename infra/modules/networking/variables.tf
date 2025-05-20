@@ -30,7 +30,7 @@ variable "subnet_names" {
 variable "subnet_prefixes" {
   description = "CIDR blocks for each subnet"
   type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24"]
+  default     = ["10.0.1.0/23", "10.0.2.0/23", "10.0.3.0/23", "10.0.4.0/23"]
 }
 
 variable "nsg_name" {
@@ -56,7 +56,7 @@ variable "nsg_rules" {
     appgateway = [
       {
         name                       = "allow-app-gateway-management"
-        priority                   = 100
+        priority                   = 140
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -96,7 +96,7 @@ variable "nsg_rules" {
         source_port_range          = "*"
         destination_port_range     = "5003"
         source_address_prefix      = "*"
-        destination_address_prefix = "10.0.2.0/24"
+        destination_address_prefix = "10.0.2.0/23"
       }
     ],
     backend = [
@@ -108,7 +108,7 @@ variable "nsg_rules" {
         protocol                   = "Tcp"
         source_port_range          = "*"
         destination_port_range     = "5003"
-        source_address_prefix      = "10.0.1.0/24"
+        source_address_prefix      = "10.0.1.0/23"
         destination_address_prefix = "*"
       },
       {
@@ -119,7 +119,7 @@ variable "nsg_rules" {
         protocol                   = "Tcp"
         source_port_range          = "*"
         destination_port_range     = "8180"
-        source_address_prefix      = "10.0.1.0/24"
+        source_address_prefix      = "10.0.1.0/23"
         destination_address_prefix = "*"
       },
       {
@@ -130,8 +130,8 @@ variable "nsg_rules" {
         protocol                   = "Tcp"
         source_port_range          = "*"
         destination_port_range     = "5435"
-        source_address_prefix      = "10.0.3.0/24"
-        destination_address_prefix = "10.0.2.0/24"
+        source_address_prefix      = "10.0.3.0/23"
+        destination_address_prefix = "10.0.2.0/23"
       }
     ],
     data = [
@@ -143,7 +143,7 @@ variable "nsg_rules" {
         protocol                   = "Tcp"
         source_port_range          = "*"
         destination_port_range     = "5435"
-        source_address_prefix      = "10.0.2.0/24"
+        source_address_prefix      = "10.0.2.0/23"
         destination_address_prefix = "*"
       },
       {
@@ -154,7 +154,7 @@ variable "nsg_rules" {
         protocol                   = "Tcp"
         source_port_range          = "*"
         destination_port_range     = "5434"
-        source_address_prefix      = "10.0.2.0/24"
+        source_address_prefix      = "10.0.2.0/23"
         destination_address_prefix = "*"
       }
     ]
