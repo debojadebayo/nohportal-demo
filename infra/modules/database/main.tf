@@ -9,14 +9,14 @@ resource "azurerm_postgresql_flexible_server" "postgresql_main" {
   private_dns_zone_id    = azurerm_private_dns_zone.postgres.id
   administrator_login    = var.db_admin_username
   administrator_password = var.db_admin_password
-  zone                   = "1"
   storage_mb             = 32768
   sku_name               = "GP_Standard_D2s_v3"
   backup_retention_days  = 7
   public_network_access_enabled = false
-  
+
+# Allows for backup to minimise database downtime in the event of a failure
   high_availability {
-    mode = "ZoneRedundant"
+    mode = "SameZone"
   }
 
   depends_on = [azurerm_private_dns_zone_virtual_network_link.postgres]

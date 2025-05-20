@@ -224,20 +224,26 @@ resource "azurerm_application_gateway" "app_gateway" {
   }
 
   # Routing rules
-  request_routing_rule {
-    name                        = "http-to-https-rule"
-    rule_type                   = "Basic"
-    http_listener_name          = "http-listener"
-    redirect_configuration_name = "http-to-https"
-    priority                    = 10
+  dynamic "request_routing_rule" {
+    for_each = length(var.ssl_certificate_path) > 0 ? [1] : []
+    content {
+      name                        = "http-to-https-rule"
+      rule_type                   = "Basic"
+      http_listener_name          = "http-listener"
+      redirect_configuration_name = "http-to-https"
+      priority                    = 10
+    }
   }
 
-  request_routing_rule {
-    name               = "https-routing-rule"
-    rule_type          = "PathBasedRouting"
-    http_listener_name = "https-listener"
-    url_path_map_name  = "path-based-routing"
-    priority           = 20
+  dynamic "request_routing_rule" {
+    for_each = length(var.ssl_certificate_path) > 0 ? [1] : []
+    content {
+      name               = "https-routing-rule"
+      rule_type          = "PathBasedRouting"
+      http_listener_name = "https-listener"
+      url_path_map_name  = "path-based-routing"
+      priority           = 20
+    }
   }
 
   firewall_policy_id = azurerm_web_application_firewall_policy.waf_policy.id
