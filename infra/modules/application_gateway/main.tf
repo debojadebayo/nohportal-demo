@@ -148,7 +148,7 @@ resource "azurerm_application_gateway" "app_gateway" {
   # Health probes
   probe {
     name                = "frontend-health-probe"
-    host                = var.frontend_fqdn
+    # host                = var.frontend_fqdn
     protocol            = "Http"
     path                = "/health"
     interval            = 30
@@ -158,7 +158,7 @@ resource "azurerm_application_gateway" "app_gateway" {
 
   probe {
     name                = "api-health-probe"
-    host                = var.api_fqdn
+    # host                = var.api_fqdn
     protocol            = "Http"
     path                = "/api-health"
     interval            = 30
@@ -168,7 +168,7 @@ resource "azurerm_application_gateway" "app_gateway" {
 
   probe {
     name                = "auth-health-probe"
-    host                = var.auth_fqdn
+    # host                = var.auth_fqdn
     protocol            = "Http"
     path                = "/auth/realms/master"
     interval            = 30
@@ -209,6 +209,7 @@ resource "azurerm_application_gateway" "app_gateway" {
       paths                      = ["/api/*"]
       backend_address_pool_name  = "api-backend-pool"
       backend_http_settings_name = "api-http-settings"
+
     }
 
     path_rule {
