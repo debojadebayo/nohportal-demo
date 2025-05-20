@@ -60,6 +60,20 @@ jobs:
       run: |
         terraform init \
           -backend-config="key=${{ steps.vars.outputs.TF_STATE_KEY }}"
+    # Add these steps after the terraform init step and before the terraform plan step
+    - name: Import existing resources
+      run: |
+        cd infra
+        # Import primary resources
+        terraform import module.networking.azurerm_virtual_network.vnet /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.Network/virtualNetworks/nationoh-vnet || true
+        terraform import module.networking.azurerm_network_security_group.nsg["appgateway"] /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.Network/networkSecurityGroups/appgateway-nsg || true
+        terraform import module.networking.azurerm_network_security_group.nsg["data"] /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.Network/networkSecurityGroups/data-nsg || true
+        terraform import module.networking.azurerm_network_security_group.nsg["privatelink"] /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.Network/networkSecurityGroups/privatelink-nsg || true
+        terraform import module.monitoring.azurerm_log_analytics_workspace.log_analytics /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.OperationalInsights/workspaces/nationohdev-insights-workspace-tf || true
+        terraform import module.application_gateway.azurerm_public_ip.app_gateway_ip /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.Network/publicIPAddresses/nationohdev-app-gateway-ip || true
+        terraform import module.application_gateway.azurerm_web_application_firewall_policy.waf_policy /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.Network/applicationGatewayWebApplicationFirewallPolicies/nationohdev-waf-policy || true
+        terraform import module.registry.azurerm_container_registry.acr /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.ContainerRegistry/registries/nationohdevregistry || true
+        terraform import module.registry.azurerm_user_assigned_identity.acr_identity /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/nationohdevregistry-identity || true
     
     # temporary fix for the issue of refreshing the state file to deploy in a different location 
     - name: Terraform Refresh
