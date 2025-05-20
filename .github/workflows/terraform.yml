@@ -61,13 +61,19 @@ jobs:
         terraform init \
           -backend-config="key=${{ steps.vars.outputs.TF_STATE_KEY }}"
 
-    # to be removed once transferred to client portal
+    # to be removed once transferred to client portal, imports keyvault and then secrets
     - name: Import Key vault resource
       working-directory: ./infra
       run: |
-        terraform import module.secrets.azurerm_key_vault_secret.keycloak_admin_username /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2
-      continue-on-error: true
-    
+        terraform import module.secrets.azurerm_key_vault.key_vault /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2
+        terraform import module.secrets.azurerm_key_vault_secret.postgresql_admin_username /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/postgresql-admin-username
+        terraform import module.secrets.azurerm_key_vault_secret.postgresql_admin_password /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/postgresql-admin-password
+        terraform import module.secrets.azurerm_key_vault_secret.keycloak_admin_username /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/keycloak-admin-username
+        terraform import module.secrets.azurerm_key_vault_secret.keycloak_admin_password /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/keycloak-admin-password
+        terraform import module.secrets.azurerm_key_vault_secret.keycloak_db_username /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/keycloak-db-username
+        terraform import module.secrets.azurerm_key_vault_secret.keycloak_db_password /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/keycloak-db-password
+
+
     # temporary fix for the issue of refreshing the state file to deploy in a different location 
     - name: Terraform Refresh
       working-directory: ./infra
