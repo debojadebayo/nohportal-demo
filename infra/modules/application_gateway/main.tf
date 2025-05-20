@@ -107,12 +107,15 @@ resource "azurerm_application_gateway" "app_gateway" {
   }
 
   #   Http to https redirect 
-  redirect_configuration {
-    name                 = "http-to-https"
-    redirect_type        = "Permanent"
-    target_listener_name = "https-listener"
-    include_path         = true
-    include_query_string = true
+  dynamic "redirect_configuration" {
+    for_each = length(var.ssl_certificate_path) > 0 ? [1] : []
+    content {
+      name                 = "http-to-https"
+      redirect_type        = "Permanent"
+      target_listener_name = "https-listener"
+      include_path         = true
+      include_query_string = true
+    }
   }
 
   backend_http_settings {
