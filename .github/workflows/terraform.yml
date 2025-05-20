@@ -60,6 +60,13 @@ jobs:
       run: |
         terraform init \
           -backend-config="key=${{ steps.vars.outputs.TF_STATE_KEY }}"
+
+    # to be removed once transferred to client portal
+    - name: Import Key vault resource
+      working-directory: ./infra
+      run: |
+        terraform import module.secrets.azurerm_key_vault_secret.keycloak_admin_username /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2
+      continue-on-error: true
     
     # temporary fix for the issue of refreshing the state file to deploy in a different location 
     - name: Terraform Refresh
