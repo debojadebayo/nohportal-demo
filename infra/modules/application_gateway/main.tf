@@ -142,7 +142,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     protocol              = "Http"
     request_timeout       = 60
     probe_name            = "auth-health-probe"
-    pick_host_name_from_backend_address = true
+    pick_host_name_from_backend_address = true 
   }
 
   # Health probes
@@ -154,6 +154,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     interval            = 30
     timeout             = 30
     unhealthy_threshold = 3
+    pick_host_name_from_backend_http_settings = true
   }
 
   probe {
@@ -164,6 +165,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     interval            = 30
     timeout             = 30
     unhealthy_threshold = 3
+    pick_host_name_from_backend_http_settings = true
   }
 
   probe {
@@ -174,6 +176,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     interval            = 30
     timeout             = 30
     unhealthy_threshold = 3
+    pick_host_name_from_backend_http_settings = true
   }
 
   #   HTTP listener

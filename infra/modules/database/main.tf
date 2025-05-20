@@ -13,7 +13,8 @@ resource "azurerm_postgresql_flexible_server" "postgresql_main" {
   storage_mb             = 32768
   sku_name               = "GP_Standard_D2s_v3"
   backup_retention_days  = 7
-
+  public_network_access_enabled = false
+  
   high_availability {
     mode = "ZoneRedundant"
   }
@@ -63,10 +64,10 @@ resource "azurerm_postgresql_flexible_server_database" "keycloak_db" {
 }
 
 # Firewall rule to allow connections from the container apps subnet
-resource "azurerm_postgresql_flexible_server_firewall_rule" "container_apps" {
-  name             = var.firewall_rule_name
-  server_id        = azurerm_postgresql_flexible_server.postgresql_main.id
-  start_ip_address = var.container_subnet_cidr_start
-  end_ip_address   = var.container_subnet_cidr_end
-}
+# resource "azurerm_postgresql_flexible_server_firewall_rule" "container_apps" {
+#   name             = var.firewall_rule_name
+#   server_id        = azurerm_postgresql_flexible_server.postgresql_main.id
+#   start_ip_address = var.container_subnet_cidr_start
+#   end_ip_address   = var.container_subnet_cidr_end
+# }
     

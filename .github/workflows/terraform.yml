@@ -47,12 +47,12 @@ jobs:
           echo "TF_STATE_KEY=nationoh/dev.tfstate" >> $GITHUB_OUTPUT
         fi
 
-    - name: Clear Terraform Cache
-      working-directory: ./infra
-      run: |
-        rm -rf .terraform
-        rm -f .terraform.lock.hcl
-        rm -f terraform.tfstate*
+    # - name: Clear Terraform Cache
+    #   working-directory: ./infra
+    #   run: |
+    #     rm -rf .terraform
+    #     rm -f .terraform.lock.hcl
+    #     rm -f terraform.tfstate*
 
     - name: Terraform Init
       working-directory: ./infra
