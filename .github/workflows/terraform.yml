@@ -65,7 +65,7 @@ jobs:
     - name: Import Key vault resource
       working-directory: ./infra
       run: |
-        terraform import module.secrets.azurerm_key_vault.key_vault /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2
+        terraform import module.secrets.azurerm_key_vault.kv /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2
         terraform import module.secrets.azurerm_key_vault_secret.postgresql_admin_username /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/postgresql-admin-username
         terraform import module.secrets.azurerm_key_vault_secret.postgresql_admin_password /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/postgresql-admin-password
         terraform import module.secrets.azurerm_key_vault_secret.keycloak_admin_username /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/keycloak-admin-username
