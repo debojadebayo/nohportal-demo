@@ -30,6 +30,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+# will need to remove the devops-setup branch and the uk_south flag when we move to production and merge with master 
     - name: Set Environment Variables 
       id: vars
       run: |
@@ -44,21 +45,26 @@ jobs:
         elif [[ ${{ github.ref }} == "refs/heads/devops-setup" ]]; then
           echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
           echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
-          echo "TF_STATE_KEY=nationoh/dev.tfstate" >> $GITHUB_OUTPUT
+          echo "TF_STATE_KEY=nationoh/dev_uksouth.tfstate" >> $GITHUB_OUTPUT
         fi
 
-    # - name: Clear Terraform Cache
-    #   working-directory: ./infra
-    #   run: |
-    #     rm -rf .terraform
-    #     rm -f .terraform.lock.hcl
-    #     rm -f terraform.tfstate*
+    - name: Clear Terraform Cache
+      working-directory: ./infra
+      run: |
+        rm -rf .terraform
+        rm -f .terraform.lock.hcl
+        rm -f terraform.tfstate*
 
     - name: Terraform Init
       working-directory: ./infra
       run: |
         terraform init \
           -backend-config="key=${{ steps.vars.outputs.TF_STATE_KEY }}"
+    
+    # temporary fix for the issue of refreshing the state file to deploy in a different location 
+    - name: Terraform Refresh
+      working-directory: ./infra
+      run: terraform refresh -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}"
     
     - name: Terraform Format
       working-directory: ./infra
