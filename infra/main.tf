@@ -47,7 +47,7 @@ module "secrets" {
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
   subnet_ids          = module.networking.subnets_ids
-  key_vault_name      = "${var.resource_group_name}-keyvault2"
+  key_vault_name      = "${var.resource_group_name}-kv-new"
   vnet_id             = module.networking.vnet_id
 }
 

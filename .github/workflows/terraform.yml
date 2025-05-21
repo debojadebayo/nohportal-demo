@@ -37,42 +37,29 @@ jobs:
         if [[ ${{ github.ref }} == "refs/heads/production" ]]; then
            echo "ENV_NAME=prod" >> $GITHUB_OUTPUT
            echo "TF_VAR_FILE=prod.tfvars" >> $GITHUB_OUTPUT
-           echo "TF_STATE_KEY=nationoh/prod.tfstate" >> $GITHUB_OUTPUT
+           echo "TF_STATE_KEY=nationoh/prod.tfstate.latest" >> $GITHUB_OUTPUT
         elif [[ ${{ github.ref }} == "refs/heads/master" ]]; then
           echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
           echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
-          echo "TF_STATE_KEY=nationoh/dev.tfstate" >> $GITHUB_OUTPUT
+          echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
         elif [[ ${{ github.ref }} == "refs/heads/devops-setup" ]]; then
           echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
           echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
-          echo "TF_STATE_KEY=nationoh/dev_fresh.tfstate" >> $GITHUB_OUTPUT
+          echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
         fi
 
-    - name: Clear Terraform Cache
-      working-directory: ./infra
-      run: |
-        rm -rf .terraform
-        rm -f .terraform.lock.hcl
-        rm -f terraform.tfstate*
+    # - name: Clear Terraform Cache
+    #   working-directory: ./infra
+    #   run: |
+    #     rm -rf .terraform
+    #     rm -f .terraform.lock.hcl
+    #     rm -f terraform.tfstate*
 
     - name: Terraform Init
       working-directory: ./infra
       run: |
         terraform init \
           -backend-config="key=${{ steps.vars.outputs.TF_STATE_KEY }}"
-
-    # to be removed once transferred to client portal, imports keyvault and then secrets
-    - name: Import Key vault resource
-      working-directory: ./infra
-      run: |
-        terraform import -lock=false module.secrets.azurerm_key_vault.kv /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2
-        terraform import module.secrets.azurerm_key_vault_secret.postgresql_admin_username /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/postgresql-admin-username
-        terraform import module.secrets.azurerm_key_vault_secret.postgresql_admin_password /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/postgresql-admin-password
-        terraform import module.secrets.azurerm_key_vault_secret.keycloak_admin_username /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/keycloak-admin-username
-        terraform import module.secrets.azurerm_key_vault_secret.keycloak_admin_password /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/keycloak-admin-password
-        terraform import module.secrets.azurerm_key_vault_secret.keycloak_db_username /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/keycloak-db-username
-        terraform import module.secrets.azurerm_key_vault_secret.keycloak_db_password /subscriptions/ba3bebaa-e2fc-47da-b577-2830ffd32473/resourceGroups/nationohdev/providers/Microsoft.KeyVault/vaults/nationohdev-keyvault2/secrets/keycloak-db-password
-
 
     # temporary fix for the issue of refreshing the state file to deploy in a different location 
     - name: Terraform Refresh
