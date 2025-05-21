@@ -15,17 +15,6 @@ resource "azurerm_subnet" "subnets" {
   address_prefixes     = [var.subnet_prefixes[index(var.subnet_names, each.value)]]
 
   dynamic "delegation" {
-    for_each = each.value == "backend" ? [1] : []
-    content {
-      name = "container-apps-delegation"
-      service_delegation {
-        name    = "Microsoft.App/environments"
-        actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-      }
-    }
-  }
-
-  dynamic "delegation" {
     for_each = each.value == "data" ? [1] : []
     content {
       name = "postgres-delegation"
