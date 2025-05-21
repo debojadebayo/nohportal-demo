@@ -7,7 +7,6 @@ resource "azurerm_key_vault" "kv" {
   soft_delete_retention_days  = 90
   purge_protection_enabled    = true
   sku_name                    = "standard"
-  enable_rbac_authorization   = true
 
   # Network ACLs for restricting access
   network_acls {
@@ -18,46 +17,56 @@ resource "azurerm_key_vault" "kv" {
 
   # access policy  
 
-  # access_policy {
-  #   tenant_id = data.azurerm_client_config.current.tenant_id
-  #   object_id = data.azurerm_client_config.current.object_id
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
 
-  #   key_permissions = [
-  #     "Get",
-  #     "List",
-  #     "Create",
-  #     "Delete",
-  #     "Update",
-  #     "Recover",
-  #     "Purge",
-  #     "GetRotationPolicy",
-  #     "SetRotationPolicy"
-  #   ]
-  #   secret_permissions = [
-  #     "Get",
-  #     "List",
-  #     "Set",
-  #     "Delete",
-  #     "Recover",
-  #     "Backup",
-  #     "Restore",
-  #     "Purge"
-  #   ]
+    key_permissions = [
+      "Get",
+      "List",
+      "Create",
+      "Delete",
+      "Update",
+      "Recover",
+      "Purge",
+      "GetRotationPolicy",
+      "SetRotationPolicy"
+    ]
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
+      "Purge"
+    ]
 
-  #   certificate_permissions = [
-  #     "Get",
-  #     "List",
-  #     "Create",
-  #     "Import",
-  #     "Update",
-  #     "Delete",
-  #     "Recover",
-  #     "Backup",
-  #     "Restore",
-  #     "Purge"
-  #   ]
-  # }
+    certificate_permissions = [
+      "Get",
+      "List",
+      "Create",
+      "Import",
+      "Update",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
+      "Purge"
+    ]
+  }
 
+  # Add access policy for Keycloak Managed Identity
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = var.keycloak_managed_identity_object_id
+
+    secret_permissions = [
+      "Get",
+      "List"
+    ]
+  }
 
   # Prevent accidental deletion in production
   # lifecycle {
@@ -68,13 +77,6 @@ resource "azurerm_key_vault" "kv" {
 
 # Get current Azure client config 
 data "azurerm_client_config" "current" {}
-
-# Role assignment for the Terraform deployment identity
-resource "azurerm_role_assignment" "terraform_deployer" {
-  scope                = azurerm_key_vault.kv.id
-  role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
-}
 
 # Private endpoint for secure access
 resource "azurerm_private_endpoint" "keyvault" {

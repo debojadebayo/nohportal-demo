@@ -114,7 +114,6 @@ variable "keycloak_db_url" {
   type        = string
 }
 
-
 variable "image_tags" {
   description = "Map of image tags for each container"
   type        = map(string)
@@ -123,6 +122,11 @@ variable "image_tags" {
     frontend = "1.0.0"
     keycloak = "26.1"
   }
+}
+
+variable "container_apps_identity_id" {
+  description = "Container Apps Identity ID"
+  type        = string
 }
 
 # variable "container_app_server_name" {

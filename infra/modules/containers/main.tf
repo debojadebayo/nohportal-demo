@@ -28,10 +28,20 @@ resource "azurerm_container_app" "api_server" {
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.container_apps_identity_id]
+  }
+
+  registry {
+    server = var.container_registry_url
+    identity = var.container_apps_identity_id
+  }
+
   template {
     container {
       name   = "server"
-      image  = "${var.container_registry_url}/nationoh/server:${var.image_tags["server"]}"
+      image  = "nginx:latest"
       cpu    = var.container_cpu
       memory = var.container_memory
 
@@ -74,7 +84,12 @@ resource "azurerm_container_app" "keycloak_server" {
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [var.user_assigned_identity_id]
+    identity_ids = [var.user_assigned_identity_id, var.container_apps_identity_id]
+  }
+
+  registry {
+    server = var.container_registry_url
+    identity = var.container_apps_identity_id
   }
 
   secret {
@@ -104,7 +119,7 @@ resource "azurerm_container_app" "keycloak_server" {
   template {
     container {
       name   = "keycloak"
-      image  = "${var.container_registry_url}/nationoh/keycloak:${var.image_tags["keycloak"]}"
+      image  = "nginx:latest"
       cpu    = 0.5
       memory = "1Gi"
 
@@ -171,10 +186,20 @@ resource "azurerm_container_app" "frontend" {
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.container_apps_identity_id]
+  }
+
+  registry {
+    server = var.container_registry_url
+    identity = var.container_apps_identity_id
+  }
+
   template {
     container {
       name   = "frontend"
-      image  = "${var.container_registry_url}/nationoh/frontend:${var.image_tags["frontend"]}"
+      image  = "nginx:latest"
       cpu    = 1.0
       memory = "2Gi"
 

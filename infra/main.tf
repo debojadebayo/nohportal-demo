@@ -29,11 +29,31 @@ resource "azurerm_user_assigned_identity" "uai_keycloak" {
   resource_group_name = azurerm_resource_group.rg.name
 }
 
-resource "azurerm_role_assignment" "ra_keycloak" {
-  scope                = module.secrets.key_vault_id
-  role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = azurerm_user_assigned_identity.uai_keycloak.principal_id
+resource "azurerm_user_assigned_identity" "container_apps_identity" {
+  name                = "${var.resource_group_name}-uai-container-apps"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.location
 }
+
+resource "azurerm_role_assignment" "acr_pull_role" {
+  scope                = module.registry.registry_id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.container_apps_identity.principal_id
+
+  depends_on = [
+    module.registry
+  ]
+}
+
+# resource "azurerm_role_assignment" "ra_keycloak" {
+#   scope                = module.secrets.key_vault_id
+#   role_definition_name = "Key Vault Secrets Officer"
+#   principal_id         = azurerm_user_assigned_identity.uai_keycloak.principal_id
+# }
+
+
+# Get current Azure client config 
+data "azurerm_client_config" "current" {}
 
 
 module "networking" {
@@ -49,6 +69,7 @@ module "secrets" {
   subnet_ids          = module.networking.subnets_ids
   key_vault_name      = "${var.resource_group_name}-kv-rbac-new"
   vnet_id             = module.networking.vnet_id
+  keycloak_managed_identity_object_id = azurerm_user_assigned_identity.uai_keycloak.principal_id
 }
 
 module "monitoring" {
@@ -123,6 +144,9 @@ module "containers" {
   container_cpu                = var.container_cpu
   container_memory             = var.container_memory
 
+  # Managed identity 
+  container_apps_identity_id   = azurerm_user_assigned_identity.container_apps_identity.id
+
 
   # API Server 
   server_container_app_name = "${var.resource_group_name}server"
@@ -145,6 +169,7 @@ module "containers" {
   depends_on = [
     module.database,
     module.secrets,
-    module.registry
+    module.registry,
+    azurerm_role_assignment.acr_pull_role
   ]
 }
