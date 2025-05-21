@@ -48,7 +48,7 @@ resource "azurerm_subnet_network_security_group_association" "association" {
 }
 
 
-# Network Security Rules
+# Network Security Rules for subnets
 
 resource "azurerm_network_security_rule" "rule" {
   for_each = {
