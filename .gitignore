@@ -375,3 +375,5 @@ CLAUDE.md
 # Terraform
 .terraform
 .terraform.lock.hcl
+tfplan
+tfplan.*

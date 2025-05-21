@@ -8,8 +8,13 @@ resource "azurerm_container_registry" "acr" {
 
   # Network rules to restrict access
   network_rule_set {
-    default_action = "Deny"
+    default_action = "Allow"     # After initial deployment, change this back to "Deny" for production
     
+    # When switching to "Deny" default action, uncomment and configure these rules
+    # ip_rule {
+    #   action   = "Allow"
+    #   ip_range = var.allowed_ip_range
+    # }
   }
 
   # Geo-replication for disaster recovery

@@ -7,6 +7,7 @@ resource "azurerm_key_vault" "kv" {
   soft_delete_retention_days  = 90
   purge_protection_enabled    = true
   sku_name                    = "standard"
+  enable_rbac_authorization   = true
 
   # Network ACLs for restricting access
   network_acls {
@@ -17,45 +18,45 @@ resource "azurerm_key_vault" "kv" {
 
   # access policy  
 
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
+  # access_policy {
+  #   tenant_id = data.azurerm_client_config.current.tenant_id
+  #   object_id = data.azurerm_client_config.current.object_id
 
-    key_permissions = [
-      "Get",
-      "List",
-      "Create",
-      "Delete",
-      "Update",
-      "Recover",
-      "Purge",
-      "GetRotationPolicy",
-      "SetRotationPolicy"
-    ]
-    secret_permissions = [
-      "Get",
-      "List",
-      "Set",
-      "Delete",
-      "Recover",
-      "Backup",
-      "Restore",
-      "Purge"
-    ]
+  #   key_permissions = [
+  #     "Get",
+  #     "List",
+  #     "Create",
+  #     "Delete",
+  #     "Update",
+  #     "Recover",
+  #     "Purge",
+  #     "GetRotationPolicy",
+  #     "SetRotationPolicy"
+  #   ]
+  #   secret_permissions = [
+  #     "Get",
+  #     "List",
+  #     "Set",
+  #     "Delete",
+  #     "Recover",
+  #     "Backup",
+  #     "Restore",
+  #     "Purge"
+  #   ]
 
-    certificate_permissions = [
-      "Get",
-      "List",
-      "Create",
-      "Import",
-      "Update",
-      "Delete",
-      "Recover",
-      "Backup",
-      "Restore",
-      "Purge"
-    ]
-  }
+  #   certificate_permissions = [
+  #     "Get",
+  #     "List",
+  #     "Create",
+  #     "Import",
+  #     "Update",
+  #     "Delete",
+  #     "Recover",
+  #     "Backup",
+  #     "Restore",
+  #     "Purge"
+  #   ]
+  # }
 
 
   # Prevent accidental deletion in production
