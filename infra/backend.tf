@@ -3,5 +3,6 @@ terraform {
     resource_group_name  = "terraform-state-rg-latest"
     storage_account_name = "nationohtfstatelatest"
     container_name       = "tfstatelatest"
+    key                  = "nationoh/dev.tfstate.latest"
   }
 }
