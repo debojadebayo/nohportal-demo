@@ -26,5 +26,5 @@ variable "vnet_id" {
 variable "keycloak_managed_identity_object_id" {
   description = "Object ID of the Keycloak managed identity for key vault access"
   type        = string
-  default     = ""  # Default to empty to make it optional
+  default     = "" # Default to empty to make it optional
 }

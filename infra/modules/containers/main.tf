@@ -34,7 +34,7 @@ resource "azurerm_container_app" "api_server" {
   }
 
   registry {
-    server = var.container_registry_url
+    server   = var.container_registry_url
     identity = var.container_apps_identity_id
   }
 
@@ -88,7 +88,7 @@ resource "azurerm_container_app" "keycloak_server" {
   }
 
   registry {
-    server = var.container_registry_url
+    server   = var.container_registry_url
     identity = var.container_apps_identity_id
   }
 
@@ -192,7 +192,7 @@ resource "azurerm_container_app" "frontend" {
   }
 
   registry {
-    server = var.container_registry_url
+    server   = var.container_registry_url
     identity = var.container_apps_identity_id
   }
 

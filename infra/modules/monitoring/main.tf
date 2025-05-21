@@ -31,7 +31,7 @@ resource "azurerm_log_analytics_workspace" "log_analytics" {
   location            = var.location
   resource_group_name = var.resource_group_name
   retention_in_days   = 90
-  
+
   tags = {
     environment = "production"
     compliance  = "hipaa"

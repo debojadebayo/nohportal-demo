@@ -4,7 +4,7 @@ resource "azurerm_public_ip" "app_gateway_ip" {
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
-  domain_name_label = "nationohdev-gateway"
+  domain_name_label   = "nationohdev-gateway"
 }
 
 resource "azurerm_web_application_firewall_policy" "waf_policy" {
@@ -119,66 +119,66 @@ resource "azurerm_application_gateway" "app_gateway" {
   }
 
   backend_http_settings {
-    name                  = "frontend-http-settings"
-    cookie_based_affinity = "Disabled"
-    port                  = 5002
-    protocol              = "Http"
-    request_timeout       = 60
-    probe_name            = "frontend-health-probe"
+    name                                = "frontend-http-settings"
+    cookie_based_affinity               = "Disabled"
+    port                                = 5002
+    protocol                            = "Http"
+    request_timeout                     = 60
+    probe_name                          = "frontend-health-probe"
     pick_host_name_from_backend_address = true
   }
 
   backend_http_settings {
-    name                  = "api-http-settings"
-    cookie_based_affinity = "Disabled"
-    port                  = 5003
-    protocol              = "Http"
-    request_timeout       = 60
-    probe_name            = "api-health-probe"
+    name                                = "api-http-settings"
+    cookie_based_affinity               = "Disabled"
+    port                                = 5003
+    protocol                            = "Http"
+    request_timeout                     = 60
+    probe_name                          = "api-health-probe"
     pick_host_name_from_backend_address = true
   }
 
   backend_http_settings {
-    name                  = "auth-http-settings"
-    cookie_based_affinity = "Enabled"
-    port                  = 8080
-    protocol              = "Http"
-    request_timeout       = 60
-    probe_name            = "auth-health-probe"
-    pick_host_name_from_backend_address = true 
+    name                                = "auth-http-settings"
+    cookie_based_affinity               = "Enabled"
+    port                                = 8080
+    protocol                            = "Http"
+    request_timeout                     = 60
+    probe_name                          = "auth-health-probe"
+    pick_host_name_from_backend_address = true
   }
 
   # Health probes
   probe {
-    name                = "frontend-health-probe"
+    name = "frontend-health-probe"
     # host                = var.frontend_fqdn
-    protocol            = "Http"
-    path                = "/health"
-    interval            = 30
-    timeout             = 30
-    unhealthy_threshold = 3
+    protocol                                  = "Http"
+    path                                      = "/health"
+    interval                                  = 30
+    timeout                                   = 30
+    unhealthy_threshold                       = 3
     pick_host_name_from_backend_http_settings = true
   }
 
   probe {
-    name                = "api-health-probe"
+    name = "api-health-probe"
     # host                = var.api_fqdn
-    protocol            = "Http"
-    path                = "/api-health"
-    interval            = 30
-    timeout             = 30
-    unhealthy_threshold = 3
+    protocol                                  = "Http"
+    path                                      = "/api-health"
+    interval                                  = 30
+    timeout                                   = 30
+    unhealthy_threshold                       = 3
     pick_host_name_from_backend_http_settings = true
   }
 
   probe {
-    name                = "auth-health-probe"
+    name = "auth-health-probe"
     # host                = var.auth_fqdn
-    protocol            = "Http"
-    path                = "/auth/realms/master"
-    interval            = 30
-    timeout             = 30
-    unhealthy_threshold = 3
+    protocol                                  = "Http"
+    path                                      = "/auth/realms/master"
+    interval                                  = 30
+    timeout                                   = 30
+    unhealthy_threshold                       = 3
     pick_host_name_from_backend_http_settings = true
   }
 

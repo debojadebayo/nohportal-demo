@@ -10,7 +10,7 @@ resource "azurerm_key_vault" "kv" {
 
   # Network ACLs for restricting access
   network_acls {
-    default_action             = "Allow"     # After initial deployment, change this back to "Deny" for production
+    default_action             = "Allow" # After initial deployment, change this back to "Deny" for production
     bypass                     = "AzureServices"
     virtual_network_subnet_ids = [var.subnet_ids["backend"], var.subnet_ids["data"]]
   }
@@ -146,13 +146,13 @@ resource "random_string" "postgresql_admin_username_prefix" {
   length  = 1
   special = false
   numeric = false
-  upper = false
+  upper   = false
 }
 
 resource "random_string" "postgresql_admin_username_suffix" {
   length  = 23
   special = false
-  upper = false
+  upper   = false
 }
 
 resource "azurerm_key_vault_secret" "postgresql_admin_username" {
@@ -178,13 +178,13 @@ resource "random_string" "keycloak_admin_username_prefix" {
   length  = 1
   special = false
   numeric = false
-  upper = false
+  upper   = false
 }
 
 resource "random_string" "keycloak_admin_username_suffix" {
   length  = 23
   special = false
-  upper = false
+  upper   = false
 }
 
 resource "azurerm_key_vault_secret" "keycloak_admin_username" {

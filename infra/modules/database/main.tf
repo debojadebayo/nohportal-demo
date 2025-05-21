@@ -1,23 +1,23 @@
 
 # PostgreSQL Flexible Server
 resource "azurerm_postgresql_flexible_server" "postgresql_main" {
-  name                   = var.postgresql_server_name
-  resource_group_name    = var.resource_group_name
-  location               = var.location
-  version                = "14"
-  delegated_subnet_id    = var.subnet_ids["data"]
-  private_dns_zone_id    = azurerm_private_dns_zone.postgres.id
-  administrator_login    = var.db_admin_username
-  administrator_password = var.db_admin_password
-  storage_mb             = 32768
-  sku_name               = "GP_Standard_D2s_v3"
-  backup_retention_days  = 7
-  zone = 1
+  name                          = var.postgresql_server_name
+  resource_group_name           = var.resource_group_name
+  location                      = var.location
+  version                       = "14"
+  delegated_subnet_id           = var.subnet_ids["data"]
+  private_dns_zone_id           = azurerm_private_dns_zone.postgres.id
+  administrator_login           = var.db_admin_username
+  administrator_password        = var.db_admin_password
+  storage_mb                    = 32768
+  sku_name                      = "GP_Standard_D2s_v3"
+  backup_retention_days         = 7
+  zone                          = 1
   public_network_access_enabled = false
 
-# Allows for backup to minimise database downtime in the event of a failure
+  # Allows for backup to minimise database downtime in the event of a failure
   high_availability {
-    mode = "ZoneRedundant"
+    mode                      = "ZoneRedundant"
     standby_availability_zone = 2
   }
 
