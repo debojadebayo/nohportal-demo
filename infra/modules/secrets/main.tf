@@ -69,6 +69,12 @@ resource "azurerm_key_vault" "kv" {
 # Get current Azure client config 
 data "azurerm_client_config" "current" {}
 
+# Role assignment for the Terraform deployment identity
+resource "azurerm_role_assignment" "terraform_deployer" {
+  scope                = azurerm_key_vault.kv.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
 
 # Private endpoint for secure access
 resource "azurerm_private_endpoint" "keyvault" {
@@ -262,5 +268,3 @@ resource "azurerm_key_vault_secret" "keycloak_db_password" {
 #   value        = var.jwt_signing_key
 #   key_vault_id = azurerm_key_vault.kv.id
 # }
-
-
