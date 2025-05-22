@@ -19,12 +19,6 @@ namespace Server.Modules.CRM.Infrastructure
 			services.AddDbContext<IDbContext<CRMDbContext>, CRMDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-			var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");
-			
-			Console.WriteLine($"Connection string: {azureStorageConnectionString}");
-
-			services.AddSingleton(x => new BlobServiceClient(azureStorageConnectionString));
-
 			return services;
 		}
 		public WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment)

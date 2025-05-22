@@ -43,8 +43,8 @@
 		</Authorized>
 	</AuthorizeView>
 	<MudMainContent>
-		<MudContainer>
-			<MudPaper Class="pa-8 ma-2 max-w-xl">
+		<MudContainer Class="mt-6 px-8" MaxWidth="MaxWidth.False">
+			<MudPaper Class="pa-8 ma-2">
 				@Body
 			</MudPaper>
 		</MudContainer>
@@ -112,7 +112,8 @@
 		{
 			DrawerWidthLeft = "260px",
 			DrawerWidthRight = "300px",
-		}
+		},
+		
 	};
 
 	bool _drawerOpen = true;

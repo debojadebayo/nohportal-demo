@@ -1,4 +1,6 @@
 ﻿
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +20,7 @@ namespace ComposedHealthBase.Server.Modules
 			{
 				options.AddPolicy("Client",
 					policy => policy
-						.WithOrigins("http://localhost:5002")
+						.WithOrigins(configuration["Cors:AllowedClientOrigin"])
 						.AllowAnyHeader()
 						.AllowAnyMethod()
 						.AllowCredentials());
@@ -43,6 +45,24 @@ namespace ComposedHealthBase.Server.Modules
 
 			services.AddAuthorization();
 			services.AddOpenApi();
+
+			var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");
+			var blobServiceClient = new BlobServiceClient(azureStorageConnectionString);
+			var properties = blobServiceClient.GetProperties();
+			properties.Value.Cors =
+				new[]
+				{
+					new BlobCorsRule
+					{
+						MaxAgeInSeconds = 1000,
+						AllowedHeaders = configuration["Cors:AllowedHeaders"],
+						AllowedOrigins = $"{configuration["Cors:AllowedClientOrigin"]}, {configuration["Cors:AllowedServerOrigin"]}",
+						ExposedHeaders = configuration["Cors:ExposedHeaders"],
+						AllowedMethods = configuration["Cors:AllowedMethods"],
+					}
+				};
+        	blobServiceClient.SetProperties(properties);
+			services.AddSingleton(x => blobServiceClient);
 
 			return services;
 		}

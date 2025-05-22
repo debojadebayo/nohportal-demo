@@ -15,6 +15,7 @@ using Server.Modules.CommonModule.Interfaces;
 using ComposedHealthBase.Shared.DTOs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs;
+using Azure.Storage.Sas;
 
 namespace Server.Modules.CRM.Endpoints
 {
@@ -124,10 +125,24 @@ namespace Server.Modules.CRM.Endpoints
 			group.MapPost("/upload", async (
 				[FromServices] CRMDbContext dbContext,
 				[FromServices] IMapper<Document, DocumentDto> mapper,
-				[FromServices] Azure.Storage.Blobs.BlobServiceClient blobServiceClient,
+				[FromServices] BlobServiceClient blobServiceClient,
 				[FromForm] DocumentDto documentDto,
 				[FromForm] IFormFile file
 			) => await UploadDocument(dbContext, mapper, blobServiceClient, documentDto, file)).DisableAntiforgery();
+
+			group.MapGet("/getsaslink/{documentId}", async (
+				[FromServices] CRMDbContext dbContext,
+				[FromServices] IMapper<Document, DocumentDto> mapper,
+				[FromServices] BlobServiceClient blobServiceClient,
+				long documentId
+			) => await GetDocumentSasLink(dbContext, mapper, blobServiceClient, documentId));
+
+			group.MapGet("/getcontent/{documentId}", async (
+				[FromServices] CRMDbContext dbContext,
+				[FromServices] IMapper<Document, DocumentDto> mapper,
+				[FromServices] BlobServiceClient blobServiceClient,
+				long documentId) =>
+					await GetDocumentContent(dbContext, mapper, blobServiceClient, documentId));
 
 			return endpoints;
 		}
@@ -136,7 +151,7 @@ namespace Server.Modules.CRM.Endpoints
 		protected async Task<IResult> UploadDocument(
 			CRMDbContext dbContext,
 			IMapper<Document, DocumentDto> mapper,
-			Azure.Storage.Blobs.BlobServiceClient blobServiceClient,
+			BlobServiceClient blobServiceClient,
 			DocumentDto documentDto,
 			IFormFile file)
 		{
@@ -162,6 +177,9 @@ namespace Server.Modules.CRM.Endpoints
 				// Optionally, update the DocumentDto with the blob URL
 				documentDto.FilePath = blobClient.Uri.ToString();
 
+				documentDto.BlobContainerName = containerName;
+				documentDto.BlobName = blobName;
+
 				// Map and save the Document entity as needed
 				var entity = mapper.Map(documentDto);
 				dbContext.Documents.Add(entity);
@@ -173,6 +191,62 @@ namespace Server.Modules.CRM.Endpoints
 			{
 				Console.Error.WriteLine($"An error occurred: {ex.Message}");
 				return Results.Problem("An error occurred while uploading the document.");
+			}
+		}
+		protected async Task<IResult> GetDocumentSasLink(
+			CRMDbContext dbContext,
+			IMapper<Document, DocumentDto> mapper,
+			BlobServiceClient blobServiceClient,
+			long documentId)
+		{
+			try
+			{
+				// Retrieve the document entity from the database using the generic query handler
+				var document = await new GetByIdQuery<Document, DocumentDto, CRMDbContext>(dbContext, mapper).Handle(documentId);
+				if (document == null)
+					return Results.NotFound("Document not found.");
+				//TODO Check the current user's claims against ownerId on the entity
+
+				var containerClient = blobServiceClient.GetBlobContainerClient(document.BlobContainerName);
+				// Use the stored BlobName directly instead of extracting from FilePath
+				var blobClient = containerClient.GetBlobClient(document.BlobName);
+				var sasToken = blobClient.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
+
+				return Results.Ok(sasToken.ToString());
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem("An error occurred while generating document access link.");
+			}
+		}
+		protected async Task<IResult> GetDocumentContent(
+			CRMDbContext dbContext,
+			IMapper<Document, DocumentDto> mapper,
+			BlobServiceClient blobServiceClient,
+			long documentId)
+		{
+			try
+			{
+				// Retrieve the document entity from the database using the generic query handler
+				var document = await new GetByIdQuery<Document, DocumentDto, CRMDbContext>(dbContext, mapper).Handle(documentId);
+				if (document == null)
+					return Results.NotFound("Document not found.");
+				//TODO Check the current user's claims against ownerId on the entity
+
+				var containerClient = blobServiceClient.GetBlobContainerClient(document.BlobContainerName);
+				// Use the stored BlobName directly instead of extracting from FilePath
+				var blobClient = containerClient.GetBlobClient(document.BlobName);
+
+				var response = await blobClient.DownloadContentAsync();
+				return Results.File(response.Value.Content.ToArray(),
+								   response.Value.Details.ContentType,
+								   document.Name);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem("An error occurred while retrieving the document.");
 			}
 		}
 	}

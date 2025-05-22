@@ -1,9 +1,9 @@
-@namespace Client.Pages.Forms
-@using Shared.Validators
+@namespace Client.Pages.Components.TabComponents
 @using Shared.DTOs.CRM
+@using Shared.Validators
 @using MudBlazor
 
-<MudForm Model="@Model" @ref="@form" Validation="@(employeeValidator.ValidateValue)" ValidationDelay="0">
+<MudForm @ref="form" Model="Model" validated="OnValidated">
     <MudGrid>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="Model.FirstName" For="@(() => Model.FirstName)" Immediate="true"
@@ -36,25 +36,35 @@
     </MudGrid>
     <MudCardActions>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"
-            OnClick="@(async () => await Submit())">Submit
+            OnClick="@(async () => await Save())">Save Changes
         </MudButton>
     </MudCardActions>
 </MudForm>
 
 @code {
     [Parameter] public EmployeeDto Model { get; set; } = new EmployeeDto();
-    [Parameter] public EventCallback<EmployeeDto> OnSubmit { get; set; }
-    [Inject] ISnackbar Snackbar { get; set; } = default!;
-    MudForm form = default!;
-    EmployeeValidator employeeValidator = new EmployeeValidator();
+    [Parameter] public EventCallback<EmployeeDto> OnSave { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
 
-    private async Task Submit()
+    private MudForm form = default!;
+
+    private async Task Save()
     {
         await form.Validate();
         if (form.IsValid)
         {
-            Snackbar.Add("Submitted!");
-            await OnSubmit.InvokeAsync(Model);
+            await OnSave.InvokeAsync(Model);
         }
+    }
+
+    private async Task Delete()
+    {
+        await OnDelete.InvokeAsync();
+    }
+
+    private void OnValidated()
+    {
+        // No-op, handled in Save
     }
 }

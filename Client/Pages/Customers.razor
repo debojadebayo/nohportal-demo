@@ -2,10 +2,11 @@
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @using MudBlazor
+@using Client.Pages.Components.TabComponents
 @attribute [Authorize]
 
-@using Client.Pages.Components.Customers
-<h1>Customers</h1>
+<MudText Typo="Typo.h1">Customers</MudText>
+
 <MudText Typo="Typo.body1">Select a customer to view details</MudText>
 <MudAutocomplete T="CustomerDto" ToStringFunc="@CustomerToString" Label="Company Name" @bind-Value="selectedCustomer"
     SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true"
@@ -103,7 +104,7 @@
         {
             if (customer.Id == 0)
             {
-                var response = await httpClient.PostAsJsonAsync("api/customer", customer);
+                var response = await httpClient.PostAsJsonAsync("api/customer/create", customer);
                 if (response.IsSuccessStatusCode)
                 {
                     Snackbar.Add("Customer created.", Severity.Success);
@@ -115,7 +116,7 @@
             }
             else
             {
-                var response = await httpClient.PutAsJsonAsync($"api/customer", customer);
+                var response = await httpClient.PutAsJsonAsync($"api/customer/update", customer);
                 if (response.IsSuccessStatusCode)
                 {
                     Snackbar.Add("Customer updated.", Severity.Success);
@@ -261,8 +262,8 @@
         {
             ProductType = productTypes?.FirstOrDefault() ?? new ProductTypeDto{ ChargeCode = string.Empty, Description = string.Empty, Name = string.Empty },
             Price = 0,
-            StartTime = DateTime.Now,
-            EndTime = DateTime.Now.AddMonths(12)
+            StartTime = DateTime.UtcNow,
+            EndTime = DateTime.UtcNow.AddMonths(12)
         };
         productDialogOpen = true;
     }
@@ -448,7 +449,7 @@
         if (selectedCustomer == null) return;
         try
         {
-            var response = await httpClient.PutAsJsonAsync($"api/customer", selectedCustomer);
+            var response = await httpClient.PutAsJsonAsync($"api/customer/update", selectedCustomer);
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add("Notes saved.", Severity.Success);

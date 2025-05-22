@@ -18,7 +18,7 @@ public class BaseCalendarItem : CalendarItem
             }
             else
             {
-                Start = DateTime.Now;
+                Start = DateTime.UtcNow;
                 StartTime = Start;
             }
         }

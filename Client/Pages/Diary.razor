@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Client.Pages.Components
+@using Client.Pages.Components.Calendar.Events
 @using ComposedHealthBase.Shared.Interfaces
 @using Shared.DTOs.CRM
 @using Client.Pages.Forms
@@ -11,45 +12,25 @@
 @inject ISnackbar Snackbar
 @attribute [Authorize]
 
-<PageTitle>Diary</PageTitle>
+<MudGrid>
+    <MudItem xs="12" sm="6">
+        <MudText Typo="Typo.h1">Diary</MudText>
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <div class="d-flex justify-end mb-4">
+            <MudButton variant="Variant.Filled" Color="Color.Primary" OnClick="() => OpenAddAppointmentModal()">Add Appointment
+            </MudButton>
+        </div>
+    </MudItem>
+</MudGrid>
 
-<MudText Typo="Typo.h1">Diary</MudText>
-
-<div class="d-flex justify-end mb-4">
-    <MudButton variant="Variant.Filled" Color="Color.Primary" OnClick="OpenAddAppointmentModal">Add Appointment
-    </MudButton>
-</div>
-
-<MultiResourceCalendar Resources="@Clinicians" TResource="ClinicianDto" TCalendarItem="ScheduleDto" />
-
-<MudDialog @bind-is-open="_isModalOpen">
-    <DialogContent>
-        <MudText Typo="Typo.h6">@(_editingSchedule?.Id > 0 ? "Edit Appointment" : "Add Appointment")</MudText>
-        <MudTextField @bind-Value="_editingSchedule.Title" Label="Title" />
-        <MudTextField @bind-Value="_editingSchedule.Description" Label="Description" />
-        <MudTextField @bind-Value="_editingSchedule.CustomerId" Label="Customer Id" />
-        <MudTextField @bind-Value="_editingSchedule.ReferralId" Label="Referral Id" />
-        <MudTextField @bind-Value="_editingSchedule.EmployeeId" Label="Patient Id" />
-        <MudTextField @bind-Value="_editingSchedule.ClinicianId" Label="Clinician Id" />
-        <MudDatePicker @bind-Date="_editingSchedule.StartTime" Label="Start" />
-        <MudDatePicker @bind-Date="_editingSchedule.EndTime" Label="End" />
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="SaveAppointment" Color="Color.Primary">Save</MudButton>
-        <MudButton OnClick="CloseModal">Cancel</MudButton>
-        @if (_editingSchedule?.Id > 0)
-        {
-            <MudButton OnClick="DeleteAppointment" Color="Color.Error">Delete</MudButton>
-        }
-    </DialogActions>
-</MudDialog>
+<MultiResourceCalendar Resources="@Clinicians" TResource="ClinicianDto" TCalendarItem="ScheduleDto"
+    CellClickedCallback="OnCellClicked" ItemClickedCallback="OnItemClicked" />
 
 @code {
     private IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
     private IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
     private HttpClient httpClient = default!;
-
-    private bool _isModalOpen = false;
     private ScheduleDto _editingSchedule = new ScheduleDto
     {
         Title = string.Empty,
@@ -75,85 +56,79 @@
         }
     }
 
-    private async Task OpenAddAppointmentModal()
+    private async Task OpenAddAppointmentModal(ScheduleDto? schedule = null)
     {
-        // Create a new schedule with default values
-        var newSchedule = new ScheduleDto
+        var isEdit = schedule != null && schedule.Id > 0;
+        if (schedule == null)
         {
-            Title = string.Empty,
-            Description = string.Empty,
-            Start = DateTime.UtcNow,
-            End = DateTime.UtcNow.AddHours(1)
-        };
+            schedule = new ScheduleDto
+            {
+                Title = string.Empty,
+                Description = string.Empty,
+                Start = DateTime.UtcNow,
+                End = DateTime.UtcNow.AddHours(1)
+            };
+        }
 
-        // Show the dialog
         var parameters = new DialogParameters
         {
-        { "model", newSchedule },
-        { "Clinicians", Clinicians },
-        { "Referrals", Referrals }
+            { "model", schedule! },
+            { "Clinicians", Clinicians },
+            { "Referrals", Referrals }
         };
-        var dialogReference = await DialogService.ShowAsync<Forms.ScheduleDetails>("Add Appointment", parameters);
+        var dialogReference = await DialogService.ShowAsync<Forms.ScheduleDetails>(isEdit ? "Edit Appointment" : "Add Appointment", parameters);
         var dialogResult = await dialogReference.Result;
 
-        if (dialogResult?.Data is ScheduleDto schedule)
+        if (dialogResult?.Data is ScheduleDto editedSchedule)
         {
             try
             {
-                var response = await httpClient.PostAsJsonAsync("api/schedule/create", schedule);
+                var response = isEdit
+                    ? await httpClient.PutAsJsonAsync($"api/schedule/update", editedSchedule)
+                    : await httpClient.PostAsJsonAsync("api/schedule/create", editedSchedule);
+
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add("Appointment created successfully");
+                    Snackbar.Add(isEdit ? "Appointment updated successfully" : "Appointment created successfully", Severity.Success);
                     await LoadClinicians();
                 }
                 else
                 {
-                    Snackbar.Add($"Failed to create appointment: {response.StatusCode}");
+                    Snackbar.Add($"Failed to {(isEdit ? "update" : "create")} appointment: {response.StatusCode}", Severity.Error);
                 }
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Error creating appointment: {ex.Message}");
+                Snackbar.Add($"Error {(isEdit ? "updating" : "creating")} appointment: {ex.Message}", Severity.Error);
             }
         }
     }
+    
     private async Task LoadClinicians()
     {
-        var clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getallclinicianswithschedules");
+        var clinicians = await
+        httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getallclinicianswithschedules");
         Clinicians = clinicians ?? new List<ClinicianDto>();
     }
 
-    private void OnCalendarItemClick(ScheduleDto item)
+    private async Task OnCellClicked(CellClickedEventArgs<ClinicianDto, ScheduleDto> args)
     {
-        _editingSchedule = new ScheduleDto
+        var schedule = new ScheduleDto
         {
-            Id = item.Id,
-            Title = item.Title,
-            Description = item.Description,
-            CustomerId = item.CustomerId,
-            ReferralId = item.ReferralId,
-            EmployeeId = item.EmployeeId,
-            ClinicianId = item.ClinicianId,
-            Start = item.Start,
-            End = item.End
+            StartTime = DateTime.SpecifyKind(args.DateTime, DateTimeKind.Utc),
+            EndTime = DateTime.SpecifyKind(args.DateTime.AddMinutes(30), DateTimeKind.Utc),
+            ClinicianId = args.Resource.Id,
+            Title = string.Empty,
+            Description = string.Empty
         };
-        _isModalOpen = true;
+        await OpenAddAppointmentModal(schedule);
     }
-
-    private void CloseModal()
+    private async Task OnItemClicked(ItemClickedEventArgs<ScheduleDto> args)
     {
-        _isModalOpen = false;
-    }
-
-    private Task SaveAppointment()
-    {
-        _isModalOpen = false;
-        return Task.CompletedTask;
-    }
-
-    private Task DeleteAppointment()
-    {
-        _isModalOpen = false;
-        return Task.CompletedTask;
+        var schedule = args.Item;
+        if (schedule != null)
+        {
+            await OpenAddAppointmentModal(schedule);
+        }
     }
 }

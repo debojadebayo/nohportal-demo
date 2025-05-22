@@ -1,3 +1,4 @@
+@namespace Client.Pages.Components.TabComponents
 @using Shared.DTOs.Scheduling
 @using MudBlazor
 
@@ -20,5 +21,5 @@
 </MudPaper>
 
 @code {
-    [Parameter] public List<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
+    [Parameter] public IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
 }
