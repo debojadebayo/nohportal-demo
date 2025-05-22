@@ -26,7 +26,8 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             CustomerId = entity.CustomerId,
             JobRole = entity.JobRole,
             Department = entity.Department,
-            LineManager = entity.LineManager
+            LineManager = entity.LineManager,
+            Notes = entity.Notes
         };
     }
 
@@ -52,7 +53,8 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             CustomerId = dto.CustomerId,
             JobRole = dto.JobRole,
             Department = dto.Department,
-            LineManager = dto.LineManager
+            LineManager = dto.LineManager,
+            Notes = dto.Notes
         };
     }
 
@@ -87,6 +89,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         entity.JobRole = dto.JobRole;
         entity.Department = dto.Department;
         entity.LineManager = dto.LineManager;
+        entity.Notes = dto.Notes;
     }
 
     public void Map(Employee entity, EmployeeDto dto)
@@ -110,6 +113,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         dto.JobRole = entity.JobRole;
         dto.Department = entity.Department;
         dto.LineManager = entity.LineManager;
+        dto.Notes = entity.Notes;
     }
 
     public void Map(IEnumerable<EmployeeDto> dtos, IEnumerable<Employee> entities)

@@ -7,10 +7,11 @@ namespace Shared.DTOs.Scheduling
 	{
 		public long Id { get; set; }
 		public bool IsActive { get; set; }
-		public int CreatedBy { get; set; }
-		public int LastModifiedBy { get; set; }
+		public long CreatedBy { get; set; }
+		public long LastModifiedBy { get; set; }
 		public DateTime CreatedDate { get; set; }
 		public DateTime ModifiedDate { get; set; }
+		public long TenantId { get; set; }
 		public long CustomerId { get; set; }
 		public long EmployeeId { get; set; }
 		public string ReferralDetails { get; set; } = string.Empty;

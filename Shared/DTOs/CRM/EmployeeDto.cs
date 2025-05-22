@@ -7,10 +7,11 @@ namespace Shared.DTOs.CRM
     {
         public long Id { get; set; }
         public bool IsActive { get; set; }
-        public int CreatedBy { get; set; }
-        public int LastModifiedBy { get; set; }
+        public long CreatedBy { get; set; }
+        public long LastModifiedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
+        public long TenantId { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public DateTime DOB { get; set; }
@@ -24,5 +25,6 @@ namespace Shared.DTOs.CRM
         public string JobRole { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
         public string LineManager { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
     }
 }

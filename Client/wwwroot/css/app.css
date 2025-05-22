@@ -30,26 +30,3 @@
   .loading-progress-text:after {
       content: var(--blazor-load-percentage-text, "Loading");
   }
-
-  .mud-button{
-    border-radius: 10px;
-  }
-
-  .mud-button-filled{
-    background-color: #0d47a1;
-    color: white;
-  }
-
-  /* Global CSS for all buttons */
-  .mud-button-outlined{
-    background-color: #f5f5f5; 
-    border-color: #625B71;
-    border-width: 2px;
-    border-style: solid;
-    color: #333;
-  }
-
-  .mud-button-outlined:hover{
-    background-color: #E5EFF9;
-    border-color: #625B71;
-  }

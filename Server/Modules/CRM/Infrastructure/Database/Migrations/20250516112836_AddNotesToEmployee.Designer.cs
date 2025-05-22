@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Modules.CRM.Infrastructure.Database;
@@ -11,9 +12,11 @@ using Server.Modules.CRM.Infrastructure.Database;
 namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(CRMDbContext))]
-    partial class CRMDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250516112836_AddNotesToEmployee")]
+    partial class AddNotesToEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,8 +34,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -46,8 +49,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("LastModifiedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -64,12 +67,6 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     b.Property<DateTime?>("StartTime")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -90,8 +87,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -111,8 +108,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("LastModifiedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -139,15 +136,9 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Telephone")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("Website")
                         .IsRequired()
@@ -162,13 +153,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         {
                             Id = 1L,
                             Address = "1 Acme Street, London",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Email = "info@acme.example.com",
                             Industry = "Technology",
                             InvoiceEmail = "accounts@acme.example.com",
                             IsActive = true,
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Acme Corp",
                             Notes = "Key client.",
@@ -176,22 +167,20 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             OHServicesRequired = "Full OH Service",
                             Postcode = "AC1 2ME",
                             Site = "London",
-                            SubjectId = 0L,
                             Telephone = "01234 567890",
-                            TenantId = 0L,
                             Website = "https://acme.example.com"
                         },
                         new
                         {
                             Id = 2L,
                             Address = "2 Beta Road, Manchester",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Email = "contact@beta.example.com",
                             Industry = "Manufacturing",
                             InvoiceEmail = "finance@beta.example.com",
                             IsActive = true,
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Beta Ltd",
                             Notes = "Annual contract.",
@@ -199,22 +188,20 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             OHServicesRequired = "Health Surveillance",
                             Postcode = "BT2 3LT",
                             Site = "Manchester",
-                            SubjectId = 0L,
                             Telephone = "02345 678901",
-                            TenantId = 0L,
                             Website = "https://beta.example.com"
                         },
                         new
                         {
                             Id = 3L,
                             Address = "3 Gamma Avenue, Birmingham",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Email = "hello@gamma.example.com",
                             Industry = "Logistics",
                             InvoiceEmail = "billing@gamma.example.com",
                             IsActive = true,
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Gamma Inc",
                             Notes = "Occasional work.",
@@ -222,9 +209,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             OHServicesRequired = "Ad hoc assessments",
                             Postcode = "GM3 4IN",
                             Site = "Birmingham",
-                            SubjectId = 0L,
                             Telephone = "03456 789012",
-                            TenantId = 0L,
                             Website = "https://gamma.example.com"
                         });
                 });
@@ -237,16 +222,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("BlobContainerName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("BlobName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -267,8 +244,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("LastModifiedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -276,12 +253,6 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -308,8 +279,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<string>("Address3")
                         .HasColumnType("text");
 
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -339,8 +310,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("LastModifiedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -361,15 +332,9 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Telephone")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -382,7 +347,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address1 = "1 Main St",
                             Address2 = "Apt 1",
                             Address3 = "",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = 1L,
                             DOB = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -391,15 +356,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             FirstName = "Alice",
                             IsActive = true,
                             JobRole = "Manager",
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             LastName = "Smith",
                             LineManager = "Bob Jones",
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP1 1AA",
-                            SubjectId = 0L,
-                            Telephone = "07111 111111",
-                            TenantId = 0L
+                            Telephone = "07111 111111"
                         },
                         new
                         {
@@ -407,7 +370,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address1 = "2 Main St",
                             Address2 = "Apt 2",
                             Address3 = "",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = 2L,
                             DOB = new DateTime(1985, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -416,15 +379,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             FirstName = "Bob",
                             IsActive = true,
                             JobRole = "Engineer",
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             LastName = "Jones",
                             LineManager = "Carol White",
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP2 2BB",
-                            SubjectId = 0L,
-                            Telephone = "07222 222222",
-                            TenantId = 0L
+                            Telephone = "07222 222222"
                         },
                         new
                         {
@@ -432,7 +393,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address1 = "3 Main St",
                             Address2 = "Apt 3",
                             Address3 = "",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = 3L,
                             DOB = new DateTime(1992, 3, 3, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -441,15 +402,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             FirstName = "Carol",
                             IsActive = true,
                             JobRole = "Analyst",
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             LastName = "White",
                             LineManager = "David Black",
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP3 3CC",
-                            SubjectId = 0L,
-                            Telephone = "07333 333333",
-                            TenantId = 0L
+                            Telephone = "07333 333333"
                         },
                         new
                         {
@@ -457,7 +416,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address1 = "4 Main St",
                             Address2 = "Apt 4",
                             Address3 = "",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = 1L,
                             DOB = new DateTime(1988, 4, 4, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -466,15 +425,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             FirstName = "David",
                             IsActive = true,
                             JobRole = "Consultant",
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             LastName = "Black",
                             LineManager = "Alice Smith",
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP4 4DD",
-                            SubjectId = 0L,
-                            Telephone = "07444 444444",
-                            TenantId = 0L
+                            Telephone = "07444 444444"
                         },
                         new
                         {
@@ -482,7 +439,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address1 = "5 Main St",
                             Address2 = "Apt 5",
                             Address3 = "",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = 2L,
                             DOB = new DateTime(1995, 5, 5, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -491,15 +448,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             FirstName = "Eve",
                             IsActive = true,
                             JobRole = "Nurse",
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             LastName = "Green",
                             LineManager = "Bob Jones",
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP5 5EE",
-                            SubjectId = 0L,
-                            Telephone = "07555 555555",
-                            TenantId = 0L
+                            Telephone = "07555 555555"
                         },
                         new
                         {
@@ -507,7 +462,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address1 = "6 Main St",
                             Address2 = "Apt 6",
                             Address3 = "",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = 3L,
                             DOB = new DateTime(1983, 6, 6, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -516,15 +471,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             FirstName = "Frank",
                             IsActive = true,
                             JobRole = "Technician",
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             LastName = "Blue",
                             LineManager = "Carol White",
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP6 6FF",
-                            SubjectId = 0L,
-                            Telephone = "07666 666666",
-                            TenantId = 0L
+                            Telephone = "07666 666666"
                         },
                         new
                         {
@@ -532,7 +485,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address1 = "7 Main St",
                             Address2 = "Apt 7",
                             Address3 = "",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = 1L,
                             DOB = new DateTime(1991, 7, 7, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -541,15 +494,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             FirstName = "Grace",
                             IsActive = true,
                             JobRole = "Advisor",
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             LastName = "Brown",
                             LineManager = "David Black",
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP7 7GG",
-                            SubjectId = 0L,
-                            Telephone = "07777 777777",
-                            TenantId = 0L
+                            Telephone = "07777 777777"
                         },
                         new
                         {
@@ -557,7 +508,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address1 = "8 Main St",
                             Address2 = "Apt 8",
                             Address3 = "",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = 2L,
                             DOB = new DateTime(1987, 8, 8, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -566,15 +517,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             FirstName = "Henry",
                             IsActive = true,
                             JobRole = "Driver",
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             LastName = "Gray",
                             LineManager = "Eve Green",
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP8 8HH",
-                            SubjectId = 0L,
-                            Telephone = "07888 888888",
-                            TenantId = 0L
+                            Telephone = "07888 888888"
                         },
                         new
                         {
@@ -582,7 +531,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address1 = "9 Main St",
                             Address2 = "Apt 9",
                             Address3 = "",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = 3L,
                             DOB = new DateTime(1993, 9, 9, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -591,15 +540,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             FirstName = "Ivy",
                             IsActive = true,
                             JobRole = "Receptionist",
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             LastName = "Violet",
                             LineManager = "Frank Blue",
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP9 9II",
-                            SubjectId = 0L,
-                            Telephone = "07999 999999",
-                            TenantId = 0L
+                            Telephone = "07999 999999"
                         },
                         new
                         {
@@ -607,7 +554,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address1 = "10 Main St",
                             Address2 = "Apt 10",
                             Address3 = "",
-                            CreatedBy = 1L,
+                            CreatedBy = 1,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = 1L,
                             DOB = new DateTime(1989, 10, 10, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -616,15 +563,13 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             FirstName = "Jack",
                             IsActive = true,
                             JobRole = "Cleaner",
-                            LastModifiedBy = 1L,
+                            LastModifiedBy = 1,
                             LastName = "White",
                             LineManager = "Grace Brown",
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP10 0JJ",
-                            SubjectId = 0L,
-                            Telephone = "07000 000000",
-                            TenantId = 0L
+                            Telephone = "07000 000000"
                         });
                 });
 
@@ -636,8 +581,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -659,8 +604,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("LastModifiedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -672,12 +617,6 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -695,8 +634,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<long?>("ContractId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -707,8 +646,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("LastModifiedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -721,12 +660,6 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     b.Property<DateTime?>("StartTime")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -749,8 +682,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -768,8 +701,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("LastModifiedBy")
-                        .HasColumnType("bigint");
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -781,12 +714,6 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<DateTime?>("StartTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.ToTable("ProductTypes", "crm");
@@ -796,477 +723,421 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         {
                             Id = 1L,
                             ChargeCode = "OHPFULL",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHP Full Day",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHP Full Day",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 2L,
                             ChargeCode = "OHPHALF",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 1000m,
                             Description = "OHP Half Day",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHP Half Day",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 3L,
                             ChargeCode = "OHAFULL",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHA Full Day",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHA Full Day",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 4L,
                             ChargeCode = "OHAHALF",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHA Half Day",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHA Half Day",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 5L,
                             ChargeCode = "OHTFULLDAY",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHT Full Day",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHT Full Day",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 6L,
                             ChargeCode = "OHPAPP",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHP Appointment",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHP Appointment",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 7L,
                             ChargeCode = "OHPPENS",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Pensions Case",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Pensions Case",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 8L,
                             ChargeCode = "OHPAUDIO",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Audiometry Reviews (per 15 mins)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Audiometry Reviews (per 15 mins)",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 9L,
                             ChargeCode = "RETAIN",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Monthly Retainer Fee",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Monthly Retainer Fee",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 10L,
                             ChargeCode = "OHPTIME",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHP Consultancy Time (per 15 mins)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHP Consultancy Time (per 15 mins)",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 11L,
                             ChargeCode = "PPHA",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Pre Placement Health Assessment",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Pre Placement Health Assessment",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 12L,
                             ChargeCode = "PPHA15",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Pre Placement Health Assessment (per 15 mins)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Pre Placement Health Assessment (per 15 mins)",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 13L,
                             ChargeCode = "MTRC",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Mileage and Travel Re-Charged to Customer (per mile)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Mileage and Travel Re-Charged to Customer (per mile)",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 14L,
                             ChargeCode = "ARC",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Accommodation Recharged to Customer",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Accommodation Recharged to Customer",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 15L,
                             ChargeCode = "CRC",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Consumables Recharged to Customer",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Consumables Recharged to Customer",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 16L,
                             ChargeCode = "PSRC",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Physiotherapy Services Recharged to Customer",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Physiotherapy Services Recharged to Customer",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 17L,
                             ChargeCode = "GPSR",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "GP / Specialist Report Recharged",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "GP / Specialist Report Recharged",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 18L,
                             ChargeCode = "ADMIN",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Administration Time",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Administration Time",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 19L,
                             ChargeCode = "HAVS1",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "HAVS Tier 1",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "HAVS Tier 1",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 20L,
                             ChargeCode = "HAVS2",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "HAVS Tier 2",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "HAVS Tier 2",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 21L,
                             ChargeCode = "HAVS3",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "HAVS Tier 3",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "HAVS Tier 3",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 22L,
                             ChargeCode = "HAVS4",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "HAVS Tier 4",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "HAVS Tier 4",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 23L,
                             ChargeCode = "OHPFULLCOMPLEX",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHP Full Complex",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHP Full Complex",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 24L,
                             ChargeCode = "PTSMINI",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "PTS / Rail Work mini audit",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "PTS / Rail Work mini audit",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 25L,
                             ChargeCode = "PTSPAPER",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "PTS / Rail Work paper based review",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "PTS / Rail Work paper based review",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 26L,
                             ChargeCode = "PTSAUDIT",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "PTS / Rail Work audit of cases",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "PTS / Rail Work audit of cases",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 27L,
                             ChargeCode = "PTSRETAIN",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "PTS / Rail Work Retainer (per month)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "PTS / Rail Work Retainer (per month)",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 28L,
                             ChargeCode = "PTSADD",
-                            CreatedBy = 0L,
+                            CreatedBy = 0,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Additional PTS or MRO work or reporting (per 15 mins)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
-                            LastModifiedBy = 0L,
+                            LastModifiedBy = 0,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Additional PTS or MRO work or reporting (per 15 mins)",
-                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            SubjectId = 0L,
-                            TenantId = 0L
+                            StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 

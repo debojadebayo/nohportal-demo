@@ -22,7 +22,6 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     depends_on:
       - app.database
-      - blobstorage
     volumes:
       - ./:/app
 
@@ -70,11 +69,13 @@ services:
   blobstorage:
     container_name: blobstorage
     image: mcr.microsoft.com/azure-storage/azurite:latest
-    command: "azurite --loose --blobHost 0.0.0.0 --blobPort 10000 --queueHost 0.0.0.0 --queuePort 10001 --location /workspace --debug /workspace/debug.log"
+    hostname: azurite
+    restart: always
+    command: "azurite --loose --blobHost 0.0.0.0 --queueHost 0.0.0.0"
     ports:
-      - 10010:10000
-      - 10011:10001
-      - 10012:10002
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
     volumes:
       - ./.containers/blob_storage/data:/workspace
 

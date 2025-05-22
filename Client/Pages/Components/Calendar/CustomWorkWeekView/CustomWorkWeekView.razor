@@ -75,15 +75,15 @@ protected override RenderFragment RenderDayTitle(CalendarCell<TCalendarItem> cel
 /// Renders the cells.
 /// </summary>
 protected override RenderFragment RenderCells =>
-@<div class="mud-cal-week-layer">
-    <div></div>
-    <div class="@GridClass">
-        @foreach (var cell in Cells)
-        {
-            @RenderCell(cell)
-        }
-    </div>
-</div>;
+    @<div class="mud-cal-week-layer">
+        <div class="@GridClass">
+            <div></div>
+            @foreach (var cell in Cells)
+            {
+                @RenderCell(cell)
+            }
+        </div>
+    </div>;
 
 /// <summary>
 /// Renders an individual cell.

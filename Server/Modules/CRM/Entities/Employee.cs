@@ -17,5 +17,6 @@ namespace Server.Modules.CRM.Entities
         public required string JobRole { get; set; }
         public required string Department { get; set; }
         public required string LineManager { get; set; }
+        public string Notes { get; set; } = string.Empty;
     }
 }

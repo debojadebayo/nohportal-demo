@@ -1,11 +1,13 @@
 ﻿@page "/employees"
 @using Shared.DTOs.CRM
+@using Shared.DTOs.Scheduling
 @using MudBlazor
-@using Client.Pages.Forms
-@inject IHttpClientFactory HttpClientFactory
+@using Client.Pages.Components.TabComponents
+@attribute [Authorize]
 
-<h1>Employees</h1>
+<MudText Typo="Typo.h1">Employees</MudText>
 
+<MudText Typo="Typo.body1">Select an employee to view details</MudText>
 <MudAutocomplete T="EmployeeDto" ToStringFunc="@EmployeeToString" Label="Employee Name or DOB"
     @bind-Value="selectedEmployee" SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true"
     ProgressIndicatorColor="Color.Default" />
@@ -14,31 +16,23 @@
     @if (selectedEmployee != null)
     {
         <MudTabPanel Text="Employees">
-            <EmployeeDetails Model="selectedEmployee" OnSubmit="HandleSubmit" />
+            <EmployeeDetailsTab Model="selectedEmployee" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee"
+                IsLoading="isLoading"/>
         </MudTabPanel>
-        <MudTabPanel Text="Appointments">
-            <MudText>Appointments Content</MudText>
+        <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByEmployeeId">
+            <AppointmentsTab Appointments="appointments" />
         </MudTabPanel>
-        <MudTabPanel Text="Referrals">
-            <MudText>Referrals Content</MudText>
+        <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByEmployeeId">
+            <ReferralsTab Referrals="referrals" />
         </MudTabPanel>
-        <MudTabPanel Text="Managers">
-            <MudText>Managers Content</MudText>
+        <MudTabPanel Text="Managers" OnClick="GetAllManagersByEmployeeId">
+            <ManagersTab Managers="managers" />
         </MudTabPanel>
-        <MudTabPanel Text="Services">
-            <MudText>Services Content</MudText>
-        </MudTabPanel>
-        <MudTabPanel Text="Invoicing">
-            <MudText>Invoicing Content</MudText>
-        </MudTabPanel>
-        <MudTabPanel Text="Documents">
-            <MudText>Documents Content</MudText>
-        </MudTabPanel>
-        <MudTabPanel Text="Reports">
-            <MudText>Reports Content</MudText>
+        <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByEmployeeId">
+            <DocumentLibraryTab Documents="documents" OnSave="UploadDocument" />
         </MudTabPanel>
         <MudTabPanel Text="Notes">
-            <MudText>Notes Content</MudText>
+            <NotesTab Notes="@selectedEmployee.Notes" OnSave="SaveNotes" />
         </MudTabPanel>
     }
 </MudTabs>
@@ -46,12 +40,19 @@
 @code {
     private List<EmployeeDto> employeeList = new();
     private EmployeeDto? selectedEmployee;
+    private bool isLoading;
     private HttpClient httpClient = default!;
+    private List<ScheduleDto> appointments = new();
+    private List<ReferralDto> referrals = new();
+    private List<ManagerDto> managers = new();
+    private List<DocumentDto> documents = new();
 
-    private string EmployeeToString(EmployeeDto? e)
-    {
-        return e is null ? string.Empty : $"{e.FirstName} {e.LastName} - {e.Id}";
-    }
+    [Inject]
+    private IHttpClientFactory HttpClientFactory { get; set; } = default!;
+    [Inject]
+    private ISnackbar Snackbar { get; set; } = default!;
+
+    private string EmployeeToString(EmployeeDto? e) => e is null ? string.Empty : $"{e.FirstName} {e.LastName} - {e.Id}";
 
     protected override void OnInitialized()
     {
@@ -60,20 +61,199 @@
 
     private async Task<IEnumerable<EmployeeDto>> Search(string value, CancellationToken token)
     {
-        if (string.IsNullOrEmpty(value)) return employeeList;
-
-        var result = await httpClient.GetFromJsonAsync<IEnumerable<EmployeeDto>>("api/employee/search?term=" + value, token);
-        if (result is not null)
+        if (string.IsNullOrWhiteSpace(value))
         {
-            employeeList.AddRange(result);
+            return employeeList;
         }
-        return result ?? employeeList;
-            }
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<EmployeeDto>>("api/employee/search?term=" + value, token);
+            employeeList = result?.ToList() ?? new List<EmployeeDto>();
+            return employeeList;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to search employees: {ex.Message}", Severity.Error);
+            return new List<EmployeeDto>();
+        }
+    }
 
-    private Task HandleSubmit(EmployeeDto employee)
+    private async Task GetAllAppointmentsByEmployeeId()
     {
-        // Handle submit logic here (e.g., save employee)
-        return Task.CompletedTask;
+        if (selectedEmployee == null) return;
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>($"api/schedule/GetAllByEmployeeId/{selectedEmployee.Id}");
+            appointments = result?.ToList() ?? new List<ScheduleDto>();
         }
-   } 
-            
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load appointments: {ex.Message}", Severity.Error);
+            appointments = new List<ScheduleDto>();
+        }
+    }
+
+    private async Task GetAllReferralsByEmployeeId()
+    {
+        if (selectedEmployee == null) return;
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>($"api/referral/GetAllByEmployeeId/{selectedEmployee.Id}");
+            referrals = result?.ToList() ?? new List<ReferralDto>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load referrals: {ex.Message}", Severity.Error);
+            referrals = new List<ReferralDto>();
+        }
+    }
+
+    private async Task GetAllManagersByEmployeeId()
+    {
+        if (selectedEmployee == null) return;
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByEmployeeId/{selectedEmployee.Id}");
+            managers = result?.ToList() ?? new List<ManagerDto>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load managers: {ex.Message}", Severity.Error);
+            managers = new List<ManagerDto>();
+        }
+    }
+
+    private async Task GetAllDocumentsByEmployeeId()
+    {
+        if (selectedEmployee == null) return;
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"api/document/GetAllByEmployeeId/{selectedEmployee.Id}");
+            documents = result?.ToList() ?? new List<DocumentDto>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load documents: {ex.Message}", Severity.Error);
+            documents = new List<DocumentDto>();
+        }
+    }
+
+    private async Task UploadDocument(Tuple<DocumentDto, IBrowserFile> document)
+    {
+        if (selectedEmployee == null)
+        {
+            Snackbar.Add("Employee must be selected.", Severity.Error);
+            return;
+        }
+
+        isLoading = true;
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(document.Item1.Name ?? string.Empty), "Name");
+            content.Add(new StringContent(document.Item1.Description ?? string.Empty), "Description");
+            content.Add(new StringContent(document.Item1.FilePath ?? string.Empty), "FilePath");
+            content.Add(new StringContent(selectedEmployee.Id.ToString()), "EmployeeId");
+
+            var fileContent = new StreamContent(document.Item2.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // Max 10MB file
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(document.Item2.ContentType);
+            content.Add(fileContent, "file", document.Item2.Name);
+
+            var response = await httpClient.PostAsync("api/document/upload", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Document uploaded successfully.", Severity.Success);
+                await GetAllDocumentsByEmployeeId(); // Refresh the list
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to upload document: {response.StatusCode} - {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error uploading document: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SaveNotes()
+    {
+        if (selectedEmployee == null) return;
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync($"api/employee/update", selectedEmployee);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Notes saved.", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Failed to save notes: {response.StatusCode}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to save notes: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task HandleEmployeeSave(EmployeeDto employee)
+    {
+        if (employee == null) return;
+
+        isLoading = true;
+        try
+        {
+            var response = await httpClient.PutAsJsonAsync($"api/employee/update", employee);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Employee details saved successfully.", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Failed to save employee: {response.StatusCode}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving employee: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task DeleteEmployee()
+    {
+        if (selectedEmployee == null) return;
+        isLoading = true;
+        try
+        {
+            var response = await httpClient.DeleteAsync($"api/employee/delete/{selectedEmployee.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Employee deleted successfully.", Severity.Success);
+                selectedEmployee = null;
+            }
+            else
+            {
+                Snackbar.Add($"Failed to delete employee: {response.StatusCode}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error deleting employee: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

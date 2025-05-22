@@ -1,35 +1,36 @@
 @namespace Client.Pages.Components.Calendar
+@using Client.Pages.Components.Calendar
+@using Client.Pages.Components.Calendar.Events
 @using ComposedHealthBase.Shared.Interfaces
 @using ComposedHealthBase.Shared.Models
 @using Heron.MudCalendar
 @using Shared.DTOs.Scheduling
-@using Client.Pages.Components.Calendar
+@using System.Text.Json
 @typeparam TResource where TResource : ICalendarResource<TCalendarItem>
 @typeparam TCalendarItem where TCalendarItem : BaseCalendarItem
 
-<MudGrid>
-    <MudItem xs="12" Class="d-flex align-center">
+<MudGrid Class="align-center">
+<MudItem xs="12" sm="6" md="3">
+            <MudButtonGroup Color="Color.Primary" Variant="Variant.Text">
         <MudButton OnClick="() => PrevClicked()">
-            <MudIcon Icon="@Icons.Material.TwoTone.ChevronLeft" Color="Color.Primary" />
+            <MudIcon Icon="@Icons.Material.TwoTone.ChevronLeft" />
         </MudButton>
         <MudButton OnClick="() => CurrentDay = DateTime.Today">Today</MudButton>
         <MudButton OnClick="() => NextClicked()">
-            <MudIcon Icon="@Icons.Material.TwoTone.ChevronRight" Color="Color.Primary" />
+            <MudIcon Icon="@Icons.Material.TwoTone.ChevronRight"/>
         </MudButton>
-        
-        <div class="d-flex mx-auto">
-            <MudButton Class="@($"{(CalendarView == CalendarView.Day ? "mud-button-filled" : "mud-button-outlined")} mx-2")"
-                OnClick="SwitchToDayView">Day</MudButton>
-            <MudButton Class="@($"{(CalendarView == CalendarView.Week ? "mud-button-filled" : "mud-button-outlined")} mx-2")"
-                OnClick="SwitchToWeekView">Week</MudButton>
-            <MudButton Class="@($"{(CalendarView == CalendarView.WorkWeek ? "mud-button-filled" : "mud-button-outlined")} mx-2")"
-                OnClick="SwitchToWorkWeekView">Workweek</MudButton>
-            <MudButton Class="@($"{(CalendarView == CalendarView.Month ? "mud-button-filled" : "mud-button-outlined")} mx-2")"
-                OnClick="SwitchToMonthView">Month</MudButton>
-        </div>
-
-        <div class="ml-auto" style="min-width: 200px;">
-            <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" T="string"
+</MudButtonGroup>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+                    <MudToggleGroup T="CalendarView" SelectionMode="SelectionMode.SingleSelection" @bind-Value="CalendarView">
+            <MudToggleItem Value="@(CalendarView.Day)" Text="Day" />
+            <MudToggleItem Value="@(CalendarView.Week)" Text="Week" />
+            <MudToggleItem Value="@(CalendarView.WorkWeek)" Text="Work Week" />
+            <MudToggleItem Value="@(CalendarView.Month)" Text="Month" />
+        </MudToggleGroup>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="3">
+                        <MudSelect MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" T="string"
                 Label="Select Resources" MultiSelection="true" @bind-Value="_value"
                 @bind-SelectedValues="_selectedResources">
                 @foreach (var resource in Resources)
@@ -37,8 +38,7 @@
                     <MudSelectItem T="string" Value="@resource.AvatarTitle">@resource.AvatarTitle</MudSelectItem>
                 }
             </MudSelect>
-        </div>
-    </MudItem>
+        </MudItem>
 </MudGrid>
 
 @if (_selectedResources.Count() == 0)
@@ -49,44 +49,48 @@
 }
 else
 {
-    <div class="calendar-resource-group">
+<MudStack Row="true" Wrap="Wrap.NoWrap" Style="overflow-x: auto;">
     @foreach (var resource in Resources.Where(r => _selectedResources.Contains(r.AvatarTitle)))
     {
-        <div class="calendar-resource">
-            <MudCard>
-                <div class="calendar-resource-header">
-                    <div class="calendar-resource-header-inner">
-                        <MudCardHeader>
-                            <CardHeaderAvatar>
-                                <MudAvatar>
-                                    <MudImage Src="@resource.AvatarImage"></MudImage>
-                                </MudAvatar>
-                            </CardHeaderAvatar>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.body1">@resource.AvatarTitle</MudText>
-                                <MudText Typo="Typo.body2">@resource.AvatarDescription</MudText>
-                            </CardHeaderContent>
-                        </MudCardHeader>
-                    </div>
-                </div>
-                <MudCardContent>
-                    <CustomMudCalendar TCalendarItem="TCalendarItem" Height=2000 CurrentDay=@CurrentDay ShowDay="CalendarView == CalendarView.Day"
-                        ShowWeek="CalendarView == CalendarView.Week" ShowWorkWeek="CalendarView == CalendarView.WorkWeek"
-                        ShowMonth="CalendarView == CalendarView.Month" ShowCurrentTime="true"
-                        Items="@resource.CalendarItems" FirstDayOfWorkWeek="DayOfWeek.Monday"
-                        FirstDayOfWeek="DayOfWeek.Monday" ShowToolbar="false"
-                        CellClicked="CellClicked" ItemClicked="ItemClicked" />
-                </MudCardContent>
-            </MudCard>
-            
-        </div>
+        <MudContainer MaxWidth="MaxWidth.False" Class="ma-0 pa-0">
+<MudCard Style="min-width: 300px;">
+                            <MudCardHeader Style="@($"color:{Colors.Shades.White}; background:{Colors.Blue.Lighten1};")">
+                                <CardHeaderAvatar>
+                                    <MudAvatar>
+                                        <MudImage Src="@resource.AvatarImage"></MudImage>
+                                    </MudAvatar>
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.body1">@resource.AvatarTitle</MudText>
+                                    <MudText Typo="Typo.body2">@resource.AvatarDescription</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Style="@($"background:{Colors.Blue.Lighten5};")">
+                    <CustomMudCalendar 
+                        TCalendarItem="TCalendarItem" 
+                        CurrentDay=@CurrentDay 
+                        ShowDay="CalendarView == CalendarView.Day"
+                        ShowWeek="CalendarView == CalendarView.Week" 
+                        ShowWorkWeek="CalendarView == CalendarView.WorkWeek"
+                        ShowMonth="CalendarView == CalendarView.Month" 
+                        ShowCurrentTime="true"
+                        Items="@resource.CalendarItems" 
+                        FirstDayOfWorkWeek="DayOfWeek.Monday"
+                        FirstDayOfWeek="DayOfWeek.Monday" 
+                        ShowToolbar="false"
+                        CellClicked="(d) => CellClicked(d, resource)" 
+                        ItemClicked="ItemClicked" />
+                            </MudCardContent>
+                        </MudCard>
+        </MudContainer>                    
     }
-</div>
+</MudStack>
 }
 
 @code {
     [Parameter] public IEnumerable<TResource> Resources { get; set; } = new List<TResource>();
-    [Parameter] public EventCallback<TCalendarItem> ItemClickedCallback { get; set; }
+    [Parameter] public EventCallback<ItemClickedEventArgs<TCalendarItem>> ItemClickedCallback { get; set; }
+    [Parameter] public EventCallback<CellClickedEventArgs<TResource, TCalendarItem>> CellClickedCallback { get; set; }
     private DateTime CurrentDay = DateTime.Today;
     private CalendarView CalendarView { get; set; } = CalendarView.WorkWeek;
 
@@ -161,14 +165,13 @@ else
     }
         [Inject]
     private IDialogService DialogService { get; set; } = default!;
-    private Task CellClicked(DateTime dateTime)
+    private void CellClicked(DateTime dateTime, TResource resource)
     {
-        return DialogService.ShowMessageBox("Cell Clicked", dateTime.ToString(Thread.CurrentThread.CurrentCulture));
+        CellClickedCallback.InvokeAsync(new CellClickedEventArgs<TResource, TCalendarItem>(dateTime, resource));
     }
 
-    private Task ItemClicked(TCalendarItem item)
+    private void ItemClicked(TCalendarItem item)
     {
-        ItemClickedCallback.InvokeAsync(item);
-        return DialogService.ShowMessageBox("Item Clicked", item.Text);
+        ItemClickedCallback.InvokeAsync(new ItemClickedEventArgs<TCalendarItem>(item));
     }
 }

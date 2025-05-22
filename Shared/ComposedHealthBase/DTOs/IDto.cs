@@ -4,9 +4,10 @@ namespace ComposedHealthBase.Shared.DTOs
     {
         long Id { get; set; }
         bool IsActive { get; set; }
-        int CreatedBy { get; set; }
-        int LastModifiedBy { get; set; }
+        long CreatedBy { get; set; }
+        long LastModifiedBy { get; set; }
         DateTime CreatedDate { get; set; }
         DateTime ModifiedDate { get; set; }
+        long TenantId { get; set; }
     }
 }

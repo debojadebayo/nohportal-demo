@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Client.RoleManagement;
 using MudBlazor.Services;
 using System.Net;
+using MudBlazor;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -31,5 +32,7 @@ builder.Services.AddOidcAuthentication(options =>
 }).AddAccountClaimsPrincipalFactory<ParseRoleClaimsPrincipalFactory>();
 
 builder.Services.AddMudServices();
+MudGlobal.InputDefaults.Variant = Variant.Outlined;
+builder.Services.AddBlazorPdfViewer();
 
 await builder.Build().RunAsync();

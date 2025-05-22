@@ -20,7 +20,9 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 EmployeeId = entity.EmployeeId,
                 FilePath = entity.FilePath,
                 Name = entity.Name,
-                Description = entity.Description
+                Description = entity.Description,
+                BlobContainerName = entity.BlobContainerName,
+                BlobName = entity.BlobName
             };
         }
 
@@ -41,7 +43,9 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 EmployeeId = dto.EmployeeId,
                 FilePath = dto.FilePath,
                 Name = dto.Name,
-                Description = dto.Description
+                Description = dto.Description,
+                BlobContainerName = dto.BlobContainerName,
+                BlobName = dto.BlobName
             };
         }
 
@@ -71,6 +75,8 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             entity.FilePath = dto.FilePath;
             entity.Name = dto.Name;
             entity.Description = dto.Description;
+            entity.BlobContainerName = dto.BlobContainerName;
+            entity.BlobName = dto.BlobName;
         }
 
         public void Map(Document entity, DocumentDto dto)
@@ -86,6 +92,8 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             dto.FilePath = entity.FilePath;
             dto.Name = entity.Name;
             dto.Description = entity.Description;
+            dto.BlobContainerName = entity.BlobContainerName;
+            dto.BlobName = entity.BlobName;
         }
 
         public void Map(IEnumerable<DocumentDto> dtos, IEnumerable<Document> entities)

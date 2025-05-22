@@ -13,9 +13,10 @@ namespace Shared.DTOs.CRM
         public string Department { get; set; } = string.Empty;
 
         public bool IsActive { get; set; }
-        public int CreatedBy { get; set; }
-        public int LastModifiedBy { get; set; }
+        public long CreatedBy { get; set; }
+        public long LastModifiedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
+        public long TenantId { get; set; }
     }
 }
