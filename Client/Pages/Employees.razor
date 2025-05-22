@@ -11,13 +11,17 @@
 <MudAutocomplete T="EmployeeDto" ToStringFunc="@EmployeeToString" Label="Employee Name or DOB"
     @bind-Value="selectedEmployee" SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true"
     ProgressIndicatorColor="Color.Default" />
+@if (selectedEmployee == null)
+{
+    <MudButton OnClick="CreateEmployee">Add New Employee</MudButton>
+}
 
-<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-    @if (selectedEmployee != null)
-    {
+@if (selectedEmployee != null)
+{
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
         <MudTabPanel Text="Employees">
             <EmployeeDetailsTab Model="selectedEmployee" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee"
-                IsLoading="isLoading"/>
+                IsLoading="isLoading" />
         </MudTabPanel>
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByEmployeeId">
             <AppointmentsTab Appointments="appointments" />
@@ -32,10 +36,11 @@
             <DocumentLibraryTab Documents="documents" OnSave="UploadDocument" />
         </MudTabPanel>
         <MudTabPanel Text="Notes">
-            <NotesTab Notes="@selectedEmployee.Notes" OnSave="SaveNotes" />
+            <NotesTab Model="selectedEmployee" OnSave="HandleEmployeeSave" TDto="EmployeeDto" />
         </MudTabPanel>
-    }
-</MudTabs>
+    </MudTabs>
+}
+
 
 @code {
     private List<EmployeeDto> employeeList = new();
@@ -83,7 +88,8 @@
         if (selectedEmployee == null) return;
         try
         {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>($"api/schedule/GetAllByEmployeeId/{selectedEmployee.Id}");
+            var result = await
+            httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>($"api/schedule/GetAllByEmployeeId/{selectedEmployee.Id}");
             appointments = result?.ToList() ?? new List<ScheduleDto>();
         }
         catch (Exception ex)
@@ -98,7 +104,8 @@
         if (selectedEmployee == null) return;
         try
         {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>($"api/referral/GetAllByEmployeeId/{selectedEmployee.Id}");
+            var result = await
+            httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>($"api/referral/GetAllByEmployeeId/{selectedEmployee.Id}");
             referrals = result?.ToList() ?? new List<ReferralDto>();
         }
         catch (Exception ex)
@@ -113,7 +120,8 @@
         if (selectedEmployee == null) return;
         try
         {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByEmployeeId/{selectedEmployee.Id}");
+            var result = await
+            httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByEmployeeId/{selectedEmployee.Id}");
             managers = result?.ToList() ?? new List<ManagerDto>();
         }
         catch (Exception ex)
@@ -128,7 +136,8 @@
         if (selectedEmployee == null) return;
         try
         {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"api/document/GetAllByEmployeeId/{selectedEmployee.Id}");
+            var result = await
+            httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"api/document/GetAllByEmployeeId/{selectedEmployee.Id}");
             documents = result?.ToList() ?? new List<DocumentDto>();
         }
         catch (Exception ex)
@@ -202,27 +211,43 @@
             Snackbar.Add($"Failed to save notes: {ex.Message}", Severity.Error);
         }
     }
-
+    private void CreateEmployee()
+    {
+        selectedEmployee = new EmployeeDto();
+    }
     private async Task HandleEmployeeSave(EmployeeDto employee)
     {
-        if (employee == null) return;
-
         isLoading = true;
         try
         {
-            var response = await httpClient.PutAsJsonAsync($"api/employee/update", employee);
-            if (response.IsSuccessStatusCode)
+            if (employee.Id == 0)
             {
-                Snackbar.Add("Employee details saved successfully.", Severity.Success);
+                var response = await httpClient.PostAsJsonAsync("api/employee/create", employee);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Employee created.", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add($"Failed to create employee: {response.StatusCode}", Severity.Error);
+                }
             }
             else
             {
-                Snackbar.Add($"Failed to save employee: {response.StatusCode}", Severity.Error);
+                var response = await httpClient.PutAsJsonAsync($"api/employee/update", employee);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Employee updated.", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add($"Failed to update employee: {response.StatusCode}", Severity.Error);
+                }
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error saving employee: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Failed to save employee: {ex.Message}", Severity.Error);
         }
         finally
         {

@@ -1,9 +1,10 @@
 using ComposedHealthBase.Shared.DTOs;
 using Shared.DTOs;
+using Shared.Interfaces;
 
 namespace Shared.DTOs.CRM
 {
-    public class EmployeeDto : IDto
+    public class EmployeeDto : IDto, INotesTab
     {
         public long Id { get; set; }
         public bool IsActive { get; set; }

@@ -11,7 +11,10 @@
 <MudAutocomplete T="CustomerDto" ToStringFunc="@CustomerToString" Label="Company Name" @bind-Value="selectedCustomer"
     SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true"
     ProgressIndicatorColor="Color.Default" />
-
+@if (selectedCustomer == null)
+{
+    <MudButton OnClick="CreateCustomer">Add New Customer</MudButton>
+}
 
 @if (selectedCustomer != null)
 {
@@ -44,7 +47,7 @@
             <ReportsTab />
         </MudTabPanel>
         <MudTabPanel Text="Notes">
-            <NotesTab Notes="@selectedCustomer.Notes" OnSave="SaveNotes" />
+            <NotesTab Model="selectedCustomer" OnSave="HandleCustomerSave" TDto="CustomerDto" />
         </MudTabPanel>
     </MudTabs>
 }
@@ -96,7 +99,10 @@
         }
     }
 
-    // --- Customer CRUD ---
+    private void CreateCustomer()
+    {
+        selectedCustomer = new CustomerDto();
+    }
     private async Task HandleCustomerSave(CustomerDto customer)
     {
         isLoading = true;
@@ -260,7 +266,13 @@
     {
         editingProduct = new ProductDto
         {
-            ProductType = productTypes?.FirstOrDefault() ?? new ProductTypeDto{ ChargeCode = string.Empty, Description = string.Empty, Name = string.Empty },
+            ProductType = productTypes?.FirstOrDefault() ?? new ProductTypeDto
+            {
+                ChargeCode = string.Empty,
+                Description =
+        string.Empty,
+                Name = string.Empty
+            },
             Price = 0,
             StartTime = DateTime.UtcNow,
             EndTime = DateTime.UtcNow.AddMonths(12)
@@ -399,7 +411,7 @@
         }
     }
 
-    private async Task UploadDocument(Tuple<DocumentDto,IBrowserFile> document)
+    private async Task UploadDocument(Tuple<DocumentDto, IBrowserFile> document)
     {
         if (selectedCustomer == null)
         {

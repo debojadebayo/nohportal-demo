@@ -1,17 +1,43 @@
 @namespace Client.Pages.Components.TabComponents
 @using MudBlazor
+@using Shared.Interfaces
+@typeparam TDto where TDto : INotesTab
 
-<MudPaper Class="pa-4">
-    <MudTextField @bind-Value="Notes" Label="Notes" Lines="6" FullWidth="true" />
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSaveClicked" Class="mt-2">Save</MudButton>
-</MudPaper>
+<MudForm @ref="form" Model="Model" validated="OnValidated">
+    <MudItem>
+        <MudTextField @bind-Value="Model.Notes" Label="Notes" Lines="6" FullWidth="true" />
+    </MudItem>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Save())">
+            Save Changes
+        </MudButton>
+    </MudCardActions>
+</MudForm>
 
 @code {
-    [Parameter] public string Notes { get; set; } = string.Empty;
-    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public TDto Model { get; set; } = default!;
+    [Parameter] public EventCallback<TDto> OnSave { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
 
-    private async Task OnSaveClicked()
+    private MudForm form = default!;
+
+    private async Task Save()
     {
-        await OnSave.InvokeAsync();
+        await form.Validate();
+        if (form.IsValid)
+        {
+            await OnSave.InvokeAsync(Model);
+        }
+    }
+
+    private async Task Delete()
+    {
+        await OnDelete.InvokeAsync();
+    }
+
+    private void OnValidated()
+    {
+        // No-op, handled in Save
     }
 }
