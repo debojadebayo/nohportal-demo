@@ -1,10 +1,11 @@
 using ComposedHealthBase.Shared.DTOs;
 using Shared.DTOs;
 using Shared.Interfaces;
+using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.CRM
 {
-    public class EmployeeDto : IDto, INotesTab
+    public class EmployeeDto : IDto, INotesTab, ILazyLookup
     {
         public long Id { get; set; }
         public bool IsActive { get; set; }
@@ -27,5 +28,6 @@ namespace Shared.DTOs.CRM
         public string Department { get; set; } = string.Empty;
         public string LineManager { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
+        public string DisplayName => $"{FirstName} {LastName}";
     }
 }

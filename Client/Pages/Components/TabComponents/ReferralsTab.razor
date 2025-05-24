@@ -1,8 +1,9 @@
-@namespace Client.Pages.Components.TabComponents
+@* @namespace Client.Pages.Components.TabComponents
 @using Shared.DTOs.Scheduling
 @using Shared.DTOs.CRM
 @using Shared.Validators
 @using MudBlazor
+@using Client.Pages.Components.Lookups
 @inject IHttpClientFactory HttpClientFactory
 @inject ISnackbar Snackbar
 
@@ -45,18 +46,14 @@
                 For="@(() => _newReferral.Title)" />
                 
             <MudAutocomplete T="CustomerDto" Label="Customer" Class="mt-3"
-                @bind-Value="_selectedCustomer" SearchFunc="SearchCustomers"
+                Value="_selectedCustomer" 
+                ValueChanged="(c) => { _selectedCustomer = c; OnCustomerSelected(c); }"
+                SearchFunc="SearchCustomers"
                 ToStringFunc="@(c => c?.Name ?? string.Empty)"
                 Variant="Variant.Outlined" 
-                ShowProgressIndicator="true"
-                ValueChanged="OnCustomerSelected" />
+                ShowProgressIndicator="true" />
                 
-            <MudAutocomplete T="EmployeeDto" Label="Employee" Class="mt-3"
-                @bind-Value="_selectedEmployee" SearchFunc="SearchEmployees"
-                ToStringFunc="@(e => e == null ? string.Empty : $"{e.FirstName} {e.LastName}")"
-                Variant="Variant.Outlined" 
-                ShowProgressIndicator="true"
-                Disabled="_selectedCustomer == null" />
+            <EmployeeLookup @bind-Value="selectedEmployee" />
                 
             <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined"
                 For="@(() => _newReferral.ReferralDetails)" Class="mt-3" Lines="3" />
@@ -77,8 +74,8 @@
     
     private bool _addReferralDialogOpen = false;
     private ReferralDto _newReferral = default!;
-    private CustomerDto _selectedCustomer = default!;
-    private EmployeeDto _selectedEmployee = default!;
+    private CustomerDto? _selectedCustomer = default!;
+    private EmployeeDto? _selectedEmployee = default!;
     private MudForm form = default!;
     private bool _isSubmitting = false;
     private HttpClient httpClient = default!;
@@ -94,7 +91,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        // Load employee and customer names
+        // Load employee and customer names using the lookup service
         await LoadEmployeeCustomerNames();
     }
 
@@ -102,39 +99,21 @@
     {
         try
         {
-            // Get unique employee IDs
-            var employeeIds = Referrals.Select(r => r.EmployeeId).Distinct().ToList();
-            if (employeeIds.Any())
+            if (Referrals.Any())
             {
-                var employeeResponse = await httpClient.PostAsJsonAsync("api/employee/getbyids", employeeIds);
-                if (employeeResponse.IsSuccessStatusCode)
+                // Get unique IDs
+                var employeeIds = Referrals.Select(r => r.EmployeeId).Distinct().ToList();
+                var customerIds = Referrals.Select(r => r.CustomerId).Distinct().ToList();
+                
+                // Load name maps
+                if (employeeIds.Any())
                 {
-                    var employees = await employeeResponse.Content.ReadFromJsonAsync<List<EmployeeDto>>();
-                    if (employees != null)
-                    {
-                        foreach (var employee in employees)
-                        {
-                            _employeeNames[employee.Id] = $"{employee.FirstName} {employee.LastName}";
-                        }
-                    }
+                    _employeeNames = await LookupService.LoadEmployeeNamesAsync(employeeIds);
                 }
-            }
-
-            // Get unique customer IDs
-            var customerIds = Referrals.Select(r => r.CustomerId).Distinct().ToList();
-            if (customerIds.Any())
-            {
-                var customerResponse = await httpClient.PostAsJsonAsync("api/customer/getbyids", customerIds);
-                if (customerResponse.IsSuccessStatusCode)
+                
+                if (customerIds.Any())
                 {
-                    var customers = await customerResponse.Content.ReadFromJsonAsync<List<CustomerDto>>();
-                    if (customers != null)
-                    {
-                        foreach (var customer in customers)
-                        {
-                            _customerNames[customer.Id] = customer.Name;
-                        }
-                    }
+                    _customerNames = await LookupService.LoadCustomerNamesAsync(customerIds);
                 }
             }
         }
@@ -166,64 +145,17 @@
             ReferralDetails = "",
             DocumentId = "",
         };
-        _selectedCustomer = null!;
-        _selectedEmployee = null!;
+        _selectedCustomer = null;
+        _selectedEmployee = null;
         _addReferralDialogOpen = true;
     }
 
-    private async Task<IEnumerable<CustomerDto>> SearchCustomers(string value, CancellationToken cancellationToken)
+    private void OnCustomerSelected(CustomerDto? customer)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            return new List<CustomerDto>();
-
-        try
-        {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<CustomerDto>>($"api/customer/search?term={value}", cancellationToken);
-            return result ?? new List<CustomerDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error searching customers: {ex.Message}", Severity.Error);
-            return new List<CustomerDto>();
-        }
-    }
-
-    private async Task<IEnumerable<EmployeeDto>> SearchEmployees(string value, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrWhiteSpace(value) || _selectedCustomer == null)
-            return new List<EmployeeDto>();
-
-        try
-        {
-            // First try to get employees by customer ID
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<EmployeeDto>>($"api/employee/getbycustomer/{_selectedCustomer.Id}", cancellationToken);
-            
-            if (!string.IsNullOrWhiteSpace(value))
-            {
-                // Filter results by search term
-                return result?.Where(e => 
-                    e.FirstName.Contains(value, StringComparison.OrdinalIgnoreCase) || 
-                    e.LastName.Contains(value, StringComparison.OrdinalIgnoreCase) ||
-                    $"{e.FirstName} {e.LastName}".Contains(value, StringComparison.OrdinalIgnoreCase)
-                ) ?? new List<EmployeeDto>();
-            }
-            
-            return result ?? new List<EmployeeDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error searching employees: {ex.Message}", Severity.Error);
-            return new List<EmployeeDto>();
-        }
-    }
-
-    private void OnCustomerSelected(CustomerDto customer)
-    {
-        _selectedCustomer = customer;
-        _selectedEmployee = null!;
         if (customer != null)
         {
             _newReferral.CustomerId = customer.Id;
+            _selectedEmployee = null;
         }
     }
 
@@ -280,4 +212,4 @@
             _isSubmitting = false;
         }
     }
-}
+} *@

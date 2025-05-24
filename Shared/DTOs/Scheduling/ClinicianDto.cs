@@ -6,7 +6,7 @@ using Shared.Enums;
 
 namespace Shared.DTOs.Scheduling
 {
-    public class ClinicianDto : ICalendarResource<ScheduleDto>, IDto
+    public class ClinicianDto : ICalendarResource<ScheduleDto>, IDto, ILazyLookup
     {
         public long Id { get; set; }
         public bool IsActive { get; set; }
@@ -26,5 +26,6 @@ namespace Shared.DTOs.Scheduling
         public required string AvatarImage { get; set; }
         public required string AvatarTitle { get; set; }
         public required string AvatarDescription { get; set; }
+        public string DisplayName => $"{FirstName} {LastName}";
     }
 }

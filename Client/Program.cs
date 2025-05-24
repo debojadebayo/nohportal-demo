@@ -6,6 +6,9 @@ using Client.RoleManagement;
 using MudBlazor.Services;
 using System.Net;
 using MudBlazor;
+using ComposedHealthBase.BaseClient.Services;
+using Shared.DTOs.CRM;
+using Shared.DTOs.Scheduling;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -34,5 +37,11 @@ builder.Services.AddOidcAuthentication(options =>
 builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
 builder.Services.AddBlazorPdfViewer();
+
+// Register application services
+builder.Services.AddScoped<ILazyLookupService<CustomerDto>, LazyLookupService<CustomerDto>>();
+builder.Services.AddScoped<ILazyLookupService<EmployeeDto>, LazyLookupService<EmployeeDto>>();
+builder.Services.AddScoped<ILazyLookupService<ManagerDto>, LazyLookupService<ManagerDto>>();
+builder.Services.AddScoped<ILazyLookupService<ClinicianDto>, LazyLookupService<ClinicianDto>>();
 
 await builder.Build().RunAsync();

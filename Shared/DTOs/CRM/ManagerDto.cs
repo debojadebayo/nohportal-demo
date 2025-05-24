@@ -1,9 +1,10 @@
 using ComposedHealthBase.Shared.DTOs;
+using ComposedHealthBase.Shared.Interfaces;
 using System;
 
 namespace Shared.DTOs.CRM
 {
-    public class ManagerDto : IDto
+    public class ManagerDto : IDto, ILazyLookup
     {
         public long Id { get; set; }
         public long CustomerId { get; set; }
@@ -18,5 +19,6 @@ namespace Shared.DTOs.CRM
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
         public long TenantId { get; set; }
+        public string DisplayName => Name;
     }
 }

@@ -11,5 +11,12 @@ namespace Shared.Validators
             RuleFor(x => x.EmployeeId).GreaterThan(0);
             RuleFor(x => x.ReferralDetails).NotEmpty();
         }
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<ReferralDto>.CreateWithOptions((ReferralDto)model, x => x.IncludeProperties(propertyName)));
+            if (result.IsValid)
+                return Array.Empty<string>();
+            return result.Errors.Select(e => e.ErrorMessage);
+        };
     }
 }

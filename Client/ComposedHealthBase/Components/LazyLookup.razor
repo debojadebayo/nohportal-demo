@@ -1,0 +1,26 @@
+@namespace ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.Shared.Interfaces
+@inject IHttpClientFactory HttpClientFactory
+@typeparam TDto where TDto : ILazyLookup
+@inject ILazyLookupService<TDto> LookupService
+
+<MudAutocomplete T="TDto" ToStringFunc="@LookupService.ItemToString" Label="Company Name" @bind-Value="selectedItem"
+    SearchFunc="@LookupService.ItemSearch" Variant="Variant.Outlined" ShowProgressIndicator="true"
+    ProgressIndicatorColor="Color.Default" />
+
+@code {
+    [Inject]
+    private ISnackbar Snackbar { get; set; } = default!;
+    private HttpClient httpClient = default!;
+    private Dictionary<long, TDto> ItemList { get; set; } = new Dictionary<long, TDto>();
+    private TDto? selectedItem;
+
+    protected override void OnInitialized()
+    {
+        httpClient = HttpClientFactory.CreateClient("api");
+    }
+
+
+
+}

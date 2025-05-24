@@ -3,14 +3,13 @@
 @using Shared.DTOs.Scheduling
 @using MudBlazor
 @using Client.Pages.Components.TabComponents
+@using ComposedHealthBase.BaseClient.Components
 @attribute [Authorize]
 
 <MudText Typo="Typo.h1">Customers</MudText>
 
 <MudText Typo="Typo.body1">Select a customer to view details</MudText>
-<MudAutocomplete T="CustomerDto" ToStringFunc="@CustomerToString" Label="Company Name" @bind-Value="selectedCustomer"
-    SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true"
-    ProgressIndicatorColor="Color.Default" />
+<LazyLookup TDto="CustomerDto" />
 @if (selectedCustomer == null)
 {
     <MudButton OnClick="CreateCustomer">Add New Customer</MudButton>
