@@ -1,77 +1,77 @@
-﻿@using Shared.DTOs.CRM
+﻿@page "/referrals"
+@using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
+@using Client.Pages.Components.TabComponents
 @inject IHttpClientFactory HttpClientFactory
-@using Client.Pages.Forms
+@inject ISnackbar Snackbar
 @attribute [Authorize]
 
 <PageTitle>Referrals</PageTitle>
 
-<MudTabs Rounded="true" Centered="true" Class="mb-4">
-    <MudTabPanel Text="New Case Referrals">
-        <MudDataGrid Items="@newCaseReferrals" Filterable="true" Hover="true" Bordered="true" Dense="true">
-            <Columns>
-                <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
-                <PropertyColumn Property="x => x.Employee" Title="Employee" />
-                <PropertyColumn Property="x => x.AppointmentType" Title="Appointment type" />
-                <PropertyColumn Property="x => x.Duration" Title="Duration" />
-                <PropertyColumn Property="x => x.Location" Title="Location" />
-            </Columns>
-            <PagerContent>
-                <MudDataGridPager T="NewCaseReferralView" />
-            </PagerContent>
-        </MudDataGrid>
-    </MudTabPanel>
-    <MudTabPanel Text="Processed Referrals">
-        <MudDataGrid Items="@processedReferrals" Filterable="true" Hover="true" Bordered="true" Dense="true">
-            <Columns>
-                <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
-                <PropertyColumn Property="x => x.Date" Title="Date" />
-                <PropertyColumn Property="x => x.Manager" Title="Manager" />
-                <PropertyColumn Property="x => x.Employee" Title="Employee" />
-                <PropertyColumn Property="x => x.EmployeeDOB" Title="Employee DOB" />
-                <PropertyColumn Property="x => x.Status" Title="Status" />
-            </Columns>
-            <PagerContent>
-                <MudDataGridPager T="ProcessedReferralView" />
-            </PagerContent>
-        </MudDataGrid>
-    </MudTabPanel>
-</MudTabs>
+<MudText Typo="Typo.h1">Referrals</MudText>
+
+<MudPaper Class="pa-4" Elevation="2">
+    <ReferralsTab Referrals="referrals" OnSave="SaveReferral" />
+</MudPaper>
 
 @code {
-    private List<NewCaseReferralView> newCaseReferrals = new()
-    {
-        new NewCaseReferralView { ReferralId = 123456, Employee = "Nguyen Shanek", AppointmentType = "PPHA", Duration = "15 min", Location = "Client site" },
-        new NewCaseReferralView { ReferralId = 123456, Employee = "Nguyen Shanek", AppointmentType = "Case Management", Duration = "45 min", Location = "Remote" },
-        new NewCaseReferralView { ReferralId = 123456, Employee = "Nguyen Shanek", AppointmentType = "PPHA", Duration = "15 min", Location = "NOH site" },
-        new NewCaseReferralView { ReferralId = 123456, Employee = "Nguyen Shanek", AppointmentType = "PPHA", Duration = "1h 15 min", Location = "NOH site" },
-        new NewCaseReferralView { ReferralId = 123456, Employee = "Nguyen Shanek", AppointmentType = "PPHA", Duration = "15 min", Location = "Remote" },
-    };
+    private List<ReferralDto> referrals = new();
+    private HttpClient httpClient = default!;
+    private bool isLoading = false;
 
-    private List<ProcessedReferralView> processedReferrals = new()
+    protected override void OnInitialized()
     {
-        new ProcessedReferralView { ReferralId = 123456, Date = "10.03.2025", Manager = "Ronald Richards", Employee = "Theresa Webb", EmployeeDOB = "01.02.2020", Status = "App. booked" },
-        new ProcessedReferralView { ReferralId = 123456, Date = "10.03.2025", Manager = "Robert Fox", Employee = "Jenny Wilson", EmployeeDOB = "22.10.1986", Status = "Referred" },
-        new ProcessedReferralView { ReferralId = 123456, Date = "10.03.2025", Manager = "Jacob Jones", Employee = "Floyd Miles", EmployeeDOB = "17.10.2001", Status = "App. completed" },
-        new ProcessedReferralView { ReferralId = 123456, Date = "10.03.2025", Manager = "Guy Hawkins", Employee = "Jane Cooper", EmployeeDOB = "08.09.1993", Status = "Report completed" },
-    };
-
-    private sealed class NewCaseReferralView
-    {
-        public long ReferralId { get; set; }
-        public required string Employee { get; set; }
-        public required string AppointmentType { get; set; }
-        public required string Duration { get; set; }
-        public required string Location { get; set; }
+        httpClient = HttpClientFactory.CreateClient("api");
     }
 
-    private sealed class ProcessedReferralView
+    protected override async Task OnInitializedAsync()
     {
-        public long ReferralId { get; set; }
-        public required string Date { get; set; }
-        public required string Manager { get; set; }
-        public required string Employee { get; set; }
-        public required string EmployeeDOB { get; set; }
-        public required string Status { get; set; }
+        await LoadReferrals();
+    }
+
+    private async Task LoadReferrals()
+    {
+        isLoading = true;
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>("api/referral/getall");
+            referrals = result?.ToList() ?? new List<ReferralDto>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load referrals: {ex.Message}", Severity.Error);
+            referrals = new List<ReferralDto>();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SaveReferral(ReferralDto referral)
+    {
+        isLoading = true;
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync("api/referral/create", referral);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Referral added successfully", Severity.Success);
+                await LoadReferrals(); // Refresh the list
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to add referral: {response.StatusCode} - {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error adding referral: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 }

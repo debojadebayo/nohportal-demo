@@ -1,17 +1,32 @@
 @namespace Client.Pages.Components.TabComponents
 @using Shared.DTOs.Scheduling
+@using Shared.DTOs.CRM
+@using Shared.Validators
 @using MudBlazor
+@inject IHttpClientFactory HttpClientFactory
+@inject ISnackbar Snackbar
 
 <MudPaper Class="pa-4">
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+        <MudText Typo="Typo.h6">Referrals</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowAddReferralDialog"
+            StartIcon="@Icons.Material.Filled.Add">Add New Referral</MudButton>
+    </MudStack>
     <MudTable Items="Referrals ?? new List<ReferralDto>()" Dense="true" Hover="true">
         <HeaderContent>
             <MudTh>Created</MudTh>
+            <MudTh>Title</MudTh>
             <MudTh>Referral Details</MudTh>
+            <MudTh>Employee</MudTh>
+            <MudTh>Customer</MudTh>
             <MudTh>Document Id</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.CreatedDate.ToString("g")</MudTd>
+            <MudTd>@context.Title</MudTd>
             <MudTd>@context.ReferralDetails</MudTd>
+            <MudTd>@GetEmployeeName(context.EmployeeId)</MudTd>
+            <MudTd>@GetCustomerName(context.CustomerId)</MudTd>
             <MudTd>@context.DocumentId</MudTd>
         </RowTemplate>
         <NoRecordsContent>
@@ -20,6 +35,249 @@
     </MudTable>
 </MudPaper>
 
+<MudDialog @bind-Visible="_addReferralDialogOpen" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Add New Referral</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Model="_newReferral" Validation="@(referralValidator.ValidateValue)" ValidationDelay="0">
+            <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined"
+                For="@(() => _newReferral.Title)" />
+                
+            <MudAutocomplete T="CustomerDto" Label="Customer" Class="mt-3"
+                @bind-Value="_selectedCustomer" SearchFunc="SearchCustomers"
+                ToStringFunc="@(c => c?.Name ?? string.Empty)"
+                Variant="Variant.Outlined" 
+                ShowProgressIndicator="true"
+                ValueChanged="OnCustomerSelected" />
+                
+            <MudAutocomplete T="EmployeeDto" Label="Employee" Class="mt-3"
+                @bind-Value="_selectedEmployee" SearchFunc="SearchEmployees"
+                ToStringFunc="@(e => e == null ? string.Empty : $"{e.FirstName} {e.LastName}")"
+                Variant="Variant.Outlined" 
+                ShowProgressIndicator="true"
+                Disabled="_selectedCustomer == null" />
+                
+            <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined"
+                For="@(() => _newReferral.ReferralDetails)" Class="mt-3" Lines="3" />
+                
+            <MudTextField @bind-Value="_newReferral.DocumentId" Label="Document ID (Optional)" Variant="Variant.Outlined"
+                For="@(() => _newReferral.DocumentId)" Class="mt-3" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="AddReferral" Disabled="_isSubmitting">Add Referral</MudButton>
+        <MudButton OnClick="() => _addReferralDialogOpen = false">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
     [Parameter] public IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
+    [Parameter] public EventCallback<ReferralDto> OnSave { get; set; }
+    
+    private bool _addReferralDialogOpen = false;
+    private ReferralDto _newReferral = default!;
+    private CustomerDto _selectedCustomer = default!;
+    private EmployeeDto _selectedEmployee = default!;
+    private MudForm form = default!;
+    private bool _isSubmitting = false;
+    private HttpClient httpClient = default!;
+    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+    private ReferralValidator referralValidator = new ReferralValidator();
+    private Dictionary<long, string> _employeeNames = new();
+    private Dictionary<long, string> _customerNames = new();
+    
+    protected override void OnInitialized()
+    {
+        httpClient = HttpClientFactory.CreateClient("api");
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Load employee and customer names
+        await LoadEmployeeCustomerNames();
+    }
+
+    private async Task LoadEmployeeCustomerNames()
+    {
+        try
+        {
+            // Get unique employee IDs
+            var employeeIds = Referrals.Select(r => r.EmployeeId).Distinct().ToList();
+            if (employeeIds.Any())
+            {
+                var employeeResponse = await httpClient.PostAsJsonAsync("api/employee/getbyids", employeeIds);
+                if (employeeResponse.IsSuccessStatusCode)
+                {
+                    var employees = await employeeResponse.Content.ReadFromJsonAsync<List<EmployeeDto>>();
+                    if (employees != null)
+                    {
+                        foreach (var employee in employees)
+                        {
+                            _employeeNames[employee.Id] = $"{employee.FirstName} {employee.LastName}";
+                        }
+                    }
+                }
+            }
+
+            // Get unique customer IDs
+            var customerIds = Referrals.Select(r => r.CustomerId).Distinct().ToList();
+            if (customerIds.Any())
+            {
+                var customerResponse = await httpClient.PostAsJsonAsync("api/customer/getbyids", customerIds);
+                if (customerResponse.IsSuccessStatusCode)
+                {
+                    var customers = await customerResponse.Content.ReadFromJsonAsync<List<CustomerDto>>();
+                    if (customers != null)
+                    {
+                        foreach (var customer in customers)
+                        {
+                            _customerNames[customer.Id] = customer.Name;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading names: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private string GetEmployeeName(long id)
+    {
+        if (_employeeNames.TryGetValue(id, out var name))
+            return name;
+        return $"ID: {id}";
+    }
+
+    private string GetCustomerName(long id)
+    {
+        if (_customerNames.TryGetValue(id, out var name))
+            return name;
+        return $"ID: {id}";
+    }
+
+    private void ShowAddReferralDialog()
+    {
+        _newReferral = new ReferralDto
+        {
+            Title = "",
+            ReferralDetails = "",
+            DocumentId = "",
+        };
+        _selectedCustomer = null!;
+        _selectedEmployee = null!;
+        _addReferralDialogOpen = true;
+    }
+
+    private async Task<IEnumerable<CustomerDto>> SearchCustomers(string value, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return new List<CustomerDto>();
+
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<CustomerDto>>($"api/customer/search?term={value}", cancellationToken);
+            return result ?? new List<CustomerDto>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error searching customers: {ex.Message}", Severity.Error);
+            return new List<CustomerDto>();
+        }
+    }
+
+    private async Task<IEnumerable<EmployeeDto>> SearchEmployees(string value, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(value) || _selectedCustomer == null)
+            return new List<EmployeeDto>();
+
+        try
+        {
+            // First try to get employees by customer ID
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<EmployeeDto>>($"api/employee/getbycustomer/{_selectedCustomer.Id}", cancellationToken);
+            
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                // Filter results by search term
+                return result?.Where(e => 
+                    e.FirstName.Contains(value, StringComparison.OrdinalIgnoreCase) || 
+                    e.LastName.Contains(value, StringComparison.OrdinalIgnoreCase) ||
+                    $"{e.FirstName} {e.LastName}".Contains(value, StringComparison.OrdinalIgnoreCase)
+                ) ?? new List<EmployeeDto>();
+            }
+            
+            return result ?? new List<EmployeeDto>();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error searching employees: {ex.Message}", Severity.Error);
+            return new List<EmployeeDto>();
+        }
+    }
+
+    private void OnCustomerSelected(CustomerDto customer)
+    {
+        _selectedCustomer = customer;
+        _selectedEmployee = null!;
+        if (customer != null)
+        {
+            _newReferral.CustomerId = customer.Id;
+        }
+    }
+
+    private async Task AddReferral()
+    {
+        await form.Validate();
+        if (!form.IsValid) return;
+
+        if (_selectedCustomer == null)
+        {
+            Snackbar.Add("Please select a customer", Severity.Warning);
+            return;
+        }
+
+        if (_selectedEmployee == null)
+        {
+            Snackbar.Add("Please select an employee", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            _isSubmitting = true;
+            _newReferral.CustomerId = _selectedCustomer.Id;
+            _newReferral.EmployeeId = _selectedEmployee.Id;
+
+            // Check if we're using event callback or making direct API call
+            if (OnSave.HasDelegate)
+            {
+                await OnSave.InvokeAsync(_newReferral);
+            }
+            else
+            {
+                var response = await httpClient.PostAsJsonAsync("api/referral/create", _newReferral);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Referral added successfully", Severity.Success);
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Error adding referral: {error}", Severity.Error);
+                }
+            }
+
+            _addReferralDialogOpen = false;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error adding referral: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
 }
