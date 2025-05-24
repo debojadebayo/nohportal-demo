@@ -1,8 +1,9 @@
 @namespace Client.Pages.Components.TabComponents
 @using Shared.DTOs.CRM
 @using MudBlazor
+@using Shared.Validators
 
-<MudForm @ref="form" Model="Model" validated="OnValidated">
+<MudForm @ref="form" Model="Model" Validation="@(customerValidator.ValidateValue)" ValidationDelay="0">
     <MudGrid>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="Model.Id" For="@(() => Model.Id)" Immediate="true" Label="Company ID"
@@ -54,6 +55,7 @@
 
     private MudForm form = default!;
 
+    private CustomerValidator customerValidator = new CustomerValidator();
     private async Task Save()
     {
         await form.Validate();
@@ -66,10 +68,5 @@
     private async Task Delete()
     {
         await OnDelete.InvokeAsync();
-    }
-
-    private void OnValidated()
-    {
-        // No-op, handled in Save
     }
 }

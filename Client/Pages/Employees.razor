@@ -9,7 +9,7 @@
 
 <MudText Typo="Typo.body1">Select an employee to view details</MudText>
 <MudAutocomplete T="EmployeeDto" ToStringFunc="@EmployeeToString" Label="Employee Name or DOB"
-    @bind-Value="selectedEmployee" SearchFunc="@Search" Variant="Variant.Outlined" ShowProgressIndicator="true"
+    @bind-Value="selectedEmployee" SearchFunc="@EmployeeSearch" Variant="Variant.Outlined" ShowProgressIndicator="true"
     ProgressIndicatorColor="Color.Default" />
 @if (selectedEmployee == null)
 {
@@ -21,7 +21,8 @@
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
         <MudTabPanel Text="Employees">
             <EmployeeDetailsTab Model="selectedEmployee" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee"
-                IsLoading="isLoading" />
+                IsLoading="isLoading" SearchFunc="CustomerSearch" ToStringFunc="CustomerToString"
+                CustomerList="customerList" />
         </MudTabPanel>
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByEmployeeId">
             <AppointmentsTab Appointments="appointments" />
@@ -43,7 +44,8 @@
 
 
 @code {
-    private List<EmployeeDto> employeeList = new();
+    private Dictionary<long, EmployeeDto> employeeList = new();
+    private Dictionary<long, CustomerDto> customerList = new();
     private EmployeeDto? selectedEmployee;
     private bool isLoading;
     private HttpClient httpClient = default!;
@@ -64,25 +66,76 @@
         httpClient = HttpClientFactory.CreateClient("api");
     }
 
-    private async Task<IEnumerable<EmployeeDto>> Search(string value, CancellationToken token)
+    private async Task<IEnumerable<EmployeeDto>> EmployeeSearch(string value, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return employeeList;
+            return employeeList.Values;
         }
         try
         {
             var result = await httpClient.GetFromJsonAsync<IEnumerable<EmployeeDto>>("api/employee/search?term=" + value, token);
-            employeeList = result?.ToList() ?? new List<EmployeeDto>();
-            return employeeList;
+            if (result == null)
+            {
+                return Enumerable.Empty<EmployeeDto>();
+            }
+            var customerIdsToLoad = new List<long>();
+            foreach (var employee in result)
+            {
+                employeeList.TryAdd(employee.Id, employee);
+                customerIdsToLoad.Add(employee.CustomerId);
+            }
+            if (customerIdsToLoad.Count > 0)
+            {
+                var response = await httpClient.PostAsJsonAsync($"api/customer/getbyids", customerIdsToLoad, token);
+                if (response.IsSuccessStatusCode)
+                {
+                    var customers = await response.Content.ReadFromJsonAsync<IEnumerable<CustomerDto>>(cancellationToken: token);
+                    if (customers != null)
+                    {
+                        foreach (var customer in customers)
+                        {
+                            customerList.TryAdd(customer.Id, customer);
+                        }
+                    }
+                }
+            }
+            return result;
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Failed to search employees: {ex.Message}", Severity.Error);
-            return new List<EmployeeDto>();
+            return Enumerable.Empty<EmployeeDto>();
         }
     }
 
+    private string CustomerToString(CustomerDto? e) => e is null ? string.Empty : $"{e.Name} - {e.Id}";
+
+    private async Task<IEnumerable<CustomerDto>> CustomerSearch(string value, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return customerList.Values;
+        }
+        try
+        {
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<CustomerDto>>("api/customer/search?term=" + value, token);
+            if (result == null)
+            {
+                return Enumerable.Empty<CustomerDto>();
+            }
+            foreach (var customer in result)
+            {
+                customerList.TryAdd(customer.Id, customer);
+            }
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to search customers: {ex.Message}", Severity.Error);
+            return Enumerable.Empty<CustomerDto>();
+        }
+    }
     private async Task GetAllAppointmentsByEmployeeId()
     {
         if (selectedEmployee == null) return;

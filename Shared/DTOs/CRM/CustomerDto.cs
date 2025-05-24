@@ -24,7 +24,7 @@ namespace Shared.DTOs.CRM
 		public string Website { get; set; } = string.Empty;
 		public string Email { get; set; } = string.Empty;
 		public string InvoiceEmail { get; set; } = string.Empty;
-		public string? Notes { get; set; }
+		public string Notes { get; set; } = string.Empty;
 		public HashSet<ContractDto> Contracts { get; set; } = new();
 	}
 }
