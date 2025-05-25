@@ -10,17 +10,44 @@ namespace ComposedHealthBase.Server.Database
 		public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
 		{
 			var timeNow = DateTime.UtcNow;
-			var createdEntities = ChangeTracker.Entries<IEntity>().Where(e => e.State == EntityState.Added).ToList();
-			var modifiedEntities = ChangeTracker.Entries<IEntity>().Where(e => e.State == EntityState.Modified).ToList();
-			foreach (var createdEntity in createdEntities)
+			var entries = ChangeTracker.Entries()
+				.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+				.ToList();
+
+			foreach (var entry in entries)
 			{
-				createdEntity.Entity.CreatedDate = timeNow;
-				createdEntity.Entity.ModifiedDate = timeNow;
+				// Set CreatedDate/ModifiedDate for IEntity
+				if (entry.Entity is IEntity entity)
+				{
+					if (entry.State == EntityState.Added)
+					{
+						entity.CreatedDate = timeNow;
+						entity.ModifiedDate = timeNow;
+					}
+					else if (entry.State == EntityState.Modified)
+					{
+						entity.ModifiedDate = timeNow;
+					}
+				}
+
+				// Set all DateTime/DateTime? properties to UTC
+				var properties = entry.Entity.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+					.Where(p => p.CanRead && p.CanWrite &&
+						(p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(DateTime?)));
+
+				foreach (var prop in properties)
+				{
+					var value = prop.GetValue(entry.Entity);
+					if (value is DateTime dt)
+					{
+						if (dt.Kind != DateTimeKind.Utc && dt != default)
+						{
+							prop.SetValue(entry.Entity, DateTime.SpecifyKind(dt, DateTimeKind.Utc));
+						}
+					}
+				}
 			}
-			foreach (var modifiedEntity in modifiedEntities)
-			{
-				modifiedEntity.Entity.ModifiedDate = timeNow;
-			}
+
 			return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
 		}
 	}
