@@ -45,13 +45,7 @@
             <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined"
                 For="@(() => _newReferral.Title)" />
                 
-            <MudAutocomplete T="CustomerDto" Label="Customer" Class="mt-3"
-                Value="_selectedCustomer" 
-                ValueChanged="(c) => { _selectedCustomer = c; OnCustomerSelected(c); }"
-                SearchFunc="SearchCustomers"
-                ToStringFunc="@(c => c?.Name ?? string.Empty)"
-                Variant="Variant.Outlined" 
-                ShowProgressIndicator="true" />
+            <LazyLookup TDto="CustomerDto" @bind-Item="selectedCustomer" Label="Company Name" />
                 
             <EmployeeLookup @bind-Value="selectedEmployee" />
                 

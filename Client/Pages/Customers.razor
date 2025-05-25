@@ -4,12 +4,14 @@
 @using MudBlazor
 @using Client.Pages.Components.TabComponents
 @using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Services
+@inject ILazyLookupService<CustomerDto> LookupService
 @attribute [Authorize]
 
 <MudText Typo="Typo.h1">Customers</MudText>
 
 <MudText Typo="Typo.body1">Select a customer to view details</MudText>
-<LazyLookup TDto="CustomerDto" />
+<LazyLookup TDto="CustomerDto" @bind-ItemId="selectedCustomerId" Label="Company Name" />
 @if (selectedCustomer == null)
 {
     <MudButton OnClick="CreateCustomer">Add New Customer</MudButton>
@@ -17,7 +19,7 @@
 
 @if (selectedCustomer != null)
 {
-    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @ref="tabs">
         <MudTabPanel Text="Customers">
             <CustomerTab Model="selectedCustomer" OnSave="HandleCustomerSave" OnDelete="DeleteCustomer"
                 IsLoading="isLoading" />
@@ -52,8 +54,10 @@
 }
 
 @code {
-    private List<CustomerDto> customerList = new();
-    private CustomerDto? selectedCustomer;
+    private MudTabs tabs = default!;
+    private CustomerDto? selectedCustomer => 
+        LookupService.ItemList.TryGetValue(selectedCustomerId, out var customer) ? customer : null;
+    private long selectedCustomerId { get; set; } = 0;
     private bool isLoading;
     private HttpClient httpClient = default!;
     private List<ScheduleDto> appointments = new();
@@ -71,36 +75,15 @@
 
     private bool productDialogOpen;
     private ProductDto editingProduct = default!;
-
-    private string CustomerToString(CustomerDto? e) => e is null ? string.Empty : $"{e.Name} - {e.Id}";
-
     protected override void OnInitialized()
     {
         httpClient = HttpClientFactory.CreateClient("api");
     }
 
-    private async Task<IEnumerable<CustomerDto>> Search(string value, CancellationToken token)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return customerList;
-        }
-        try
-        {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<CustomerDto>>("api/customer/search?term=" + value, token);
-            customerList = result?.ToList() ?? new List<CustomerDto>();
-            return customerList;
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to search customers: {ex.Message}", Severity.Error);
-            return new List<CustomerDto>();
-        }
-    }
-
     private void CreateCustomer()
     {
-        selectedCustomer = new CustomerDto();
+        LookupService.ItemList.TryAdd(0, new CustomerDto());
+        selectedCustomerId = 0;
     }
     private async Task HandleCustomerSave(CustomerDto customer)
     {
@@ -152,7 +135,7 @@
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add("Customer deleted.", Severity.Success);
-                selectedCustomer = null;
+                selectedCustomerId = 0;
             }
             else
             {

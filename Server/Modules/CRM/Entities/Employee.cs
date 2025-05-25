@@ -6,7 +6,7 @@ namespace Server.Modules.CRM.Entities
     {
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
-        public DateTime DOB { get; set; }
+        public DateTime? DOB { get; set; }
         public required string Address1 { get; set; }
         public string? Address2 { get; set; }
         public string? Address3 { get; set; }

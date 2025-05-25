@@ -1,26 +1,28 @@
 @namespace ComposedHealthBase.BaseClient.Components
 @using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.Shared.Interfaces
-@inject IHttpClientFactory HttpClientFactory
+@using System.Linq.Expressions
 @typeparam TDto where TDto : ILazyLookup
 @inject ILazyLookupService<TDto> LookupService
 
-<MudAutocomplete T="TDto" ToStringFunc="@LookupService.ItemToString" Label="Company Name" @bind-Value="selectedItem"
-    SearchFunc="@LookupService.ItemSearch" Variant="Variant.Outlined" ShowProgressIndicator="true"
-    ProgressIndicatorColor="Color.Default" />
-
+<MudAutocomplete T="long" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
+    ValueChanged="@OnItemChanged" ValueExpression="@ItemIdValueExpression" SearchFunc="@LookupService.ItemSearch"
+    Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
 @code {
-    [Inject]
-    private ISnackbar Snackbar { get; set; } = default!;
-    private HttpClient httpClient = default!;
-    private Dictionary<long, TDto> ItemList { get; set; } = new Dictionary<long, TDto>();
-    private TDto? selectedItem;
-
-    protected override void OnInitialized()
+    [Parameter] public long ItemId { get; set; } = 0;
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public EventCallback<long> ItemIdChanged { get; set; }
+    [Parameter] public Expression<Func<long>>? ItemIdValueExpression { get; set; }
+    protected override async Task OnParametersSetAsync()
     {
-        httpClient = HttpClientFactory.CreateClient("api");
+        if (ItemId > 0 && !LookupService.ItemList.TryGetValue(ItemId, out var item))
+        {
+            await LookupService.GetItemById(ItemId, CancellationToken.None);
+        }
     }
-
-
-
+    private async Task OnItemChanged(long value)
+    {
+        ItemId = value;
+        await ItemIdChanged.InvokeAsync(value);
+    }
 }

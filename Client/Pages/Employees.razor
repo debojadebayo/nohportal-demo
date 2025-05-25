@@ -1,16 +1,17 @@
 ﻿@page "/employees"
+@using ComposedHealthBase.BaseClient.Services
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @using MudBlazor
 @using Client.Pages.Components.TabComponents
+@using ComposedHealthBase.BaseClient.Components
+@inject ILazyLookupService<EmployeeDto> LookupService
 @attribute [Authorize]
 
 <MudText Typo="Typo.h1">Employees</MudText>
 
 <MudText Typo="Typo.body1">Select an employee to view details</MudText>
-<MudAutocomplete T="EmployeeDto" ToStringFunc="@EmployeeToString" Label="Employee Name or DOB"
-    @bind-Value="selectedEmployee" SearchFunc="@EmployeeSearch" Variant="Variant.Outlined" ShowProgressIndicator="true"
-    ProgressIndicatorColor="Color.Default" />
+<LazyLookup TDto="EmployeeDto" @bind-ItemId="selectedEmployeeId" Label="Employee Name" />
 @if (selectedEmployee == null)
 {
     <MudButton OnClick="CreateEmployee">Add New Employee</MudButton>
@@ -18,11 +19,10 @@
 
 @if (selectedEmployee != null)
 {
-    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @ref="tabs">
         <MudTabPanel Text="Employees">
             <EmployeeDetailsTab Model="selectedEmployee" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee"
-                IsLoading="isLoading" SearchFunc="CustomerSearch" ToStringFunc="CustomerToString"
-                CustomerList="customerList" />
+                IsLoading="isLoading" />
         </MudTabPanel>
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByEmployeeId">
             <AppointmentsTab Appointments="appointments" />
@@ -44,9 +44,10 @@
 
 
 @code {
-    private Dictionary<long, EmployeeDto> employeeList = new();
-    private Dictionary<long, CustomerDto> customerList = new();
-    private EmployeeDto? selectedEmployee;
+    private MudTabs tabs = default!;
+    private EmployeeDto? selectedEmployee => 
+        LookupService.ItemList.TryGetValue(selectedEmployeeId, out var employee) ? employee : null;
+    private long selectedEmployeeId { get; set; } = 0;
     private bool isLoading;
     private HttpClient httpClient = default!;
     private List<ScheduleDto> appointments = new();
@@ -58,83 +59,9 @@
     private IHttpClientFactory HttpClientFactory { get; set; } = default!;
     [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
-
-    private string EmployeeToString(EmployeeDto? e) => e is null ? string.Empty : $"{e.FirstName} {e.LastName} - {e.Id}";
-
     protected override void OnInitialized()
     {
         httpClient = HttpClientFactory.CreateClient("api");
-    }
-
-    private async Task<IEnumerable<EmployeeDto>> EmployeeSearch(string value, CancellationToken token)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return employeeList.Values;
-        }
-        try
-        {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<EmployeeDto>>("api/employee/search?term=" + value, token);
-            if (result == null)
-            {
-                return Enumerable.Empty<EmployeeDto>();
-            }
-            var customerIdsToLoad = new List<long>();
-            foreach (var employee in result)
-            {
-                employeeList.TryAdd(employee.Id, employee);
-                customerIdsToLoad.Add(employee.CustomerId);
-            }
-            if (customerIdsToLoad.Count > 0)
-            {
-                var response = await httpClient.PostAsJsonAsync($"api/customer/getbyids", customerIdsToLoad, token);
-                if (response.IsSuccessStatusCode)
-                {
-                    var customers = await response.Content.ReadFromJsonAsync<IEnumerable<CustomerDto>>(cancellationToken: token);
-                    if (customers != null)
-                    {
-                        foreach (var customer in customers)
-                        {
-                            customerList.TryAdd(customer.Id, customer);
-                        }
-                    }
-                }
-            }
-            return result;
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to search employees: {ex.Message}", Severity.Error);
-            return Enumerable.Empty<EmployeeDto>();
-        }
-    }
-
-    private string CustomerToString(CustomerDto? e) => e is null ? string.Empty : $"{e.Name} - {e.Id}";
-
-    private async Task<IEnumerable<CustomerDto>> CustomerSearch(string value, CancellationToken token)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return customerList.Values;
-        }
-        try
-        {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<CustomerDto>>("api/customer/search?term=" + value, token);
-            if (result == null)
-            {
-                return Enumerable.Empty<CustomerDto>();
-            }
-            foreach (var customer in result)
-            {
-                customerList.TryAdd(customer.Id, customer);
-            }
-            return result;
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to search customers: {ex.Message}", Severity.Error);
-            return Enumerable.Empty<CustomerDto>();
-        }
     }
     private async Task GetAllAppointmentsByEmployeeId()
     {
@@ -215,7 +142,7 @@
             content.Add(new StringContent(document.Item1.Name ?? string.Empty), "Name");
             content.Add(new StringContent(document.Item1.Description ?? string.Empty), "Description");
             content.Add(new StringContent(document.Item1.FilePath ?? string.Empty), "FilePath");
-            content.Add(new StringContent(selectedEmployee.Id.ToString()), "EmployeeId");
+            content.Add(new StringContent(selectedEmployeeId.ToString()), "EmployeeId");
 
             var fileContent = new StreamContent(document.Item2.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // Max 10MB file
             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(document.Item2.ContentType);
@@ -266,7 +193,8 @@
     }
     private void CreateEmployee()
     {
-        selectedEmployee = new EmployeeDto();
+        LookupService.ItemList.TryAdd(0, new EmployeeDto());
+        selectedEmployeeId = 0;
     }
     private async Task HandleEmployeeSave(EmployeeDto employee)
     {
@@ -318,7 +246,7 @@
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add("Employee deleted successfully.", Severity.Success);
-                selectedEmployee = null;
+                selectedEmployeeId = 0;
             }
             else
             {
