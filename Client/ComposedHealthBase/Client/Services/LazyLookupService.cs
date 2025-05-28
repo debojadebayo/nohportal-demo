@@ -18,7 +18,11 @@ where TDto : ILazyLookup
     Task AddItem(TDto item, CancellationToken token);
     Task UpdateItem(TDto item, CancellationToken token);
     Task DeleteItem(long id, CancellationToken token);
-
+    Task<IEnumerable<TDto>> GetAllByTenantId(long tenantId, CancellationToken token);
+    Task<IEnumerable<TDto>> GetAllByTenantIds(IEnumerable<long> tenantIds, CancellationToken token);
+    Task<IEnumerable<TDto>> GetAllBySubjectId(long subjectId, CancellationToken token);
+    Task<IEnumerable<TDto>> GetAllBySubjectIds(IEnumerable<long> subjectIds, CancellationToken token);
+    Task<IEnumerable<TDto>> GetAllByCustom(string customRoute, CancellationToken token);
 }
 
 public class LazyLookupService<TDto> : ILazyLookupService<TDto>
@@ -27,9 +31,11 @@ where TDto : ILazyLookup
     private static string EndpointType => typeof(TDto).Name.Replace("Dto", string.Empty).ToLowerInvariant();
     public Dictionary<long, TDto> ItemList { get; set; } = new();
     private readonly HttpClient _httpClient;
-    public LazyLookupService(HttpClient httpClient)
+    private readonly ISnackbar _snackbar;
+    public LazyLookupService(HttpClient httpClient, ISnackbar snackbar)
     {
         _httpClient = httpClient;
+        _snackbar = snackbar;
     }
 
     public string ItemToString(long e) => e > 0 && ItemList.TryGetValue(e, out TDto? item) ? $"{item.DisplayName} - {item.Id}" : string.Empty;
@@ -54,7 +60,7 @@ where TDto : ILazyLookup
         }
         catch (Exception ex)
         {
-            //Snackbar.Add($"Failed to search items: {ex.Message}", Severity.Error);
+            _snackbar.Add($"Failed to search items: {ex.Message}", Severity.Error);
             return Enumerable.Empty<long>();
         }
     }
@@ -77,7 +83,7 @@ where TDto : ILazyLookup
         }
         catch (Exception ex)
         {
-            //Snackbar.Add($"Failed to get item by ID: {ex.Message}", Severity.Error);
+            _snackbar.Add($"Failed to get item by ID: {ex.Message}", Severity.Error);
             return default;
         }
     }
@@ -114,7 +120,7 @@ where TDto : ILazyLookup
         }
         catch (Exception ex)
         {
-            //Snackbar.Add($"Failed to get items by IDs: {ex.Message}", Severity.Error);
+            _snackbar.Add($"Failed to get items by IDs: {ex.Message}", Severity.Error);
             return Enumerable.Empty<TDto>();
         }
     }
@@ -136,7 +142,7 @@ where TDto : ILazyLookup
         }
         catch (Exception ex)
         {
-            //Snackbar.Add($"Failed to get all items: {ex.Message}", Severity.Error);
+            _snackbar.Add($"Failed to get all items: {ex.Message}", Severity.Error);
             return Enumerable.Empty<TDto>();
         }
     }
@@ -154,16 +160,12 @@ where TDto : ILazyLookup
                     item.Id = createdItemId;
                     ItemList[createdItemId] = item;
                 }
-            }
-            else
-            {
-                throw new Exception($"Failed to add item: {response.ReasonPhrase}");
+                _snackbar.Add($"Successfully added {EndpointType}", Severity.Success);
             }
         }
         catch (Exception ex)
         {
-            // Optionally log or handle the exception
-            // throw;
+            _snackbar.Add($"Failed to add item: {ex.Message}", Severity.Error);
         }
     }
 
@@ -171,7 +173,7 @@ where TDto : ILazyLookup
     {
         try
         {
-            var response = await _httpClient.PutAsJsonAsync($"api/{EndpointType}/update/{item.Id}", item, token);
+            var response = await _httpClient.PutAsJsonAsync($"api/{EndpointType}/update", item, token);
             if (response.IsSuccessStatusCode)
             {
                 var updatedItemId = await response.Content.ReadFromJsonAsync<long>(token);
@@ -179,12 +181,12 @@ where TDto : ILazyLookup
                 {
                     ItemList[updatedItemId] = item;
                 }
+                _snackbar.Add($"Successfully updated {EndpointType}", Severity.Success);
             }
         }
         catch (Exception ex)
         {
-            // Optionally log or handle the exception
-            // throw;
+            _snackbar.Add($"Failed to update {EndpointType}: {ex.Message}", Severity.Error);
         }
     }
 
@@ -197,17 +199,129 @@ where TDto : ILazyLookup
             {
                 ItemList.Remove(id);
             }
-            else
-            {
-                // Optionally handle error response
-                // throw new Exception($"Failed to delete item: {response.ReasonPhrase}");
-            }
+            _snackbar.Add($"Successfully deleted {EndpointType}", Severity.Success);
         }
         catch (Exception ex)
         {
-            // Optionally log or handle the exception
-            // throw;
+            _snackbar.Add($"Failed to delete {EndpointType}: {ex.Message}", Severity.Error);
         }
     }
 
+    public async Task<IEnumerable<TDto>> GetAllByTenantId(long tenantId, CancellationToken token)
+    {
+        try
+        {
+            var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>($"api/{EndpointType}/getallbytenantid/{tenantId}", token);
+            if (result != null)
+            {
+                foreach (var item in result)
+                {
+                    ItemList.TryAdd(item.Id, item);
+                }
+                return result;
+            }
+            return Enumerable.Empty<TDto>();
+        }
+        catch (Exception ex)
+        {
+            _snackbar.Add($"Failed to get items by tenantId: {ex.Message}", Severity.Error);
+            return Enumerable.Empty<TDto>();
+        }
+    }
+
+    public async Task<IEnumerable<TDto>> GetAllByTenantIds(IEnumerable<long> tenantIds, CancellationToken token)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync($"api/{EndpointType}/getallbytenantids", tenantIds, token);
+            if (response.IsSuccessStatusCode)
+            {
+                var items = await response.Content.ReadFromJsonAsync<IEnumerable<TDto>>(token);
+                if (items != null)
+                {
+                    foreach (var item in items)
+                    {
+                        ItemList.TryAdd(item.Id, item);
+                    }
+                    return items;
+                }
+            }
+            return Enumerable.Empty<TDto>();
+        }
+        catch (Exception ex)
+        {
+            _snackbar.Add($"Failed to get items by tenantIds: {ex.Message}", Severity.Error);
+            return Enumerable.Empty<TDto>();
+        }
+    }
+
+    public async Task<IEnumerable<TDto>> GetAllBySubjectId(long subjectId, CancellationToken token)
+    {
+        try
+        {
+            var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>($"api/{EndpointType}/getallbysubjectid/{subjectId}", token);
+            if (result != null)
+            {
+                foreach (var item in result)
+                {
+                    ItemList.TryAdd(item.Id, item);
+                }
+                return result;
+            }
+            return Enumerable.Empty<TDto>();
+        }
+        catch (Exception ex)
+        {
+            _snackbar.Add($"Failed to get items by subjectId: {ex.Message}", Severity.Error);
+            return Enumerable.Empty<TDto>();
+        }
+    }
+
+    public async Task<IEnumerable<TDto>> GetAllBySubjectIds(IEnumerable<long> subjectIds, CancellationToken token)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync($"api/{EndpointType}/getallbysubjectids", subjectIds, token);
+            if (response.IsSuccessStatusCode)
+            {
+                var items = await response.Content.ReadFromJsonAsync<IEnumerable<TDto>>(token);
+                if (items != null)
+                {
+                    foreach (var item in items)
+                    {
+                        ItemList.TryAdd(item.Id, item);
+                    }
+                    return items;
+                }
+            }
+            return Enumerable.Empty<TDto>();
+        }
+        catch (Exception ex)
+        {
+            _snackbar.Add($"Failed to get items by subjectIds: {ex.Message}", Severity.Error);
+            return Enumerable.Empty<TDto>();
+        }
+    }
+
+    public async Task<IEnumerable<TDto>> GetAllByCustom(string customRoute, CancellationToken token)
+    {
+        try
+        {
+            var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>(customRoute, token);
+            if (result != null)
+            {
+                foreach (var item in result)
+                {
+                    ItemList.TryAdd(item.Id, item);
+                }
+                return result;
+            }
+            return Enumerable.Empty<TDto>();
+        }
+        catch (Exception ex)
+        {
+            _snackbar.Add($"Failed to get all items: {ex.Message}", Severity.Error);
+            return Enumerable.Empty<TDto>();
+        }
+    }
 }

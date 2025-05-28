@@ -134,6 +134,10 @@
 			userName = user.Identity?.Name;
 		}
 	}
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+	}
 	private void Logout(MouseEventArgs args)
 	{
 		NavigationManager.NavigateToLogout("authentication/logout");

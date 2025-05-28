@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Client.Pages.Components
 @using Client.Pages.Components.Calendar.Events
+@using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.Shared.Interfaces
 @using Shared.DTOs.CRM
 @using Client.Pages.Forms
@@ -9,7 +10,10 @@
 @using Client.Pages.Components.Calendar
 @inject IHttpClientFactory HttpClientFactory
 @inject IDialogService DialogService
-@inject ISnackbar Snackbar
+@inject ILazyLookupService<ClinicianDto> ClinicianLookupService
+@inject ILazyLookupService<ReferralDto> ReferralLookupService
+@inject ILazyLookupService<ScheduleDto> ScheduleLookupService
+
 @attribute [Authorize]
 
 <MudGrid>
@@ -30,7 +34,6 @@
 @code {
     private IEnumerable<ClinicianDto> Clinicians { get; set; } = new List<ClinicianDto>();
     private IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
-    private HttpClient httpClient = default!;
     private ScheduleDto _editingSchedule = new ScheduleDto
     {
         Title = string.Empty,
@@ -39,21 +42,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        httpClient = HttpClientFactory.CreateClient("api");
-        try
-        {
-            var clinicians = await httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getall");
-            Clinicians = clinicians ?? new List<ClinicianDto>();
-
-            var referrals = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>("api/referral/getall");
-            Referrals = referrals ?? new List<ReferralDto>();
-
-            await LoadClinicians();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error fetching data: {ex.Message}");
-        }
+        Clinicians = await ClinicianLookupService.GetAllByCustom("api/clinician/getallclinicianswithschedules", CancellationToken.None);
+        Referrals = await ReferralLookupService.GetAllItems(CancellationToken.None);
     }
 
     private async Task OpenAddAppointmentModal(ScheduleDto? schedule = null)
@@ -81,34 +71,11 @@
 
         if (dialogResult?.Data is ScheduleDto editedSchedule)
         {
-            try
-            {
-                var response = isEdit
-                    ? await httpClient.PutAsJsonAsync($"api/schedule/update", editedSchedule)
-                    : await httpClient.PostAsJsonAsync("api/schedule/create", editedSchedule);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    Snackbar.Add(isEdit ? "Appointment updated successfully" : "Appointment created successfully", Severity.Success);
-                    await LoadClinicians();
-                }
-                else
-                {
-                    Snackbar.Add($"Failed to {(isEdit ? "update" : "create")} appointment: {response.StatusCode}", Severity.Error);
-                }
+            if(isEdit){
+                await ScheduleLookupService.UpdateItem(editedSchedule, CancellationToken.None);
             }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Error {(isEdit ? "updating" : "creating")} appointment: {ex.Message}", Severity.Error);
-            }
+            await ScheduleLookupService.AddItem(editedSchedule, CancellationToken.None);
         }
-    }
-    
-    private async Task LoadClinicians()
-    {
-        var clinicians = await
-        httpClient.GetFromJsonAsync<IEnumerable<ClinicianDto>>("api/clinician/getallclinicianswithschedules");
-        Clinicians = clinicians ?? new List<ClinicianDto>();
     }
 
     private async Task OnCellClicked(CellClickedEventArgs<ClinicianDto, ScheduleDto> args)

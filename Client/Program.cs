@@ -43,5 +43,11 @@ builder.Services.AddScoped<ILazyLookupService<CustomerDto>, LazyLookupService<Cu
 builder.Services.AddScoped<ILazyLookupService<EmployeeDto>, LazyLookupService<EmployeeDto>>();
 builder.Services.AddScoped<ILazyLookupService<ManagerDto>, LazyLookupService<ManagerDto>>();
 builder.Services.AddScoped<ILazyLookupService<ClinicianDto>, LazyLookupService<ClinicianDto>>();
+builder.Services.AddScoped<ILazyLookupService<ReferralDto>, LazyLookupService<ReferralDto>>();
+builder.Services.AddScoped<ILazyLookupService<ProductDto>, LazyLookupService<ProductDto>>();
+builder.Services.AddScoped<ILazyLookupService<ScheduleDto>, LazyLookupService<ScheduleDto>>();
+builder.Services.AddScoped<ILazyLookupService<DocumentDto>, LazyLookupService<DocumentDto>>();
+builder.Services.AddScoped<ILazyLookupService<ContractDto>, LazyLookupService<ContractDto>>();
+builder.Services.AddScoped<IDocumentUploadService, DocumentUploadService>();
 
 await builder.Build().RunAsync();

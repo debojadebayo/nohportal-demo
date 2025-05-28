@@ -9,5 +9,6 @@ namespace ComposedHealthBase.Shared.DTOs
         DateTime CreatedDate { get; set; }
         DateTime ModifiedDate { get; set; }
         long TenantId { get; set; }
+        long SubjectId { get; set; }
     }
 }

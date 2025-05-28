@@ -6,15 +6,8 @@ using Shared.Enums;
 
 namespace Shared.DTOs.Scheduling
 {
-    public class ClinicianDto : ICalendarResource<ScheduleDto>, IDto, ILazyLookup
+    public class ClinicianDto : BaseDto<ClinicianDto>, ICalendarResource<ScheduleDto>, IDto, ILazyLookup
     {
-        public long Id { get; set; }
-        public bool IsActive { get; set; }
-        public long CreatedBy { get; set; }
-        public long LastModifiedBy { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
-        public long TenantId { get; set; }
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
         public required string Telephone { get; set; }

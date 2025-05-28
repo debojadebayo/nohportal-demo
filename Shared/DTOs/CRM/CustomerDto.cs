@@ -5,15 +5,8 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.CRM
 {
-	public class CustomerDto : IDto, INotesTab, ILazyLookup
+	public class CustomerDto : BaseDto<CustomerDto>, IDto, INotesTab, ILazyLookup
 	{
-		public long Id { get; set; }
-		public bool IsActive { get; set; }
-		public long CreatedBy { get; set; }
-		public long LastModifiedBy { get; set; }
-		public DateTime CreatedDate { get; set; }
-		public DateTime ModifiedDate { get; set; }
-		public long TenantId { get; set; }
 		public string Name { get; set; } = string.Empty;
 		public string Telephone { get; set; } = string.Empty;
 		public int NumberOfEmployees { get; set; }

@@ -1,11 +1,20 @@
 ﻿@page "/customers"
+@using ComposedHealthBase.Shared.DTOs
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @using MudBlazor
 @using Client.Pages.Components.TabComponents
 @using ComposedHealthBase.BaseClient.Components
 @using ComposedHealthBase.BaseClient.Services
-@inject ILazyLookupService<CustomerDto> LookupService
+@inject ILazyLookupService<EmployeeDto> EmployeeLookupService
+@inject ILazyLookupService<CustomerDto> CustomerLookupService
+@inject ILazyLookupService<ManagerDto> ManagerLookupService
+@inject ILazyLookupService<ScheduleDto> ScheduleLookupService
+@inject ILazyLookupService<ReferralDto> ReferralLookupService
+@inject ILazyLookupService<ContractDto> ContractLookupService
+@inject ILazyLookupService<DocumentDto> DocumentLookupService
+@inject IDocumentUploadService DocumentUploadService
+
 @attribute [Authorize]
 
 <MudText Typo="Typo.h1">Customers</MudText>
@@ -21,8 +30,7 @@
 {
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @ref="tabs">
         <MudTabPanel Text="Customers">
-            <CustomerTab Model="selectedCustomer" OnSave="HandleCustomerSave" OnDelete="DeleteCustomer"
-                IsLoading="isLoading" />
+            <CustomerTab Model="selectedCustomer" OnSave="HandleCustomerSave" OnDelete="DeleteCustomer" />
         </MudTabPanel>
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByCustomerId">
             <AppointmentsTab Appointments="appointments" />
@@ -34,15 +42,15 @@
             <ManagersTab Managers="managers" />
         </MudTabPanel>
         <MudTabPanel Text="Services" OnClick="GetAllProductsByCustomerId">
-            <ServicesTab Products="products" ProductTypes="productTypes" OnAdd="ShowAddProductDialog" OnEdit="EditProduct"
+            @* <ServicesTab Products="products" ProductTypes="productTypes" OnAdd="ShowAddProductDialog" OnEdit="EditProduct"
                 OnDelete="DeleteProduct" OnSave="SaveProduct" EditingProduct="editingProduct"
-                ProductDialogOpen="productDialogOpen" SetProductDialogOpen="(v) => productDialogOpen = v" />
+                ProductDialogOpen="productDialogOpen" SetProductDialogOpen="(v) => productDialogOpen = v" /> *@
         </MudTabPanel>
         <MudTabPanel Text="Invoicing">
             <InvoicingTab />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByCustomerId">
-            <DocumentLibraryTab Documents="documents" OnSave="UploadDocument" />
+            <DocumentLibraryTab Documents="documents" OnSave="@(async (x) => await OnDocumentSave(x))" />
         </MudTabPanel>
         <MudTabPanel Text="Reports">
             <ReportsTab />
@@ -55,11 +63,9 @@
 
 @code {
     private MudTabs tabs = default!;
-    private CustomerDto? selectedCustomer => 
-        LookupService.ItemList.TryGetValue(selectedCustomerId, out var customer) ? customer : null;
+    private CustomerDto? selectedCustomer =>
+    CustomerLookupService.ItemList.TryGetValue(selectedCustomerId, out var customer) ? customer : null;
     private long selectedCustomerId { get; set; } = 0;
-    private bool isLoading;
-    private HttpClient httpClient = default!;
     private List<ScheduleDto> appointments = new();
     private List<ReferralDto> referrals = new();
     private List<ContractDto> contracts = new();
@@ -67,395 +73,64 @@
     private List<ManagerDto> managers = new();
     private List<ProductTypeDto> productTypes = new();
     private List<DocumentDto> documents = new();
-
-    [Inject]
-    private IHttpClientFactory HttpClientFactory { get; set; } = default!;
-    [Inject]
-    private ISnackbar Snackbar { get; set; } = default!;
-
-    private bool productDialogOpen;
-    private ProductDto editingProduct = default!;
-    protected override void OnInitialized()
-    {
-        httpClient = HttpClientFactory.CreateClient("api");
-    }
-
     private void CreateCustomer()
     {
-        LookupService.ItemList.TryAdd(0, new CustomerDto());
+        CustomerLookupService.ItemList.TryAdd(0, new CustomerDto());
         selectedCustomerId = 0;
     }
-    private async Task HandleCustomerSave(CustomerDto customer)
-    {
-        isLoading = true;
-        try
-        {
-            if (customer.Id == 0)
-            {
-                var response = await httpClient.PostAsJsonAsync("api/customer/create", customer);
-                if (response.IsSuccessStatusCode)
-                {
-                    Snackbar.Add("Customer created.", Severity.Success);
-                }
-                else
-                {
-                    Snackbar.Add($"Failed to create customer: {response.StatusCode}", Severity.Error);
-                }
-            }
-            else
-            {
-                var response = await httpClient.PutAsJsonAsync($"api/customer/update", customer);
-                if (response.IsSuccessStatusCode)
-                {
-                    Snackbar.Add("Customer updated.", Severity.Success);
-                }
-                else
-                {
-                    Snackbar.Add($"Failed to update customer: {response.StatusCode}", Severity.Error);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to save customer: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
-
-    private async Task DeleteCustomer()
+    private async Task HandleCustomerSave()
     {
         if (selectedCustomer == null) return;
-        isLoading = true;
-        try
+        if (selectedCustomer.Id == 0)
         {
-            var response = await httpClient.DeleteAsync($"api/customer/{selectedCustomer.Id}");
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Customer deleted.", Severity.Success);
-                selectedCustomerId = 0;
-            }
-            else
-            {
-                Snackbar.Add($"Failed to delete customer: {response.StatusCode}", Severity.Error);
-            }
+            await CustomerLookupService.AddItem(selectedCustomer, CancellationToken.None);
         }
-        catch (Exception ex)
+        else
         {
-            Snackbar.Add($"Failed to delete customer: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
+            await CustomerLookupService.UpdateItem(selectedCustomer, CancellationToken.None);
         }
     }
-
-    // --- Appointments, Referrals, Managers ---
+    async Task DeleteCustomer()
+    {
+        if (selectedCustomer == null) return;
+        await CustomerLookupService.DeleteItem(selectedCustomer.Id, CancellationToken.None);
+    }
     private async Task GetAllAppointmentsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        try
-        {
-            var result = await
-            httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>($"api/schedule/GetAllByCustomerId/{selectedCustomer.Id}");
-            appointments = result?.ToList() ?? new List<ScheduleDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load appointments: {ex.Message}", Severity.Error);
-            appointments = new List<ScheduleDto>();
-        }
+        appointments = (await ScheduleLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
     }
-
     private async Task GetAllReferralsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        try
-        {
-            var result = await
-            httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>($"api/referral/GetAllByCustomerId/{selectedCustomer.Id}");
-            referrals = result?.ToList() ?? new List<ReferralDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load referrals: {ex.Message}", Severity.Error);
-            referrals = new List<ReferralDto>();
-        }
+        referrals = (await ReferralLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
     }
-
     private async Task GetAllManagersByCustomerId()
     {
         if (selectedCustomer == null) return;
-        try
-        {
-            var result = await
-            httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByCustomerId/{selectedCustomer.Id}");
-            managers = result?.ToList() ?? new List<ManagerDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load managers: {ex.Message}", Severity.Error);
-            managers = new List<ManagerDto>();
-        }
+        managers = (await ManagerLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
     }
-
-    // --- Services (Products) CRUD ---
     private async Task GetAllProductsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        try
-        {
-            // Get contracts for the customer using the new endpoint
-            var contractsResult = await
-            httpClient.GetFromJsonAsync<IEnumerable<ContractDto>>($"api/contract/GetByCustomerId/{selectedCustomer.Id}");
-            contracts = contractsResult?.ToList() ?? new List<ContractDto>();
+        contracts = (await ContractLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
 
-            // Then, extract all products from the contracts
-            products = new List<ProductDto>();
-            foreach (var contract in contracts)
-            {
-                if (contract.Products != null)
-                {
-                    products.AddRange(contract.Products);
-                }
-            }
-        }
-        catch (Exception ex)
+        products = new List<ProductDto>();
+        foreach (var contract in contracts)
         {
-            Snackbar.Add($"Failed to load products: {ex.Message}", Severity.Error);
-            contracts = new List<ContractDto>();
-            products = new List<ProductDto>();
+            if (contract.Products != null)
+            {
+                products.AddRange(contract.Products);
+            }
         }
     }
-
-    private async Task LoadProductTypes()
-    {
-        try
-        {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<ProductTypeDto>>("api/producttype");
-            productTypes = result?.ToList() ?? new List<ProductTypeDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load product types: {ex.Message}", Severity.Error);
-            productTypes = new List<ProductTypeDto>();
-        }
-    }
-
-    private void ShowAddProductDialog()
-    {
-        editingProduct = new ProductDto
-        {
-            ProductType = productTypes?.FirstOrDefault() ?? new ProductTypeDto
-            {
-                ChargeCode = string.Empty,
-                Description =
-        string.Empty,
-                Name = string.Empty
-            },
-            Price = 0,
-            StartTime = DateTime.UtcNow,
-            EndTime = DateTime.UtcNow.AddMonths(12)
-        };
-        productDialogOpen = true;
-    }
-
-    private void EditProduct(ProductDto product)
-    {
-        editingProduct = new ProductDto
-        {
-            Id = product.Id,
-            ProductType = product.ProductType,
-            Price = product.Price,
-            StartTime = product.StartTime,
-            EndTime = product.EndTime
-        };
-        productDialogOpen = true;
-    }
-
-    private async Task SaveProduct(ProductDto product)
-    {
-        if (selectedCustomer == null) return;
-        if (contracts.Count == 0)
-        {
-            Snackbar.Add("No contracts available for this customer. Please create a contract first.", Severity.Warning);
-            return;
-        }
-
-        try
-        {
-            // Get the first contract for simplicity
-            // In a real application, you might want to let the user select which contract to add the product to
-            var contract = contracts.First();
-
-            if (product.Id == 0)
-            {
-                // Add the new product to the contract
-                contract.Products.Add(product);
-
-                // Update the contract with the new product
-                var response = await httpClient.PutAsJsonAsync($"api/contract", contract);
-                if (response.IsSuccessStatusCode)
-                {
-                    Snackbar.Add("Service added to contract.", Severity.Success);
-                    await GetAllProductsByCustomerId();
-                }
-                else
-                {
-                    Snackbar.Add($"Failed to add service to contract: {response.StatusCode}", Severity.Error);
-                }
-            }
-            else
-            {
-                // For existing products, update directly
-                var response = await httpClient.PutAsJsonAsync($"api/product", product);
-                if (response.IsSuccessStatusCode)
-                {
-                    Snackbar.Add("Service updated.", Severity.Success);
-                    await GetAllProductsByCustomerId();
-                }
-                else
-                {
-                    Snackbar.Add($"Failed to update service: {response.StatusCode}", Severity.Error);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to save service: {ex.Message}", Severity.Error);
-        }
-    }
-
-    private async Task DeleteProduct(ProductDto product)
-    {
-        if (product.Id == 0) return;
-
-        try
-        {
-            // Find which contract contains this product
-            ContractDto? contractWithProduct = null;
-            foreach (var contract in contracts)
-            {
-                if (contract.Products != null && contract.Products.Any(p => p.Id == product.Id))
-                {
-                    contractWithProduct = contract;
-                    break;
-                }
-            }
-
-            if (contractWithProduct == null)
-            {
-                Snackbar.Add("Could not find the contract containing this service.", Severity.Error);
-                return;
-            }
-
-            // Remove the product from the contract
-            var productToRemove = contractWithProduct.Products.FirstOrDefault(p => p.Id == product.Id);
-            if (productToRemove != null)
-            {
-                contractWithProduct.Products.Remove(productToRemove);
-            }
-
-            // Update the contract
-            var response = await httpClient.PutAsJsonAsync($"api/contract", contractWithProduct);
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Service removed from contract.", Severity.Success);
-                await GetAllProductsByCustomerId();
-            }
-            else
-            {
-                Snackbar.Add($"Failed to remove service from contract: {response.StatusCode}", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to delete service: {ex.Message}", Severity.Error);
-        }
-    }
-
-    // --- Documents ---
     private async Task GetAllDocumentsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        try
-        {
-            var result = await
-            httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"api/document/GetAllByCustomerId/{selectedCustomer.Id}");
-            documents = result?.ToList() ?? new List<DocumentDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load documents: {ex.Message}", Severity.Error);
-            documents = new List<DocumentDto>();
-        }
+        documents = (await DocumentLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
     }
-
-    private async Task UploadDocument(Tuple<DocumentDto, IBrowserFile> document)
+    private async Task OnDocumentSave(Tuple<IDocumentDto,IBrowserFile> document)
     {
-        if (selectedCustomer == null)
-        {
-            Snackbar.Add("Customer must be selected.", Severity.Error);
-            return;
-        }
-
-        isLoading = true;
-        try
-        {
-            using var content = new MultipartFormDataContent();
-            content.Add(new StringContent(document.Item1.Name ?? string.Empty), "Name");
-            content.Add(new StringContent(document.Item1.Description ?? string.Empty), "Description");
-            content.Add(new StringContent(document.Item1.FilePath ?? string.Empty), "FilePath");
-            content.Add(new StringContent(selectedCustomer.Id.ToString()), "CustomerId");
-
-            var fileContent = new StreamContent(document.Item2.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // Max 10MB file
-            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(document.Item2.ContentType);
-            content.Add(fileContent, "file", document.Item2.Name);
-
-            var response = await httpClient.PostAsync("api/document/upload", content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Document uploaded successfully.", Severity.Success);
-                await GetAllDocumentsByCustomerId(); // Refresh the list
-            }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Failed to upload document: {response.StatusCode} - {errorContent}", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error uploading document: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
-
-    // --- Notes ---
-    private async Task SaveNotes()
-    {
-        if (selectedCustomer == null) return;
-        try
-        {
-            var response = await httpClient.PutAsJsonAsync($"api/customer/update", selectedCustomer);
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Notes saved.", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add($"Failed to save notes: {response.StatusCode}", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to save notes: {ex.Message}", Severity.Error);
-        }
+        await DocumentUploadService.UploadDocument(document);
     }
 }

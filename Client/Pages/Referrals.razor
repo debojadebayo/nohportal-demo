@@ -2,8 +2,8 @@
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @using Client.Pages.Components.TabComponents
-@inject IHttpClientFactory HttpClientFactory
-@inject ISnackbar Snackbar
+@using ComposedHealthBase.BaseClient.Services
+@inject ILazyLookupService<ReferralDto> ReferralLookupService
 @attribute [Authorize]
 
 <PageTitle>Referrals</PageTitle>
@@ -16,14 +16,6 @@
 
 @code {
     private List<ReferralDto> referrals = new();
-    private HttpClient httpClient = default!;
-    private bool isLoading = false;
-
-    protected override void OnInitialized()
-    {
-        httpClient = HttpClientFactory.CreateClient("api");
-    }
-
     protected override async Task OnInitializedAsync()
     {
         await LoadReferrals();
@@ -31,47 +23,19 @@
 
     private async Task LoadReferrals()
     {
-        isLoading = true;
-        try
-        {
-            var result = await httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>("api/referral/getall");
-            referrals = result?.ToList() ?? new List<ReferralDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load referrals: {ex.Message}", Severity.Error);
-            referrals = new List<ReferralDto>();
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        referrals = (await ReferralLookupService.GetAllItems(CancellationToken.None)).ToList();
     }
 
     private async Task SaveReferral(ReferralDto referral)
     {
-        isLoading = true;
-        try
+        if (referral == null) return;
+        if (referral.Id == 0)
         {
-            var response = await httpClient.PostAsJsonAsync("api/referral/create", referral);
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Referral added successfully", Severity.Success);
-                await LoadReferrals(); // Refresh the list
-            }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Failed to add referral: {response.StatusCode} - {errorContent}", Severity.Error);
-            }
+            await ReferralLookupService.AddItem(referral, CancellationToken.None);
         }
-        catch (Exception ex)
+        else
         {
-            Snackbar.Add($"Error adding referral: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
+            await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
         }
     }
 }

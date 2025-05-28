@@ -57,7 +57,7 @@ namespace Shared.Validators
                 .WithMessage("Telephone must be a valid UK mobile number.");
 
             // CustomerId: required
-            RuleFor(e => e.CustomerId)
+            RuleFor(e => e.TenantId)
                 .NotEmpty().WithMessage("Company is required.");
 
             // JobRole: required, must be in allowed list

@@ -1,11 +1,20 @@
 ﻿@page "/employees"
 @using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.Shared.DTOs
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @using MudBlazor
 @using Client.Pages.Components.TabComponents
 @using ComposedHealthBase.BaseClient.Components
-@inject ILazyLookupService<EmployeeDto> LookupService
+@inject ILazyLookupService<EmployeeDto> EmployeeLookupService
+@inject ILazyLookupService<CustomerDto> CustomerLookupService
+@inject ILazyLookupService<ManagerDto> ManagerLookupService
+@inject ILazyLookupService<ScheduleDto> ScheduleLookupService
+@inject ILazyLookupService<ReferralDto> ReferralLookupService
+@inject ILazyLookupService<ContractDto> ContractLookupService
+@inject ILazyLookupService<DocumentDto> DocumentLookupService
+@inject IDocumentUploadService DocumentUploadService
+
 @attribute [Authorize]
 
 <MudText Typo="Typo.h1">Employees</MudText>
@@ -21,8 +30,7 @@
 {
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @ref="tabs">
         <MudTabPanel Text="Employees">
-            <EmployeeDetailsTab Model="selectedEmployee" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee"
-                IsLoading="isLoading" />
+            <EmployeeDetailsTab Model="selectedEmployee" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee" />
         </MudTabPanel>
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByEmployeeId">
             <AppointmentsTab Appointments="appointments" />
@@ -34,7 +42,7 @@
             <ManagersTab Managers="managers" />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByEmployeeId">
-            <DocumentLibraryTab Documents="documents" OnSave="UploadDocument" />
+            <DocumentLibraryTab Documents="documents" OnSave="@(async (x) => await OnDocumentSave(x))" />
         </MudTabPanel>
         <MudTabPanel Text="Notes">
             <NotesTab Model="selectedEmployee" OnSave="HandleEmployeeSave" TDto="EmployeeDto" />
@@ -46,220 +54,73 @@
 @code {
     private MudTabs tabs = default!;
     private EmployeeDto? selectedEmployee => 
-        LookupService.ItemList.TryGetValue(selectedEmployeeId, out var employee) ? employee : null;
+        EmployeeLookupService.ItemList.TryGetValue(selectedEmployeeId, out var employee) ? employee : null;
     private long selectedEmployeeId { get; set; } = 0;
-    private bool isLoading;
-    private HttpClient httpClient = default!;
     private List<ScheduleDto> appointments = new();
     private List<ReferralDto> referrals = new();
     private List<ManagerDto> managers = new();
     private List<DocumentDto> documents = new();
+    private List<ContractDto> contracts = new();
+    private List<ProductDto> products = new();
 
-    [Inject]
-    private IHttpClientFactory HttpClientFactory { get; set; } = default!;
-    [Inject]
-    private ISnackbar Snackbar { get; set; } = default!;
-    protected override void OnInitialized()
+    private void CreateEmployee()
     {
-        httpClient = HttpClientFactory.CreateClient("api");
+        EmployeeLookupService.ItemList.TryAdd(0, new EmployeeDto());
+        selectedEmployeeId = 0;
+    }
+    private async Task HandleEmployeeSave()
+    {
+        if (selectedEmployee == null) return;
+        if (selectedEmployee.Id == 0)
+        {
+            await EmployeeLookupService.AddItem(selectedEmployee, CancellationToken.None);
+        }
+        else
+        {
+            await EmployeeLookupService.UpdateItem(selectedEmployee, CancellationToken.None);
+        }
+    }
+    async Task DeleteEmployee()
+    {
+        if (selectedEmployee == null) return;
+        await EmployeeLookupService.DeleteItem(selectedEmployee.Id, CancellationToken.None);
     }
     private async Task GetAllAppointmentsByEmployeeId()
     {
         if (selectedEmployee == null) return;
-        try
-        {
-            var result = await
-            httpClient.GetFromJsonAsync<IEnumerable<ScheduleDto>>($"api/schedule/GetAllByEmployeeId/{selectedEmployee.Id}");
-            appointments = result?.ToList() ?? new List<ScheduleDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load appointments: {ex.Message}", Severity.Error);
-            appointments = new List<ScheduleDto>();
-        }
+        appointments = (await ScheduleLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
     }
-
     private async Task GetAllReferralsByEmployeeId()
     {
         if (selectedEmployee == null) return;
-        try
-        {
-            var result = await
-            httpClient.GetFromJsonAsync<IEnumerable<ReferralDto>>($"api/referral/GetAllByEmployeeId/{selectedEmployee.Id}");
-            referrals = result?.ToList() ?? new List<ReferralDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load referrals: {ex.Message}", Severity.Error);
-            referrals = new List<ReferralDto>();
-        }
+        referrals = (await ReferralLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
     }
-
     private async Task GetAllManagersByEmployeeId()
     {
         if (selectedEmployee == null) return;
-        try
+        managers = (await ManagerLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
+    }
+    private async Task GetAllProductsByEmployeeId()
+    {
+        if (selectedEmployee == null) return;
+        contracts = (await ContractLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
+
+        products = new List<ProductDto>();
+        foreach (var contract in contracts)
         {
-            var result = await
-            httpClient.GetFromJsonAsync<IEnumerable<ManagerDto>>($"api/manager/GetAllByEmployeeId/{selectedEmployee.Id}");
-            managers = result?.ToList() ?? new List<ManagerDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load managers: {ex.Message}", Severity.Error);
-            managers = new List<ManagerDto>();
+            if (contract.Products != null)
+            {
+                products.AddRange(contract.Products);
+            }
         }
     }
-
     private async Task GetAllDocumentsByEmployeeId()
     {
         if (selectedEmployee == null) return;
-        try
-        {
-            var result = await
-            httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"api/document/GetAllByEmployeeId/{selectedEmployee.Id}");
-            documents = result?.ToList() ?? new List<DocumentDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load documents: {ex.Message}", Severity.Error);
-            documents = new List<DocumentDto>();
-        }
+        documents = (await DocumentLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
     }
-
-    private async Task UploadDocument(Tuple<DocumentDto, IBrowserFile> document)
+    private async Task OnDocumentSave(Tuple<IDocumentDto,IBrowserFile> document)
     {
-        if (selectedEmployee == null)
-        {
-            Snackbar.Add("Employee must be selected.", Severity.Error);
-            return;
-        }
-
-        isLoading = true;
-        try
-        {
-            using var content = new MultipartFormDataContent();
-            content.Add(new StringContent(document.Item1.Name ?? string.Empty), "Name");
-            content.Add(new StringContent(document.Item1.Description ?? string.Empty), "Description");
-            content.Add(new StringContent(document.Item1.FilePath ?? string.Empty), "FilePath");
-            content.Add(new StringContent(selectedEmployeeId.ToString()), "EmployeeId");
-
-            var fileContent = new StreamContent(document.Item2.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10)); // Max 10MB file
-            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(document.Item2.ContentType);
-            content.Add(fileContent, "file", document.Item2.Name);
-
-            var response = await httpClient.PostAsync("api/document/upload", content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Document uploaded successfully.", Severity.Success);
-                await GetAllDocumentsByEmployeeId(); // Refresh the list
-            }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Failed to upload document: {response.StatusCode} - {errorContent}", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error uploading document: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
-
-    private async Task SaveNotes()
-    {
-        if (selectedEmployee == null) return;
-        try
-        {
-            var response = await httpClient.PutAsJsonAsync($"api/employee/update", selectedEmployee);
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Notes saved.", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add($"Failed to save notes: {response.StatusCode}", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to save notes: {ex.Message}", Severity.Error);
-        }
-    }
-    private void CreateEmployee()
-    {
-        LookupService.ItemList.TryAdd(0, new EmployeeDto());
-        selectedEmployeeId = 0;
-    }
-    private async Task HandleEmployeeSave(EmployeeDto employee)
-    {
-        isLoading = true;
-        try
-        {
-            if (employee.Id == 0)
-            {
-                var response = await httpClient.PostAsJsonAsync("api/employee/create", employee);
-                if (response.IsSuccessStatusCode)
-                {
-                    Snackbar.Add("Employee created.", Severity.Success);
-                }
-                else
-                {
-                    Snackbar.Add($"Failed to create employee: {response.StatusCode}", Severity.Error);
-                }
-            }
-            else
-            {
-                var response = await httpClient.PutAsJsonAsync($"api/employee/update", employee);
-                if (response.IsSuccessStatusCode)
-                {
-                    Snackbar.Add("Employee updated.", Severity.Success);
-                }
-                else
-                {
-                    Snackbar.Add($"Failed to update employee: {response.StatusCode}", Severity.Error);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to save employee: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
-
-    private async Task DeleteEmployee()
-    {
-        if (selectedEmployee == null) return;
-        isLoading = true;
-        try
-        {
-            var response = await httpClient.DeleteAsync($"api/employee/delete/{selectedEmployee.Id}");
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add("Employee deleted successfully.", Severity.Success);
-                selectedEmployeeId = 0;
-            }
-            else
-            {
-                Snackbar.Add($"Failed to delete employee: {response.StatusCode}", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error deleting employee: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        await DocumentUploadService.UploadDocument(document);
     }
 }

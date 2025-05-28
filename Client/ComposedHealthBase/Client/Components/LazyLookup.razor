@@ -6,7 +6,7 @@
 @inject ILazyLookupService<TDto> LookupService
 
 <MudAutocomplete T="long" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
-    ValueChanged="@OnItemChanged" ValueExpression="@ItemIdValueExpression" SearchFunc="@LookupService.ItemSearch"
+    ValueChanged="@OnItemChanged" SearchFunc="@LookupService.ItemSearch"
     Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
 @code {
     [Parameter] public long ItemId { get; set; } = 0;

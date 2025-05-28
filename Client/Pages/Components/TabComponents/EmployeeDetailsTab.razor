@@ -29,7 +29,7 @@
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="Model.Telephone" For="@(() => Model.Telephone)" Immediate="true"
                 Label="Telephone" Variant="Variant.Outlined" />
-            <LazyLookup TDto="CustomerDto" @bind-ItemId="Model.CustomerId" Label="Company Name" />
+            <LazyLookup TDto="CustomerDto" @bind-ItemId="Model.TenantId" Label="Company Name" />
             <MudTextField @bind-Value="Model.JobRole" For="@(() => Model.JobRole)" Immediate="true" Label="Job Role"
                 Variant="Variant.Outlined" />
             <MudTextField @bind-Value="Model.Department" For="@(() => Model.Department)" Immediate="true"

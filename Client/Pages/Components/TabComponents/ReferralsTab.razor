@@ -5,7 +5,7 @@
 @using MudBlazor
 @using Client.Pages.Components.Lookups
 @inject IHttpClientFactory HttpClientFactory
-@inject ISnackbar Snackbar
+
 
 <MudPaper Class="pa-4">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
@@ -113,7 +113,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error loading names: {ex.Message}", Severity.Error);
+            SnackbarService.Add($"Error loading names: {ex.Message}", MudBlazor.Severity.Error);
         }
     }
 
@@ -160,13 +160,13 @@
 
         if (_selectedCustomer == null)
         {
-            Snackbar.Add("Please select a customer", Severity.Warning);
+            SnackbarService.Add("Please select a customer", MudBlazor.Severity.Warning);
             return;
         }
 
         if (_selectedEmployee == null)
         {
-            Snackbar.Add("Please select an employee", Severity.Warning);
+            SnackbarService.Add("Please select an employee", MudBlazor.Severity.Warning);
             return;
         }
 
@@ -186,12 +186,12 @@
                 var response = await httpClient.PostAsJsonAsync("api/referral/create", _newReferral);
                 if (response.IsSuccessStatusCode)
                 {
-                    Snackbar.Add("Referral added successfully", Severity.Success);
+                    SnackbarService.Add("Referral added successfully", MudBlazor.Severity.Success);
                 }
                 else
                 {
                     var error = await response.Content.ReadAsStringAsync();
-                    Snackbar.Add($"Error adding referral: {error}", Severity.Error);
+                    SnackbarService.Add($"Error adding referral: {error}", MudBlazor.Severity.Error);
                 }
             }
 
@@ -199,7 +199,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error adding referral: {ex.Message}", Severity.Error);
+            SnackbarService.Add($"Error adding referral: {ex.Message}", MudBlazor.Severity.Error);
         }
         finally
         {

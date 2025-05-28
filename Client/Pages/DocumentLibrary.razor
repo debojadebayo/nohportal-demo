@@ -1,9 +1,10 @@
 @page "/document-library"
+@using ComposedHealthBase.BaseClient.Services
 @using Gotho.BlazorPdf
 @using System.Collections.Generic
 @using Shared.DTOs.CRM
-@inject HttpClient httpClient
-@inject ISnackbar Snackbar
+@inject ILazyLookupService<DocumentDto> DocumentLookupService
+@inject IDocumentUploadService DocumentUploadService
 
 <MudText Typo="Typo.h1">Documents Library</MudText>
 <MudGrid>
@@ -40,25 +41,12 @@
 @code {
     private string searchTerm = "";
     private string documentUrl = "";
-    private DocumentDto? selectedDocument;
     private bool isLoading = false;
     private List<DocumentDto> documents = new();
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            isLoading = true;
-            documents = await httpClient.GetFromJsonAsync<List<DocumentDto>>("api/document/getall") ?? new List<DocumentDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error loading documents: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        documents = (await DocumentLookupService.GetAllItems(CancellationToken.None)).ToList();
     }
 
     private IEnumerable<DocumentDto> filteredDocuments => 
@@ -68,32 +56,6 @@
 
     private async Task OnDocumentSelected(DocumentDto document)
     {
-        if (document == null) return;
-        
-        try
-        {
-            isLoading = true;
-            selectedDocument = document;
-
-            var response = await httpClient.GetFromJsonAsync<string>($"api/document/getsaslink/{document.Id}");
-            
-            if (response != null && !string.IsNullOrEmpty(response))
-            {
-                documentUrl = response.Replace("http://blobstorage", "http://localhost");
-            }
-            else
-            {
-                Snackbar.Add("Failed to get document access link", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error loading document: {ex.Message}", Severity.Error);
-            documentUrl = "";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        documentUrl = (await DocumentUploadService.GetSasLink(document.Id, CancellationToken.None)) ?? "";
     }
 }

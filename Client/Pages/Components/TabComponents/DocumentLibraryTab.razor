@@ -1,4 +1,5 @@
 @namespace Client.Pages.Components.TabComponents
+@using ComposedHealthBase.Shared.DTOs
 @using Shared.DTOs.CRM
 @using MudBlazor
 @inject IDialogService DialogService
@@ -88,7 +89,7 @@
 
 @code {
     [Parameter] public List<DocumentDto> Documents { get; set; } = new();
-    [Parameter] public EventCallback<Tuple<DocumentDto, IBrowserFile>> OnSave { get; set; }
+    [Parameter] public EventCallback<Tuple<IDocumentDto, IBrowserFile>> OnSave { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
     private bool _uploadDocumentDialogOpen = false;
     private DocumentDto _newDocument = default!;
@@ -113,7 +114,7 @@
     {
         if (_fileToUpload != null)
         {
-            await OnSave.InvokeAsync(new Tuple<DocumentDto, IBrowserFile>(_newDocument, _fileToUpload));
+            await OnSave.InvokeAsync(new Tuple<IDocumentDto, IBrowserFile>(_newDocument, _fileToUpload));
             _uploadDocumentDialogOpen = false;
         }
     }

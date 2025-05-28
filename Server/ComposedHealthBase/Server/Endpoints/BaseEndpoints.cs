@@ -28,6 +28,12 @@ namespace ComposedHealthBase.Server.Endpoints
 			group.MapPut("/Update", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, TDto dto) => Update(dbContext, mapper, dto));
 			group.MapPost("/Delete/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long id) => Delete(dbContext, mapper, id));
 
+			// New endpoints
+			group.MapGet("/GetAllByTenantId/{tenantId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long tenantId) => GetAllByTenantId(dbContext, mapper, tenantId));
+			group.MapPost("/GetAllByTenantIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, List<long> tenantIds) => GetAllByTenantIds(dbContext, mapper, tenantIds));
+			group.MapGet("/GetAllBySubjectId/{subjectId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long subjectId) => GetAllBySubjectId(dbContext, mapper, subjectId));
+			group.MapPost("/GetAllBySubjectIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, List<long> subjectIds) => GetAllBySubjectIds(dbContext, mapper, subjectIds));
+
 			return endpoints;
 		}
 
@@ -113,6 +119,68 @@ namespace ComposedHealthBase.Server.Endpoints
 			{
 				Console.Error.WriteLine($"An error occurred: {ex.Message}");
 				return Results.Problem($"An error occurred while deleting the {typeof(T).Name}.");
+			}
+		}
+
+		// New methods for tenant and subject filtering
+
+		protected async Task<IResult> GetAllByTenantId(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, long tenantId)
+		{
+			try
+			{
+				// Assumes a query exists: GetAllByTenantIdQuery<T, TDto, TContext>
+				var entities = await new GetAllByTenantIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(tenantId);
+				return Results.Ok(entities);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by tenantId.");
+			}
+		}
+
+		protected async Task<IResult> GetAllByTenantIds(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, List<long> tenantIds)
+		{
+			try
+			{
+				// Assumes a query exists: GetAllByTenantIdsQuery<T, TDto, TContext>
+				var entities = await new GetAllByTenantIdsQuery<T, TDto, TContext>(dbContext, mapper).Handle(tenantIds);
+				return Results.Ok(entities);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by tenantIds.");
+			}
+		}
+
+		protected async Task<IResult> GetAllBySubjectId(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, long subjectId)
+		{
+			try
+			{
+				// Assumes a query exists: GetAllBySubjectIdQuery<T, TDto, TContext>
+				var entities = await new GetAllBySubjectIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(subjectId);
+				return Results.Ok(entities);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by subjectId.");
+			}
+		}
+
+		protected async Task<IResult> GetAllBySubjectIds(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, List<long> subjectIds)
+		{
+			try
+			{
+				// Assumes a query exists: GetAllBySubjectIdsQuery<T, TDto, TContext>
+				var entities = await new GetAllBySubjectIdsQuery<T, TDto, TContext>(dbContext, mapper).Handle(subjectIds);
+				return Results.Ok(entities);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by subjectIds.");
 			}
 		}
 	}
