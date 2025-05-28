@@ -33,7 +33,6 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
     {
         return new Customer
         {
-            Id = dto.Id,
             Name = dto.Name,
             Telephone = dto.Telephone,
             NumberOfEmployees = dto.NumberOfEmployees,
@@ -46,11 +45,7 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
             Email = dto.Email,
             InvoiceEmail = dto.InvoiceEmail,
             Notes = dto.Notes,
-            IsActive = dto.IsActive,
-            CreatedBy = dto.CreatedBy,
-            LastModifiedBy = dto.LastModifiedBy,
-            CreatedDate = dto.CreatedDate,
-            ModifiedDate = dto.ModifiedDate
+            IsActive = dto.IsActive
         };
     }
 
@@ -66,7 +61,6 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
 
     public void Map(CustomerDto dto, Customer entity)
     {
-        entity.Id = dto.Id;
         entity.Name = dto.Name;
         entity.Telephone = dto.Telephone;
         entity.NumberOfEmployees = dto.NumberOfEmployees;
@@ -80,10 +74,6 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
         entity.InvoiceEmail = dto.InvoiceEmail;
         entity.Notes = dto.Notes;
         entity.IsActive = dto.IsActive;
-        entity.CreatedBy = dto.CreatedBy;
-        entity.LastModifiedBy = dto.LastModifiedBy;
-        entity.CreatedDate = dto.CreatedDate;
-        entity.ModifiedDate = dto.ModifiedDate;
     }
 
     public void Map(Customer entity, CustomerDto dto)

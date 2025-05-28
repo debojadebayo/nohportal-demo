@@ -9,8 +9,6 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
         return new ReferralDto
         {
             Id = entity.Id,
-            CustomerId = entity.CustomerId,
-            EmployeeId = entity.EmployeeId,
             ReferralDetails = entity.ReferralDetails,
             DocumentId = entity.DocumentId,
             Title = entity.Title,
@@ -25,16 +23,9 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
     {
         return new Referral
         {
-            Id = dto.Id,
-            CustomerId = dto.CustomerId,
-            EmployeeId = dto.EmployeeId,
             ReferralDetails = dto.ReferralDetails,
             DocumentId = dto.DocumentId,
-            Title = dto.Title,
-            CreatedBy = dto.CreatedBy,
-            LastModifiedBy = dto.LastModifiedBy,
-            CreatedDate = dto.CreatedDate,
-            ModifiedDate = dto.ModifiedDate
+            Title = dto.Title
         };
     }
 
@@ -50,23 +41,14 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
 
     public void Map(ReferralDto dto, Referral entity)
     {
-        entity.Id = dto.Id;
-        entity.CustomerId = dto.CustomerId;
-        entity.EmployeeId = dto.EmployeeId;
         entity.ReferralDetails = dto.ReferralDetails;
         entity.DocumentId = dto.DocumentId;
         entity.Title = dto.Title;
-        entity.CreatedBy = dto.CreatedBy;
-        entity.LastModifiedBy = dto.LastModifiedBy;
-        entity.CreatedDate = dto.CreatedDate;
-        entity.ModifiedDate = dto.ModifiedDate;
     }
 
     public void Map(Referral entity, ReferralDto dto)
     {
         dto.Id = entity.Id;
-        dto.CustomerId = entity.CustomerId;
-        dto.EmployeeId = entity.EmployeeId;
         dto.ReferralDetails = entity.ReferralDetails;
         dto.DocumentId = entity.DocumentId;
         dto.CreatedBy = entity.CreatedBy;

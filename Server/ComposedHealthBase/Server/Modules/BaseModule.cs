@@ -20,7 +20,8 @@ namespace ComposedHealthBase.Server.Modules
 			{
 				options.AddPolicy("Client",
 					policy => policy
-						.WithOrigins(configuration["Cors:AllowedClientOrigin"])
+						.WithOrigins(configuration["Cors:AllowedClientOrigin"] ?? throw new InvalidOperationException("AllowedClientOrigin not configured."),
+							configuration["Cors:AllowedServerOrigin"] ?? throw new InvalidOperationException("AllowedServerOrigin not configured."))
 						.AllowAnyHeader()
 						.AllowAnyMethod()
 						.AllowCredentials());

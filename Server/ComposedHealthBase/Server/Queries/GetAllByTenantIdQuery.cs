@@ -2,6 +2,7 @@ using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace ComposedHealthBase.Server.Queries
 {
@@ -23,7 +24,7 @@ namespace ComposedHealthBase.Server.Queries
 		{
 			// Assumes T has a TenantId property
 			var entities = await _dbContext.Set<T>().Where(e => e.TenantId == tenantId).ToListAsync();
-			return entities.Select(e => _mapper.ToDto(e));
+			return entities.Select(e => _mapper.Map(e));
 		}
 	}
 }

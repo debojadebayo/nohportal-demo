@@ -8,6 +8,7 @@
 <MudAutocomplete T="long" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
     ValueChanged="@OnItemChanged" SearchFunc="@LookupService.ItemSearch"
     Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
+<p>@ItemId</p>
 @code {
     [Parameter] public long ItemId { get; set; } = 0;
     [Parameter] public string Label { get; set; } = "";
@@ -19,6 +20,7 @@
         {
             await LookupService.GetItemById(ItemId, CancellationToken.None);
         }
+        StateHasChanged();
     }
     private async Task OnItemChanged(long value)
     {

@@ -16,8 +16,6 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 LastModifiedBy = entity.LastModifiedBy,
                 CreatedDate = entity.CreatedDate,
                 ModifiedDate = entity.ModifiedDate,
-                CustomerId = entity.CustomerId,
-                EmployeeId = entity.EmployeeId,
                 FilePath = entity.FilePath,
                 Name = entity.Name,
                 Description = entity.Description,
@@ -30,17 +28,8 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
         {
             return new Document
             {
-                Id = dto.Id,
                 IsActive = dto.IsActive,
                 CreatedBy = dto.CreatedBy,
-                LastModifiedBy = dto.LastModifiedBy,
-                // CreatedDate and ModifiedDate are typically handled by the BaseEntity or database
-                // and should not be set from the DTO when creating/updating an entity.
-                // If you need to set them, uncomment the lines below and ensure business logic allows it.
-                // CreatedDate = dto.CreatedDate,
-                // ModifiedDate = dto.ModifiedDate,
-                CustomerId = dto.CustomerId,
-                EmployeeId = dto.EmployeeId,
                 FilePath = dto.FilePath,
                 Name = dto.Name,
                 Description = dto.Description,
@@ -61,17 +50,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
 
         public void Map(DocumentDto dto, Document entity)
         {
-            entity.Id = dto.Id; // Be cautious mapping Id back if it's auto-generated
             entity.IsActive = dto.IsActive;
-            // CreatedBy, LastModifiedBy, CreatedDate, ModifiedDate are usually managed by the system/BaseEntity logic
-            // and not directly mapped from DTO in an update operation.
-            // If you have specific needs to update them from a DTO, uncomment and adjust as necessary.
-            // entity.CreatedBy = dto.CreatedBy;
-            // entity.LastModifiedBy = dto.LastModifiedBy;
-            // entity.CreatedDate = dto.CreatedDate;
-            // entity.ModifiedDate = dto.ModifiedDate;
-            entity.CustomerId = dto.CustomerId;
-            entity.EmployeeId = dto.EmployeeId;
             entity.FilePath = dto.FilePath;
             entity.Name = dto.Name;
             entity.Description = dto.Description;
@@ -87,8 +66,6 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             dto.LastModifiedBy = entity.LastModifiedBy;
             dto.CreatedDate = entity.CreatedDate;
             dto.ModifiedDate = entity.ModifiedDate;
-            dto.CustomerId = entity.CustomerId;
-            dto.EmployeeId = entity.EmployeeId;
             dto.FilePath = entity.FilePath;
             dto.Name = entity.Name;
             dto.Description = entity.Description;

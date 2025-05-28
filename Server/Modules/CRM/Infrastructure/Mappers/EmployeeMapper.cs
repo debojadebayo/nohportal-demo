@@ -23,11 +23,12 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Postcode = entity.Postcode,
             Email = entity.Email,
             Telephone = entity.Telephone,
-            CustomerId = entity.CustomerId,
             JobRole = entity.JobRole,
             Department = entity.Department,
             LineManager = entity.LineManager,
-            Notes = entity.Notes
+            Notes = entity.Notes,
+            SubjectId = entity.SubjectId,
+            TenantId = entity.TenantId
         };
     }
 
@@ -35,12 +36,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
     {
         return new Employee
         {
-            Id = dto.Id,
             IsActive = dto.IsActive,
-            CreatedBy = dto.CreatedBy,
-            LastModifiedBy = dto.LastModifiedBy,
-            CreatedDate = dto.CreatedDate,
-            ModifiedDate = dto.ModifiedDate,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             DOB = dto.DOB,
@@ -50,7 +46,6 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Postcode = dto.Postcode,
             Email = dto.Email,
             Telephone = dto.Telephone,
-            CustomerId = dto.CustomerId,
             JobRole = dto.JobRole,
             Department = dto.Department,
             LineManager = dto.LineManager,
@@ -70,12 +65,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
 
     public void Map(EmployeeDto dto, Employee entity)
     {
-        entity.Id = dto.Id;
         entity.IsActive = dto.IsActive;
-        entity.CreatedBy = dto.CreatedBy;
-        entity.LastModifiedBy = dto.LastModifiedBy;
-        entity.CreatedDate = dto.CreatedDate;
-        entity.ModifiedDate = dto.ModifiedDate;
         entity.FirstName = dto.FirstName;
         entity.LastName = dto.LastName;
         entity.DOB = dto.DOB;
@@ -85,7 +75,6 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         entity.Postcode = dto.Postcode;
         entity.Email = dto.Email;
         entity.Telephone = dto.Telephone;
-        entity.CustomerId = dto.CustomerId;
         entity.JobRole = dto.JobRole;
         entity.Department = dto.Department;
         entity.LineManager = dto.LineManager;
@@ -109,11 +98,12 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         dto.Postcode = entity.Postcode;
         dto.Email = entity.Email;
         dto.Telephone = entity.Telephone;
-        dto.CustomerId = entity.CustomerId;
         dto.JobRole = entity.JobRole;
         dto.Department = entity.Department;
         dto.LineManager = entity.LineManager;
         dto.Notes = entity.Notes;
+        dto.SubjectId = entity.SubjectId;
+        dto.TenantId = entity.TenantId;
     }
 
     public void Map(IEnumerable<EmployeeDto> dtos, IEnumerable<Employee> entities)

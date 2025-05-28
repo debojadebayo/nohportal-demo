@@ -27,17 +27,12 @@ public class ContractMapper : IMapper<Contract, ContractDto>
     {
         return new Contract
         {
-            Id = dto.Id,
             Reference = dto.Reference,
             Notes = dto.Notes,
             StartTime = dto.StartTime,
             EndTime = dto.EndTime,
             Products = new HashSet<Product>(dto.Products.Select(p => new ProductMapper().Map(p))),
             IsActive = dto.IsActive,
-            CreatedBy = dto.CreatedBy,
-            LastModifiedBy = dto.LastModifiedBy,
-            CreatedDate = dto.CreatedDate,
-            ModifiedDate = dto.ModifiedDate,
             RepresentativeId = dto.RepresentativeId
         };
     }
@@ -60,15 +55,12 @@ public class ContractMapper : IMapper<Contract, ContractDto>
         entity.EndTime = dto.EndTime;
         entity.Products = new HashSet<Product>(dto.Products.Select(p => new ProductMapper().Map(p)));
         entity.IsActive = dto.IsActive;
-        entity.CreatedBy = dto.CreatedBy;
-        entity.LastModifiedBy = dto.LastModifiedBy;
-        entity.CreatedDate = dto.CreatedDate;
-        entity.ModifiedDate = dto.ModifiedDate;
         entity.RepresentativeId = dto.RepresentativeId;
     }
 
     public void Map(Contract entity, ContractDto dto)
     {
+        dto.Id = entity.Id;
         dto.Reference = entity.Reference;
         dto.Notes = entity.Notes;
         dto.StartTime = entity.StartTime;

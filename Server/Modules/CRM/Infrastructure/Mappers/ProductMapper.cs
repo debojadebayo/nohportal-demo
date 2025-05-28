@@ -25,16 +25,11 @@ public class ProductMapper : IMapper<Product, ProductDto>
     {
         return new Product
         {
-            Id = dto.Id,
             ProductType = new ProductTypeMapper().Map(dto.ProductType),
             Price = dto.Price,
             StartTime = dto.StartTime,
             EndTime = dto.EndTime,
-            IsActive = dto.IsActive,
-            CreatedBy = dto.CreatedBy,
-            LastModifiedBy = dto.LastModifiedBy,
-            CreatedDate = dto.CreatedDate,
-            ModifiedDate = dto.ModifiedDate
+            IsActive = dto.IsActive
         };
     }
 
@@ -55,10 +50,6 @@ public class ProductMapper : IMapper<Product, ProductDto>
         entity.StartTime = dto.StartTime;
         entity.EndTime = dto.EndTime;
         entity.IsActive = dto.IsActive;
-        entity.CreatedBy = dto.CreatedBy;
-        entity.LastModifiedBy = dto.LastModifiedBy;
-        entity.CreatedDate = dto.CreatedDate;
-        entity.ModifiedDate = dto.ModifiedDate;
     }
 
     public void Map(Product entity, ProductDto dto)

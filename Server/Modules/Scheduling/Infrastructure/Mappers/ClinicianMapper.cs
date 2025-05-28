@@ -36,7 +36,6 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
     {
         return new Clinician
         {
-            Id = dto.Id,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             Telephone = dto.Telephone,
@@ -46,12 +45,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             LicenceNumber = dto.LicenceNumber,
             AvatarImage = dto.AvatarImage,
             AvatarTitle = dto.AvatarTitle,
-            AvatarDescription = dto.AvatarDescription,
-            // Schedules mapping can be handled with a ScheduleMapper if needed
-            CreatedBy = dto.CreatedBy,
-            LastModifiedBy = dto.LastModifiedBy,
-            CreatedDate = dto.CreatedDate,
-            ModifiedDate = dto.ModifiedDate
+            AvatarDescription = dto.AvatarDescription
         };
     }
 
@@ -67,7 +61,6 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
 
     public void Map(ClinicianDto dto, Clinician entity)
     {
-        entity.Id = dto.Id;
         entity.FirstName = dto.FirstName;
         entity.LastName = dto.LastName;
         entity.Telephone = dto.Telephone;
@@ -78,11 +71,6 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         entity.AvatarImage = dto.AvatarImage;
         entity.AvatarTitle = dto.AvatarTitle;
         entity.AvatarDescription = dto.AvatarDescription;
-        // Schedules mapping can be handled with a ScheduleMapper if needed
-        entity.CreatedBy = dto.CreatedBy;
-        entity.LastModifiedBy = dto.LastModifiedBy;
-        entity.CreatedDate = dto.CreatedDate;
-        entity.ModifiedDate = dto.ModifiedDate;
     }
 
     public void Map(Clinician entity, ClinicianDto dto)
