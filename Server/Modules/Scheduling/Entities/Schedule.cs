@@ -4,11 +4,9 @@ using Server.Modules.CommonModule.Interfaces;
 
 namespace Server.Modules.Scheduling.Entities
 {
-	public class Schedule : BaseEntity<Schedule>, IEntity, IFilterByEmployee, IFilterByCustomer
+	public class Schedule : BaseEntity<Schedule>, IEntity, INOHEntity, IFilterByEmployee, IFilterByCustomer
 	{
-		public long CustomerId { get; set; }
 		public long ReferralId { get; set; }
-		public long EmployeeId { get; set; }
 		public long ClinicianId { get; set; }
 		public long ProductId { get; set; }
 		public ScheduleStatusEnum Status { get; set; }
@@ -16,5 +14,27 @@ namespace Server.Modules.Scheduling.Entities
 		public DateTime? End { get; set; }
 		public required string Title { get; set; }
 		public required string Description { get; set; }
+		public long CustomerId
+		{
+			get
+			{
+				return TenantId;
+			}
+			set
+			{
+				TenantId = value;
+			}
+		}
+		public long EmployeeId
+		{
+			get
+			{
+				return SubjectId;
+			}
+			set
+			{
+				SubjectId = value;
+			}
+		}
 	}
 }

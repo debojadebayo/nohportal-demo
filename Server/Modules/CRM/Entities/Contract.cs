@@ -1,8 +1,9 @@
 ﻿using ComposedHealthBase.Server.Entities;
+using Server.Modules.CommonModule.Interfaces;
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Contract : BaseEntity<Contract>, IEntity
+	public class Contract : BaseEntity<Contract>, IEntity, INOHEntity
 	{
 		public required string Reference { get; set; }
 		public string? Notes { get; set; }
@@ -10,5 +11,27 @@ namespace Server.Modules.CRM.Entities
 		public DateTime? StartTime { get; set; }
 		public DateTime? EndTime { get; set; }
 		public HashSet<Product> Products { get; set; } = new HashSet<Product>();
+		public long CustomerId
+		{
+			get
+			{
+				return TenantId;
+			}
+			set
+			{
+				TenantId = value;
+			}
+		}
+		public long EmployeeId
+		{
+			get
+			{
+				return SubjectId;
+			}
+			set
+			{
+				SubjectId = value;
+			}
+		}
 	}
 }

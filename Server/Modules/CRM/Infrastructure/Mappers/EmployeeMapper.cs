@@ -32,24 +32,32 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         };
     }
 
-    public Employee Map(EmployeeDto dto)
+    public Employee MapWithKeycloakId(EmployeeDto dto, Guid keycloakId)
     {
         return new Employee
         {
+            Id = dto.Id,
             IsActive = dto.IsActive,
+            CreatedBy = dto.CreatedBy,
+            LastModifiedBy = dto.LastModifiedBy,
+            CreatedDate = dto.CreatedDate,
+            ModifiedDate = dto.ModifiedDate,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             DOB = dto.DOB,
             Address1 = dto.Address1,
-            Address2 = dto.Address2,
-            Address3 = dto.Address3,
+            Address2 = dto.Address2!,
+            Address3 = dto.Address3!,
             Postcode = dto.Postcode,
             Email = dto.Email,
             Telephone = dto.Telephone,
             JobRole = dto.JobRole,
             Department = dto.Department,
             LineManager = dto.LineManager,
-            Notes = dto.Notes
+            Notes = dto.Notes,
+            SubjectId = dto.SubjectId,
+            TenantId = dto.TenantId,
+            KeycloakId = keycloakId
         };
     }
 
@@ -106,23 +114,8 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         dto.TenantId = entity.TenantId;
     }
 
-    public void Map(IEnumerable<EmployeeDto> dtos, IEnumerable<Employee> entities)
+    public Employee Map(EmployeeDto dto)
     {
-        var dtosArray = dtos.ToArray();
-        var entitiesArray = entities.ToArray();
-        for (int i = 0; i < Math.Min(dtosArray.Length, entitiesArray.Length); i++)
-        {
-            Map(dtosArray[i], entitiesArray[i]);
-        }
-    }
-
-    public void Map(IEnumerable<Employee> entities, IEnumerable<EmployeeDto> dtos)
-    {
-        var dtosArray = dtos.ToArray();
-        var entitiesArray = entities.ToArray();
-        for (int i = 0; i < Math.Min(dtosArray.Length, entitiesArray.Length); i++)
-        {
-            Map(entitiesArray[i], dtosArray[i]);
-        }
+        throw new NotImplementedException("Mapping from DTO to Entity without KeycloakId is not supported.");
     }
 }
