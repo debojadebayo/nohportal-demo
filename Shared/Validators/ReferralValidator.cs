@@ -7,8 +7,6 @@ namespace Shared.Validators
     {
         public ReferralValidator()
         {
-            RuleFor(x => x.TenantId).GreaterThan(0);
-            RuleFor(x => x.SubjectId).GreaterThan(0);
             RuleFor(x => x.ReferralDetails).NotEmpty();
         }
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>

@@ -4,9 +4,9 @@ using Shared.DTOs.CRM;
 
 namespace Server.Modules.CRM.Infrastructure.Mappers
 {
-    public class DocumentMapper : IMapper<Document, DocumentDto>
+    public class EmployeeDocumentMapper : IMapper<EmployeeDocument, DocumentDto>
     {
-        public DocumentDto Map(Document entity)
+        public DocumentDto Map(EmployeeDocument entity)
         {
             return new DocumentDto
             {
@@ -24,9 +24,9 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             };
         }
 
-        public Document Map(DocumentDto dto)
+        public EmployeeDocument Map(DocumentDto dto)
         {
-            return new Document
+            return new EmployeeDocument
             {
                 IsActive = dto.IsActive,
                 CreatedBy = dto.CreatedBy,
@@ -38,17 +38,17 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             };
         }
 
-        public IEnumerable<DocumentDto> Map(IEnumerable<Document> entities)
+        public IEnumerable<DocumentDto> Map(IEnumerable<EmployeeDocument> entities)
         {
             return entities.Select(Map);
         }
 
-        public IEnumerable<Document> Map(IEnumerable<DocumentDto> dtos)
+        public IEnumerable<EmployeeDocument> Map(IEnumerable<DocumentDto> dtos)
         {
             return dtos.Select(Map);
         }
 
-        public void Map(DocumentDto dto, Document entity)
+        public void Map(DocumentDto dto, EmployeeDocument entity)
         {
             entity.IsActive = dto.IsActive;
             entity.FilePath = dto.FilePath;
@@ -58,7 +58,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             entity.BlobName = dto.BlobName;
         }
 
-        public void Map(Document entity, DocumentDto dto)
+        public void Map(EmployeeDocument entity, DocumentDto dto)
         {
             dto.Id = entity.Id;
             dto.IsActive = entity.IsActive;
@@ -73,7 +73,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             dto.BlobName = entity.BlobName;
         }
 
-        public void Map(IEnumerable<DocumentDto> dtos, IEnumerable<Document> entities)
+        public void Map(IEnumerable<DocumentDto> dtos, IEnumerable<EmployeeDocument> entities)
         {
             var dtosArray = dtos.ToArray();
             var entitiesArray = entities.ToArray();
@@ -83,7 +83,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             }
         }
 
-        public void Map(IEnumerable<Document> entities, IEnumerable<DocumentDto> dtos)
+        public void Map(IEnumerable<EmployeeDocument> entities, IEnumerable<DocumentDto> dtos)
         {
             var dtosArray = dtos.ToArray();
             var entitiesArray = entities.ToArray();

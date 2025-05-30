@@ -21,5 +21,6 @@ namespace Shared.DTOs.CRM
         public string LineManager { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
         public string DisplayName => $"{FirstName} {LastName}";
+        public long CustomerId { get; set; }
     }
 }

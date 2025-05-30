@@ -2,13 +2,13 @@
 {
 	public interface IEntity
 	{
-		public long Id { get; set; }
-		public bool IsActive { get; set; }
-		public long CreatedBy { get; set; }
-		public long LastModifiedBy { get; set; }
-		public DateTime CreatedDate { get; set; }
-		public DateTime ModifiedDate { get; set; }
-		public long SubjectId { get; set; }
-		public long TenantId { get; set; }
+		long Id { get; set; }
+		bool IsActive { get; set; }
+		long CreatedBy { get; set; }
+		long LastModifiedBy { get; set; }
+		DateTime CreatedDate { get; set; }
+		DateTime ModifiedDate { get; set; }
+		long SubjectId { get; set; }
+		long TenantId { get; set; }
 	}
 }

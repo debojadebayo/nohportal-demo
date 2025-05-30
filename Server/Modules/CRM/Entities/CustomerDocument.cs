@@ -3,7 +3,7 @@ using Server.Modules.CommonModule.Interfaces;
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Document : BaseEntity<Document>, IEntity, INOHEntity, IFilterByEmployee, IFilterByCustomer
+	public class CustomerDocument : BaseEntity<CustomerDocument>, IEntity, INOHEntity, IDocument
 	{
 		public required string FilePath { get; set; }
 		public required string BlobContainerName { get; set; }

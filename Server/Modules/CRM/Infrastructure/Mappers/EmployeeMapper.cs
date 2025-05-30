@@ -27,8 +27,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Department = entity.Department,
             LineManager = entity.LineManager,
             Notes = entity.Notes,
-            SubjectId = entity.SubjectId,
-            TenantId = entity.TenantId
+            CustomerId = entity.CustomerId
         };
     }
 
@@ -55,9 +54,8 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Department = dto.Department,
             LineManager = dto.LineManager,
             Notes = dto.Notes,
-            SubjectId = dto.SubjectId,
-            TenantId = dto.TenantId,
-            KeycloakId = keycloakId
+            KeycloakId = keycloakId,
+            CustomerId = dto.CustomerId
         };
     }
 
@@ -87,6 +85,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         entity.Department = dto.Department;
         entity.LineManager = dto.LineManager;
         entity.Notes = dto.Notes;
+        entity.CustomerId = dto.CustomerId;
     }
 
     public void Map(Employee entity, EmployeeDto dto)
@@ -110,8 +109,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         dto.Department = entity.Department;
         dto.LineManager = entity.LineManager;
         dto.Notes = entity.Notes;
-        dto.SubjectId = entity.SubjectId;
-        dto.TenantId = entity.TenantId;
+        dto.CustomerId = entity.CustomerId;
     }
 
     public Employee Map(EmployeeDto dto)

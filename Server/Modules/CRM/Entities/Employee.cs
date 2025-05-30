@@ -19,6 +19,7 @@ namespace Server.Modules.CRM.Entities
         public required string LineManager { get; set; }
         public string Notes { get; set; } = string.Empty;
         public required Guid KeycloakId { get; set; }
+        public HashSet<EmployeeDocument> Documents { get; set; } = new();
         public long CustomerId
         {
             get

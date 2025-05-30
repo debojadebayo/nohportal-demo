@@ -56,10 +56,6 @@ namespace Shared.Validators
                 .Matches(@"^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$")
                 .WithMessage("Telephone must be a valid UK mobile number.");
 
-            // CustomerId: required
-            RuleFor(e => e.TenantId)
-                .NotEmpty().WithMessage("Company is required.");
-
             // JobRole: required, must be in allowed list
             RuleFor(e => e.JobRole)
                 .NotEmpty().WithMessage("Job Role is required.");

@@ -107,7 +107,8 @@
         { 
             FilePath = "placeholder",  // Temporary placeholder
             Name = "", 
-            Description = "" 
+            Description = "",
+            TenantId = 20
         };
         _fileToUpload = null;
         _uploadDocumentDialogOpen = true;
@@ -122,7 +123,7 @@
         if (_fileToUpload == null || string.IsNullOrWhiteSpace(_newDocument.Name))
             return;
 
-        await DocumentUploadService.UploadDocument(new Tuple<IDocumentDto, IBrowserFile>(_newDocument, _fileToUpload), 0, CancellationToken.None);
+        await DocumentUploadService.UploadDocument(new Tuple<IDocumentDto, IBrowserFile>(_newDocument, _fileToUpload), 20, CancellationToken.None);
         documents = (await DocumentLookupService.GetAllItems(CancellationToken.None)).ToList();
         _uploadDocumentDialogOpen = false;
         StateHasChanged();
