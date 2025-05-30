@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Modules.CRM.Infrastructure.Database;
@@ -11,9 +12,11 @@ using Server.Modules.CRM.Infrastructure.Database;
 namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(CRMDbContext))]
-    partial class CRMDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250530125302_MakeEmployeeChildOfCustomer")]
+    partial class MakeEmployeeChildOfCustomer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -768,6 +771,9 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long?>("ContractId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("CreatedBy")
                         .HasColumnType("bigint");
 
@@ -809,7 +815,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("ContractId");
 
                     b.HasIndex("ProductTypeId");
 
@@ -1440,11 +1446,9 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Server.Modules.CRM.Entities.Product", b =>
                 {
-                    b.HasOne("Server.Modules.CRM.Entities.Customer", null)
+                    b.HasOne("Server.Modules.CRM.Entities.Contract", null)
                         .WithMany("Products")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ContractId");
 
                     b.HasOne("Server.Modules.CRM.Entities.ProductType", "ProductType")
                         .WithMany()
@@ -1455,6 +1459,11 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Navigation("ProductType");
                 });
 
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Contract", b =>
+                {
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("Server.Modules.CRM.Entities.Customer", b =>
                 {
                     b.Navigation("Contracts");
@@ -1462,8 +1471,6 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Navigation("Documents");
 
                     b.Navigation("Employees");
-
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

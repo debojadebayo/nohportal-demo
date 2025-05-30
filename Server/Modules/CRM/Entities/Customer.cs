@@ -18,7 +18,9 @@ namespace Server.Modules.CRM.Entities
 		public required string InvoiceEmail { get; set; }
 		public string Notes { get; set; } = string.Empty;
 		public HashSet<Contract> Contracts { get; set; } = new();
+		public HashSet<Product> Products { get; set; } = new();
 		public HashSet<Document> Documents { get; set; } = new();
+		public HashSet<Employee> Employees { get; set; } = new();
 		public required Guid KeycloakId { get; set; }
 		public long CustomerId
 		{

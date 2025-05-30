@@ -26,7 +26,7 @@ namespace Server.Modules.CRM.Infrastructure.Queries
         {
             var customer = await _dbContext.Customers
                 .Include(c => c.Contracts)
-                    .ThenInclude(co => co.Products) // Include Products within Contracts
+                .Include(c => c.Products)
                 .FirstOrDefaultAsync(c => c.Id == _customerId);
 
             if (customer == null || customer.Contracts == null)

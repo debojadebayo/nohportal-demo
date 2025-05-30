@@ -13,7 +13,6 @@ public class ContractMapper : IMapper<Contract, ContractDto>
             Notes = entity.Notes,
             StartTime = entity.StartTime,
             EndTime = entity.EndTime,
-            Products = new HashSet<ProductDto>(entity.Products.Select(p => new ProductMapper().Map(p))),
             IsActive = entity.IsActive,
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
@@ -31,7 +30,6 @@ public class ContractMapper : IMapper<Contract, ContractDto>
             Notes = dto.Notes,
             StartTime = dto.StartTime,
             EndTime = dto.EndTime,
-            Products = new HashSet<Product>(dto.Products.Select(p => new ProductMapper().Map(p))),
             IsActive = dto.IsActive,
             RepresentativeId = dto.RepresentativeId
         };
@@ -53,7 +51,6 @@ public class ContractMapper : IMapper<Contract, ContractDto>
         entity.Notes = dto.Notes;
         entity.StartTime = dto.StartTime;
         entity.EndTime = dto.EndTime;
-        entity.Products = new HashSet<Product>(dto.Products.Select(p => new ProductMapper().Map(p)));
         entity.IsActive = dto.IsActive;
         entity.RepresentativeId = dto.RepresentativeId;
     }
@@ -65,7 +62,6 @@ public class ContractMapper : IMapper<Contract, ContractDto>
         dto.Notes = entity.Notes;
         dto.StartTime = entity.StartTime;
         dto.EndTime = entity.EndTime;
-        dto.Products = new HashSet<ProductDto>(entity.Products.Select(p => new ProductMapper().Map(p)));
         dto.IsActive = entity.IsActive;
         dto.CreatedBy = entity.CreatedBy;
         dto.LastModifiedBy = entity.LastModifiedBy;
