@@ -1,9 +1,9 @@
 ﻿using ComposedHealthBase.Server.Entities;
-using Server.Modules.CommonModule.Interfaces;
+
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Product : BaseEntity<Product>, IEntity, INOHEntity
+	public class Product : BaseEntity<Product>, IEntity
 	{
 		public required ProductType ProductType { get; set; }
 		public decimal Price { get; set; }
@@ -18,17 +18,6 @@ namespace Server.Modules.CRM.Entities
 			set
 			{
 				TenantId = value;
-			}
-		}
-		public long EmployeeId
-		{
-			get
-			{
-				return SubjectId;
-			}
-			set
-			{
-				SubjectId = value;
 			}
 		}
 	}

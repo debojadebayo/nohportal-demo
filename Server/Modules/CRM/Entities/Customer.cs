@@ -1,9 +1,9 @@
 ﻿using ComposedHealthBase.Server.Entities;
-using Server.Modules.CommonModule.Interfaces;
+
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Customer : BaseEntity<Customer>, IEntity, INOHEntity
+	public class Customer : BaseEntity<Customer>, IEntity
 	{
 		public required string Name { get; set; }
 		public required string Telephone { get; set; }
@@ -21,6 +21,7 @@ namespace Server.Modules.CRM.Entities
 		public HashSet<Product> Products { get; set; } = new();
 		public HashSet<CustomerDocument> Documents { get; set; } = new();
 		public HashSet<Employee> Employees { get; set; } = new();
+		public HashSet<Manager> Managers { get; set; } = new();
 		public required Guid KeycloakId { get; set; }
 		public long CustomerId
 		{
@@ -31,17 +32,6 @@ namespace Server.Modules.CRM.Entities
 			set
 			{
 				TenantId = value;
-			}
-		}
-		public long EmployeeId
-		{
-			get
-			{
-				return SubjectId;
-			}
-			set
-			{
-				SubjectId = value;
 			}
 		}
 	}

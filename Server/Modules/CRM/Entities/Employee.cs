@@ -1,9 +1,9 @@
 using ComposedHealthBase.Server.Entities;
-using Server.Modules.CommonModule.Interfaces;
+
 
 namespace Server.Modules.CRM.Entities
 {
-    public class Employee : BaseEntity<Employee>, IEntity, INOHEntity
+    public class Employee : BaseEntity<Employee>, IEntity
     {
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
@@ -29,17 +29,6 @@ namespace Server.Modules.CRM.Entities
             set
             {
                 TenantId = value;
-            }
-        }
-        public long EmployeeId
-        {
-            get
-            {
-                return SubjectId;
-            }
-            set
-            {
-                SubjectId = value;
             }
         }
     }

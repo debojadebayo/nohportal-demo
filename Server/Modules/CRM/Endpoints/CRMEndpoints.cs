@@ -11,7 +11,7 @@ using Server.Modules.CRM.Infrastructure.Queries;
 using ComposedHealthBase.Server.Queries;
 using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Database;
-using Server.Modules.CommonModule.Interfaces;
+
 using ComposedHealthBase.Shared.DTOs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs;
@@ -116,51 +116,5 @@ namespace Server.Modules.CRM.Endpoints
 	}
 	public class CustomerDocumentEndpoints : DocumentEndpoints<CustomerDocument, DocumentDto, CRMDbContext>, IEndpoints { }
 	public class EmployeeDocumentEndpoints : DocumentEndpoints<EmployeeDocument, DocumentDto, CRMDbContext>, IEndpoints { }
-	public class ManagerEndpoints : CommonCRMEndpoints<Manager, Shared.DTOs.CRM.ManagerDto, CRMDbContext>, IEndpoints { }
-	//public class DocumentEndpoints : CommonCRMEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints { } //This line is now handled by the specific DocumentEndpoints class
-	public abstract class CommonCRMEndpoints<T, TDto, CRMDbContext> : BaseEndpoints<T, TDto, CRMDbContext>
-		where T : BaseEntity<T>, IFilterByEmployee, IFilterByCustomer
-		where TDto : IDto
-		where CRMDbContext : IDbContext<CRMDbContext>
-	{
-		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
-		{
-			endpoints = base.MapEndpoints(endpoints);
-
-			var entityName = typeof(T).Name.ToLower();
-
-			var group = endpoints.MapGroup($"/api/{entityName}");
-
-			group.MapGet("/GetAllByCustomerId/{customerId}", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<T, TDto> mapper, long customerId) => GetAllByCustomerId(dbContext, mapper, customerId));
-			group.MapGet("/GetAllByEmployeeId/{employeeId}", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<T, TDto> mapper, long employeeId) => GetAllByEmployeeId(dbContext, mapper, employeeId));
-
-			return endpoints;
-		}
-		protected async Task<IResult> GetAllByCustomerId(CRMDbContext dbContext, IMapper<T, TDto> mapper, long customerId)
-		{
-			try
-			{
-				var allEntities = await new GetByPredicateQuery<T, TDto, CRMDbContext>(dbContext, mapper).Handle(s => s.CustomerId == customerId);
-				return Results.Ok(allEntities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving records.");
-			}
-		}
-		protected async Task<IResult> GetAllByEmployeeId(CRMDbContext dbContext, IMapper<T, TDto> mapper, long employeeId)
-		{
-			try
-			{
-				var allEntities = await new GetByPredicateQuery<T, TDto, CRMDbContext>(dbContext, mapper).Handle(s => s.EmployeeId == employeeId);
-				return Results.Ok(allEntities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving records.");
-			}
-		}
-	}
+	public class ManagerEndpoints : BaseEndpoints<Manager, ManagerDto, CRMDbContext>, IEndpoints { }
 }

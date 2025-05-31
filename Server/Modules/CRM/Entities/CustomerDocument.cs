@@ -1,9 +1,9 @@
 using ComposedHealthBase.Server.Entities;
-using Server.Modules.CommonModule.Interfaces;
+
 
 namespace Server.Modules.CRM.Entities
 {
-	public class CustomerDocument : BaseEntity<CustomerDocument>, IEntity, INOHEntity, IDocument
+	public class CustomerDocument : BaseEntity<CustomerDocument>, IEntity, IDocument
 	{
 		public required string FilePath { get; set; }
 		public required string BlobContainerName { get; set; }
@@ -19,17 +19,6 @@ namespace Server.Modules.CRM.Entities
 			set
 			{
 				TenantId = value;
-			}
-		}
-		public long EmployeeId
-		{
-			get
-			{
-				return SubjectId;
-			}
-			set
-			{
-				SubjectId = value;
 			}
 		}
 	}
