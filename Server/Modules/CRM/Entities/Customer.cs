@@ -1,5 +1,6 @@
 ﻿using ComposedHealthBase.Server.Entities;
 
+
 namespace Server.Modules.CRM.Entities
 {
 	public class Customer : BaseEntity<Customer>, IEntity
@@ -15,8 +16,23 @@ namespace Server.Modules.CRM.Entities
 		public required string Website { get; set; }
 		public required string Email { get; set; }
 		public required string InvoiceEmail { get; set; }
-		public string? Notes { get; set; }
+		public string Notes { get; set; } = string.Empty;
 		public HashSet<Contract> Contracts { get; set; } = new();
-		public HashSet<Document> Documents { get; set; } = new();
+		public HashSet<Product> Products { get; set; } = new();
+		public HashSet<CustomerDocument> Documents { get; set; } = new();
+		public HashSet<Employee> Employees { get; set; } = new();
+		public HashSet<Manager> Managers { get; set; } = new();
+		public required Guid KeycloakId { get; set; }
+		public long CustomerId
+		{
+			get
+			{
+				return TenantId;
+			}
+			set
+			{
+				TenantId = value;
+			}
+		}
 	}
 }

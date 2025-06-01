@@ -1,6 +1,7 @@
 @using MudBlazor
 @using Shared.DTOs.CRM
 
+
 <MudForm Model="@model" @ref="@form" ValidationDelay="0">
     <MudGrid>
         <MudItem xs="12" sm="6">
@@ -19,7 +20,7 @@
 </MudForm>
 
 @code {
-    [Inject] ISnackbar Snackbar { get; set; } = default!;
+    
     MudForm form = default!;
     ProductDto model = new ProductDto { ProductType = new ProductTypeDto{ Name = "", Description= "", ChargeCode = ""} };
     private async Task Submit()
@@ -27,7 +28,7 @@
         await form.Validate();
         if (form.IsValid)
         {
-            Snackbar.Add("Submitted!");
+            @* SnackbarService.Add("Submitted!"); *@
         }
     }
 }

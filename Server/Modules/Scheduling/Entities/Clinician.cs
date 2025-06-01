@@ -1,4 +1,5 @@
 ﻿using ComposedHealthBase.Server.Entities;
+
 using Shared.Enums;
 
 namespace Server.Modules.Scheduling.Entities

@@ -1,18 +1,12 @@
 using ComposedHealthBase.Shared.DTOs;
 using Shared.DTOs;
 using Shared.Interfaces;
+using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.CRM
 {
-    public class EmployeeDto : IDto, INotesTab
+    public class EmployeeDto : BaseDto<EmployeeDto>, IDto, INotesTab, ILazyLookup
     {
-        public long Id { get; set; }
-        public bool IsActive { get; set; }
-        public long CreatedBy { get; set; }
-        public long LastModifiedBy { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
-        public long TenantId { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public DateTime? DOB { get; set; }
@@ -22,10 +16,11 @@ namespace Shared.DTOs.CRM
         public string Postcode { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Telephone { get; set; } = string.Empty;
-        public long CustomerId { get; set; }
         public string JobRole { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
         public string LineManager { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
+        public string DisplayName => $"{FirstName} {LastName} - Id: {Id}";
+        public long CustomerId { get; set; }
     }
 }

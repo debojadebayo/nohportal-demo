@@ -28,17 +28,12 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
     {
         return new Schedule
         {
-            Id = dto.Id,
             CustomerId = dto.CustomerId,
             ReferralId = dto.ReferralId,
             EmployeeId = dto.EmployeeId,
             ClinicianId = dto.ClinicianId,
             Start = dto.StartTime,
             End = dto.EndTime,
-            CreatedBy = dto.CreatedBy,
-            LastModifiedBy = dto.LastModifiedBy,
-            CreatedDate = dto.CreatedDate,
-            ModifiedDate = dto.ModifiedDate,
             Title = dto.Title,
             Description = dto.Description,
         };
@@ -56,17 +51,12 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
 
     public void Map(ScheduleDto dto, Schedule entity)
     {
-        entity.Id = dto.Id;
         entity.CustomerId = dto.CustomerId;
         entity.ReferralId = dto.ReferralId;
         entity.EmployeeId = dto.EmployeeId;
         entity.ClinicianId = dto.ClinicianId;
         entity.Start = dto.StartTime;
         entity.End = dto.EndTime;
-        entity.CreatedBy = dto.CreatedBy;
-        entity.LastModifiedBy = dto.LastModifiedBy;
-        entity.CreatedDate = dto.CreatedDate;
-        entity.ModifiedDate = dto.ModifiedDate;
         entity.Title = dto.Title;
         entity.Description = dto.Description;
     }

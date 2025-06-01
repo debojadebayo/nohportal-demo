@@ -1,0 +1,42 @@
+using System.Linq.Expressions;
+using ComposedHealthBase.Server.Database;
+using ComposedHealthBase.Server.Entities;
+using ComposedHealthBase.Server.Mappers;
+using ComposedHealthBase.Shared.DTOs;
+using Microsoft.EntityFrameworkCore;
+
+namespace ComposedHealthBase.Server.Queries
+{
+	public interface IGetAllByTenantIdsQuery<T, TDto, TContext>
+	{
+		Task<IEnumerable<TDto>> Handle(List<long> subjectIds, params Expression<Func<T, object>>[]? includes);
+	}
+	public class GetAllByTenantIdsQuery<T, TDto, TContext> : IGetAllByTenantIdsQuery<T, TDto, TContext>
+		where T : BaseEntity<T>
+		where TDto : IDto
+		where TContext : IDbContext<TContext>
+	{
+		private readonly IDbContext<TContext> _dbContext;
+		private readonly IMapper<T, TDto> _mapper;
+
+		public GetAllByTenantIdsQuery(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper)
+		{
+			_dbContext = dbContext;
+			_mapper = mapper;
+		}
+
+		public async Task<IEnumerable<TDto>> Handle(List<long> tenantIds, params Expression<Func<T, object>>[]? includes)
+		{
+			var query = _dbContext.Set<T>().AsNoTracking().Where(e => tenantIds.Contains(e.TenantId));
+			if (includes != null && includes.Length > 0)
+			{
+				foreach (var include in includes)
+				{
+					query = query.Include(include);
+				}
+			}
+			var entities = await query.ToListAsync();
+			return entities.Select(e => _mapper.Map(e));
+		}
+	}
+}

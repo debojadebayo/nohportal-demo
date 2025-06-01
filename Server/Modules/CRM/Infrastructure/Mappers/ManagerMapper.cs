@@ -10,7 +10,6 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             return new ManagerDto
             {
                 Id = entity.Id,
-                CustomerId = entity.CustomerId,
                 Name = entity.Name,
                 Email = entity.Email,
                 Phone = entity.Phone,
@@ -22,8 +21,6 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
         {
             return new Manager
             {
-                Id = dto.Id,
-                CustomerId = dto.CustomerId,
                 Name = dto.Name,
                 Email = dto.Email,
                 Phone = dto.Phone,

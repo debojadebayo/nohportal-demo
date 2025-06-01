@@ -37,7 +37,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long?>("CustomerId")
+                    b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("EndTime")
@@ -96,6 +96,9 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -111,6 +114,9 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid>("KeycloakId")
+                        .HasColumnType("uuid");
+
                     b.Property<long>("LastModifiedBy")
                         .HasColumnType("bigint");
 
@@ -122,6 +128,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("NumberOfEmployees")
@@ -164,10 +171,12 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address = "1 Acme Street, London",
                             CreatedBy = 1L,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 0L,
                             Email = "info@acme.example.com",
                             Industry = "Technology",
                             InvoiceEmail = "accounts@acme.example.com",
                             IsActive = true,
+                            KeycloakId = new Guid("11111111-1111-1111-1111-111111111111"),
                             LastModifiedBy = 1L,
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Acme Corp",
@@ -187,10 +196,12 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address = "2 Beta Road, Manchester",
                             CreatedBy = 1L,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 0L,
                             Email = "contact@beta.example.com",
                             Industry = "Manufacturing",
                             InvoiceEmail = "finance@beta.example.com",
                             IsActive = true,
+                            KeycloakId = new Guid("22222222-2222-2222-2222-222222222222"),
                             LastModifiedBy = 1L,
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Beta Ltd",
@@ -210,10 +221,12 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address = "3 Gamma Avenue, Birmingham",
                             CreatedBy = 1L,
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 0L,
                             Email = "hello@gamma.example.com",
                             Industry = "Logistics",
                             InvoiceEmail = "billing@gamma.example.com",
                             IsActive = true,
+                            KeycloakId = new Guid("33333333-3333-3333-3333-333333333333"),
                             LastModifiedBy = 1L,
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Gamma Inc",
@@ -226,10 +239,35 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Telephone = "03456 789012",
                             TenantId = 0L,
                             Website = "https://gamma.example.com"
+                        },
+                        new
+                        {
+                            Id = 20L,
+                            Address = "First Floor, Swan Buildings, 20 Swan Street, Manchester",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 0L,
+                            Email = "contact@nationoh.co.uk",
+                            Industry = "Occupatioanl Health",
+                            InvoiceEmail = "contact@nationoh.co.uk",
+                            IsActive = true,
+                            KeycloakId = new Guid("44444444-4444-4444-4444-444444444444"),
+                            LastModifiedBy = 1L,
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Name = "Nation Occupational Health",
+                            Notes = "",
+                            NumberOfEmployees = 200,
+                            OHServicesRequired = "Ad hoc assessments",
+                            Postcode = "M4 5JW",
+                            Site = "Birmingham",
+                            SubjectId = 0L,
+                            Telephone = "01147 004 362",
+                            TenantId = 0L,
+                            Website = "https://www.nationoh.co.uk"
                         });
                 });
 
-            modelBuilder.Entity("Server.Modules.CRM.Entities.Document", b =>
+            modelBuilder.Entity("Server.Modules.CRM.Entities.CustomerDocument", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -253,6 +291,419 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("LastModifiedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("SubjectId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TenantId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("CustomerDocuments", "crm");
+                });
+
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Employee", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address1")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address2")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address3")
+                        .HasColumnType("text");
+
+                    b.Property<long>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DOB")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("JobRole")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("KeycloakId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("LastModifiedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LineManager")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long?>("ManagerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Postcode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("SubjectId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Telephone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("TenantId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("ManagerId");
+
+                    b.ToTable("Employees", "crm");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Address1 = "1 Main St",
+                            Address2 = "Apt 1",
+                            Address3 = "",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 1L,
+                            DOB = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Department = "HR",
+                            Email = "alice.smith@example.com",
+                            FirstName = "Alice",
+                            IsActive = true,
+                            JobRole = "Manager",
+                            KeycloakId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            LastModifiedBy = 1L,
+                            LastName = "Smith",
+                            LineManager = "Bob Jones",
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "",
+                            Postcode = "EMP1 1AA",
+                            SubjectId = 0L,
+                            Telephone = "07111 111111",
+                            TenantId = 1L
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Address1 = "2 Main St",
+                            Address2 = "Apt 2",
+                            Address3 = "",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 2L,
+                            DOB = new DateTime(1985, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Department = "IT",
+                            Email = "bob.jones@example.com",
+                            FirstName = "Bob",
+                            IsActive = true,
+                            JobRole = "Engineer",
+                            KeycloakId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            LastModifiedBy = 1L,
+                            LastName = "Jones",
+                            LineManager = "Carol White",
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "",
+                            Postcode = "EMP2 2BB",
+                            SubjectId = 0L,
+                            Telephone = "07222 222222",
+                            TenantId = 2L
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Address1 = "3 Main St",
+                            Address2 = "Apt 3",
+                            Address3 = "",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 3L,
+                            DOB = new DateTime(1992, 3, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Department = "Finance",
+                            Email = "carol.white@example.com",
+                            FirstName = "Carol",
+                            IsActive = true,
+                            JobRole = "Analyst",
+                            KeycloakId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                            LastModifiedBy = 1L,
+                            LastName = "White",
+                            LineManager = "David Black",
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "",
+                            Postcode = "EMP3 3CC",
+                            SubjectId = 0L,
+                            Telephone = "07333 333333",
+                            TenantId = 3L
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Address1 = "4 Main St",
+                            Address2 = "Apt 4",
+                            Address3 = "",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 1L,
+                            DOB = new DateTime(1988, 4, 4, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Department = "Consulting",
+                            Email = "david.black@example.com",
+                            FirstName = "David",
+                            IsActive = true,
+                            JobRole = "Consultant",
+                            KeycloakId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            LastModifiedBy = 1L,
+                            LastName = "Black",
+                            LineManager = "Alice Smith",
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "",
+                            Postcode = "EMP4 4DD",
+                            SubjectId = 0L,
+                            Telephone = "07444 444444",
+                            TenantId = 1L
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Address1 = "5 Main St",
+                            Address2 = "Apt 5",
+                            Address3 = "",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 2L,
+                            DOB = new DateTime(1995, 5, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Department = "Medical",
+                            Email = "eve.green@example.com",
+                            FirstName = "Eve",
+                            IsActive = true,
+                            JobRole = "Nurse",
+                            KeycloakId = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
+                            LastModifiedBy = 1L,
+                            LastName = "Green",
+                            LineManager = "Bob Jones",
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "",
+                            Postcode = "EMP5 5EE",
+                            SubjectId = 0L,
+                            Telephone = "07555 555555",
+                            TenantId = 2L
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            Address1 = "6 Main St",
+                            Address2 = "Apt 6",
+                            Address3 = "",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 3L,
+                            DOB = new DateTime(1983, 6, 6, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Department = "Support",
+                            Email = "frank.blue@example.com",
+                            FirstName = "Frank",
+                            IsActive = true,
+                            JobRole = "Technician",
+                            KeycloakId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
+                            LastModifiedBy = 1L,
+                            LastName = "Blue",
+                            LineManager = "Carol White",
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "",
+                            Postcode = "EMP6 6FF",
+                            SubjectId = 0L,
+                            Telephone = "07666 666666",
+                            TenantId = 3L
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            Address1 = "7 Main St",
+                            Address2 = "Apt 7",
+                            Address3 = "",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 1L,
+                            DOB = new DateTime(1991, 7, 7, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Department = "Advisory",
+                            Email = "grace.brown@example.com",
+                            FirstName = "Grace",
+                            IsActive = true,
+                            JobRole = "Advisor",
+                            KeycloakId = new Guid("11111111-aaaa-aaaa-aaaa-111111111111"),
+                            LastModifiedBy = 1L,
+                            LastName = "Brown",
+                            LineManager = "David Black",
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "",
+                            Postcode = "EMP7 7GG",
+                            SubjectId = 0L,
+                            Telephone = "07777 777777",
+                            TenantId = 1L
+                        },
+                        new
+                        {
+                            Id = 8L,
+                            Address1 = "8 Main St",
+                            Address2 = "Apt 8",
+                            Address3 = "",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 2L,
+                            DOB = new DateTime(1987, 8, 8, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Department = "Logistics",
+                            Email = "henry.gray@example.com",
+                            FirstName = "Henry",
+                            IsActive = true,
+                            JobRole = "Driver",
+                            KeycloakId = new Guid("22222222-bbbb-bbbb-bbbb-222222222222"),
+                            LastModifiedBy = 1L,
+                            LastName = "Gray",
+                            LineManager = "Eve Green",
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "",
+                            Postcode = "EMP8 8HH",
+                            SubjectId = 0L,
+                            Telephone = "07888 888888",
+                            TenantId = 2L
+                        },
+                        new
+                        {
+                            Id = 9L,
+                            Address1 = "9 Main St",
+                            Address2 = "Apt 9",
+                            Address3 = "",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 3L,
+                            DOB = new DateTime(1993, 9, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Department = "Admin",
+                            Email = "ivy.violet@example.com",
+                            FirstName = "Ivy",
+                            IsActive = true,
+                            JobRole = "Receptionist",
+                            KeycloakId = new Guid("33333333-cccc-cccc-cccc-333333333333"),
+                            LastModifiedBy = 1L,
+                            LastName = "Violet",
+                            LineManager = "Frank Blue",
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "",
+                            Postcode = "EMP9 9II",
+                            SubjectId = 0L,
+                            Telephone = "07999 999999",
+                            TenantId = 3L
+                        },
+                        new
+                        {
+                            Id = 10L,
+                            Address1 = "10 Main St",
+                            Address2 = "Apt 10",
+                            Address3 = "",
+                            CreatedBy = 1L,
+                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 1L,
+                            DOB = new DateTime(1989, 10, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Department = "Facilities",
+                            Email = "jack.white@example.com",
+                            FirstName = "Jack",
+                            IsActive = true,
+                            JobRole = "Cleaner",
+                            KeycloakId = new Guid("44444444-dddd-dddd-dddd-444444444444"),
+                            LastModifiedBy = 1L,
+                            LastName = "White",
+                            LineManager = "Grace Brown",
+                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            Notes = "",
+                            Postcode = "EMP10 0JJ",
+                            SubjectId = 0L,
+                            Telephone = "07000 000000",
+                            TenantId = 1L
+                        });
+                });
+
+            modelBuilder.Entity("Server.Modules.CRM.Entities.EmployeeDocument", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("BlobContainerName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("BlobName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -285,347 +736,9 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("EmployeeId");
 
-                    b.ToTable("Documents", "crm");
-                });
-
-            modelBuilder.Entity("Server.Modules.CRM.Entities.Employee", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Address1")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Address2")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Address3")
-                        .HasColumnType("text");
-
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("CustomerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("DOB")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("JobRole")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("LastModifiedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LineManager")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Postcode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Telephone")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Employees", "crm");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Address1 = "1 Main St",
-                            Address2 = "Apt 1",
-                            Address3 = "",
-                            CreatedBy = 1L,
-                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            CustomerId = 1L,
-                            DOB = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "HR",
-                            Email = "alice.smith@example.com",
-                            FirstName = "Alice",
-                            IsActive = true,
-                            JobRole = "Manager",
-                            LastModifiedBy = 1L,
-                            LastName = "Smith",
-                            LineManager = "Bob Jones",
-                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            Notes = "",
-                            Postcode = "EMP1 1AA",
-                            SubjectId = 0L,
-                            Telephone = "07111 111111",
-                            TenantId = 0L
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            Address1 = "2 Main St",
-                            Address2 = "Apt 2",
-                            Address3 = "",
-                            CreatedBy = 1L,
-                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            CustomerId = 2L,
-                            DOB = new DateTime(1985, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "IT",
-                            Email = "bob.jones@example.com",
-                            FirstName = "Bob",
-                            IsActive = true,
-                            JobRole = "Engineer",
-                            LastModifiedBy = 1L,
-                            LastName = "Jones",
-                            LineManager = "Carol White",
-                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            Notes = "",
-                            Postcode = "EMP2 2BB",
-                            SubjectId = 0L,
-                            Telephone = "07222 222222",
-                            TenantId = 0L
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            Address1 = "3 Main St",
-                            Address2 = "Apt 3",
-                            Address3 = "",
-                            CreatedBy = 1L,
-                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            CustomerId = 3L,
-                            DOB = new DateTime(1992, 3, 3, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "Finance",
-                            Email = "carol.white@example.com",
-                            FirstName = "Carol",
-                            IsActive = true,
-                            JobRole = "Analyst",
-                            LastModifiedBy = 1L,
-                            LastName = "White",
-                            LineManager = "David Black",
-                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            Notes = "",
-                            Postcode = "EMP3 3CC",
-                            SubjectId = 0L,
-                            Telephone = "07333 333333",
-                            TenantId = 0L
-                        },
-                        new
-                        {
-                            Id = 4L,
-                            Address1 = "4 Main St",
-                            Address2 = "Apt 4",
-                            Address3 = "",
-                            CreatedBy = 1L,
-                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            CustomerId = 1L,
-                            DOB = new DateTime(1988, 4, 4, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "Consulting",
-                            Email = "david.black@example.com",
-                            FirstName = "David",
-                            IsActive = true,
-                            JobRole = "Consultant",
-                            LastModifiedBy = 1L,
-                            LastName = "Black",
-                            LineManager = "Alice Smith",
-                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            Notes = "",
-                            Postcode = "EMP4 4DD",
-                            SubjectId = 0L,
-                            Telephone = "07444 444444",
-                            TenantId = 0L
-                        },
-                        new
-                        {
-                            Id = 5L,
-                            Address1 = "5 Main St",
-                            Address2 = "Apt 5",
-                            Address3 = "",
-                            CreatedBy = 1L,
-                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            CustomerId = 2L,
-                            DOB = new DateTime(1995, 5, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "Medical",
-                            Email = "eve.green@example.com",
-                            FirstName = "Eve",
-                            IsActive = true,
-                            JobRole = "Nurse",
-                            LastModifiedBy = 1L,
-                            LastName = "Green",
-                            LineManager = "Bob Jones",
-                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            Notes = "",
-                            Postcode = "EMP5 5EE",
-                            SubjectId = 0L,
-                            Telephone = "07555 555555",
-                            TenantId = 0L
-                        },
-                        new
-                        {
-                            Id = 6L,
-                            Address1 = "6 Main St",
-                            Address2 = "Apt 6",
-                            Address3 = "",
-                            CreatedBy = 1L,
-                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            CustomerId = 3L,
-                            DOB = new DateTime(1983, 6, 6, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "Support",
-                            Email = "frank.blue@example.com",
-                            FirstName = "Frank",
-                            IsActive = true,
-                            JobRole = "Technician",
-                            LastModifiedBy = 1L,
-                            LastName = "Blue",
-                            LineManager = "Carol White",
-                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            Notes = "",
-                            Postcode = "EMP6 6FF",
-                            SubjectId = 0L,
-                            Telephone = "07666 666666",
-                            TenantId = 0L
-                        },
-                        new
-                        {
-                            Id = 7L,
-                            Address1 = "7 Main St",
-                            Address2 = "Apt 7",
-                            Address3 = "",
-                            CreatedBy = 1L,
-                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            CustomerId = 1L,
-                            DOB = new DateTime(1991, 7, 7, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "Advisory",
-                            Email = "grace.brown@example.com",
-                            FirstName = "Grace",
-                            IsActive = true,
-                            JobRole = "Advisor",
-                            LastModifiedBy = 1L,
-                            LastName = "Brown",
-                            LineManager = "David Black",
-                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            Notes = "",
-                            Postcode = "EMP7 7GG",
-                            SubjectId = 0L,
-                            Telephone = "07777 777777",
-                            TenantId = 0L
-                        },
-                        new
-                        {
-                            Id = 8L,
-                            Address1 = "8 Main St",
-                            Address2 = "Apt 8",
-                            Address3 = "",
-                            CreatedBy = 1L,
-                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            CustomerId = 2L,
-                            DOB = new DateTime(1987, 8, 8, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "Logistics",
-                            Email = "henry.gray@example.com",
-                            FirstName = "Henry",
-                            IsActive = true,
-                            JobRole = "Driver",
-                            LastModifiedBy = 1L,
-                            LastName = "Gray",
-                            LineManager = "Eve Green",
-                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            Notes = "",
-                            Postcode = "EMP8 8HH",
-                            SubjectId = 0L,
-                            Telephone = "07888 888888",
-                            TenantId = 0L
-                        },
-                        new
-                        {
-                            Id = 9L,
-                            Address1 = "9 Main St",
-                            Address2 = "Apt 9",
-                            Address3 = "",
-                            CreatedBy = 1L,
-                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            CustomerId = 3L,
-                            DOB = new DateTime(1993, 9, 9, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "Admin",
-                            Email = "ivy.violet@example.com",
-                            FirstName = "Ivy",
-                            IsActive = true,
-                            JobRole = "Receptionist",
-                            LastModifiedBy = 1L,
-                            LastName = "Violet",
-                            LineManager = "Frank Blue",
-                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            Notes = "",
-                            Postcode = "EMP9 9II",
-                            SubjectId = 0L,
-                            Telephone = "07999 999999",
-                            TenantId = 0L
-                        },
-                        new
-                        {
-                            Id = 10L,
-                            Address1 = "10 Main St",
-                            Address2 = "Apt 10",
-                            Address3 = "",
-                            CreatedBy = 1L,
-                            CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            CustomerId = 1L,
-                            DOB = new DateTime(1989, 10, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Department = "Facilities",
-                            Email = "jack.white@example.com",
-                            FirstName = "Jack",
-                            IsActive = true,
-                            JobRole = "Cleaner",
-                            LastModifiedBy = 1L,
-                            LastName = "White",
-                            LineManager = "Grace Brown",
-                            ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
-                            Notes = "",
-                            Postcode = "EMP10 0JJ",
-                            SubjectId = 0L,
-                            Telephone = "07000 000000",
-                            TenantId = 0L
-                        });
+                    b.ToTable("EmployeeDocuments", "crm");
                 });
 
             modelBuilder.Entity("Server.Modules.CRM.Entities.Manager", b =>
@@ -653,9 +766,6 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("EmployeeId")
-                        .HasColumnType("bigint");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -681,6 +791,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CustomerId");
+
                     b.ToTable("Managers", "crm");
                 });
 
@@ -692,14 +804,14 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("ContractId")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("CreatedBy")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("timestamp with time zone");
@@ -730,7 +842,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ContractId");
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("ProductTypeId");
 
@@ -1274,10 +1386,12 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                 {
                     b.HasOne("Server.Modules.CRM.Entities.Customer", null)
                         .WithMany("Contracts")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("Server.Modules.CRM.Entities.Document", b =>
+            modelBuilder.Entity("Server.Modules.CRM.Entities.CustomerDocument", b =>
                 {
                     b.HasOne("Server.Modules.CRM.Entities.Customer", null)
                         .WithMany("Documents")
@@ -1286,11 +1400,44 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Employee", b =>
+                {
+                    b.HasOne("Server.Modules.CRM.Entities.Customer", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Server.Modules.CRM.Entities.Manager", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("ManagerId");
+                });
+
+            modelBuilder.Entity("Server.Modules.CRM.Entities.EmployeeDocument", b =>
+                {
+                    b.HasOne("Server.Modules.CRM.Entities.Employee", null)
+                        .WithMany("Documents")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Manager", b =>
+                {
+                    b.HasOne("Server.Modules.CRM.Entities.Customer", null)
+                        .WithMany("Managers")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Server.Modules.CRM.Entities.Product", b =>
                 {
-                    b.HasOne("Server.Modules.CRM.Entities.Contract", null)
+                    b.HasOne("Server.Modules.CRM.Entities.Customer", null)
                         .WithMany("Products")
-                        .HasForeignKey("ContractId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Server.Modules.CRM.Entities.ProductType", "ProductType")
                         .WithMany()
@@ -1301,16 +1448,27 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Navigation("ProductType");
                 });
 
-            modelBuilder.Entity("Server.Modules.CRM.Entities.Contract", b =>
-                {
-                    b.Navigation("Products");
-                });
-
             modelBuilder.Entity("Server.Modules.CRM.Entities.Customer", b =>
                 {
                     b.Navigation("Contracts");
 
                     b.Navigation("Documents");
+
+                    b.Navigation("Employees");
+
+                    b.Navigation("Managers");
+
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Employee", b =>
+                {
+                    b.Navigation("Documents");
+                });
+
+            modelBuilder.Entity("Server.Modules.CRM.Entities.Manager", b =>
+                {
+                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }

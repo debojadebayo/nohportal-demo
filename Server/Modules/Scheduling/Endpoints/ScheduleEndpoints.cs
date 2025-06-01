@@ -11,8 +11,8 @@ using ComposedHealthBase.Server.Queries;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Shared.DTOs;
 using ComposedHealthBase.Server.Entities;
-using Server.Modules.Scheduling.Infrastructure.Queries;
-using Server.Modules.CommonModule.Interfaces;
+using System.Linq.Expressions;
+
 
 namespace Server.Modules.Scheduling.Endpoints
 {
@@ -32,7 +32,7 @@ namespace Server.Modules.Scheduling.Endpoints
 		{
 			try
 			{
-				var allEntities = await new GetAllCliniciansWithSchedulesQuery(dbContext, mapper).Handle();
+				var allEntities = await new GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext>(dbContext, mapper).Handle(x => x.CalendarItems);
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
@@ -42,51 +42,6 @@ namespace Server.Modules.Scheduling.Endpoints
 			}
 		}
 	}
-	public class ReferralEndpoints : CommonScheduleEndpoints<Referral, ReferralDto, SchedulingDbContext>, IEndpoints { }
-	public class ScheduleEndpoints : CommonScheduleEndpoints<Schedule, ScheduleDto, SchedulingDbContext>, IEndpoints { }
-	public abstract class CommonScheduleEndpoints<T, TDto, SchedulingDbContext> : BaseEndpoints<T, TDto, SchedulingDbContext>
-		where T : BaseEntity<T>, IFilterByEmployee, IFilterByCustomer
-		where TDto : IDto
-		where SchedulingDbContext : IDbContext<SchedulingDbContext>
-	{
-		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
-		{
-			endpoints = base.MapEndpoints(endpoints);
-
-			var entityName = typeof(T).Name.ToLower();
-
-			var group = endpoints.MapGroup($"/api/{entityName}");
-
-			group.MapGet("/GetAllByCustomerId/{customerId}", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<T, TDto> mapper, long customerId) => GetAllByCustomerId(dbContext, mapper, customerId));
-			group.MapGet("/GetAllByEmployeeId/{employeeId}", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<T, TDto> mapper, long employeeId) => GetAllByEmployeeId(dbContext, mapper, employeeId));
-
-			return endpoints;
-		}
-		protected async Task<IResult> GetAllByCustomerId(SchedulingDbContext dbContext, IMapper<T, TDto> mapper, long customerId)
-		{
-			try
-			{
-				var allEntities = await new GetByPredicateQuery<T, TDto, SchedulingDbContext>(dbContext, mapper).Handle(s => s.CustomerId == customerId);
-				return Results.Ok(allEntities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving records.");
-			}
-		}
-		protected async Task<IResult> GetAllByEmployeeId(SchedulingDbContext dbContext, IMapper<T, TDto> mapper, long employeeId)
-		{
-			try
-			{
-				var allEntities = await new GetByPredicateQuery<T, TDto, SchedulingDbContext>(dbContext, mapper).Handle(s => s.EmployeeId == employeeId);
-				return Results.Ok(allEntities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving records.");
-			}
-		}
-	}
+	public class ReferralEndpoints : BaseEndpoints<Referral, ReferralDto, SchedulingDbContext>, IEndpoints { }
+	public class ScheduleEndpoints : BaseEndpoints<Schedule, ScheduleDto, SchedulingDbContext>, IEndpoints { }
 }

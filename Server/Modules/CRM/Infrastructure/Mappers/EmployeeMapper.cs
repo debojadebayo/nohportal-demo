@@ -23,15 +23,15 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Postcode = entity.Postcode,
             Email = entity.Email,
             Telephone = entity.Telephone,
-            CustomerId = entity.CustomerId,
             JobRole = entity.JobRole,
             Department = entity.Department,
             LineManager = entity.LineManager,
-            Notes = entity.Notes
+            Notes = entity.Notes,
+            CustomerId = entity.CustomerId
         };
     }
 
-    public Employee Map(EmployeeDto dto)
+    public Employee MapWithKeycloakId(EmployeeDto dto, Guid keycloakId)
     {
         return new Employee
         {
@@ -45,16 +45,17 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             LastName = dto.LastName,
             DOB = dto.DOB,
             Address1 = dto.Address1,
-            Address2 = dto.Address2,
-            Address3 = dto.Address3,
+            Address2 = dto.Address2!,
+            Address3 = dto.Address3!,
             Postcode = dto.Postcode,
             Email = dto.Email,
             Telephone = dto.Telephone,
-            CustomerId = dto.CustomerId,
             JobRole = dto.JobRole,
             Department = dto.Department,
             LineManager = dto.LineManager,
-            Notes = dto.Notes
+            Notes = dto.Notes,
+            KeycloakId = keycloakId,
+            CustomerId = dto.CustomerId
         };
     }
 
@@ -70,12 +71,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
 
     public void Map(EmployeeDto dto, Employee entity)
     {
-        entity.Id = dto.Id;
         entity.IsActive = dto.IsActive;
-        entity.CreatedBy = dto.CreatedBy;
-        entity.LastModifiedBy = dto.LastModifiedBy;
-        entity.CreatedDate = dto.CreatedDate;
-        entity.ModifiedDate = dto.ModifiedDate;
         entity.FirstName = dto.FirstName;
         entity.LastName = dto.LastName;
         entity.DOB = dto.DOB;
@@ -85,11 +81,11 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         entity.Postcode = dto.Postcode;
         entity.Email = dto.Email;
         entity.Telephone = dto.Telephone;
-        entity.CustomerId = dto.CustomerId;
         entity.JobRole = dto.JobRole;
         entity.Department = dto.Department;
         entity.LineManager = dto.LineManager;
         entity.Notes = dto.Notes;
+        entity.CustomerId = dto.CustomerId;
     }
 
     public void Map(Employee entity, EmployeeDto dto)
@@ -109,30 +105,15 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         dto.Postcode = entity.Postcode;
         dto.Email = entity.Email;
         dto.Telephone = entity.Telephone;
-        dto.CustomerId = entity.CustomerId;
         dto.JobRole = entity.JobRole;
         dto.Department = entity.Department;
         dto.LineManager = entity.LineManager;
         dto.Notes = entity.Notes;
+        dto.CustomerId = entity.CustomerId;
     }
 
-    public void Map(IEnumerable<EmployeeDto> dtos, IEnumerable<Employee> entities)
+    public Employee Map(EmployeeDto dto)
     {
-        var dtosArray = dtos.ToArray();
-        var entitiesArray = entities.ToArray();
-        for (int i = 0; i < Math.Min(dtosArray.Length, entitiesArray.Length); i++)
-        {
-            Map(dtosArray[i], entitiesArray[i]);
-        }
-    }
-
-    public void Map(IEnumerable<Employee> entities, IEnumerable<EmployeeDto> dtos)
-    {
-        var dtosArray = dtos.ToArray();
-        var entitiesArray = entities.ToArray();
-        for (int i = 0; i < Math.Min(dtosArray.Length, entitiesArray.Length); i++)
-        {
-            Map(entitiesArray[i], dtosArray[i]);
-        }
+        throw new NotImplementedException("Mapping from DTO to Entity without KeycloakId is not supported.");
     }
 }

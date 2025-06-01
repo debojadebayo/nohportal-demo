@@ -1,7 +1,8 @@
 @using MudBlazor
 @using Shared.DTOs.Scheduling
 @using Shared.DTOs.CRM
-@inject ISnackbar Snackbar
+
+
 @inject IHttpClientFactory HttpClientFactory
 
 <MudForm Model="@_model" @ref="@form" ValidationDelay="0">
@@ -83,7 +84,7 @@
         if (form.IsValid)
         {
             await httpClient.PostAsJsonAsync("api/referral/create", _model);
-            Snackbar.Add("Referral added successfully", Severity.Success);
+            @* SnackbarService.Add("Referral added successfully", MudBlazor.Severity.Success); *@
         }
     }
 }

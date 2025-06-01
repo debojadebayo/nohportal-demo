@@ -6,7 +6,7 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.Scheduling
 {
-    public class ScheduleDto : BaseCalendarItem, IDto
+    public class ScheduleDto : BaseCalendarItem, IDto, ILazyLookup
     {
         public new long Id { get; set; }
         public bool IsActive { get; set; }
@@ -15,6 +15,7 @@ namespace Shared.DTOs.Scheduling
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
         public long TenantId { get; set; }
+        public long SubjectId { get; set; }
         public long CustomerId { get; set; }
         public long ReferralId { get; set; }
         public long EmployeeId { get; set; }
@@ -33,5 +34,6 @@ namespace Shared.DTOs.Scheduling
         }
         public required string Description { get; set; }
         public ScheduleStatusEnum Status { get; set; }
+        public string DisplayName => $"{Title} - {Description}";
     }
 }

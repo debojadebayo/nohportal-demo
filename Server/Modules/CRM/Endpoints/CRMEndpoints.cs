@@ -11,7 +11,7 @@ using Server.Modules.CRM.Infrastructure.Queries;
 using ComposedHealthBase.Server.Queries;
 using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Database;
-using Server.Modules.CommonModule.Interfaces;
+
 using ComposedHealthBase.Shared.DTOs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs;
@@ -26,26 +26,9 @@ namespace Server.Modules.CRM.Endpoints
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/employee");
 
-			group.MapGet("/getbycustomer/{id}", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<Employee, EmployeeDto> mapper, long id) => GetByCustomer(dbContext, mapper, id));
-
-			// Add search endpoint
 			group.MapGet("/search", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<Employee, EmployeeDto> mapper, [FromQuery] string term) => SearchEmployees(dbContext, mapper, term));
 
 			return endpoints;
-		}
-
-		protected async Task<IResult> GetByCustomer(CRMDbContext dbContext, IMapper<Employee, EmployeeDto> mapper, long id)
-		{
-			try
-			{
-				var allEntities = await new GetByPredicateQuery<Employee, EmployeeDto, CRMDbContext>(dbContext, mapper).Handle(e => e.CustomerId == id);
-				return Results.Ok(allEntities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving employee entities.");
-			}
 		}
 
 		// New method for searching employees by free text
@@ -89,212 +72,8 @@ namespace Server.Modules.CRM.Endpoints
 			}
 		}
 	}
-	public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints
-	{
-		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
-		{
-			endpoints = base.MapEndpoints(endpoints); // Call the base class method first
-			var group = endpoints.MapGroup($"/api/contract");
-
-			group.MapGet("/GetByCustomerId/{customerId}", async ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<Contract, ContractDto> mapper, long customerId) =>
-			{
-				try
-				{
-					var query = new GetContractsByCustomerIdQuery(dbContext, mapper, customerId);
-					var result = await query.Handle();
-					return Results.Ok(result);
-				}
-				catch (Exception ex)
-				{
-					Console.Error.WriteLine($"An error occurred while retrieving contracts by customer ID: {ex.Message}");
-					return Results.Problem($"An error occurred while retrieving contracts for customer ID {customerId}.");
-				}
-			});
-
-			return endpoints;
-		}
-	}
-	public class DocumentEndpoints : CommonCRMEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints
-	{
-		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
-		{
-			endpoints = base.MapEndpoints(endpoints);
-			var group = endpoints.MapGroup($"/api/document");
-
-			// New upload endpoint
-			group.MapPost("/upload", async (
-				[FromServices] CRMDbContext dbContext,
-				[FromServices] IMapper<Document, DocumentDto> mapper,
-				[FromServices] BlobServiceClient blobServiceClient,
-				[FromForm] DocumentDto documentDto,
-				[FromForm] IFormFile file
-			) => await UploadDocument(dbContext, mapper, blobServiceClient, documentDto, file)).DisableAntiforgery();
-
-			group.MapGet("/getsaslink/{documentId}", async (
-				[FromServices] CRMDbContext dbContext,
-				[FromServices] IMapper<Document, DocumentDto> mapper,
-				[FromServices] BlobServiceClient blobServiceClient,
-				long documentId
-			) => await GetDocumentSasLink(dbContext, mapper, blobServiceClient, documentId));
-
-			group.MapGet("/getcontent/{documentId}", async (
-				[FromServices] CRMDbContext dbContext,
-				[FromServices] IMapper<Document, DocumentDto> mapper,
-				[FromServices] BlobServiceClient blobServiceClient,
-				long documentId) =>
-					await GetDocumentContent(dbContext, mapper, blobServiceClient, documentId));
-
-			return endpoints;
-		}
-
-		// New method for uploading document and file to Azure Blob Storage
-		protected async Task<IResult> UploadDocument(
-			CRMDbContext dbContext,
-			IMapper<Document, DocumentDto> mapper,
-			BlobServiceClient blobServiceClient,
-			DocumentDto documentDto,
-			IFormFile file)
-		{
-			if (file == null || file.Length == 0)
-				return Results.BadRequest("File is required.");
-
-			try
-			{
-				var containerName = $"documents";
-
-				var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
-				containerClient.CreateIfNotExists();
-
-				var blobName = $"{file.FileName}_{Guid.NewGuid()}";
-				var blobClient = containerClient.GetBlobClient(blobName);
-
-				using (var stream = file.OpenReadStream())
-				{
-					await blobClient.UploadAsync(stream, new BlobUploadOptions { HttpHeaders = new BlobHttpHeaders { ContentType = file.ContentType } });
-				}
-
-				// Optionally, update the DocumentDto with the blob URL
-				documentDto.FilePath = blobClient.Uri.ToString();
-
-				documentDto.BlobContainerName = containerName;
-				documentDto.BlobName = blobName;
-
-				// Map and save the Document entity as needed
-				var entity = mapper.Map(documentDto);
-				dbContext.Documents.Add(entity);
-				await dbContext.SaveChangesAsync();
-
-				return Results.Ok(new { url = blobClient.Uri.ToString() });
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem("An error occurred while uploading the document.");
-			}
-		}
-		protected async Task<IResult> GetDocumentSasLink(
-			CRMDbContext dbContext,
-			IMapper<Document, DocumentDto> mapper,
-			BlobServiceClient blobServiceClient,
-			long documentId)
-		{
-			try
-			{
-				// Retrieve the document entity from the database using the generic query handler
-				var document = await new GetByIdQuery<Document, DocumentDto, CRMDbContext>(dbContext, mapper).Handle(documentId);
-				if (document == null)
-					return Results.NotFound("Document not found.");
-				//TODO Check the current user's claims against ownerId on the entity
-
-				var containerClient = blobServiceClient.GetBlobContainerClient(document.BlobContainerName);
-				// Use the stored BlobName directly instead of extracting from FilePath
-				var blobClient = containerClient.GetBlobClient(document.BlobName);
-				var sasToken = blobClient.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
-
-				return Results.Ok(sasToken.ToString());
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem("An error occurred while generating document access link.");
-			}
-		}
-		protected async Task<IResult> GetDocumentContent(
-			CRMDbContext dbContext,
-			IMapper<Document, DocumentDto> mapper,
-			BlobServiceClient blobServiceClient,
-			long documentId)
-		{
-			try
-			{
-				// Retrieve the document entity from the database using the generic query handler
-				var document = await new GetByIdQuery<Document, DocumentDto, CRMDbContext>(dbContext, mapper).Handle(documentId);
-				if (document == null)
-					return Results.NotFound("Document not found.");
-				//TODO Check the current user's claims against ownerId on the entity
-
-				var containerClient = blobServiceClient.GetBlobContainerClient(document.BlobContainerName);
-				// Use the stored BlobName directly instead of extracting from FilePath
-				var blobClient = containerClient.GetBlobClient(document.BlobName);
-
-				var response = await blobClient.DownloadContentAsync();
-				return Results.File(response.Value.Content.ToArray(),
-								   response.Value.Details.ContentType,
-								   document.Name);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem("An error occurred while retrieving the document.");
-			}
-		}
-	}
-	public class ManagerEndpoints : CommonCRMEndpoints<Manager, Shared.DTOs.CRM.ManagerDto, CRMDbContext>, IEndpoints { }
-	//public class DocumentEndpoints : CommonCRMEndpoints<Document, DocumentDto, CRMDbContext>, IEndpoints { } //This line is now handled by the specific DocumentEndpoints class
-	public abstract class CommonCRMEndpoints<T, TDto, CRMDbContext> : BaseEndpoints<T, TDto, CRMDbContext>
-		where T : BaseEntity<T>, IFilterByEmployee, IFilterByCustomer
-		where TDto : IDto
-		where CRMDbContext : IDbContext<CRMDbContext>
-	{
-		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
-		{
-			endpoints = base.MapEndpoints(endpoints);
-
-			var entityName = typeof(T).Name.ToLower();
-
-			var group = endpoints.MapGroup($"/api/{entityName}");
-
-			group.MapGet("/GetAllByCustomerId/{customerId}", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<T, TDto> mapper, long customerId) => GetAllByCustomerId(dbContext, mapper, customerId));
-			group.MapGet("/GetAllByEmployeeId/{employeeId}", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<T, TDto> mapper, long employeeId) => GetAllByEmployeeId(dbContext, mapper, employeeId));
-
-			return endpoints;
-		}
-		protected async Task<IResult> GetAllByCustomerId(CRMDbContext dbContext, IMapper<T, TDto> mapper, long customerId)
-		{
-			try
-			{
-				var allEntities = await new GetByPredicateQuery<T, TDto, CRMDbContext>(dbContext, mapper).Handle(s => s.CustomerId == customerId);
-				return Results.Ok(allEntities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving records.");
-			}
-		}
-		protected async Task<IResult> GetAllByEmployeeId(CRMDbContext dbContext, IMapper<T, TDto> mapper, long employeeId)
-		{
-			try
-			{
-				var allEntities = await new GetByPredicateQuery<T, TDto, CRMDbContext>(dbContext, mapper).Handle(s => s.EmployeeId == employeeId);
-				return Results.Ok(allEntities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving records.");
-			}
-		}
-	}
+	public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints { }
+	public class CustomerDocumentEndpoints : DocumentEndpoints<CustomerDocument, CustomerDocumentDto, CRMDbContext>, IEndpoints { }
+	public class EmployeeDocumentEndpoints : DocumentEndpoints<EmployeeDocument, EmployeeDocumentDto, CRMDbContext>, IEndpoints { }
+	public class ManagerEndpoints : BaseEndpoints<Manager, ManagerDto, CRMDbContext>, IEndpoints { }
 }

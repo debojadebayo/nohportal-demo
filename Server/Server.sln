@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{ED942921-9D58-4717-9A42-77FB1B767896}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComposedHealthBase.Server", "ComposedHealthBase\ComposedHealthBase.Server.csproj", "{C5B6477D-A680-4180-90B3-04A30DD57AEC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComposedHealthBase.Server", "ComposedHealthBase\Server\ComposedHealthBase.Server.csproj", "{C5B6477D-A680-4180-90B3-04A30DD57AEC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{2B4606D8-1C11-49F3-95C0-ECFC56DB560E}"
 EndProject

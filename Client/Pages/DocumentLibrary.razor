@@ -1,99 +1,31 @@
 @page "/document-library"
-@using Gotho.BlazorPdf
-@using System.Collections.Generic
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Services
 @using Shared.DTOs.CRM
-@inject HttpClient httpClient
-@inject ISnackbar Snackbar
+@inject ILazyLookupService<CustomerDocumentDto> DocumentLookupService
 
-<MudText Typo="Typo.h1">Documents Library</MudText>
-<MudGrid>
-    <MudItem xs="12" sm="4" md="3">
-        <MudPaper Class="pa-4" Elevation="1">
-            <MudTextField T="string" @bind-Value="searchTerm" Placeholder="Search Document" Adornment="Adornment.Start"
-                AdornmentIcon="@Icons.Material.Filled.Search" Class="mb-2" />
-            <MudList T="DocumentDto" Dense="true">
-                @foreach (var doc in filteredDocuments)
-                {
-                    <MudListItem OnClick="() => OnDocumentSelected(doc)" Value="doc">@doc.Name</MudListItem>
-                }
-            </MudList>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="8" md="9">
-        <MudPaper Class="pa-4" Elevation="1">
-            @if (isLoading)
-            {
-                <MudProgressCircular Indeterminate="true" />
-            }
-            else if (!string.IsNullOrEmpty(documentUrl))
-            {
-                <PdfViewer Url="@documentUrl" />
-            }
-            else
-            {
-                <MudAlert Severity="Severity.Info">Select a document to view</MudAlert>
-            }
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+<DocumentBrowser TDto="CustomerDocumentDto" Documents="documents" NewDocument="newDocument" OnSave="OnDocumentSave" />
 
 @code {
-    private string searchTerm = "";
-    private string documentUrl = "";
-    private DocumentDto? selectedDocument;
-    private bool isLoading = false;
-    private List<DocumentDto> documents = new();
-
+    private List<CustomerDocumentDto> documents = new();
+    private CustomerDocumentDto newDocument = new CustomerDocumentDto
+    {
+        CustomerId = 20,
+        Name = "",
+        FilePath = ""
+    };
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            isLoading = true;
-            documents = await httpClient.GetFromJsonAsync<List<DocumentDto>>("api/document/getall") ?? new List<DocumentDto>();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error loading documents: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        documents = (await DocumentLookupService.GetAllByTenantId(20, CancellationToken.None)).ToList();
     }
-
-    private IEnumerable<DocumentDto> filteredDocuments => 
-        string.IsNullOrWhiteSpace(searchTerm) 
-            ? documents 
-            : documents.Where(d => d.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
-
-    private async Task OnDocumentSelected(DocumentDto document)
+    private async Task OnDocumentSave()
     {
-        if (document == null) return;
-        
-        try
+        documents = (await DocumentLookupService.GetAllByTenantId(20, CancellationToken.None)).ToList();
+        newDocument = new CustomerDocumentDto
         {
-            isLoading = true;
-            selectedDocument = document;
-
-            var response = await httpClient.GetFromJsonAsync<string>($"api/document/getsaslink/{document.Id}");
-            
-            if (response != null && !string.IsNullOrEmpty(response))
-            {
-                documentUrl = response.Replace("http://blobstorage", "http://localhost");
-            }
-            else
-            {
-                Snackbar.Add("Failed to get document access link", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error loading document: {ex.Message}", Severity.Error);
-            documentUrl = "";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+            CustomerId = 20,
+            Name = "",
+            FilePath = ""
+        };
     }
 }

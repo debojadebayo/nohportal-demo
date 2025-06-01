@@ -14,7 +14,7 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ComposedHealthBase\ComposedHealthBase.Server.csproj" />
+    <ProjectReference Include="..\ComposedHealthBase\Server\ComposedHealthBase.Server.csproj" />
 	  
     <ProjectReference Include="..\Modules\CRM\Infrastructure\Server.Modules.CRM.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\Scheduling\Infrastructure\Server.Modules.Scheduling.Infrastructure.csproj" />

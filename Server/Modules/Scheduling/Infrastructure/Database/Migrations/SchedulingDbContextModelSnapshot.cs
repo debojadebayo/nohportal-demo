@@ -371,8 +371,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             LastModifiedBy = 0L,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Routine checkup for hypertension.",
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 1L,
+                            TenantId = 1L,
                             Title = "Hypertension Checkup"
                         },
                         new
@@ -387,8 +387,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             LastModifiedBy = 0L,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Follow-up for diabetes management.",
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 2L,
+                            TenantId = 1L,
                             Title = "Diabetes Follow-up"
                         },
                         new
@@ -403,8 +403,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             LastModifiedBy = 0L,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Initial consultation for back pain.",
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 3L,
+                            TenantId = 1L,
                             Title = "Back Pain Consultation"
                         },
                         new
@@ -419,8 +419,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             LastModifiedBy = 0L,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Annual physical examination.",
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 4L,
+                            TenantId = 2L,
                             Title = "Annual Physical Exam"
                         },
                         new
@@ -435,8 +435,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             LastModifiedBy = 0L,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Referral for allergy testing.",
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 5L,
+                            TenantId = 2L,
                             Title = "Allergy Testing"
                         },
                         new
@@ -451,8 +451,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             LastModifiedBy = 0L,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Consultation for asthma symptoms.",
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 6L,
+                            TenantId = 2L,
                             Title = "Asthma Consultation"
                         },
                         new
@@ -467,8 +467,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             LastModifiedBy = 0L,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Pre-surgery evaluation.",
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 7L,
+                            TenantId = 3L,
                             Title = "Pre-Surgery Evaluation"
                         },
                         new
@@ -483,8 +483,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             LastModifiedBy = 0L,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Post-operative follow-up.",
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 8L,
+                            TenantId = 3L,
                             Title = "Post-Op Follow-up"
                         },
                         new
@@ -499,8 +499,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             LastModifiedBy = 0L,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Referral for physical therapy.",
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 9L,
+                            TenantId = 3L,
                             Title = "Physical Therapy Referral"
                         },
                         new
@@ -515,8 +515,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             LastModifiedBy = 0L,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Consultation for migraine headaches.",
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 10L,
+                            TenantId = 3L,
                             Title = "Migraine Consultation"
                         });
                 });
@@ -586,6 +586,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
 
                     b.HasIndex("ClinicianId");
 
+                    b.HasIndex("ReferralId");
+
                     b.ToTable("Schedules", "scheduling");
 
                     b.HasData(
@@ -606,8 +608,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ReferralId = 1L,
                             Start = new DateTime(2025, 4, 22, 9, 0, 0, 0, DateTimeKind.Utc),
                             Status = 0,
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 1L,
+                            TenantId = 1L,
                             Title = "Blood Pressure Check-up"
                         },
                         new
@@ -627,8 +629,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ReferralId = 2L,
                             Start = new DateTime(2025, 4, 22, 10, 0, 0, 0, DateTimeKind.Utc),
                             Status = 0,
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 2L,
+                            TenantId = 1L,
                             Title = "Diabetes Follow-up"
                         },
                         new
@@ -648,8 +650,8 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ReferralId = 3L,
                             Start = new DateTime(2025, 4, 22, 11, 0, 0, 0, DateTimeKind.Utc),
                             Status = 0,
-                            SubjectId = 0L,
-                            TenantId = 0L,
+                            SubjectId = 3L,
+                            TenantId = 1L,
                             Title = "Back Pain Assessment"
                         });
                 });
@@ -661,9 +663,20 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                         .HasForeignKey("ClinicianId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Server.Modules.Scheduling.Entities.Referral", null)
+                        .WithMany("CalendarItems")
+                        .HasForeignKey("ReferralId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Server.Modules.Scheduling.Entities.Clinician", b =>
+                {
+                    b.Navigation("CalendarItems");
+                });
+
+            modelBuilder.Entity("Server.Modules.Scheduling.Entities.Referral", b =>
                 {
                     b.Navigation("CalendarItems");
                 });

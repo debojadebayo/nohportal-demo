@@ -2,6 +2,7 @@
 @using Shared.DTOs.Scheduling
 @using Shared.Enums
 
+
 <MudForm Model="@model" @ref="@form" ValidationDelay="0">
     <MudGrid>
         <MudItem xs="12" sm="6">
@@ -33,7 +34,7 @@
 </MudForm>
 
 @code {
-    [Inject] ISnackbar Snackbar { get; set; } = default!;
+    
     MudForm form = default!;
     ClinicianDto model = new ClinicianDto{
         AvatarImage = "",
@@ -50,7 +51,7 @@
         await form.Validate();
         if (form.IsValid)
         {
-            Snackbar.Add("Submitted!");
+            @* SnackbarService.Add("Submitted!"); *@
         }
     }
 }

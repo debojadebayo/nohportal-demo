@@ -1,25 +1,75 @@
 @namespace Client.Pages.Components.TabComponents
-@using Shared.DTOs.Scheduling
+@using Shared.DTOs.CRM
 @using MudBlazor
+@using Shared.DTOs.Scheduling
 
 <MudPaper Class="pa-4">
-    <MudTable Items="Referrals ?? new List<ReferralDto>()" Dense="true" Hover="true">
-        <HeaderContent>
-            <MudTh>Created</MudTh>
-            <MudTh>Referral Details</MudTh>
-            <MudTh>Document Id</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd>@context.CreatedDate.ToString("g")</MudTd>
-            <MudTd>@context.ReferralDetails</MudTd>
-            <MudTd>@context.DocumentId</MudTd>
-        </RowTemplate>
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+        <MudText Typo="Typo.h6">Referrals</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowAddReferralDialog"
+            StartIcon="@Icons.Material.Filled.Add">Add New Referral</MudButton>
+    </MudStack>
+    <MudDataGrid T="ReferralDto" Items="Referrals ?? new List<ReferralDto>()" Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true">
+        <Columns>
+            <PropertyColumn Property="x => x.CreatedDate" Title="Created" />
+            <PropertyColumn Property="x => x.Title" />
+            <PropertyColumn Property="x => x.ReferralDetails" Title="Referral Details" />
+            <PropertyColumn Property="x => x.EmployeeId" Title="Employee" />
+            <PropertyColumn Property="x => x.CustomerId" Title="Customer" />
+            <PropertyColumn Property="x => x.DocumentId" Title="Document Id" />
+        </Columns>
         <NoRecordsContent>
             <MudText>No referrals found.</MudText>
         </NoRecordsContent>
-    </MudTable>
+    </MudDataGrid>
 </MudPaper>
+
+<MudDialog @bind-Visible="_addReferralDialogOpen" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Add New Referral</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Model="_newReferral">
+            <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" />
+            <MudTextField @bind-Value="_newReferral.DocumentId" Label="Document ID (Optional)" Variant="Variant.Outlined" Class="mt-3" />
+            <!-- Optionally add dropdowns for Employee/Customer if needed, or let parent handle -->
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="AddReferral">Add Referral</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
 @code {
     [Parameter] public IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
+    [Parameter] public EventCallback<ReferralDto> OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private bool _addReferralDialogOpen = false;
+    private ReferralDto _newReferral = new ReferralDto();
+    private MudForm form = default!;
+    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+    private void ShowAddReferralDialog()
+    {
+        _newReferral = new ReferralDto();
+        _addReferralDialogOpen = true;
+    }
+
+    private async Task AddReferral()
+    {
+        await form.Validate();
+        if (!form.IsValid) return;
+        await OnSave.InvokeAsync(_newReferral);
+        _addReferralDialogOpen = false;
+    }
+
+    private async Task Cancel()
+    {
+        _addReferralDialogOpen = false;
+        if (OnCancel.HasDelegate)
+            await OnCancel.InvokeAsync();
+    }
 }

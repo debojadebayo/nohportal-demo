@@ -1,5 +1,6 @@
 ﻿using ComposedHealthBase.Server.Entities;
 
+
 namespace Server.Modules.CRM.Entities
 {
 	public class Product : BaseEntity<Product>, IEntity
@@ -8,5 +9,16 @@ namespace Server.Modules.CRM.Entities
 		public decimal Price { get; set; }
 		public DateTime? StartTime { get; set; }
 		public DateTime? EndTime { get; set; }
+		public long CustomerId
+		{
+			get
+			{
+				return TenantId;
+			}
+			set
+			{
+				TenantId = value;
+			}
+		}
 	}
 }

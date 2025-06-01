@@ -6,6 +6,9 @@ using Client.RoleManagement;
 using MudBlazor.Services;
 using System.Net;
 using MudBlazor;
+using ComposedHealthBase.BaseClient.Services;
+using Shared.DTOs.CRM;
+using Shared.DTOs.Scheduling;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -34,5 +37,18 @@ builder.Services.AddOidcAuthentication(options =>
 builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
 builder.Services.AddBlazorPdfViewer();
+
+// Register application services
+builder.Services.AddScoped<ILazyLookupService<CustomerDto>, LazyLookupService<CustomerDto>>();
+builder.Services.AddScoped<ILazyLookupService<EmployeeDto>, LazyLookupService<EmployeeDto>>();
+builder.Services.AddScoped<ILazyLookupService<ManagerDto>, LazyLookupService<ManagerDto>>();
+builder.Services.AddScoped<ILazyLookupService<ClinicianDto>, LazyLookupService<ClinicianDto>>();
+builder.Services.AddScoped<ILazyLookupService<ReferralDto>, LazyLookupService<ReferralDto>>();
+builder.Services.AddScoped<ILazyLookupService<ProductDto>, LazyLookupService<ProductDto>>();
+builder.Services.AddScoped<ILazyLookupService<ScheduleDto>, LazyLookupService<ScheduleDto>>();
+builder.Services.AddScoped<ILazyLookupService<CustomerDocumentDto>, LazyLookupService<CustomerDocumentDto>>();
+builder.Services.AddScoped<ILazyLookupService<EmployeeDocumentDto>, LazyLookupService<EmployeeDocumentDto>>();
+builder.Services.AddScoped<ILazyLookupService<ContractDto>, LazyLookupService<ContractDto>>();
+builder.Services.AddScoped<IDocumentUploadService, DocumentUploadService>();
 
 await builder.Build().RunAsync();

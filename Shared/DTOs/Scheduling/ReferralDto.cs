@@ -1,21 +1,16 @@
 ﻿using ComposedHealthBase.Shared.DTOs;
+using ComposedHealthBase.Shared.Interfaces;
 using Shared.DTOs;
 
 namespace Shared.DTOs.Scheduling
 {
-	public class ReferralDto : IDto
+	public class ReferralDto : BaseDto<ReferralDto>, IDto, ILazyLookup
 	{
-		public long Id { get; set; }
-		public bool IsActive { get; set; }
-		public long CreatedBy { get; set; }
-		public long LastModifiedBy { get; set; }
-		public DateTime CreatedDate { get; set; }
-		public DateTime ModifiedDate { get; set; }
-		public long TenantId { get; set; }
-		public long CustomerId { get; set; }
-		public long EmployeeId { get; set; }
 		public string ReferralDetails { get; set; } = string.Empty;
 		public string DocumentId { get; set; } = string.Empty;
 		public string Title { get; set; } = string.Empty;
+		public string DisplayName => $"{Title} - {ReferralDetails}";
+		public long CustomerId { get; set; }
+		public long EmployeeId { get; set; }
 	}
 }

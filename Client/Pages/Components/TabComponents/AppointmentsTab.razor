@@ -3,25 +3,18 @@
 @using MudBlazor
 
 <MudPaper Class="pa-4">
-    <MudTable Items="Appointments ?? new List<ScheduleDto>()" Dense="true" Hover="true">
-        <HeaderContent>
-            <MudTh>Start</MudTh>
-            <MudTh>End</MudTh>
-            <MudTh>Title</MudTh>
-            <MudTh>Description</MudTh>
-            <MudTh>Status</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd>@context.StartTime?.ToString("g")</MudTd>
-            <MudTd>@context.EndTime?.ToString("g")</MudTd>
-            <MudTd>@context.Title</MudTd>
-            <MudTd>@context.Description</MudTd>
-            <MudTd>@context.Status</MudTd>
-        </RowTemplate>
+    <MudDataGrid T="ScheduleDto" Items="Appointments ?? new List<ScheduleDto>()" Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true">
+        <Columns>
+            <PropertyColumn Property="x => x.StartTime" Title="Start" />
+            <PropertyColumn Property="x => x.EndTime" Title="End" />
+            <PropertyColumn Property="x => x.Title" />
+            <PropertyColumn Property="x => x.Description" />
+            <PropertyColumn Property="x => x.Status" />
+        </Columns>
         <NoRecordsContent>
             <MudText>No appointments found.</MudText>
         </NoRecordsContent>
-    </MudTable>
+    </MudDataGrid>
 </MudPaper>
 
 @code {

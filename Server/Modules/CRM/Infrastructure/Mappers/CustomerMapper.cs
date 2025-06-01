@@ -29,7 +29,7 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
         };
     }
 
-    public Customer Map(CustomerDto dto)
+    public Customer MapWithKeycloakId(CustomerDto dto, Guid keycloakId)
     {
         return new Customer
         {
@@ -47,10 +47,7 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
             InvoiceEmail = dto.InvoiceEmail,
             Notes = dto.Notes,
             IsActive = dto.IsActive,
-            CreatedBy = dto.CreatedBy,
-            LastModifiedBy = dto.LastModifiedBy,
-            CreatedDate = dto.CreatedDate,
-            ModifiedDate = dto.ModifiedDate
+            KeycloakId = keycloakId,
         };
     }
 
@@ -66,7 +63,6 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
 
     public void Map(CustomerDto dto, Customer entity)
     {
-        entity.Id = dto.Id;
         entity.Name = dto.Name;
         entity.Telephone = dto.Telephone;
         entity.NumberOfEmployees = dto.NumberOfEmployees;
@@ -80,10 +76,6 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
         entity.InvoiceEmail = dto.InvoiceEmail;
         entity.Notes = dto.Notes;
         entity.IsActive = dto.IsActive;
-        entity.CreatedBy = dto.CreatedBy;
-        entity.LastModifiedBy = dto.LastModifiedBy;
-        entity.CreatedDate = dto.CreatedDate;
-        entity.ModifiedDate = dto.ModifiedDate;
     }
 
     public void Map(Customer entity, CustomerDto dto)
@@ -108,23 +100,8 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
         dto.ModifiedDate = entity.ModifiedDate;
     }
 
-    public void Map(IEnumerable<CustomerDto> dtos, IEnumerable<Customer> entities)
+    public Customer Map(CustomerDto dto)
     {
-        var dtosArray = dtos.ToArray();
-        var entitiesArray = entities.ToArray();
-        for (int i = 0; i < Math.Min(dtosArray.Length, entitiesArray.Length); i++)
-        {
-            Map(dtosArray[i], entitiesArray[i]);
-        }
-    }
-
-    public void Map(IEnumerable<Customer> entities, IEnumerable<CustomerDto> dtos)
-    {
-        var dtosArray = dtos.ToArray();
-        var entitiesArray = entities.ToArray();
-        for (int i = 0; i < Math.Min(dtosArray.Length, entitiesArray.Length); i++)
-        {
-            Map(entitiesArray[i], dtosArray[i]);
-        }
+        throw new NotImplementedException("Mapping from CustomerDto to Customer without KeycloakId is not supported. Use MapWithKeycloakId instead.");
     }
 }
