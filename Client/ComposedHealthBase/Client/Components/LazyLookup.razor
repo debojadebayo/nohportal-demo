@@ -5,11 +5,19 @@
 @typeparam TDto where TDto : ILazyLookup
 @inject ILazyLookupService<TDto> LookupService
 
-<MudAutocomplete T="long" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
-    ValueChanged="@OnItemChanged" SearchFunc="@LookupService.ItemSearch"
-    Variant="Variant.Outlined" ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
-<p>@ItemId</p>
+@if (ReadOnly)
+{
+    <MudText Typo="Typo.body1">@LookupService.ItemToString(ItemId)</MudText>
+}
+else
+{
+    <MudAutocomplete T="long" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
+        ValueChanged="@OnItemChanged" SearchFunc="@LookupService.ItemSearch" Variant="Variant.Outlined"
+        ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
+}
+
 @code {
+    [Parameter] public bool ReadOnly { get; set; } = false;
     [Parameter] public long ItemId { get; set; } = 0;
     [Parameter] public string Label { get; set; } = "";
     [Parameter] public EventCallback<long> ItemIdChanged { get; set; }

@@ -11,50 +11,27 @@
 
 <MudPaper Class="pa-4">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
-        <MudText Typo="Typo.h6">Documents</MudText>
+        <MudText Typo="Typo.h1">Documents</MudText>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowDocumentUploadDialog"
             StartIcon="@Icons.Material.Filled.UploadFile">Upload New Document</MudButton>
     </MudStack>
-    <MudTable T="TDto" Items="Documents ?? new List<TDto>()" Dense="true" Hover="true" Striped="true" Bordered="true">
-        <HeaderContent>
-            <MudTh>Name</MudTh>
-            <MudTh>Description</MudTh>
-            <MudTh>File Path</MudTh>
-            <MudTh>Active</MudTh>
-            <MudTh>Created By</MudTh>
-            <MudTh>Created Date</MudTh>
-            <MudTh>Modified By</MudTh>
-            <MudTh>Modified Date</MudTh>
-        </HeaderContent>
-        <RowTemplate Context="docContext">
-            @{
-                var context = docContext;
-            }
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Description">@context.Description</MudTd>
-            <MudTd DataLabel="File Path">
-                @if (!string.IsNullOrEmpty(@context.FilePath))
-                {
-                    <MudLink OnClick="() => OnDocumentSelected(context)" Target="_blank">View Document</MudLink>
-                }
-                else
-                {
-                    <MudText>No file available</MudText>
-                }
-            </MudTd>
-            <MudTd DataLabel="Active">@context.IsActive</MudTd>
-            <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
-            <MudTd DataLabel="Created Date">@context.CreatedDate.ToString("g")</MudTd>
-            <MudTd DataLabel="Modified By">@context.LastModifiedBy</MudTd>
-            <MudTd DataLabel="Modified Date">@context.ModifiedDate.ToString("g")</MudTd>
-        </RowTemplate>
+    <MudDataGrid T="TDto" Items="Documents" Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true">
+        <Columns>
+            <PropertyColumn Property="x => x.Name" />
+            <PropertyColumn Property="x => x.Description" />
+            <PropertyColumn Property="x => x.CreatedBy" Title="Created By" />
+            <PropertyColumn Property="x => x.CreatedDate" Title="Created Date" />
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudButton OnClick="() => OnDocumentSelected(context.Item)" Size="@Size.Small"
+                        Variant="@Variant.Filled" Color="@Color.Primary">View Document</MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
         <NoRecordsContent>
             <MudText>No documents found.</MudText>
         </NoRecordsContent>
-        <PagerContent>
-            <MudTablePager />
-        </PagerContent>
-    </MudTable>
+    </MudDataGrid>
 </MudPaper>
 <MudDialog @bind-Visible="@_documentViewerOpen" Options="_documentViewerOptions">
     <TitleContent>
@@ -139,7 +116,8 @@
         if (_fileToUpload == null || string.IsNullOrWhiteSpace(_fileToUpload.Name))
             return;
 
-        await DocumentUploadService.UploadDocument<TDto>(new Tuple<IDocumentDto, IBrowserFile>(NewDocument, _fileToUpload), CancellationToken.None);
+        await DocumentUploadService.UploadDocument<TDto>(new Tuple<IDocumentDto, IBrowserFile>(NewDocument, _fileToUpload),
+        CancellationToken.None);
         await OnSave.InvokeAsync();
         _uploadDocumentDialogOpen = false;
     }

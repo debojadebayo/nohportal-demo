@@ -75,10 +75,7 @@
     private List<ManagerDto> managers = new();
     private List<ProductTypeDto> productTypes = new();
     private List<CustomerDocumentDto> documents = new();
-    private CustomerDocumentDto newDocument = new CustomerDocumentDto{
-        Name = "",
-        FilePath = ""
-    };
+    private CustomerDocumentDto newDocument = default!;
     private void CreateCustomer()
     {
         CustomerLookupService.ItemList.TryAdd(0, new CustomerDto());
@@ -134,6 +131,12 @@
     {
         if (selectedCustomer == null) return;
         documents = (await DocumentLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
+        newDocument = new CustomerDocumentDto
+        {
+            CustomerId = selectedCustomer.Id,
+            Name = "",
+            FilePath = ""
+        };
     }
     private async Task OnDocumentSave()
     {

@@ -60,11 +60,7 @@
     private List<ReferralDto> referrals = new();
     private List<ManagerDto> managers = new();
     private List<EmployeeDocumentDto> documents = new();
-    private EmployeeDocumentDto newDocument = new EmployeeDocumentDto
-    {
-        Name = "",
-        FilePath = ""
-    };
+    private EmployeeDocumentDto newDocument = default!;
     private List<ContractDto> contracts = new();
     private List<ProductDto> products = new();
 
@@ -122,11 +118,17 @@
     private async Task GetAllDocumentsByEmployeeId()
     {
         if (selectedEmployee == null) return;
-        documents = (await DocumentLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
+        documents = (await DocumentLookupService.GetAllBySubjectId(selectedEmployee.Id, CancellationToken.None)).ToList();
+        newDocument = new EmployeeDocumentDto
+        {
+            EmployeeId = selectedEmployee.Id,
+            Name = "",
+            FilePath = ""
+        };
     }
     private async Task OnDocumentSave()
     {
-        documents = (await DocumentLookupService.GetAllByTenantId(selectedEmployeeId, CancellationToken.None)).ToList();
+        documents = (await DocumentLookupService.GetAllBySubjectId(selectedEmployeeId, CancellationToken.None)).ToList();
         newDocument = new EmployeeDocumentDto
         {
             EmployeeId = selectedEmployeeId,

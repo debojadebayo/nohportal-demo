@@ -1,11 +1,7 @@
-@* @namespace Client.Pages.Components.TabComponents
-@using Shared.DTOs.Scheduling
+@namespace Client.Pages.Components.TabComponents
 @using Shared.DTOs.CRM
-@using Shared.Validators
 @using MudBlazor
-@using Client.Pages.Components.Lookups
-@inject IHttpClientFactory HttpClientFactory
-
+@using Shared.DTOs.Scheduling
 
 <MudPaper Class="pa-4">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
@@ -13,27 +9,19 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowAddReferralDialog"
             StartIcon="@Icons.Material.Filled.Add">Add New Referral</MudButton>
     </MudStack>
-    <MudTable Items="Referrals ?? new List<ReferralDto>()" Dense="true" Hover="true">
-        <HeaderContent>
-            <MudTh>Created</MudTh>
-            <MudTh>Title</MudTh>
-            <MudTh>Referral Details</MudTh>
-            <MudTh>Employee</MudTh>
-            <MudTh>Customer</MudTh>
-            <MudTh>Document Id</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd>@context.CreatedDate.ToString("g")</MudTd>
-            <MudTd>@context.Title</MudTd>
-            <MudTd>@context.ReferralDetails</MudTd>
-            <MudTd>@GetEmployeeName(context.EmployeeId)</MudTd>
-            <MudTd>@GetCustomerName(context.CustomerId)</MudTd>
-            <MudTd>@context.DocumentId</MudTd>
-        </RowTemplate>
+    <MudDataGrid T="ReferralDto" Items="Referrals ?? new List<ReferralDto>()" Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true">
+        <Columns>
+            <PropertyColumn Property="x => x.CreatedDate" Title="Created" />
+            <PropertyColumn Property="x => x.Title" />
+            <PropertyColumn Property="x => x.ReferralDetails" Title="Referral Details" />
+            <PropertyColumn Property="x => x.EmployeeId" Title="Employee" />
+            <PropertyColumn Property="x => x.CustomerId" Title="Customer" />
+            <PropertyColumn Property="x => x.DocumentId" Title="Document Id" />
+        </Columns>
         <NoRecordsContent>
             <MudText>No referrals found.</MudText>
         </NoRecordsContent>
-    </MudTable>
+    </MudDataGrid>
 </MudPaper>
 
 <MudDialog @bind-Visible="_addReferralDialogOpen" Options="_dialogOptions">
@@ -41,169 +29,47 @@
         <MudText Typo="Typo.h6">Add New Referral</MudText>
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="form" Model="_newReferral" Validation="@(referralValidator.ValidateValue)" ValidationDelay="0">
-            <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined"
-                For="@(() => _newReferral.Title)" />
-                
-            <LazyLookup TDto="CustomerDto" @bind-Item="selectedCustomer" Label="Company Name" />
-                
-            <EmployeeLookup @bind-Value="selectedEmployee" />
-                
-            <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined"
-                For="@(() => _newReferral.ReferralDetails)" Class="mt-3" Lines="3" />
-                
-            <MudTextField @bind-Value="_newReferral.DocumentId" Label="Document ID (Optional)" Variant="Variant.Outlined"
-                For="@(() => _newReferral.DocumentId)" Class="mt-3" />
+        <MudForm @ref="form" Model="_newReferral">
+            <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" />
+            <MudTextField @bind-Value="_newReferral.DocumentId" Label="Document ID (Optional)" Variant="Variant.Outlined" Class="mt-3" />
+            <!-- Optionally add dropdowns for Employee/Customer if needed, or let parent handle -->
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="AddReferral" Disabled="_isSubmitting">Add Referral</MudButton>
-        <MudButton OnClick="() => _addReferralDialogOpen = false">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AddReferral">Add Referral</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [Parameter] public IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
     [Parameter] public EventCallback<ReferralDto> OnSave { get; set; }
-    
+    [Parameter] public EventCallback OnCancel { get; set; }
+
     private bool _addReferralDialogOpen = false;
-    private ReferralDto _newReferral = default!;
-    private CustomerDto? _selectedCustomer = default!;
-    private EmployeeDto? _selectedEmployee = default!;
+    private ReferralDto _newReferral = new ReferralDto();
     private MudForm form = default!;
-    private bool _isSubmitting = false;
-    private HttpClient httpClient = default!;
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-    private ReferralValidator referralValidator = new ReferralValidator();
-    private Dictionary<long, string> _employeeNames = new();
-    private Dictionary<long, string> _customerNames = new();
-    
-    protected override void OnInitialized()
-    {
-        httpClient = HttpClientFactory.CreateClient("api");
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        // Load employee and customer names using the lookup service
-        await LoadEmployeeCustomerNames();
-    }
-
-    private async Task LoadEmployeeCustomerNames()
-    {
-        try
-        {
-            if (Referrals.Any())
-            {
-                // Get unique IDs
-                var employeeIds = Referrals.Select(r => r.EmployeeId).Distinct().ToList();
-                var customerIds = Referrals.Select(r => r.CustomerId).Distinct().ToList();
-                
-                // Load name maps
-                if (employeeIds.Any())
-                {
-                    _employeeNames = await LookupService.LoadEmployeeNamesAsync(employeeIds);
-                }
-                
-                if (customerIds.Any())
-                {
-                    _customerNames = await LookupService.LoadCustomerNamesAsync(customerIds);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            SnackbarService.Add($"Error loading names: {ex.Message}", MudBlazor.Severity.Error);
-        }
-    }
-
-    private string GetEmployeeName(long id)
-    {
-        if (_employeeNames.TryGetValue(id, out var name))
-            return name;
-        return $"ID: {id}";
-    }
-
-    private string GetCustomerName(long id)
-    {
-        if (_customerNames.TryGetValue(id, out var name))
-            return name;
-        return $"ID: {id}";
-    }
 
     private void ShowAddReferralDialog()
     {
-        _newReferral = new ReferralDto
-        {
-            Title = "",
-            ReferralDetails = "",
-            DocumentId = "",
-        };
-        _selectedCustomer = null;
-        _selectedEmployee = null;
+        _newReferral = new ReferralDto();
         _addReferralDialogOpen = true;
-    }
-
-    private void OnCustomerSelected(CustomerDto? customer)
-    {
-        if (customer != null)
-        {
-            _newReferral.CustomerId = customer.Id;
-            _selectedEmployee = null;
-        }
     }
 
     private async Task AddReferral()
     {
         await form.Validate();
         if (!form.IsValid) return;
-
-        if (_selectedCustomer == null)
-        {
-            SnackbarService.Add("Please select a customer", MudBlazor.Severity.Warning);
-            return;
-        }
-
-        if (_selectedEmployee == null)
-        {
-            SnackbarService.Add("Please select an employee", MudBlazor.Severity.Warning);
-            return;
-        }
-
-        try
-        {
-            _isSubmitting = true;
-            _newReferral.CustomerId = _selectedCustomer.Id;
-            _newReferral.EmployeeId = _selectedEmployee.Id;
-
-            // Check if we're using event callback or making direct API call
-            if (OnSave.HasDelegate)
-            {
-                await OnSave.InvokeAsync(_newReferral);
-            }
-            else
-            {
-                var response = await httpClient.PostAsJsonAsync("api/referral/create", _newReferral);
-                if (response.IsSuccessStatusCode)
-                {
-                    SnackbarService.Add("Referral added successfully", MudBlazor.Severity.Success);
-                }
-                else
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-                    SnackbarService.Add($"Error adding referral: {error}", MudBlazor.Severity.Error);
-                }
-            }
-
-            _addReferralDialogOpen = false;
-        }
-        catch (Exception ex)
-        {
-            SnackbarService.Add($"Error adding referral: {ex.Message}", MudBlazor.Severity.Error);
-        }
-        finally
-        {
-            _isSubmitting = false;
-        }
+        await OnSave.InvokeAsync(_newReferral);
+        _addReferralDialogOpen = false;
     }
-} *@
+
+    private async Task Cancel()
+    {
+        _addReferralDialogOpen = false;
+        if (OnCancel.HasDelegate)
+            await OnCancel.InvokeAsync();
+    }
+}

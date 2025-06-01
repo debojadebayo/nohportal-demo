@@ -38,7 +38,7 @@ where TDto : ILazyLookup
         _snackbar = snackbar;
     }
 
-    public string ItemToString(long e) => e > 0 && ItemList.TryGetValue(e, out TDto? item) ? $"{item.DisplayName} - {item.Id}" : string.Empty;
+    public string ItemToString(long e) => e > 0 && ItemList.TryGetValue(e, out TDto? item) ? $"{item.DisplayName}" : string.Empty;
     public async Task<IEnumerable<long>> ItemSearch(string value, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length < 3)
