@@ -15,7 +15,7 @@ using Azure.Storage.Sas;
 namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class DocumentEndpoints<T, TDto, TContext>
-	where T : BaseEntity<T>
+	where T : BaseEntity<T>, IDocument
 	where TDto : IDto, IDocumentDto
 	where TContext : IDbContext<TContext>
 	{

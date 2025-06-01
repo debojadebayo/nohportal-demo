@@ -36,6 +36,10 @@ namespace ComposedHealthBase.Server.Queries
                 }
             }
             var entity = await query.FirstOrDefaultAsync(predicate);
+            if (entity == null)
+            {
+                return default;
+            }
             return _mapper.Map(entity);
         }
     }

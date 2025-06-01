@@ -4,11 +4,11 @@ using Shared.DTOs.CRM;
 
 namespace Server.Modules.CRM.Infrastructure.Mappers
 {
-    public class EmployeeDocumentMapper : IMapper<EmployeeDocument, DocumentDto>
+    public class EmployeeDocumentMapper : IMapper<EmployeeDocument, EmployeeDocumentDto>
     {
-        public DocumentDto Map(EmployeeDocument entity)
+        public EmployeeDocumentDto Map(EmployeeDocument entity)
         {
-            return new DocumentDto
+            return new EmployeeDocumentDto
             {
                 Id = entity.Id,
                 IsActive = entity.IsActive,
@@ -20,11 +20,12 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 Name = entity.Name,
                 Description = entity.Description,
                 BlobContainerName = entity.BlobContainerName,
-                BlobName = entity.BlobName
+                BlobName = entity.BlobName,
+                EmployeeId = entity.EmployeeId
             };
         }
 
-        public EmployeeDocument Map(DocumentDto dto)
+        public EmployeeDocument Map(EmployeeDocumentDto dto)
         {
             return new EmployeeDocument
             {
@@ -34,21 +35,22 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 Name = dto.Name,
                 Description = dto.Description,
                 BlobContainerName = dto.BlobContainerName,
-                BlobName = dto.BlobName
+                BlobName = dto.BlobName,
+                EmployeeId = dto.EmployeeId
             };
         }
 
-        public IEnumerable<DocumentDto> Map(IEnumerable<EmployeeDocument> entities)
+        public IEnumerable<EmployeeDocumentDto> Map(IEnumerable<EmployeeDocument> entities)
         {
             return entities.Select(Map);
         }
 
-        public IEnumerable<EmployeeDocument> Map(IEnumerable<DocumentDto> dtos)
+        public IEnumerable<EmployeeDocument> Map(IEnumerable<EmployeeDocumentDto> dtos)
         {
             return dtos.Select(Map);
         }
 
-        public void Map(DocumentDto dto, EmployeeDocument entity)
+        public void Map(EmployeeDocumentDto dto, EmployeeDocument entity)
         {
             entity.IsActive = dto.IsActive;
             entity.FilePath = dto.FilePath;
@@ -56,9 +58,10 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             entity.Description = dto.Description;
             entity.BlobContainerName = dto.BlobContainerName;
             entity.BlobName = dto.BlobName;
+            entity.EmployeeId = dto.EmployeeId;
         }
 
-        public void Map(EmployeeDocument entity, DocumentDto dto)
+        public void Map(EmployeeDocument entity, EmployeeDocumentDto dto)
         {
             dto.Id = entity.Id;
             dto.IsActive = entity.IsActive;
@@ -71,9 +74,10 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             dto.Description = entity.Description;
             dto.BlobContainerName = entity.BlobContainerName;
             dto.BlobName = entity.BlobName;
+            dto.EmployeeId = entity.EmployeeId;
         }
 
-        public void Map(IEnumerable<DocumentDto> dtos, IEnumerable<EmployeeDocument> entities)
+        public void Map(IEnumerable<EmployeeDocumentDto> dtos, IEnumerable<EmployeeDocument> entities)
         {
             var dtosArray = dtos.ToArray();
             var entitiesArray = entities.ToArray();
@@ -83,7 +87,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             }
         }
 
-        public void Map(IEnumerable<EmployeeDocument> entities, IEnumerable<DocumentDto> dtos)
+        public void Map(IEnumerable<EmployeeDocument> entities, IEnumerable<EmployeeDocumentDto> dtos)
         {
             var dtosArray = dtos.ToArray();
             var entitiesArray = entities.ToArray();
