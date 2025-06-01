@@ -1,11 +1,11 @@
 ﻿@page "/employees"
 @using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.Shared.DTOs
+@using ComposedHealthBase.BaseClient.Components
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @using MudBlazor
 @using Client.Pages.Components.TabComponents
-@using ComposedHealthBase.BaseClient.Components
 @inject ILazyLookupService<EmployeeDto> EmployeeLookupService
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
 @inject ILazyLookupService<ManagerDto> ManagerLookupService
@@ -13,7 +13,6 @@
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
 @inject ILazyLookupService<ContractDto> ContractLookupService
 @inject ILazyLookupService<EmployeeDocumentDto> DocumentLookupService
-@inject IDocumentUploadService DocumentUploadService
 
 @attribute [Authorize]
 
@@ -42,7 +41,8 @@
             <ManagersTab Managers="managers" />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByEmployeeId">
-            <DocumentLibraryTab Documents="documents" OnSave="@(async (x) => await OnDocumentSave(x))" />
+            <DocumentBrowser TDto="EmployeeDocumentDto" Documents="documents" NewDocument="newDocument"
+                OnSave="OnDocumentSave" />
         </MudTabPanel>
         <MudTabPanel Text="Notes">
             <NotesTab Model="selectedEmployee" OnSave="HandleEmployeeSave" TDto="EmployeeDto" />
@@ -53,13 +53,18 @@
 
 @code {
     private MudTabs tabs = default!;
-    private EmployeeDto? selectedEmployee => 
-        EmployeeLookupService.ItemList.TryGetValue(selectedEmployeeId, out var employee) ? employee : null;
+    private EmployeeDto? selectedEmployee =>
+    EmployeeLookupService.ItemList.TryGetValue(selectedEmployeeId, out var employee) ? employee : null;
     private long selectedEmployeeId { get; set; } = 0;
     private List<ScheduleDto> appointments = new();
     private List<ReferralDto> referrals = new();
     private List<ManagerDto> managers = new();
     private List<EmployeeDocumentDto> documents = new();
+    private EmployeeDocumentDto newDocument = new EmployeeDocumentDto
+    {
+        Name = "",
+        FilePath = ""
+    };
     private List<ContractDto> contracts = new();
     private List<ProductDto> products = new();
 
@@ -119,8 +124,14 @@
         if (selectedEmployee == null) return;
         documents = (await DocumentLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
     }
-    private async Task OnDocumentSave(Tuple<IDocumentDto,IBrowserFile> document)
+    private async Task OnDocumentSave()
     {
-        await DocumentUploadService.UploadDocument<EmployeeDocumentDto>(document);
+        documents = (await DocumentLookupService.GetAllByTenantId(selectedEmployeeId, CancellationToken.None)).ToList();
+        newDocument = new EmployeeDocumentDto
+        {
+            EmployeeId = selectedEmployeeId,
+            Name = "",
+            FilePath = ""
+        };
     }
 }

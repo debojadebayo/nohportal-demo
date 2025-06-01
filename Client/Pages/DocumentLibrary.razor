@@ -1,131 +1,31 @@
 @page "/document-library"
+@using ComposedHealthBase.BaseClient.Components
 @using ComposedHealthBase.BaseClient.Services
-@using ComposedHealthBase.Shared.DTOs
-@using Gotho.BlazorPdf
-@using System.Collections.Generic
 @using Shared.DTOs.CRM
 @inject ILazyLookupService<CustomerDocumentDto> DocumentLookupService
-@inject IDocumentUploadService DocumentUploadService
 
-<MudText Typo="Typo.h1">Documents Library</MudText>
-<MudGrid>
-    <MudItem xs="12" sm="4" md="3">
-        <MudPaper Class="pa-4" Elevation="1">
-            <MudTextField T="string" @bind-Value="searchTerm" Placeholder="Search Document" Adornment="Adornment.Start"
-                AdornmentIcon="@Icons.Material.Filled.Search" Class="mb-2" />
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Upload"
-                OnClick="ShowDocumentUploadDialog" Class="mb-2">
-                Upload Document
-            </MudButton>
-            <MudList T="CustomerDocumentDto" Dense="true">
-                @foreach (var doc in filteredDocuments)
-                {
-                    <MudListItem OnClick="() => OnDocumentSelected(doc)" Value="doc">@doc.Name</MudListItem>
-                }
-            </MudList>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="8" md="9">
-        <MudPaper Class="pa-4" Elevation="1">
-            @if (isLoading)
-            {
-                <MudProgressCircular Indeterminate="true" />
-            }
-            else if (!string.IsNullOrEmpty(documentUrl))
-            {
-                <PdfViewer Url="@documentUrl" />
-            }
-            else
-            {
-                <MudAlert Severity="Severity.Info">Select a document to view</MudAlert>
-            }
-        </MudPaper>
-    </MudItem>
-</MudGrid>
-
-<MudDialog @bind-Visible="_uploadDocumentDialogOpen" Options="_dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">Upload New Document</MudText>
-    </TitleContent>
-    <DialogContent>
-        <MudTextField @bind-Value="_newDocument.Name" Label="Document Name" Variant="Variant.Outlined"
-            For="@(() => _newDocument.Name)" />
-        <MudTextField @bind-Value="_newDocument.Description" Label="Description" Variant="Variant.Outlined" Lines="3"
-            For="@(() => _newDocument.Description)" Class="mt-3" />
-        <MudFileUpload T="IBrowserFile" FilesChanged="HandleFileSelected">
-            <ActivatorContent>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary">
-                    Select File
-                </MudButton>
-            </ActivatorContent>
-            <SelectedTemplate>
-                @if (_fileToUpload != null)
-                {
-                    <MudText>@_fileToUpload.Name</MudText>
-                }
-                else
-                {
-                    <MudText>No File</MudText>
-                }
-            </SelectedTemplate>
-        </MudFileUpload>
-    </DialogContent>
-    <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="UploadDocument" Disabled="_fileToUpload == null">Upload</MudButton>
-        <MudButton OnClick="() => _uploadDocumentDialogOpen = false">Cancel</MudButton>
-    </DialogActions>
-</MudDialog>
+<DocumentBrowser TDto="CustomerDocumentDto" Documents="documents" NewDocument="newDocument" OnSave="OnDocumentSave" />
 
 @code {
-    private string searchTerm = "";
-    private string documentUrl = "";
-    private bool isLoading = false;
     private List<CustomerDocumentDto> documents = new();
-
-    private bool _uploadDocumentDialogOpen = false;
-    private DialogOptions _dialogOptions = new() { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small };
-    private CustomerDocumentDto _newDocument = default!;
-    private IBrowserFile? _fileToUpload;
-
+    private CustomerDocumentDto newDocument = new CustomerDocumentDto
+    {
+        CustomerId = 20,
+        Name = "",
+        FilePath = ""
+    };
     protected override async Task OnInitializedAsync()
     {
-        documents = (await DocumentLookupService.GetAllItems(CancellationToken.None)).ToList();
+        documents = (await DocumentLookupService.GetAllByTenantId(20, CancellationToken.None)).ToList();
     }
-
-    private IEnumerable<CustomerDocumentDto> filteredDocuments => 
-        string.IsNullOrWhiteSpace(searchTerm) 
-            ? documents 
-            : documents.Where(d => d.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
-
-    private async Task OnDocumentSelected(CustomerDocumentDto document)
+    private async Task OnDocumentSave()
     {
-        documentUrl = (await DocumentUploadService.GetSasLink<CustomerDocumentDto>(document.Id, CancellationToken.None)) ?? "";
-    }
-    private void ShowDocumentUploadDialog()
-    {
-        _newDocument = new CustomerDocumentDto
-        { 
-            FilePath = "placeholder",  // Temporary placeholder
-            Name = "", 
-            Description = "",
-            CustomerId = 20
+        documents = (await DocumentLookupService.GetAllByTenantId(20, CancellationToken.None)).ToList();
+        newDocument = new CustomerDocumentDto
+        {
+            CustomerId = 20,
+            Name = "",
+            FilePath = ""
         };
-        _fileToUpload = null;
-        _uploadDocumentDialogOpen = true;
-    }
-    private void HandleFileSelected(IBrowserFile file)
-    {
-        _fileToUpload = file;
-    }
-
-    private async Task UploadDocument()
-    {
-        if (_fileToUpload == null || string.IsNullOrWhiteSpace(_newDocument.Name))
-            return;
-
-        await DocumentUploadService.UploadDocument<CustomerDocumentDto>(new Tuple<IDocumentDto, IBrowserFile>(_newDocument, _fileToUpload), CancellationToken.None);
-        documents = (await DocumentLookupService.GetAllItems(CancellationToken.None)).ToList();
-        _uploadDocumentDialogOpen = false;
-        StateHasChanged();
     }
 }

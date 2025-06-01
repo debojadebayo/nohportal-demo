@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Reflection;
 
 namespace ComposedHealthBase.BaseClient.Services
 {
@@ -64,9 +65,12 @@ namespace ComposedHealthBase.BaseClient.Services
                 var endpointType = GetEndpointType<TDto>();
                 using var content = new MultipartFormDataContent();
 
-                // Serialize DTO to JSON and add as a part named "documentDto"
-                var dtoJson = JsonSerializer.Serialize(document.Item1);
-                content.Add(new StringContent(dtoJson, System.Text.Encoding.UTF8, "application/json"), "documentDto");
+                // Add each property of the DTO as a form field
+                foreach (var prop in document.Item1.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    var value = prop.GetValue(document.Item1)?.ToString() ?? string.Empty;
+                    content.Add(new StringContent(value), prop.Name);
+                }
 
                 // Add file
                 var fileContent = new StreamContent(document.Item2.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10));

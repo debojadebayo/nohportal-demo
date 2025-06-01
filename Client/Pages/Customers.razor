@@ -13,7 +13,6 @@
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
 @inject ILazyLookupService<ContractDto> ContractLookupService
 @inject ILazyLookupService<CustomerDocumentDto> DocumentLookupService
-@inject IDocumentUploadService DocumentUploadService
 
 @attribute [Authorize]
 
@@ -50,7 +49,10 @@
             <InvoicingTab />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByCustomerId">
-            <DocumentLibraryTab Documents="documents" OnSave="@(async (x) => await OnDocumentSave(x))" />
+            <DocumentBrowser TDto="CustomerDocumentDto"
+                   Documents="documents"
+                   NewDocument="newDocument"
+                   OnSave="OnDocumentSave" />
         </MudTabPanel>
         <MudTabPanel Text="Reports">
             <ReportsTab />
@@ -73,6 +75,10 @@
     private List<ManagerDto> managers = new();
     private List<ProductTypeDto> productTypes = new();
     private List<CustomerDocumentDto> documents = new();
+    private CustomerDocumentDto newDocument = new CustomerDocumentDto{
+        Name = "",
+        FilePath = ""
+    };
     private void CreateCustomer()
     {
         CustomerLookupService.ItemList.TryAdd(0, new CustomerDto());
@@ -129,8 +135,14 @@
         if (selectedCustomer == null) return;
         documents = (await DocumentLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
     }
-    private async Task OnDocumentSave(Tuple<IDocumentDto,IBrowserFile> document)
+    private async Task OnDocumentSave()
     {
-        await DocumentUploadService.UploadDocument<CustomerDocumentDto>(document);
+        documents = (await DocumentLookupService.GetAllByTenantId(selectedCustomerId, CancellationToken.None)).ToList();
+        newDocument = new CustomerDocumentDto
+        {
+            CustomerId = selectedCustomerId,
+            Name = "",
+            FilePath = ""
+        };
     }
 }

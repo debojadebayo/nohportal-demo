@@ -1,8 +1,13 @@
-@namespace Client.Pages.Components.TabComponents
+@namespace ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.Shared.DTOs
+@using ComposedHealthBase.Shared.Interfaces
 @using MudBlazor
+@using Gotho.BlazorPdf
 @inject IDialogService DialogService
-@typeparam TDto where TDto : IDocumentDto
+@inject ILazyLookupService<TDto> DocumentLookupService
+@inject IDocumentUploadService DocumentUploadService
+@typeparam TDto where TDto : IDocumentDto, ILazyLookup
 
 <MudPaper Class="pa-4">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
@@ -10,8 +15,7 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowDocumentUploadDialog"
             StartIcon="@Icons.Material.Filled.UploadFile">Upload New Document</MudButton>
     </MudStack>
-    <MudTable T="TDto" Items="Documents ?? new List<TDto>()" Dense="true" Hover="true" Striped="true"
-        Bordered="true">
+    <MudTable T="TDto" Items="Documents ?? new List<TDto>()" Dense="true" Hover="true" Striped="true" Bordered="true">
         <HeaderContent>
             <MudTh>Name</MudTh>
             <MudTh>Description</MudTh>
@@ -26,26 +30,23 @@
             @{
                 var context = docContext;
             }
-            <MudTd DataLabel="Name">@GetPropertyValue(context, "Name")</MudTd>
-            <MudTd DataLabel="Description">@GetPropertyValue(context, "Description")</MudTd>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Description">@context.Description</MudTd>
             <MudTd DataLabel="File Path">
-                @{
-                    var filePath = GetPropertyValue(context, "FilePath")?.ToString();
-                }
-                @if (!string.IsNullOrEmpty(filePath))
+                @if (!string.IsNullOrEmpty(@context.FilePath))
                 {
-                    <MudLink Href="@filePath" Target="_blank">View Document</MudLink>
+                    <MudLink OnClick="() => OnDocumentSelected(context)" Target="_blank">View Document</MudLink>
                 }
                 else
                 {
                     <MudText>No file available</MudText>
                 }
             </MudTd>
-            <MudTd DataLabel="Active">@GetPropertyValue(context, "IsActive")</MudTd>
-            <MudTd DataLabel="Created By">@GetPropertyValue(context, "CreatedBy")</MudTd>
-            <MudTd DataLabel="Created Date">@FormatDate(GetPropertyValue(context, "CreatedDate"))</MudTd>
-            <MudTd DataLabel="Modified By">@GetPropertyValue(context, "LastModifiedBy")</MudTd>
-            <MudTd DataLabel="Modified Date">@FormatDate(GetPropertyValue(context, "ModifiedDate"))</MudTd>
+            <MudTd DataLabel="Active">@context.IsActive</MudTd>
+            <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
+            <MudTd DataLabel="Created Date">@context.CreatedDate.ToString("g")</MudTd>
+            <MudTd DataLabel="Modified By">@context.LastModifiedBy</MudTd>
+            <MudTd DataLabel="Modified Date">@context.ModifiedDate.ToString("g")</MudTd>
         </RowTemplate>
         <NoRecordsContent>
             <MudText>No documents found.</MudText>
@@ -55,18 +56,37 @@
         </PagerContent>
     </MudTable>
 </MudPaper>
+<MudDialog @bind-Visible="@_documentViewerOpen" Options="_documentViewerOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Document Viewer</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (!string.IsNullOrEmpty(documentUrl))
+        {
+            <PdfViewer Url="@documentUrl" />
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Info">Select a document to view</MudAlert>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="() => _documentViewerOpen = false">Close</MudButton>
+    </DialogActions>
+</MudDialog>
 
 <MudDialog @bind-Visible="_uploadDocumentDialogOpen" Options="_dialogOptions">
     <TitleContent>
         <MudText Typo="Typo.h6">Upload New Document</MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="_newDocumentName" Label="Document Name" Variant="Variant.Outlined" />
-        <MudTextField @bind-Value="_newDocumentDescription" Label="Description" Variant="Variant.Outlined" Lines="3" Class="mt-3" />
+        <MudTextField @bind-Value="NewDocument.Name" Label="Document Name" Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="NewDocument.Description" Label="Description" Variant="Variant.Outlined" Lines="3"
+            Class="mt-3" />
         <MudFileUpload T="IBrowserFile" FilesChanged="HandleFileSelected">
             <ActivatorContent>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary">
-                    Select File  
+                    Select File
                 </MudButton>
             </ActivatorContent>
             <SelectedTemplate>
@@ -90,19 +110,24 @@
 
 @code {
     [Parameter] public List<TDto> Documents { get; set; } = new();
-    [Parameter] public EventCallback<Tuple<IDocumentDto, IBrowserFile>> OnSave { get; set; }
+    [Parameter] public TDto NewDocument { get; set; } = default!;
+    [Parameter] public EventCallback OnSave { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
     private bool _uploadDocumentDialogOpen = false;
-    private string _newDocumentName = "";
-    private string _newDocumentDescription = "";
     private IBrowserFile? _fileToUpload;
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
+    private DialogOptions _documentViewerOptions = new() { FullScreen = true };
+    private bool _documentViewerOpen = false;
+    private string documentUrl = "";
+    private async Task OnDocumentSelected(TDto document)
+    {
+        documentUrl = (await DocumentUploadService.GetSasLink<TDto>(((IDocumentDto)document).Id, CancellationToken.None)) ?? "";
+        _documentViewerOpen = true;
+        StateHasChanged();
+    }
 
     private void ShowDocumentUploadDialog()
     {
-        _newDocumentName = "";
-        _newDocumentDescription = "";
-        _fileToUpload = null;
         _uploadDocumentDialogOpen = true;
     }
     private void HandleFileSelected(IBrowserFile file)
@@ -111,33 +136,11 @@
     }
     private async Task UploadDocument()
     {
-        if (_fileToUpload != null)
-        {
-            var newDto = Activator.CreateInstance<TDto>();
-            SetPropertyValue(newDto, "Name", _newDocumentName);
-            SetPropertyValue(newDto, "Description", _newDocumentDescription);
-            SetPropertyValue(newDto, "FilePath", "placeholder"); // or handle as needed
-            await OnSave.InvokeAsync(new Tuple<IDocumentDto, IBrowserFile>(newDto!, _fileToUpload));
-            _uploadDocumentDialogOpen = false;
-        }
-    }
+        if (_fileToUpload == null || string.IsNullOrWhiteSpace(_fileToUpload.Name))
+            return;
 
-    private object? GetPropertyValue(object obj, string propertyName)
-    {
-        return obj?.GetType().GetProperty(propertyName)?.GetValue(obj);
-    }
-
-    private void SetPropertyValue(object obj, string propertyName, object? value)
-    {
-        var prop = obj?.GetType().GetProperty(propertyName);
-        if (prop != null && prop.CanWrite)
-            prop.SetValue(obj, value);
-    }
-
-    private string? FormatDate(object? dateObj)
-    {
-        if (dateObj is DateTime dt)
-            return dt.ToString("g");
-        return null;
+        await DocumentUploadService.UploadDocument<TDto>(new Tuple<IDocumentDto, IBrowserFile>(NewDocument, _fileToUpload), CancellationToken.None);
+        await OnSave.InvokeAsync();
+        _uploadDocumentDialogOpen = false;
     }
 }

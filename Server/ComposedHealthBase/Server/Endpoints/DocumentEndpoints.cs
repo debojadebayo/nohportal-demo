@@ -14,16 +14,16 @@ using Azure.Storage.Sas;
 
 namespace ComposedHealthBase.Server.Endpoints
 {
-	public abstract class DocumentEndpoints<T, TDto, TContext>
+	public abstract class DocumentEndpoints<T, TDto, TContext> : BaseEndpoints<T, TDto, TContext>
 	where T : BaseEntity<T>, IDocument
 	where TDto : IDto, IDocumentDto
 	where TContext : IDbContext<TContext>
 	{
 		private static string EndpointType => typeof(T).Name.ToLowerInvariant();
-		public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
+			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/{EndpointType}");
-
 			// New upload endpoint
 			group.MapPost("/upload", async (
 				[FromServices] IDbContext<TContext> dbContext,
