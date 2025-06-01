@@ -19,9 +19,10 @@ namespace ComposedHealthBase.Server.Endpoints
 	where TDto : IDto, IDocumentDto
 	where TContext : IDbContext<TContext>
 	{
+		private static string EndpointType => typeof(T).Name.ToLowerInvariant();
 		public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
-			var group = endpoints.MapGroup($"/api/document");
+			var group = endpoints.MapGroup($"/api/{EndpointType}");
 
 			// New upload endpoint
 			group.MapPost("/upload", async (

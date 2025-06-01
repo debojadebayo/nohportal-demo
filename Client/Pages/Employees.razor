@@ -12,7 +12,7 @@
 @inject ILazyLookupService<ScheduleDto> ScheduleLookupService
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
 @inject ILazyLookupService<ContractDto> ContractLookupService
-@inject ILazyLookupService<DocumentDto> DocumentLookupService
+@inject ILazyLookupService<EmployeeDocumentDto> DocumentLookupService
 @inject IDocumentUploadService DocumentUploadService
 
 @attribute [Authorize]
@@ -59,7 +59,7 @@
     private List<ScheduleDto> appointments = new();
     private List<ReferralDto> referrals = new();
     private List<ManagerDto> managers = new();
-    private List<DocumentDto> documents = new();
+    private List<EmployeeDocumentDto> documents = new();
     private List<ContractDto> contracts = new();
     private List<ProductDto> products = new();
 
@@ -121,6 +121,6 @@
     }
     private async Task OnDocumentSave(Tuple<IDocumentDto,IBrowserFile> document)
     {
-        await DocumentUploadService.UploadDocument(document);
+        await DocumentUploadService.UploadDocument<EmployeeDocumentDto>(document);
     }
 }

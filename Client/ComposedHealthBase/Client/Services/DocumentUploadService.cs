@@ -4,15 +4,15 @@ using ComposedHealthBase.Shared.DTOs;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Shared.DTOs.CRM;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace ComposedHealthBase.BaseClient.Services
 {
     public interface IDocumentUploadService
     {
-        Task<bool> UploadDocument(Tuple<IDocumentDto, IBrowserFile> document, long? tenantId = null, CancellationToken token = default);
-        Task<string> GetSasLink(long documentId, CancellationToken token = default);
+        Task<bool> UploadDocument<TDto>(Tuple<IDocumentDto, IBrowserFile> document, CancellationToken token = default) where TDto : IDocumentDto;
+        Task<string> GetSasLink<TDto>(long documentId, CancellationToken token = default) where TDto : IDocumentDto;
     }
 
     public class DocumentUploadService : IDocumentUploadService
@@ -26,48 +26,54 @@ namespace ComposedHealthBase.BaseClient.Services
             _snackbar = snackbar;
         }
 
-        public async Task<string> GetSasLink(long documentId, CancellationToken token = default)
+        private static string GetEndpointType<TDto>() where TDto : IDocumentDto
+        {
+            var typeName = typeof(TDto).Name.Replace("Dto", string.Empty).ToLowerInvariant();
+            return typeName;
+        }
+
+        public async Task<string> GetSasLink<TDto>(long documentId, CancellationToken token = default) where TDto : IDocumentDto
         {
             if (documentId == 0) return string.Empty;
 
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<string>($"api/document/getsaslink/{documentId}");
+                var endpointType = GetEndpointType<TDto>();
+                var response = await _httpClient.GetFromJsonAsync<string>($"api/{endpointType}/getsaslink/{documentId}", token);
 
-                if (response != null && !string.IsNullOrEmpty(response))
+                if (!string.IsNullOrEmpty(response))
                 {
                     return response.Replace("http://blobstorage", "http://localhost");
                 }
                 else
                 {
-                    _snackbar.Add("Failed to get document access link", MudBlazor.Severity.Error);
+                    _snackbar.Add("Failed to get document access link", Severity.Error);
                 }
             }
             catch (Exception ex)
             {
-                _snackbar.Add($"Error loading document: {ex.Message}", MudBlazor.Severity.Error);
+                _snackbar.Add($"Error loading document: {ex.Message}", Severity.Error);
             }
             return string.Empty;
         }
 
-        public async Task<bool> UploadDocument(Tuple<IDocumentDto, IBrowserFile> document, long? tenantId = null, CancellationToken token = default)
+        public async Task<bool> UploadDocument<TDto>(Tuple<IDocumentDto, IBrowserFile> document, CancellationToken token = default) where TDto : IDocumentDto
         {
             try
             {
+                var endpointType = GetEndpointType<TDto>();
                 using var content = new MultipartFormDataContent();
-                var dto = document.Item1;
-                var file = document.Item2;
 
-                content.Add(new StringContent(dto.Name ?? string.Empty), "Name");
-                content.Add(new StringContent(dto.Description ?? string.Empty), "Description");
-                content.Add(new StringContent(dto.FilePath ?? string.Empty), "FilePath");
-                content.Add(new StringContent((tenantId ?? dto.TenantId).ToString()), "TenantId");
+                // Serialize DTO to JSON and add as a part named "documentDto"
+                var dtoJson = JsonSerializer.Serialize(document.Item1);
+                content.Add(new StringContent(dtoJson, System.Text.Encoding.UTF8, "application/json"), "documentDto");
 
-                var fileContent = new StreamContent(file.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10));
-                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
-                content.Add(fileContent, "file", file.Name);
+                // Add file
+                var fileContent = new StreamContent(document.Item2.OpenReadStream(maxAllowedSize: 1024 * 1024 * 10));
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(document.Item2.ContentType);
+                content.Add(fileContent, "file", document.Item2.Name);
 
-                var response = await _httpClient.PostAsync("api/document/upload", content, token);
+                var response = await _httpClient.PostAsync($"api/{endpointType}/upload", content, token);
 
                 if (response.IsSuccessStatusCode)
                 {

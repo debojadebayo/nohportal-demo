@@ -8,15 +8,15 @@
 <MudForm Model="@_model" @ref="@form" ValidationDelay="0">
     <MudGrid>
         <MudItem xs="12" sm="6">
-            <MudSelect T="long" Label="Customer" Value="_model.TenantId" ValueChanged="OnCustomerChanged">
+            <MudSelect T="long" Label="Customer" Value="_model.CustomerId" ValueChanged="OnCustomerChanged">
                 @foreach (var customer in _customers)
                 {
                     <MudSelectItem T="long" Value="@customer.Id">@customer.Name</MudSelectItem>
                 }
             </MudSelect>
-            @if (_model.TenantId != 0)
+            @if (_model.CustomerId != 0)
             {
-                <MudSelect T="long" Label="Patient" @bind-Value="_model.SubjectId">
+                <MudSelect T="long" Label="Patient" @bind-Value="_model.EmployeeId">
                     @foreach (var employee in _employees)
                     {
                         <MudSelectItem T="long" Value="@employee.Id">@employee.FirstName @employee.LastName</MudSelectItem>
@@ -61,8 +61,8 @@
 
     private async Task OnCustomerChanged(long customerId)
     {
-        _model.TenantId = customerId;
-        _model.SubjectId = 0;
+        _model.CustomerId = customerId;
+        _model.EmployeeId = 0;
         _employees = new List<EmployeeDto>();
 
         if (customerId != 0)

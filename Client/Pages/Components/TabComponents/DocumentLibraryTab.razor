@@ -1,8 +1,8 @@
 @namespace Client.Pages.Components.TabComponents
 @using ComposedHealthBase.Shared.DTOs
-@using Shared.DTOs.CRM
 @using MudBlazor
 @inject IDialogService DialogService
+@typeparam TDto where TDto : IDocumentDto
 
 <MudPaper Class="pa-4">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
@@ -10,7 +10,7 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowDocumentUploadDialog"
             StartIcon="@Icons.Material.Filled.UploadFile">Upload New Document</MudButton>
     </MudStack>
-    <MudTable T="DocumentDto" Items="Documents ?? new List<DocumentDto>()" Dense="true" Hover="true" Striped="true"
+    <MudTable T="TDto" Items="Documents ?? new List<TDto>()" Dense="true" Hover="true" Striped="true"
         Bordered="true">
         <HeaderContent>
             <MudTh>Name</MudTh>
@@ -24,25 +24,28 @@
         </HeaderContent>
         <RowTemplate Context="docContext">
             @{
-                var context = (DocumentDto)docContext;
+                var context = docContext;
             }
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Description">@context.Description</MudTd>
+            <MudTd DataLabel="Name">@GetPropertyValue(context, "Name")</MudTd>
+            <MudTd DataLabel="Description">@GetPropertyValue(context, "Description")</MudTd>
             <MudTd DataLabel="File Path">
-                @if (!string.IsNullOrEmpty(context.FilePath))
+                @{
+                    var filePath = GetPropertyValue(context, "FilePath")?.ToString();
+                }
+                @if (!string.IsNullOrEmpty(filePath))
                 {
-                    <MudLink Href="@context.FilePath" Target="_blank">View Document</MudLink>
+                    <MudLink Href="@filePath" Target="_blank">View Document</MudLink>
                 }
                 else
                 {
                     <MudText>No file available</MudText>
                 }
             </MudTd>
-            <MudTd DataLabel="Active">@context.IsActive</MudTd>
-            <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
-            <MudTd DataLabel="Created Date">@context.CreatedDate.ToString("g")</MudTd>
-            <MudTd DataLabel="Modified By">@context.LastModifiedBy</MudTd>
-            <MudTd DataLabel="Modified Date">@context.ModifiedDate.ToString("g")</MudTd>
+            <MudTd DataLabel="Active">@GetPropertyValue(context, "IsActive")</MudTd>
+            <MudTd DataLabel="Created By">@GetPropertyValue(context, "CreatedBy")</MudTd>
+            <MudTd DataLabel="Created Date">@FormatDate(GetPropertyValue(context, "CreatedDate"))</MudTd>
+            <MudTd DataLabel="Modified By">@GetPropertyValue(context, "LastModifiedBy")</MudTd>
+            <MudTd DataLabel="Modified Date">@FormatDate(GetPropertyValue(context, "ModifiedDate"))</MudTd>
         </RowTemplate>
         <NoRecordsContent>
             <MudText>No documents found.</MudText>
@@ -58,10 +61,8 @@
         <MudText Typo="Typo.h6">Upload New Document</MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="_newDocument.Name" Label="Document Name" Variant="Variant.Outlined"
-            For="@(() => _newDocument.Name)" />
-        <MudTextField @bind-Value="_newDocument.Description" Label="Description" Variant="Variant.Outlined" Lines="3"
-            For="@(() => _newDocument.Description)" Class="mt-3" />
+        <MudTextField @bind-Value="_newDocumentName" Label="Document Name" Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="_newDocumentDescription" Label="Description" Variant="Variant.Outlined" Lines="3" Class="mt-3" />
         <MudFileUpload T="IBrowserFile" FilesChanged="HandleFileSelected">
             <ActivatorContent>
                 <MudButton Variant="Variant.Filled" Color="Color.Primary">
@@ -69,9 +70,9 @@
                 </MudButton>
             </ActivatorContent>
             <SelectedTemplate>
-                @if (context != null)
+                @if (_fileToUpload != null)
                 {
-                    <MudText>@context.Name</MudText>
+                    <MudText>@_fileToUpload.Name</MudText>
                 }
                 else
                 {
@@ -88,21 +89,19 @@
 </MudDialog>
 
 @code {
-    [Parameter] public List<DocumentDto> Documents { get; set; } = new();
+    [Parameter] public List<TDto> Documents { get; set; } = new();
     [Parameter] public EventCallback<Tuple<IDocumentDto, IBrowserFile>> OnSave { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
     private bool _uploadDocumentDialogOpen = false;
-    private DocumentDto _newDocument = default!;
+    private string _newDocumentName = "";
+    private string _newDocumentDescription = "";
     private IBrowserFile? _fileToUpload;
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
+
     private void ShowDocumentUploadDialog()
     {
-        _newDocument = new DocumentDto
-        { 
-            FilePath = "placeholder",  // Temporary placeholder
-            Name = "", 
-            Description = "" 
-        };
+        _newDocumentName = "";
+        _newDocumentDescription = "";
         _fileToUpload = null;
         _uploadDocumentDialogOpen = true;
     }
@@ -114,8 +113,31 @@
     {
         if (_fileToUpload != null)
         {
-            await OnSave.InvokeAsync(new Tuple<IDocumentDto, IBrowserFile>(_newDocument, _fileToUpload));
+            var newDto = Activator.CreateInstance<TDto>();
+            SetPropertyValue(newDto, "Name", _newDocumentName);
+            SetPropertyValue(newDto, "Description", _newDocumentDescription);
+            SetPropertyValue(newDto, "FilePath", "placeholder"); // or handle as needed
+            await OnSave.InvokeAsync(new Tuple<IDocumentDto, IBrowserFile>(newDto!, _fileToUpload));
             _uploadDocumentDialogOpen = false;
         }
+    }
+
+    private object? GetPropertyValue(object obj, string propertyName)
+    {
+        return obj?.GetType().GetProperty(propertyName)?.GetValue(obj);
+    }
+
+    private void SetPropertyValue(object obj, string propertyName, object? value)
+    {
+        var prop = obj?.GetType().GetProperty(propertyName);
+        if (prop != null && prop.CanWrite)
+            prop.SetValue(obj, value);
+    }
+
+    private string? FormatDate(object? dateObj)
+    {
+        if (dateObj is DateTime dt)
+            return dt.ToString("g");
+        return null;
     }
 }
