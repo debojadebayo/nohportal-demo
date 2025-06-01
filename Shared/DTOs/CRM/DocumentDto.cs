@@ -12,6 +12,6 @@ namespace Shared.DTOs.CRM
         public string? Description { get; set; }
         public long CustomerId { get; set; }
         public long EmployeeId { get; set; }
-        public string DisplayName => Name;
+        public string DisplayName => $"{Name} - {Description ?? "No description"}";
     }
 }

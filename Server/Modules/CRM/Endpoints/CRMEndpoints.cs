@@ -26,26 +26,9 @@ namespace Server.Modules.CRM.Endpoints
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/employee");
 
-			group.MapGet("/getbycustomer/{id}", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<Employee, EmployeeDto> mapper, long id) => GetByCustomer(dbContext, mapper, id));
-
-			// Add search endpoint
 			group.MapGet("/search", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<Employee, EmployeeDto> mapper, [FromQuery] string term) => SearchEmployees(dbContext, mapper, term));
 
 			return endpoints;
-		}
-
-		protected async Task<IResult> GetByCustomer(CRMDbContext dbContext, IMapper<Employee, EmployeeDto> mapper, long id)
-		{
-			try
-			{
-				var allEntities = await new GetByPredicateQuery<Employee, EmployeeDto, CRMDbContext>(dbContext, mapper).Handle(e => e.CustomerId == id);
-				return Results.Ok(allEntities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving employee entities.");
-			}
 		}
 
 		// New method for searching employees by free text
@@ -89,31 +72,7 @@ namespace Server.Modules.CRM.Endpoints
 			}
 		}
 	}
-	public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints
-	{
-		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
-		{
-			endpoints = base.MapEndpoints(endpoints); // Call the base class method first
-			var group = endpoints.MapGroup($"/api/contract");
-
-			group.MapGet("/GetByCustomerId/{customerId}", async ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<Contract, ContractDto> mapper, long customerId) =>
-			{
-				try
-				{
-					var query = new GetContractsByCustomerIdQuery(dbContext, mapper, customerId);
-					var result = await query.Handle();
-					return Results.Ok(result);
-				}
-				catch (Exception ex)
-				{
-					Console.Error.WriteLine($"An error occurred while retrieving contracts by customer ID: {ex.Message}");
-					return Results.Problem($"An error occurred while retrieving contracts for customer ID {customerId}.");
-				}
-			});
-
-			return endpoints;
-		}
-	}
+	public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints { }
 	public class CustomerDocumentEndpoints : DocumentEndpoints<CustomerDocument, DocumentDto, CRMDbContext>, IEndpoints { }
 	public class EmployeeDocumentEndpoints : DocumentEndpoints<EmployeeDocument, DocumentDto, CRMDbContext>, IEndpoints { }
 	public class ManagerEndpoints : BaseEndpoints<Manager, ManagerDto, CRMDbContext>, IEndpoints { }

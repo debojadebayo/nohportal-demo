@@ -10,6 +10,6 @@ namespace Shared.DTOs.CRM
 		public decimal Price { get; set; }
 		public DateTime? StartTime { get; set; }
 		public DateTime? EndTime { get; set; }
-		public string DisplayName => $"{ProductType.Name} - {Price:C}";
+		public string DisplayName => $"{ProductType.Name} - {Price:C} - {StartTime?.ToString("d") ?? "N/A"} to {EndTime?.ToString("d") ?? "N/A"}";
 	}
 }

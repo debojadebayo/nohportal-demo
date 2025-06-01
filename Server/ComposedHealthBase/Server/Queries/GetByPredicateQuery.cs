@@ -12,7 +12,7 @@ namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetByPredicateQuery<T, TDto, TContext>
     {
-        Task<List<TDto>> Handle(Expression<System.Func<T, bool>> predicate);
+        Task<List<TDto>> Handle(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetByPredicateQuery<T, TDto, TContext> : IGetByPredicateQuery<T, TDto, TContext>
@@ -29,9 +29,17 @@ namespace ComposedHealthBase.Server.Queries
             _mapper = mapper;
         }
 
-        public async Task<List<TDto>> Handle(Expression<System.Func<T, bool>> predicate)
+        public async Task<List<TDto>> Handle(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[]? includes)
         {
-            var entities = await _dbContext.Set<T>().Where(predicate).ToListAsync();
+            var query = _dbContext.Set<T>().AsNoTracking().Where(predicate);
+            if (includes != null && includes.Length > 0)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            var entities = await query.ToListAsync();
             return entities.ConvertAll(e => _mapper.Map(e));
         }
     }

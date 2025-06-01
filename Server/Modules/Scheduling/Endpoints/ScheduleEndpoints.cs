@@ -11,7 +11,7 @@ using ComposedHealthBase.Server.Queries;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Shared.DTOs;
 using ComposedHealthBase.Server.Entities;
-using Server.Modules.Scheduling.Infrastructure.Queries;
+using System.Linq.Expressions;
 
 
 namespace Server.Modules.Scheduling.Endpoints
@@ -32,7 +32,7 @@ namespace Server.Modules.Scheduling.Endpoints
 		{
 			try
 			{
-				var allEntities = await new GetAllCliniciansWithSchedulesQuery(dbContext, mapper).Handle();
+				var allEntities = await new GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext>(dbContext, mapper).Handle(x => x.CalendarItems);
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)

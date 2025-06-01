@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Mappers;
@@ -6,7 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ComposedHealthBase.Server.Queries
 {
-	public class GetAllByTenantIdQuery<T, TDto, TContext>
+	public interface IGetAllByTenantIdQuery<T, TDto, TContext>
+		where T : BaseEntity<T>
+		where TDto : IDto
+		where TContext : IDbContext<TContext>
+	{
+		Task<IEnumerable<TDto>> Handle(long tenantId, params Expression<Func<T, object>>[]? includes);
+	}
+	public class GetAllByTenantIdQuery<T, TDto, TContext> : IGetAllByTenantIdQuery<T, TDto, TContext>
 		where T : BaseEntity<T>
 		where TDto : IDto
 		where TContext : IDbContext<TContext>
@@ -20,10 +28,17 @@ namespace ComposedHealthBase.Server.Queries
 			_mapper = mapper;
 		}
 
-		public async Task<IEnumerable<TDto>> Handle(long tenantId)
+		public async Task<IEnumerable<TDto>> Handle(long tenantId, params Expression<Func<T, object>>[]? includes)
 		{
-			// Assumes T has a TenantId property
-			var entities = await _dbContext.Set<T>().Where(e => e.TenantId == tenantId).ToListAsync();
+			var query = _dbContext.Set<T>().AsNoTracking().Where(e => e.TenantId == tenantId);
+			if (includes != null && includes.Length > 0)
+			{
+				foreach (var include in includes)
+				{
+					query = query.Include(include);
+				}
+			}
+			var entities = await query.ToListAsync();
 			return entities.Select(e => _mapper.Map(e));
 		}
 	}

@@ -12,6 +12,6 @@ namespace Shared.DTOs.CRM
         public required string ChargeCode { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
-        public string DisplayName => $"{Name} - {DefaultPrice:C}";
+        public string DisplayName => $"{Name} - {Description} - {DefaultPrice:C} - {StartTime?.ToString("d") ?? "N/A"} to {EndTime?.ToString("d") ?? "N/A"}";
     }
 }

@@ -20,6 +20,6 @@ namespace Shared.DTOs.CRM
 		public string InvoiceEmail { get; set; } = string.Empty;
 		public string Notes { get; set; } = string.Empty;
 		public HashSet<ContractDto> Contracts { get; set; } = new();
-		public string DisplayName => Name;
+		public string DisplayName => $"{Name} - Id: {Id}";
 	}
 }

@@ -12,6 +12,6 @@ namespace Shared.DTOs.CRM
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public HashSet<ProductDto> Products { get; set; } = new HashSet<ProductDto>();
-        public string DisplayName => $"{Reference} - {RepresentativeId}";
+        public string DisplayName => $"{Reference} - {StartTime?.ToString("d") ?? "N/A"} to {EndTime?.ToString("d") ?? "N/A"}";
     }
 }

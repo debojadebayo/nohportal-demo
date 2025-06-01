@@ -12,8 +12,8 @@ using Server.Modules.CRM.Infrastructure.Database;
 namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(CRMDbContext))]
-    [Migration("20250530213854_productstocustomer")]
-    partial class productstocustomer
+    [Migration("20250530213854_ProductsToCustomer")]
+    partial class ProductsToCustomer
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

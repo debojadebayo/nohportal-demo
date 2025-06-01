@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
+using System.Linq.Expressions;
 
 namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetByIdQuery<T, TDto, TContext>
     {
-        Task<TDto> Handle(long id);
+        Task<TDto?> Handle(long id, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetByIdQuery<T, TDto, TContext> : IGetByIdQuery<T, TDto, TContext>
@@ -28,9 +29,17 @@ namespace ComposedHealthBase.Server.Queries
             _mapper = mapper;
         }
 
-        public async Task<TDto> Handle(long id)
+        public async Task<TDto?> Handle(long id, params Expression<Func<T, object>>[]? includes)
         {
-            var entity = await _dbContext.Set<T>().SingleOrDefaultAsync(x => x.Id == id);
+            var query = _dbContext.Set<T>().AsNoTracking().Where(x => x.Id == id);
+            if (includes != null && includes.Length > 0)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            var entity = await query.SingleOrDefaultAsync();
             if (entity == null)
             {
                 throw new KeyNotFoundException($"Entity of type {typeof(T).Name} with id {id} not found");

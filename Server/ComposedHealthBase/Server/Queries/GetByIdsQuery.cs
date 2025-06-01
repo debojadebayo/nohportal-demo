@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
+using System.Linq.Expressions;
 
 namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetByIdsQuery<T, TDto, TContext>
     {
-        Task<IEnumerable<TDto>> Handle(List<long> id);
+        Task<IEnumerable<TDto>> Handle(List<long> id, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetByIdsQuery<T, TDto, TContext> : IGetByIdsQuery<T, TDto, TContext>
@@ -29,9 +30,17 @@ namespace ComposedHealthBase.Server.Queries
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TDto>> Handle(List<long> ids)
+        public async Task<IEnumerable<TDto>> Handle(List<long> ids, params Expression<Func<T, object>>[]? includes)
         {
-            var entities = await _dbContext.Set<T>().Where(x => ids.Contains(x.Id)).ToListAsync();
+            var query = _dbContext.Set<T>().AsNoTracking().Where(x => ids.Contains(x.Id));
+            if (includes != null && includes.Length > 0)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            var entities = await query.ToListAsync();
             return _mapper.Map(entities.AsEnumerable<T>());
         }
     }

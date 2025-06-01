@@ -20,7 +20,7 @@ namespace Shared.DTOs.CRM
         public string Department { get; set; } = string.Empty;
         public string LineManager { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
-        public string DisplayName => $"{FirstName} {LastName}";
+        public string DisplayName => $"{FirstName} {LastName} - Id: {Id}";
         public long CustomerId { get; set; }
     }
 }

@@ -5,7 +5,7 @@
 namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class productstocustomer : Migration
+    public partial class ProductsToCustomer : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
