@@ -12,8 +12,8 @@
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudNumericField @bind-Value="model.DefaultPrice" For="@(() => model.DefaultPrice)" Immediate="true" Label="Default Price" Variant="Variant.Outlined" />
-            <MudDatePicker Date="model.StartTime" Label="Start Time" Variant="Variant.Outlined" />
-            <MudDatePicker Date="model.EndTime" Label="End Time" Variant="Variant.Outlined" />
+            <MudDatePicker Date="model.StartTime" DateFormat="dd/MM/yyyy" Label="Start Time" Variant="Variant.Outlined" />
+            <MudDatePicker Date="model.EndTime" DateFormat="dd/MM/yyyy" Label="End Time" Variant="Variant.Outlined" />
         </MudItem>
     </MudGrid>
     <MudCardActions>

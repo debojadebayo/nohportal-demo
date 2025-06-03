@@ -4,12 +4,17 @@ using Shared.DTOs.CRM;
 
 public class ProductMapper : IMapper<Product, ProductDto>
 {
+    private readonly IMapper<ProductType, ProductTypeDto> _productTypeMapper;
+    public ProductMapper(IMapper<ProductType, ProductTypeDto> productTypeMapper)
+    {
+        _productTypeMapper = productTypeMapper;
+    }
     public ProductDto Map(Product entity)
     {
         return new ProductDto
         {
             Id = entity.Id,
-            ProductType = new ProductTypeMapper().Map(entity.ProductType),
+            ProductType = _productTypeMapper.Map(entity.ProductType),
             Price = entity.Price,
             StartTime = entity.StartTime,
             EndTime = entity.EndTime,
@@ -17,7 +22,8 @@ public class ProductMapper : IMapper<Product, ProductDto>
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
-            ModifiedDate = entity.ModifiedDate
+            ModifiedDate = entity.ModifiedDate,
+            CustomerId = entity.CustomerId,
         };
     }
 
@@ -25,11 +31,12 @@ public class ProductMapper : IMapper<Product, ProductDto>
     {
         return new Product
         {
-            ProductType = new ProductTypeMapper().Map(dto.ProductType),
+            ProductType = _productTypeMapper.Map(dto.ProductType),
             Price = dto.Price,
             StartTime = dto.StartTime,
             EndTime = dto.EndTime,
-            IsActive = dto.IsActive
+            IsActive = dto.IsActive,
+            CustomerId = dto.CustomerId
         };
     }
 
@@ -45,16 +52,17 @@ public class ProductMapper : IMapper<Product, ProductDto>
 
     public void Map(ProductDto dto, Product entity)
     {
-        entity.ProductType = new ProductTypeMapper().Map(dto.ProductType);
+        entity.ProductType = _productTypeMapper.Map(dto.ProductType);
         entity.Price = dto.Price;
         entity.StartTime = dto.StartTime;
         entity.EndTime = dto.EndTime;
         entity.IsActive = dto.IsActive;
+        entity.CustomerId = dto.CustomerId;
     }
 
     public void Map(Product entity, ProductDto dto)
     {
-        dto.ProductType = new ProductTypeMapper().Map(entity.ProductType);
+        dto.ProductType = _productTypeMapper.Map(entity.ProductType);
         dto.Price = entity.Price;
         dto.StartTime = entity.StartTime;
         dto.EndTime = entity.EndTime;
@@ -63,6 +71,7 @@ public class ProductMapper : IMapper<Product, ProductDto>
         dto.LastModifiedBy = entity.LastModifiedBy;
         dto.CreatedDate = entity.CreatedDate;
         dto.ModifiedDate = entity.ModifiedDate;
+        dto.CustomerId = entity.CustomerId;
     }
 
     public void Map(IEnumerable<ProductDto> dtos, IEnumerable<Product> entities)

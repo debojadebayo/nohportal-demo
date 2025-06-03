@@ -18,7 +18,8 @@ public class ContractMapper : IMapper<Contract, ContractDto>
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
             ModifiedDate = entity.ModifiedDate,
-            RepresentativeId = entity.RepresentativeId
+            RepresentativeId = entity.RepresentativeId,
+            CustomerId = entity.CustomerId
         };
     }
 
@@ -31,7 +32,8 @@ public class ContractMapper : IMapper<Contract, ContractDto>
             StartTime = dto.StartTime,
             EndTime = dto.EndTime,
             IsActive = dto.IsActive,
-            RepresentativeId = dto.RepresentativeId
+            RepresentativeId = dto.RepresentativeId,
+            CustomerId = dto.CustomerId
         };
     }
 
@@ -53,6 +55,7 @@ public class ContractMapper : IMapper<Contract, ContractDto>
         entity.EndTime = dto.EndTime;
         entity.IsActive = dto.IsActive;
         entity.RepresentativeId = dto.RepresentativeId;
+        entity.CustomerId = dto.CustomerId;
     }
 
     public void Map(Contract entity, ContractDto dto)
@@ -68,6 +71,7 @@ public class ContractMapper : IMapper<Contract, ContractDto>
         dto.CreatedDate = entity.CreatedDate;
         dto.ModifiedDate = entity.ModifiedDate;
         dto.RepresentativeId = entity.RepresentativeId;
+        dto.CustomerId = entity.CustomerId;
     }
 
     public void Map(IEnumerable<ContractDto> dtos, IEnumerable<Contract> entities)

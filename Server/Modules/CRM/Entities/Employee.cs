@@ -1,9 +1,8 @@
 using ComposedHealthBase.Server.Entities;
 
-
 namespace Server.Modules.CRM.Entities
 {
-    public class Employee : BaseEntity<Employee>, IEntity
+    public class Employee : BaseEntity<Employee>, IEntity, IKeycloakEntity
     {
         public required string FirstName { get; set; }
         public required string LastName { get; set; }

@@ -61,8 +61,6 @@
     private List<ManagerDto> managers = new();
     private List<EmployeeDocumentDto> documents = new();
     private EmployeeDocumentDto newDocument = default!;
-    private List<ContractDto> contracts = new();
-    private List<ProductDto> products = new();
 
     private void CreateEmployee()
     {
@@ -100,20 +98,6 @@
     {
         if (selectedEmployee == null) return;
         managers = (await ManagerLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
-    }
-    private async Task GetAllProductsByEmployeeId()
-    {
-        if (selectedEmployee == null) return;
-        contracts = (await ContractLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
-
-        products = new List<ProductDto>();
-        foreach (var contract in contracts)
-        {
-            if (contract.Products != null)
-            {
-                products.AddRange(contract.Products);
-            }
-        }
     }
     private async Task GetAllDocumentsByEmployeeId()
     {

@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using ComposedHealthBase.Server.Entities;
-
 
 namespace Server.Modules.CRM.Entities
 {
-    public class Manager : BaseEntity<Manager>, IEntity
+    public class Manager : BaseEntity<Manager>, IEntity, IKeycloakEntity
     {
         public required string Name { get; set; }
         public required string Email { get; set; }
@@ -22,5 +20,6 @@ namespace Server.Modules.CRM.Entities
                 TenantId = value;
             }
         }
+        public required Guid KeycloakId { get; set; }
     }
 }

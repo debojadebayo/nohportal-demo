@@ -33,7 +33,7 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12" sm="6">
-                    <MudDatePicker @bind-Date="@SelectedDate" Label="Appointment Date" Variant="Variant.Outlined" />
+                    <MudDatePicker @bind-Date="@SelectedDate" DateFormat="dd/MM/yyyy" Label="Appointment Date" Variant="Variant.Outlined" />
                     <div class="d-flex gap-4">
                         <MudTimePicker Label="Start Time" @bind-Time="StartTime" Variant="Variant.Outlined" />
                         <MudTimePicker Label="End Time" @bind-Time="EndTime" Variant="Variant.Outlined" />

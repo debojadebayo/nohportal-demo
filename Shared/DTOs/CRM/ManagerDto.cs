@@ -11,5 +11,6 @@ namespace Shared.DTOs.CRM
         public string Phone { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
         public string DisplayName => $"{Name} - {Department} - Id: {Id}";
+        public long CustomerId { get; set; }
     }
 }

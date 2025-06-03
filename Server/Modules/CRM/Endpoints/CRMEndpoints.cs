@@ -73,6 +73,8 @@ namespace Server.Modules.CRM.Endpoints
 		}
 	}
 	public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints { }
+	public class ProductEndpoints : BaseEndpoints<Product, ProductDto, CRMDbContext>, IEndpoints { }
+	public class ProductTypeEndpoints : BaseEndpoints<ProductType, ProductTypeDto, CRMDbContext>, IEndpoints { }
 	public class CustomerDocumentEndpoints : DocumentEndpoints<CustomerDocument, CustomerDocumentDto, CRMDbContext>, IEndpoints { }
 	public class EmployeeDocumentEndpoints : DocumentEndpoints<EmployeeDocument, EmployeeDocumentDto, CRMDbContext>, IEndpoints { }
 	public class ManagerEndpoints : BaseEndpoints<Manager, ManagerDto, CRMDbContext>, IEndpoints { }

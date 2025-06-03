@@ -13,6 +13,8 @@
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
 @inject ILazyLookupService<ContractDto> ContractLookupService
 @inject ILazyLookupService<CustomerDocumentDto> DocumentLookupService
+@inject ILazyLookupService<ProductDto> ProductLookupService
+@inject ILazyLookupService<ProductTypeDto> ProductTypeLookupService
 
 @attribute [Authorize]
 
@@ -40,19 +42,18 @@
         <MudTabPanel Text="Managers" OnClick="GetAllManagersByCustomerId">
             <ManagersTab Managers="managers" />
         </MudTabPanel>
+        <MudTabPanel Text="Contracts" OnClick="GetAllContractsByCustomerId">
+            <ContractsTab Contracts="contracts" OnContractSave="HandleContractSave" NewContract="newContract" />
+        </MudTabPanel>
         <MudTabPanel Text="Services" OnClick="GetAllProductsByCustomerId">
-            @* <ServicesTab Products="products" ProductTypes="productTypes" OnAdd="ShowAddProductDialog" OnEdit="EditProduct"
-                OnDelete="DeleteProduct" OnSave="SaveProduct" EditingProduct="editingProduct"
-                ProductDialogOpen="productDialogOpen" SetProductDialogOpen="(v) => productDialogOpen = v" /> *@
+            <ProductsTab Products="products" ProductTypes="productTypes" OnProductSave="HandleProductSave" NewProduct="newProduct" />
         </MudTabPanel>
         <MudTabPanel Text="Invoicing">
             <InvoicingTab />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByCustomerId">
-            <DocumentBrowser TDto="CustomerDocumentDto"
-                   Documents="documents"
-                   NewDocument="newDocument"
-                   OnSave="OnDocumentSave" />
+            <DocumentBrowser TDto="CustomerDocumentDto" Documents="documents" NewDocument="newDocument"
+                OnSave="OnDocumentSave" />
         </MudTabPanel>
         <MudTabPanel Text="Reports">
             <ReportsTab />
@@ -76,6 +77,8 @@
     private List<ProductTypeDto> productTypes = new();
     private List<CustomerDocumentDto> documents = new();
     private CustomerDocumentDto newDocument = default!;
+    private ContractDto newContract = default!;
+    private ProductDto newProduct = default!;
     private void CreateCustomer()
     {
         CustomerLookupService.ItemList.TryAdd(0, new CustomerDto());
@@ -113,24 +116,34 @@
         if (selectedCustomer == null) return;
         managers = (await ManagerLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
     }
-    private async Task GetAllProductsByCustomerId()
+
+    private async Task GetAllContractsByCustomerId()
     {
         if (selectedCustomer == null) return;
         contracts = (await ContractLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
-
-        products = new List<ProductDto>();
-        foreach (var contract in contracts)
+        newContract = new ContractDto
         {
-            if (contract.Products != null)
-            {
-                products.AddRange(contract.Products);
-            }
-        }
+            Reference = "",
+            CustomerId = selectedCustomer.Id
+        };
+    }
+
+    private async Task GetAllProductsByCustomerId()
+    {
+        if (selectedCustomer == null) return;
+        products = (await ProductLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
+        productTypes = (await ProductTypeLookupService.GetAllItems(CancellationToken.None)).ToList();
+        newProduct = new ProductDto
+        {
+            ProductType = new ProductTypeDto{ Id = 0, Name = "Select Product Type", Description = "", ChargeCode = "" },
+            CustomerId = selectedCustomer.Id
+        };
     }
     private async Task GetAllDocumentsByCustomerId()
     {
         if (selectedCustomer == null) return;
         documents = (await DocumentLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
+        var creators = documents.Select(d => d.CreatedBy).Distinct().ToList();
         newDocument = new CustomerDocumentDto
         {
             CustomerId = selectedCustomer.Id,
@@ -140,12 +153,44 @@
     }
     private async Task OnDocumentSave()
     {
-        documents = (await DocumentLookupService.GetAllByTenantId(selectedCustomerId, CancellationToken.None)).ToList();
-        newDocument = new CustomerDocumentDto
+        await GetAllDocumentsByCustomerId();
+    }
+
+    private async Task HandleContractSave(ContractDto contract)
+    {
+        if (contract == null) return;
+        if (contract.Id == 0)
         {
-            CustomerId = selectedCustomerId,
-            Name = "",
-            FilePath = ""
-        };
+            await ContractLookupService.AddItem(contract, CancellationToken.None);
+        }
+        else
+        {
+            await ContractLookupService.UpdateItem(contract, CancellationToken.None);
+        }
+        await GetAllContractsByCustomerId();
+    }
+
+    private async Task HandleContractCancel()
+    {
+        await GetAllContractsByCustomerId();
+    }
+
+    private async Task HandleProductSave(ProductDto product)
+    {
+        if (product == null) return;
+        if (product.Id == 0)
+        {
+            await ProductLookupService.AddItem(product, CancellationToken.None);
+        }
+        else
+        {
+            await ProductLookupService.UpdateItem(product, CancellationToken.None);
+        }
+        await GetAllProductsByCustomerId();
+    }
+
+    private async Task HandleProductCancel()
+    {
+        await GetAllProductsByCustomerId();
     }
 }
