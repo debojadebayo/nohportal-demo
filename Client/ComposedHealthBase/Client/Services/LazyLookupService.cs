@@ -151,7 +151,7 @@ where TDto : ILazyLookup
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync($"api/{EndpointType}/add", item, token);
+            var response = await _httpClient.PostAsJsonAsync($"api/{EndpointType}/create", item, token);
             if (response.IsSuccessStatusCode)
             {
                 var createdItemId = await response.Content.ReadFromJsonAsync<long>(token);

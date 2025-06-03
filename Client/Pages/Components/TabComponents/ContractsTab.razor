@@ -1,0 +1,75 @@
+@namespace Client.Pages.Components.TabComponents
+@using Shared.DTOs
+@using MudBlazor
+@using Shared.DTOs.CRM
+
+<MudPaper Class="pa-4">
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+        <MudText Typo="Typo.h6">Contracts</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowAddContractDialog"
+            StartIcon="@Icons.Material.Filled.Add">Add Contract</MudButton>
+    </MudStack>
+    <MudDataGrid T="ContractDto" Items="Contracts ?? new List<ContractDto>()" Dense="true" Hover="true" Striped="true"
+        Bordered="true" Filterable="true">
+        <Columns>
+            <PropertyColumn Property="x => x.Id" Title="Contract ID" />
+            <PropertyColumn Property="x => x.Reference" />
+            <PropertyColumn Property="x => x.Notes" />
+            <PropertyColumn Property="x => x.RepresentativeId" Title="Representative ID" />
+            <PropertyColumn Property="x => x.StartTime" Title="Start Date" />
+            <PropertyColumn Property="x => x.EndTime" Title="End Date" />
+        </Columns>
+        <NoRecordsContent>
+            <MudText>No contracts found.</MudText>
+        </NoRecordsContent>
+    </MudDataGrid>
+</MudPaper>
+
+<MudDialog @bind-Visible="_addContractDialogOpen" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Add New Contract</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="contractForm" Model="NewContract">
+            <MudTextField @bind-Value="NewContract.Reference" Label="Reference" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="NewContract.Notes" Label="Notes" Variant="Variant.Outlined" />
+            <MudNumericField @bind-Value="NewContract.RepresentativeId" Label="Representative ID" Variant="Variant.Outlined" />
+            <MudDatePicker @bind-Date="NewContract.StartTime" DateFormat="dd/MM/yyyy" Label="Start Date" />
+            <MudDatePicker @bind-Date="NewContract.EndTime" DateFormat="dd/MM/yyyy" Label="End Date" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="AddContract">Add Contract</MudButton>
+        <MudButton OnClick="CancelContract">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public IEnumerable<ContractDto> Contracts { get; set; } = new List<ContractDto>();
+    [Parameter] public EventCallback<ContractDto> OnContractSave { get; set; }
+    [Parameter] public EventCallback OnContractCancel { get; set; }
+    [Parameter] public ContractDto NewContract { get; set; } = default!;
+    private bool _addContractDialogOpen = false;
+    private MudForm contractForm = default!;
+    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+    private void ShowAddContractDialog()
+    {
+        _addContractDialogOpen = true;
+    }
+
+    private async Task AddContract()
+    {
+        await contractForm.Validate();
+        if (!contractForm.IsValid) return;
+        await OnContractSave.InvokeAsync(NewContract);
+        _addContractDialogOpen = false;
+    }
+
+    private async Task CancelContract()
+    {
+        _addContractDialogOpen = false;
+        if (OnContractCancel.HasDelegate)
+            await OnContractCancel.InvokeAsync();
+    }
+}
