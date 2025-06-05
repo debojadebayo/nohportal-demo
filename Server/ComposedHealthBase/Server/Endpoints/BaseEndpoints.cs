@@ -8,6 +8,7 @@ using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ComposedHealthBase.Server.Endpoints
 {
@@ -21,15 +22,38 @@ namespace ComposedHealthBase.Server.Endpoints
 			var endpointName = typeof(T).Name;
 			var group = endpoints.MapGroup($"/api/{endpointName}");
 
+			group.MapGet("/debugclaims", (ClaimsPrincipal user) =>
+            {
+                if (user?.Identity?.IsAuthenticated == true)
+                {
+                    var claimsInfo = user.Claims.Select(c => new { c.Type, c.Value }).ToList();
+                    var identityRoleClaimType = "Unknown";
+                    if (user.Identity is ClaimsIdentity claimsIdentity)
+                    {
+                        identityRoleClaimType = claimsIdentity.RoleClaimType;
+                    }
+                    return Results.Ok(new 
+                    { 
+                        IsAuthenticated = user.Identity.IsAuthenticated,
+                        AuthenticationType = user.Identity.AuthenticationType,
+                        NameClaimType = (user.Identity as ClaimsIdentity)?.NameClaimType,
+                        RoleClaimType = identityRoleClaimType,
+                        Claims = claimsInfo,
+                        IsInAdministratorRole = user.IsInRole("administrator")
+                    });
+                }
+                return Results.Unauthorized();
+            }).RequireAuthorization();
+
 			group.MapGet("/GetAll", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper) => GetAll(dbContext, mapper));
 			group.MapGet("/GetById/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long id) => GetById(dbContext, mapper, id));
 			group.MapPost("/GetByIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, List<long> ids) => GetByIds(dbContext, mapper, ids));
-			group.MapPost("/Create", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, TDto dto) => Create(dbContext, mapper, dto));
-			group.MapPut("/Update", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, TDto dto) => Update(dbContext, mapper, dto));
-			group.MapPost("/Delete/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long id) => Delete(dbContext, mapper, id));
+			group.MapPost("/Create", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto) => Create(dbContext, mapper, user, dto));
+			group.MapPut("/Update", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto) => Update(dbContext, mapper, user, dto));
+			group.MapPost("/Delete/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, long id) => Delete(dbContext, mapper, user, id));
 
 			// New endpoints
-			group.MapGet("/GetAllByTenantId/{tenantId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long tenantId) => GetAllByTenantId(dbContext, mapper, tenantId));
+			group.MapGet("/GetAllByTenantId/{tenantId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long tenantId) => GetAllByTenantId(dbContext, mapper, tenantId)).RequireAuthorization("administrator");
 			group.MapPost("/GetAllByTenantIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, List<long> tenantIds) => GetAllByTenantIds(dbContext, mapper, tenantIds));
 			group.MapGet("/GetAllBySubjectId/{subjectId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long subjectId) => GetAllBySubjectId(dbContext, mapper, subjectId));
 			group.MapPost("/GetAllBySubjectIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, List<long> subjectIds) => GetAllBySubjectIds(dbContext, mapper, subjectIds));
@@ -79,7 +103,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Create(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, TDto dto)
+		protected async Task<IResult> Create(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto)
 		{
 			try
 			{
@@ -93,7 +117,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Update(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, TDto dto)
+		protected async Task<IResult> Update(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto)
 		{
 			try
 			{
@@ -107,7 +131,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Delete(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, long id)
+		protected async Task<IResult> Delete(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, long id)
 		{
 			try
 			{

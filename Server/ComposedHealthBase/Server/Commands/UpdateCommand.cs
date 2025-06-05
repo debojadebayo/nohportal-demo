@@ -34,7 +34,7 @@ namespace ComposedHealthBase.Server.Commands
             }
             _mapper.Map(dto, existingEntity);
             _dbContext.Set<T>().Update(existingEntity);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesWithAuditAsync("System");
             return existingEntity.Id;
         }
     }

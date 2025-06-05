@@ -1,8 +1,10 @@
 ﻿
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using ComposedHealthBase.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -32,19 +34,25 @@ namespace ComposedHealthBase.Server.Modules
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(options =>
 				{
-					options.Authority = configuration["Jwt:Issuer"];
-					options.Audience = configuration["Jwt:Audience"];
+					options.MetadataAddress = configuration["Jwt:MetadataAddress"];
 					options.RequireHttpsMetadata = requireHttpsMetadata;
+					options.Audience = configuration["Jwt:Audience"];
+					options.MapInboundClaims = false; 
 					options.TokenValidationParameters = new TokenValidationParameters
 					{
 						ValidateIssuer = true,
+						ValidIssuer = configuration["Jwt:Issuer"], 
 						ValidateAudience = true,
 						ValidateLifetime = true,
-						ValidateIssuerSigningKey = true
+						ValidateIssuerSigningKey = true,
+						RoleClaimType = "role"
 					};
 				});
 
-			services.AddAuthorization();
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("administrator", policy => policy.RequireRole("administrator"));
+			});
 			services.AddOpenApi();
 
 			var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");
@@ -62,8 +70,12 @@ namespace ComposedHealthBase.Server.Modules
 						AllowedMethods = configuration["Cors:AllowedMethods"],
 					}
 				};
-        	blobServiceClient.SetProperties(properties);
+			blobServiceClient.SetProperties(properties);
 			services.AddSingleton(x => blobServiceClient);
+
+			services.AddHttpContextAccessor();
+
+			services.AddTransient<IUserContextService, UserContextService>();
 
 			return services;
 		}
