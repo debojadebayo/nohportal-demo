@@ -32,6 +32,15 @@
 				<MudButton Href="authentication/login" StartIcon="@Icons.Material.Filled.Login">Log in</MudButton>
 			</NotAuthorized>
 		</AuthorizeView>
+		<AuthorizeView Roles="administrator">
+			<p>(Administrator)</p>
+		</AuthorizeView>
+		<AuthorizeView Roles="tenantadministrator">
+			<p>(Tenant Administrator)</p>
+		</AuthorizeView>
+		<AuthorizeView Roles="seniorclinician">
+			<p>(Senior Clinician)</p>
+		</AuthorizeView>
 	</MudAppBar>
 	<AuthorizeView>
 		<Authorized>
@@ -113,7 +122,7 @@
 			DrawerWidthLeft = "260px",
 			DrawerWidthRight = "300px",
 		},
-		
+
 	};
 
 	bool _drawerOpen = true;

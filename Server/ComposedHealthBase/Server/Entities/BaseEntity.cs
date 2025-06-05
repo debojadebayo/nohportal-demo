@@ -5,8 +5,8 @@
 	{
 		public long Id { get; set; }
 		public bool IsActive { get; set; }
-		public long CreatedBy { get; set; }
-		public long LastModifiedBy { get; set; }
+		public string CreatedBy { get; set; } = string.Empty;
+		public string LastModifiedBy { get; set; } = string.Empty;
 		public DateTime CreatedDate { get; set; }
 		public DateTime ModifiedDate { get; set; }
 		public long TenantId { get; set; }

@@ -7,7 +7,8 @@ namespace ComposedHealthBase.Server.Database
 	where TContext : DbContext
 	{
 		public BaseDbContext(DbContextOptions<TContext> options) : base(options) { }
-		public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+
+		public Task<int> SaveChangesWithAuditAsync(string userFullName, CancellationToken cancellationToken = default)
 		{
 			var timeNow = DateTime.UtcNow;
 			var entries = ChangeTracker.Entries()
@@ -16,21 +17,21 @@ namespace ComposedHealthBase.Server.Database
 
 			foreach (var entry in entries)
 			{
-				// Set CreatedDate/ModifiedDate for IEntity
 				if (entry.Entity is IEntity entity)
 				{
 					if (entry.State == EntityState.Added)
 					{
+						entity.CreatedBy = userFullName;
 						entity.CreatedDate = timeNow;
 						entity.ModifiedDate = timeNow;
 					}
 					else if (entry.State == EntityState.Modified)
 					{
+						entity.LastModifiedBy = userFullName;
 						entity.ModifiedDate = timeNow;
 					}
 				}
 
-				// Set all DateTime/DateTime? properties to UTC
 				var properties = entry.Entity.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
 					.Where(p => p.CanRead && p.CanWrite &&
 						(p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(DateTime?)));
@@ -47,8 +48,13 @@ namespace ComposedHealthBase.Server.Database
 					}
 				}
 			}
+			return SaveChangesAsync(true, cancellationToken);
+		}
+		public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+		{
 
 			return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
 		}
+		
 	}
 }

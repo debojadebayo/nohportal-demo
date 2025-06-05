@@ -86,7 +86,7 @@ namespace ComposedHealthBase.Server.Endpoints
 				// Map and save the Document entity as needed
 				var entity = mapper.Map(documentDto);
 				dbContext.Set<T>().Add(entity);
-				await dbContext.SaveChangesAsync();
+				await dbContext.SaveChangesWithAuditAsync("System");
 
 				return Results.Ok(new { url = blobClient.Uri.ToString() });
 			}

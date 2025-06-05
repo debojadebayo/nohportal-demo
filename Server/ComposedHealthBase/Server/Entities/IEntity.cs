@@ -4,8 +4,8 @@
 	{
 		long Id { get; set; }
 		bool IsActive { get; set; }
-		long CreatedBy { get; set; }
-		long LastModifiedBy { get; set; }
+		string CreatedBy { get; set; }
+		string LastModifiedBy { get; set; }
 		DateTime CreatedDate { get; set; }
 		DateTime ModifiedDate { get; set; }
 		long SubjectId { get; set; }

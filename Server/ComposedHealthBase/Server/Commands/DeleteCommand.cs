@@ -26,7 +26,7 @@ namespace ComposedHealthBase.Server.Commands
             }
 
             _dbContext.Set<T>().Remove(entity);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesWithAuditAsync("System");
             return true;
         }
     }
