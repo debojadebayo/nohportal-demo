@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
+using System.Threading.Tasks;
+using System;
+using System.Security.Claims;
 
 namespace ComposedHealthBase.Server.Endpoints
 {
@@ -30,22 +33,25 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] BlobServiceClient blobServiceClient,
 				[FromForm] TDto documentDto,
-				[FromForm] IFormFile file
-			) => await UploadDocument(dbContext, mapper, blobServiceClient, documentDto, file)).DisableAntiforgery();
+				[FromForm] IFormFile file,
+				ClaimsPrincipal user
+			) => await UploadDocument(dbContext, mapper, blobServiceClient, documentDto, file, user)).DisableAntiforgery();
 
 			group.MapGet("/getsaslink/{documentId}", async (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] BlobServiceClient blobServiceClient,
-				long documentId
-			) => await GetDocumentSasLink(dbContext, mapper, blobServiceClient, documentId));
+				long documentId,
+				ClaimsPrincipal user
+			) => await GetDocumentSasLink(dbContext, mapper, blobServiceClient, documentId, user));
 
 			group.MapGet("/getcontent/{documentId}", async (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] BlobServiceClient blobServiceClient,
-				long documentId) =>
-					await GetDocumentContent(dbContext, mapper, blobServiceClient, documentId));
+				long documentId,
+				ClaimsPrincipal user
+			) => await GetDocumentContent(dbContext, mapper, blobServiceClient, documentId, user));
 
 			return endpoints;
 		}
@@ -56,7 +62,8 @@ namespace ComposedHealthBase.Server.Endpoints
 			IMapper<T, TDto> mapper,
 			BlobServiceClient blobServiceClient,
 			TDto documentDto,
-			IFormFile file)
+			IFormFile file,
+			ClaimsPrincipal user)
 		{
 			if (file == null || file.Length == 0)
 				return Results.BadRequest("File is required.");
@@ -86,7 +93,7 @@ namespace ComposedHealthBase.Server.Endpoints
 				// Map and save the Document entity as needed
 				var entity = mapper.Map(documentDto);
 				dbContext.Set<T>().Add(entity);
-				await dbContext.SaveChangesWithAuditAsync("System");
+				await dbContext.SaveChangesWithAuditAsync(user);
 
 				return Results.Ok(new { url = blobClient.Uri.ToString() });
 			}
@@ -100,12 +107,13 @@ namespace ComposedHealthBase.Server.Endpoints
 			IDbContext<TContext> dbContext,
 			IMapper<T, TDto> mapper,
 			BlobServiceClient blobServiceClient,
-			long documentId)
+			long documentId,
+			ClaimsPrincipal user)
 		{
 			try
 			{
 				// Retrieve the document entity from the database using the generic query handler
-				var document = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(documentId);
+				var document = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(documentId, user);
 				if (document == null)
 					return Results.NotFound("Document not found.");
 				//TODO Check the current user's claims against ownerId on the entity
@@ -127,12 +135,13 @@ namespace ComposedHealthBase.Server.Endpoints
 			IDbContext<TContext> dbContext,
 			IMapper<T, TDto> mapper,
 			BlobServiceClient blobServiceClient,
-			long documentId)
+			long documentId,
+			ClaimsPrincipal user)
 		{
 			try
 			{
 				// Retrieve the document entity from the database using the generic query handler
-				var document = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(documentId);
+				var document = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(documentId, user);
 				if (document == null)
 					return Results.NotFound("Document not found.");
 				//TODO Check the current user's claims against ownerId on the entity

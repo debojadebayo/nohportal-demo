@@ -11,10 +11,6 @@ namespace Shared.Validators
     {
         public CustomerValidator()
         {
-            RuleFor(x => x.Id)
-                .NotEmpty()
-                .WithMessage("Customer ID is required.");
-
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Company name is required.")
                 .Length(2, 100).WithMessage("Company name must be between 2 and 100 characters.")

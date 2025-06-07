@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Security.Claims;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Mappers;
@@ -12,7 +13,7 @@ namespace ComposedHealthBase.Server.Queries
 		where TDto : IDto
 		where TContext : IDbContext<TContext>
 	{
-		Task<IEnumerable<TDto>> Handle(long subjectId, params Expression<Func<T, object>>[]? includes);
+		Task<IEnumerable<TDto>> Handle(long subjectId, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes);
 	}
 	public class GetAllBySubjectIdQuery<T, TDto, TContext> : IGetAllBySubjectIdQuery<T, TDto, TContext>
 		where T : BaseEntity<T>
@@ -28,7 +29,7 @@ namespace ComposedHealthBase.Server.Queries
 			_mapper = mapper;
 		}
 
-		public async Task<IEnumerable<TDto>> Handle(long subjectId, params Expression<Func<T, object>>[]? includes)
+		public async Task<IEnumerable<TDto>> Handle(long subjectId, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes)
 		{
 			var query = _dbContext.Set<T>().AsNoTracking().Where(e => e.SubjectId == subjectId);
 			if (includes != null && includes.Length > 0)

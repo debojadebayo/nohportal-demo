@@ -12,6 +12,7 @@ using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Shared.DTOs;
 using ComposedHealthBase.Server.Entities;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 
 namespace Server.Modules.Scheduling.Endpoints
@@ -23,16 +24,16 @@ namespace Server.Modules.Scheduling.Endpoints
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/clinician");
 
-			group.MapGet("/GetAllCliniciansWithSchedules", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<Clinician, ClinicianDto> mapper) => GetAllCliniciansWithSchedules(dbContext, mapper));
+			group.MapGet("/GetAllCliniciansWithSchedules", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<Clinician, ClinicianDto> mapper, ClaimsPrincipal user) => GetAllCliniciansWithSchedules(dbContext, mapper, user));
 
 			return endpoints;
 		}
 
-		protected async Task<IResult> GetAllCliniciansWithSchedules(SchedulingDbContext dbContext, IMapper<Clinician, ClinicianDto> mapper)
+		protected async Task<IResult> GetAllCliniciansWithSchedules(SchedulingDbContext dbContext, IMapper<Clinician, ClinicianDto> mapper, ClaimsPrincipal user)
 		{
 			try
 			{
-				var allEntities = await new GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext>(dbContext, mapper).Handle(x => x.CalendarItems);
+				var allEntities = await new GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext>(dbContext, mapper).Handle(user, x => x.CalendarItems);
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)

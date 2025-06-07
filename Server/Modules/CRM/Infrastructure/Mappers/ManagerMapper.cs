@@ -11,9 +11,14 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             return new ManagerDto
             {
                 Id = entity.Id,
-                Name = entity.Name,
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                UserName = entity.UserName,
+                Telephone = entity.Telephone,
                 Email = entity.Email,
-                Phone = entity.Phone,
+                AvatarImage = entity.AvatarImage,
+                AvatarTitle = entity.AvatarTitle,
+                AvatarDescription = entity.AvatarDescription,
                 Department = entity.Department,
                 CustomerId = entity.CustomerId
             };
@@ -24,11 +29,16 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             return new Manager
             {
                 Id = dto.Id,
-                Name = dto.Name,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                UserName = dto.UserName,
+                Telephone = dto.Telephone,
                 Email = dto.Email,
-                Phone = dto.Phone,
-                Department = dto.Department,
+                AvatarImage = dto.AvatarImage,
+                AvatarTitle = dto.AvatarTitle,
+                AvatarDescription = dto.AvatarDescription,
                 KeycloakId = keycloakId,
+                Department = dto.Department,
                 CustomerId = dto.CustomerId
             };
         }
@@ -45,9 +55,14 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
 
         public void Map(ManagerDto dto, Manager entity)
         {
-            entity.Name = dto.Name;
+            entity.FirstName = dto.FirstName;
+            entity.LastName = dto.LastName;
+            entity.UserName = dto.UserName;
+            entity.Telephone = dto.Telephone;
             entity.Email = dto.Email;
-            entity.Phone = dto.Phone;
+            entity.AvatarImage = dto.AvatarImage;
+            entity.AvatarTitle = dto.AvatarTitle;
+            entity.AvatarDescription = dto.AvatarDescription;
             entity.Department = dto.Department;
             entity.CustomerId = dto.CustomerId;
         }
@@ -55,9 +70,14 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
         public void Map(Manager entity, ManagerDto dto)
         {
             dto.Id = entity.Id;
-            dto.Name = entity.Name;
+            dto.FirstName = entity.FirstName;
+            dto.LastName = entity.LastName;
+            dto.UserName = entity.UserName;
+            dto.Telephone = entity.Telephone;
             dto.Email = entity.Email;
-            dto.Phone = entity.Phone;
+            dto.AvatarImage = entity.AvatarImage;
+            dto.AvatarTitle = entity.AvatarTitle;
+            dto.AvatarDescription = entity.AvatarDescription;
             dto.Department = entity.Department;
             dto.CustomerId = entity.CustomerId;
         }

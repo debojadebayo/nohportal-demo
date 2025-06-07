@@ -1,18 +1,16 @@
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Entities;
-using Shared.DTOs;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetByIdQuery<T, TDto, TContext>
     {
-        Task<TDto?> Handle(long id, params Expression<Func<T, object>>[]? includes);
+        Task<TDto?> Handle(long id, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetByIdQuery<T, TDto, TContext> : IGetByIdQuery<T, TDto, TContext>
@@ -29,7 +27,7 @@ namespace ComposedHealthBase.Server.Queries
             _mapper = mapper;
         }
 
-        public async Task<TDto?> Handle(long id, params Expression<Func<T, object>>[]? includes)
+        public async Task<TDto?> Handle(long id, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes)
         {
             var query = _dbContext.Set<T>().AsNoTracking().Where(x => x.Id == id);
             if (includes != null && includes.Length > 0)

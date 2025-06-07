@@ -1,17 +1,31 @@
 ﻿@using MudBlazor
 
-
 <MudNavMenu Class="ma-2">
-	<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/" Match="NavLinkMatch.All">Diary</MudNavLink>
-	<MudNavLink Icon="@Icons.Material.Filled.Business" Href="/customers" Match="NavLinkMatch.All">Customers</MudNavLink>
-	<MudNavLink Icon="@Icons.Material.Filled.People" Href="/employees" Match="NavLinkMatch.All">Employees</MudNavLink>
-    <MudNavLink Icon="@Icons.Material.Filled.AllInbox" Href="/document-library" Match="NavLinkMatch.All">Documents Library</MudNavLink>
-	<MudNavLink Icon="@Icons.Material.Filled.Cases" Href="/case-management" Match="NavLinkMatch.All">Case Management</MudNavLink>
-	<MudNavLink Icon="@Icons.Material.Filled.People" Href="/ppha" Match="NavLinkMatch.All">PPHA</MudNavLink>
-    <MudNavLink Icon="@Icons.Material.Filled.HealthAndSafety" Href="/health-surveillance" Match="NavLinkMatch.All">Health Surveillance</MudNavLink>
-	<MudNavLink Icon="@Icons.Material.Filled.Analytics" Href="/management-dashboard" Match="NavLinkMatch.All">Management Dashboard</MudNavLink>
-	<MudNavLink Icon="@Icons.Material.Filled.Payments" Href="/finance" Match="NavLinkMatch.All">Finance</MudNavLink>
-    <MudNavLink Icon="@Icons.Material.Filled.Settings" Href="/settings" Match="NavLinkMatch.All">Settings</MudNavLink>
+	<AuthorizeView Roles="administrator">
+		<MudNavLink Icon="@Icons.Material.Filled.CalendarMonth" Href="/" Match="NavLinkMatch.All">Diary</MudNavLink>
+		<MudNavLink Icon="@Icons.Material.Filled.Business" Href="/customers" Match="NavLinkMatch.All">Customers
+		</MudNavLink>
+		<MudNavLink Icon="@Icons.Material.Filled.People" Href="/employees" Match="NavLinkMatch.All">Employees
+		</MudNavLink>
+		<MudNavLink Icon="@Icons.Material.Filled.AllInbox" Href="/document-library" Match="NavLinkMatch.All">Documents
+			Library</MudNavLink>
+		<MudNavLink Icon="@Icons.Material.Filled.Cases" Href="/case-management" Match="NavLinkMatch.All">Case Management
+		</MudNavLink>
+		<MudNavLink Icon="@Icons.Material.Filled.People" Href="/ppha" Match="NavLinkMatch.All">PPHA</MudNavLink>
+		<MudNavLink Icon="@Icons.Material.Filled.HealthAndSafety" Href="/health-surveillance" Match="NavLinkMatch.All">
+			Health Surveillance</MudNavLink>
+		<MudNavLink Icon="@Icons.Material.Filled.Analytics" Href="/management-dashboard" Match="NavLinkMatch.All">
+			Management Dashboard</MudNavLink>
+		<MudNavLink Icon="@Icons.Material.Filled.Payments" Href="/finance" Match="NavLinkMatch.All">Finance</MudNavLink>
+		<MudNavLink Icon="@Icons.Material.Filled.Settings" Href="/settings" Match="NavLinkMatch.All">Settings
+		</MudNavLink>
+	</AuthorizeView>
+	<AuthorizeView Roles="tenantadministrator">
+		<MudNavLink Icon="@Icons.Material.Filled.Business" Href="/customers" Match="NavLinkMatch.All">Your Company
+		</MudNavLink>
+		<MudNavLink Icon="@Icons.Material.Filled.People" Href="/employees" Match="NavLinkMatch.All">Employees
+		</MudNavLink>
+	</AuthorizeView>
 </MudNavMenu>
 
 <style>
@@ -23,28 +37,28 @@
 	}
 
 	.mud-navmenu.mud-navmenu-default .mud-nav-link:hover:not(.mud-nav-link-disabled) {
-		background-color: rgba(255,255,255,0.3);
+		background-color: rgba(255, 255, 255, 0.3);
 		border-top-left-radius: 20px;
 		border-bottom-left-radius: 20px;
 	}
 
-	a.mud-nav-link.mud-ripple.active svg.mud-icon-root.mud-icon-default.mud-svg-icon.mud-icon-size-medium.mud-nav-link-icon.mud-nav-link-icon-default{
+	a.mud-nav-link.mud-ripple.active svg.mud-icon-root.mud-icon-default.mud-svg-icon.mud-icon-size-medium.mud-nav-link-icon.mud-nav-link-icon-default {
 		color: Black;
 	}
 
-	.mud-nav-link{
+	.mud-nav-link {
 		padding: 10px;
 		margin-bottom: 10px;
 	}
 </style>
 
 @code {
-    private bool collapseNavMenu = true;
+	private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+	private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+	private void ToggleNavMenu()
+	{
+		collapseNavMenu = !collapseNavMenu;
+	}
 }

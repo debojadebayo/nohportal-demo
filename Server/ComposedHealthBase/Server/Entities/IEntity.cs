@@ -10,5 +10,9 @@
 		DateTime ModifiedDate { get; set; }
 		long SubjectId { get; set; }
 		long TenantId { get; set; }
+		Guid TenantKeycloakId { get; set; }
+		Guid SubjectKeycloakId { get; set; }
+		Guid CreatedByKeycloakId { get; set; }
+		Guid ModifiedByKeycloakId { get; set; }
 	}
 }

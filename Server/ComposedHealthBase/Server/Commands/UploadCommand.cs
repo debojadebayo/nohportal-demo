@@ -3,11 +3,14 @@ using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Shared.DTOs;
 using ComposedHealthBase.Server.Mappers;
+using System.Threading.Tasks;
+using System.Security.Claims;
+
 namespace ComposedHealthBase.Server.Commands
 {
     public interface IUploadCommand<T, TDto, TContext>
     {
-        Task<long> Handle(TDto dto);
+        Task<long> Handle(TDto dto, ClaimsPrincipal user);
     }
 
     public class UploadCommand<T, TDto, TContext> : IUploadCommand<T, TDto, TContext>
@@ -24,11 +27,11 @@ namespace ComposedHealthBase.Server.Commands
             _mapper = mapper;
         }
 
-        public async Task<long> Handle(TDto dto)
+        public async Task<long> Handle(TDto dto, ClaimsPrincipal user)
         {
             var newEntity = _mapper.Map(dto);
             _dbContext.Set<T>().Add(newEntity);
-            await _dbContext.SaveChangesWithAuditAsync("System");
+            await _dbContext.SaveChangesWithAuditAsync(user);
             return newEntity.Id;
         }
     }

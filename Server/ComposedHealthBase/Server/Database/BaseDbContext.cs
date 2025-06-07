@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using ComposedHealthBase.Server.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,8 +9,17 @@ namespace ComposedHealthBase.Server.Database
 	{
 		public BaseDbContext(DbContextOptions<TContext> options) : base(options) { }
 
-		public Task<int> SaveChangesWithAuditAsync(string userFullName, CancellationToken cancellationToken = default)
+		public Task<int> SaveChangesWithAuditAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default)
 		{
+			if (user == null || user.Identity == null || !user.Identity.IsAuthenticated)
+			{
+				throw new UnauthorizedAccessException("User must be authenticated to save changes.");
+			}
+			var userFullName = user.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown User";
+			var userKeycloakId = user.FindFirst("keycloak_id")?.Value;
+			Guid.TryParse(userKeycloakId, out Guid userKeycloakGuid);
+
+
 			var timeNow = DateTime.UtcNow;
 			var entries = ChangeTracker.Entries()
 				.Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
@@ -24,11 +34,14 @@ namespace ComposedHealthBase.Server.Database
 						entity.CreatedBy = userFullName;
 						entity.CreatedDate = timeNow;
 						entity.ModifiedDate = timeNow;
+						entity.CreatedByKeycloakId = userKeycloakGuid;
+						entity.ModifiedByKeycloakId = userKeycloakGuid;
 					}
 					else if (entry.State == EntityState.Modified)
 					{
 						entity.LastModifiedBy = userFullName;
 						entity.ModifiedDate = timeNow;
+						entity.ModifiedByKeycloakId = userKeycloakGuid;
 					}
 				}
 
@@ -55,6 +68,6 @@ namespace ComposedHealthBase.Server.Database
 
 			return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
 		}
-		
+
 	}
 }

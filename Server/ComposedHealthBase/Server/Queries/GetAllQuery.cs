@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetAllQuery<T, TDto, TContext>
     {
-        Task<IEnumerable<TDto>> Handle(params Expression<Func<T, object>>[]? includes);
+        Task<IEnumerable<TDto>> Handle(ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetAllQuery<T, TDto, TContext> : IGetAllQuery<T, TDto, TContext>
@@ -25,7 +26,7 @@ namespace ComposedHealthBase.Server.Queries
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<TDto>> Handle(params Expression<Func<T, object>>[]? includes)
+        public async Task<IEnumerable<TDto>> Handle(ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes)
         {
             var query = _dbContext.Set<T>().AsNoTracking();
             if (includes != null && includes.Length > 0)

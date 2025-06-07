@@ -7,7 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Server.Modules.CRM.Infrastructure.Database;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Modules;
-using Azure.Storage.Blobs;
+using Server.Modules.CRM.Infrastructure.Auth;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Server.Modules.CRM.Infrastructure
 {
@@ -18,6 +19,13 @@ namespace Server.Modules.CRM.Infrastructure
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 			services.AddDbContext<IDbContext<CRMDbContext>, CRMDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+			// services.Configure<AuthorizationOptions>(options =>
+			// {
+			// 	CRMPolicyBuilder.AddCRMPolicies(options);
+			// });
+
+			// services.AddScoped<IEntityPermissionService, CRMRolePermissionService>();
 
 			return services;
 		}

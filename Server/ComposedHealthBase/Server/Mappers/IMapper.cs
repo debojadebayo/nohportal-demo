@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ComposedHealthBase.Server.Mappers
 {
     public interface IMapper<T, TDto>

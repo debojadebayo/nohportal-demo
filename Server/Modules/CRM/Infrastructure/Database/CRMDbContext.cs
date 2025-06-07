@@ -1,4 +1,5 @@
 ﻿using ComposedHealthBase.Server.Database;
+using ComposedHealthBase.Server.Entities;
 using Microsoft.EntityFrameworkCore;
 using Server.Modules.CRM.Entities;
 
@@ -159,9 +160,9 @@ namespace Server.Modules.CRM.Infrastructure.Database
 				new Employee { Id = 10, KeycloakId = new Guid("44444444-dddd-dddd-dddd-444444444444"), FirstName = "Jack", LastName = "White", DOB = new DateTime(1989, 10, 10, 0, 0, 0, DateTimeKind.Utc), Address1 = "10 Main St", Address2 = "Apt 10", Address3 = "", Postcode = "EMP10 0JJ", Email = "jack.white@example.com", Telephone = "07000 000000", CustomerId = 1, JobRole = "Cleaner", Department = "Facilities", LineManager = "Grace Brown", IsActive = true, CreatedBy = "System", LastModifiedBy = "System", CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, DateTimeKind.Utc), ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, DateTimeKind.Utc) }
 			);
 			modelBuilder.Entity<Manager>().HasData(
-				new Manager { Id = 1, KeycloakId = new Guid("55555555-5555-5555-5555-555555555555"), Name = "Thompson Smith", Email = "thompson.smith@example.com", Phone = "07111 111111", Department = "HR", CustomerId = 1, CreatedBy = "System", LastModifiedBy = "System" },
-				new Manager { Id = 2, KeycloakId = new Guid("66666666-6666-6666-6666-666666666666"), Name = "Emily Johnson", Email = "emily.johnson@example.com", Phone = "07222 222222", Department = "Finance", CustomerId = 2, CreatedBy = "System", LastModifiedBy = "System" },
-				new Manager { Id = 3, KeycloakId = new Guid("77777777-7777-7777-7777-777777777777"), Name = "Michael Brown", Email = "michael.brown@example.com", Phone = "07333 333333", Department = "IT", CustomerId = 3, CreatedBy = "System", LastModifiedBy = "System" }
+				new Manager { Id = 1, KeycloakId = new Guid("55555555-5555-5555-5555-555555555555"), FirstName = "Thompson", LastName = "Smith", Email = "thompson.smith@example.com", Telephone = "07111 111111", Department = "HR", CustomerId = 1, CreatedBy = "System", LastModifiedBy = "System" },
+				new Manager { Id = 2, KeycloakId = new Guid("66666666-6666-6666-6666-666666666666"), FirstName = "Emily", LastName = "Johnson", Email = "emily.johnson@example.com", Telephone = "07222 222222", Department = "Finance", CustomerId = 2, CreatedBy = "System", LastModifiedBy = "System" },
+				new Manager { Id = 3, KeycloakId = new Guid("77777777-7777-7777-7777-777777777777"), FirstName = "Michael", LastName = "Brown", Email = "michael.brown@example.com", Telephone = "07333 333333", Department = "IT", CustomerId = 3, CreatedBy = "System", LastModifiedBy = "System" }
 			);
 		}
 	}

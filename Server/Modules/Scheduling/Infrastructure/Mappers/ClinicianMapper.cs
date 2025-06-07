@@ -21,9 +21,9 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             ClinicianType = entity.ClinicianType,
             RegulatorType = entity.RegulatorType,
             LicenceNumber = entity.LicenceNumber,
-            AvatarImage = entity.AvatarImage,
-            AvatarTitle = entity.AvatarTitle,
-            AvatarDescription = entity.AvatarDescription,
+            AvatarImage = entity.AvatarImage ?? string.Empty,
+            AvatarTitle = entity.AvatarTitle ?? string.Empty,
+            AvatarDescription = entity.AvatarDescription ?? string.Empty,
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
@@ -32,10 +32,11 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         };
     }
 
-    public Clinician Map(ClinicianDto dto)
+    public Clinician MapWithKeycloakId(ClinicianDto dto, Guid keycloakId)
     {
         return new Clinician
         {
+            Id = dto.Id,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             Telephone = dto.Telephone,
@@ -45,8 +46,19 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             LicenceNumber = dto.LicenceNumber,
             AvatarImage = dto.AvatarImage,
             AvatarTitle = dto.AvatarTitle,
-            AvatarDescription = dto.AvatarDescription
+            AvatarDescription = dto.AvatarDescription,
+            CreatedBy = dto.CreatedBy,
+            LastModifiedBy = dto.LastModifiedBy,
+            CreatedDate = dto.CreatedDate,
+            ModifiedDate = dto.ModifiedDate,
+            KeycloakId = keycloakId
+            // Add other properties as needed
         };
+    }
+
+    public Clinician Map(ClinicianDto dto)
+    {
+        throw new NotImplementedException("Map method without KeycloakId is not implemented. Use MapWithKeycloakId instead.");
     }
 
     public IEnumerable<ClinicianDto> Map(IEnumerable<Clinician> entities)
@@ -83,9 +95,9 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         dto.ClinicianType = entity.ClinicianType;
         dto.RegulatorType = entity.RegulatorType;
         dto.LicenceNumber = entity.LicenceNumber;
-        dto.AvatarImage = entity.AvatarImage;
-        dto.AvatarTitle = entity.AvatarTitle;
-        dto.AvatarDescription = entity.AvatarDescription;
+        dto.AvatarImage = entity.AvatarImage ?? string.Empty; // Ensure non-null
+        dto.AvatarTitle = entity.AvatarTitle ?? string.Empty; // Ensure non-null
+        dto.AvatarDescription = entity.AvatarDescription ?? string.Empty; // Ensure non-null
         // Schedules mapping can be handled with a ScheduleMapper if needed
         dto.CreatedBy = entity.CreatedBy;
         dto.LastModifiedBy = entity.LastModifiedBy;

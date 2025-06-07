@@ -1,10 +1,13 @@
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using ComposedHealthBase.Server.Database;
 
 namespace ComposedHealthBase.Server.Commands
 {
     public interface IDeleteCommand
     {
-        Task<bool> Handle(long id);
+        Task<bool> Handle(long id, ClaimsPrincipal user);
     }
     public class DeleteCommand<T, TContext> : IDeleteCommand
     where T : class
@@ -17,7 +20,7 @@ namespace ComposedHealthBase.Server.Commands
             _dbContext = dbContext;
         }
 
-        public async Task<bool> Handle(long id)
+        public async Task<bool> Handle(long id, ClaimsPrincipal user)
         {
             var entity = await _dbContext.Set<T>().FindAsync(id);
             if (entity == null)
@@ -26,7 +29,7 @@ namespace ComposedHealthBase.Server.Commands
             }
 
             _dbContext.Set<T>().Remove(entity);
-            await _dbContext.SaveChangesWithAuditAsync("System");
+            await _dbContext.SaveChangesWithAuditAsync(user);
             return true;
         }
     }

@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Mappers;
@@ -9,7 +14,7 @@ namespace ComposedHealthBase.Server.Queries
 {
 	public interface IGetAllByTenantIdsQuery<T, TDto, TContext>
 	{
-		Task<IEnumerable<TDto>> Handle(List<long> subjectIds, params Expression<Func<T, object>>[]? includes);
+		Task<IEnumerable<TDto>> Handle(List<long> subjectIds, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes);
 	}
 	public class GetAllByTenantIdsQuery<T, TDto, TContext> : IGetAllByTenantIdsQuery<T, TDto, TContext>
 		where T : BaseEntity<T>
@@ -25,7 +30,7 @@ namespace ComposedHealthBase.Server.Queries
 			_mapper = mapper;
 		}
 
-		public async Task<IEnumerable<TDto>> Handle(List<long> tenantIds, params Expression<Func<T, object>>[]? includes)
+		public async Task<IEnumerable<TDto>> Handle(List<long> tenantIds, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes)
 		{
 			var query = _dbContext.Set<T>().AsNoTracking().Where(e => tenantIds.Contains(e.TenantId));
 			if (includes != null && includes.Length > 0)
