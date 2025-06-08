@@ -1,9 +1,10 @@
-﻿using ComposedHealthBase.Server.Entities;
+﻿using ComposedHealthBase.Server.Auth;
+using ComposedHealthBase.Server.Entities;
 
 
 namespace Server.Modules.Scheduling.Entities
 {
-	public class Referral : BaseEntity<Referral>, IEntity
+	public class Referral : BaseEntity<Referral>, IEntity, IAnchor
 	{
 		public required string ReferralDetails { get; set; }
 		public required string DocumentId { get; set; }

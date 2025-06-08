@@ -1,10 +1,11 @@
-﻿using ComposedHealthBase.Server.Entities;
+﻿using ComposedHealthBase.Server.Auth;
+using ComposedHealthBase.Server.Entities;
 using Shared.Enums;
 
 
 namespace Server.Modules.Scheduling.Entities
 {
-	public class Schedule : BaseEntity<Schedule>, IEntity
+	public class Schedule : BaseEntity<Schedule>, IEntity, IAnchorable
 	{
 		public long ReferralId { get; set; }
 		public long ClinicianId { get; set; }
@@ -34,6 +35,18 @@ namespace Server.Modules.Scheduling.Entities
 			set
 			{
 				SubjectId = value;
+			}
+		}
+
+		public long AnchorId
+		{
+			get
+			{
+				return ReferralId;
+			}
+			set
+			{
+				ReferralId = value;
 			}
 		}
 	}
