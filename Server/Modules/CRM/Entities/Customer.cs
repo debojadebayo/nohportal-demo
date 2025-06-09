@@ -1,4 +1,5 @@
-﻿using ComposedHealthBase.Server.Entities;
+﻿using ComposedHealthBase.Server.Auth;
+using ComposedHealthBase.Server.Entities;
 
 
 namespace Server.Modules.CRM.Entities
@@ -34,5 +35,5 @@ namespace Server.Modules.CRM.Entities
 				TenantId = value;
 			}
 		}
-	}
+    }
 }

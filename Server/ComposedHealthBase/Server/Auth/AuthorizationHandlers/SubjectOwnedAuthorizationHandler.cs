@@ -1,20 +1,18 @@
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
 using System.Security.Claims;
 using ComposedHealthBase.Server.Entities;
-using ComposedHealthBase.Server.Queries;
-using ComposedHealthBase.Server.Database;
 
 namespace ComposedHealthBase.Server.Auth.AuthorizationHandlers
 {
-    public class SubjectOwnedAuthorizationHandler<T, TContext> : AuthorizationHandler<IAuthorizationRequirement, T>
-        where TContext : IDbContext<TContext>
-        where T : BaseEntity<T>
+    public class SubjectOwnedRequirement : IAuthorizationRequirement
+    {
+    }
+    public class SubjectOwnedAuthorizationHandler : AuthorizationHandler<SubjectOwnedRequirement, IEntity>
     {
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
-            IAuthorizationRequirement requirement,
-            T resource)
+            SubjectOwnedRequirement requirement,
+            IEntity resource)
         {
             if (context.User.IsInRole("administrator"))
             {

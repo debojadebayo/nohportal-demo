@@ -1,8 +1,10 @@
 ﻿
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using ComposedHealthBase.Server.Auth.AuthorizationHandlers;
 using ComposedHealthBase.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -34,7 +36,7 @@ namespace ComposedHealthBase.Server.Modules
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(options =>
 				{
-					options.MetadataAddress = configuration["Jwt:MetadataAddress"];
+					options.MetadataAddress = configuration["Jwt:MetadataAddress"] ?? "";
 					options.RequireHttpsMetadata = requireHttpsMetadata;
 					options.Audience = configuration["Jwt:Audience"];
 					options.MapInboundClaims = false; 
@@ -49,10 +51,17 @@ namespace ComposedHealthBase.Server.Modules
 					};
 				});
 
+			services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
 			services.AddAuthorization(options =>
 			{
-				options.AddPolicy("administrator", policy => policy.RequireRole("administrator"));
+				options.AddPolicy("resource-access",
+				policy =>
+				{
+					policy.Requirements.Add(new SubjectOwnedRequirement());
+					policy.Requirements.Add(new TenantOwnedRequirement());
+				});
 			});
+
 			services.AddOpenApi();
 
 			var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");

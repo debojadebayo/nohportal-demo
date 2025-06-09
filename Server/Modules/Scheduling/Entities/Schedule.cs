@@ -38,16 +38,6 @@ namespace Server.Modules.Scheduling.Entities
 			}
 		}
 
-		public long AnchorId
-		{
-			get
-			{
-				return ReferralId;
-			}
-			set
-			{
-				ReferralId = value;
-			}
-		}
+		public long AnchorId => ReferralId;
 	}
 }

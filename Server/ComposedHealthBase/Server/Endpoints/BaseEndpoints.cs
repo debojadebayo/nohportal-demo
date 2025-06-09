@@ -24,7 +24,8 @@ namespace ComposedHealthBase.Server.Endpoints
 		public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			var endpointName = typeof(T).Name;
-			var group = endpoints.MapGroup($"/api/{endpointName}");
+			var group = endpoints.MapGroup($"/api/{endpointName}")
+				.RequireAuthorization("resource-access");
 
 			group.MapGet("/debugclaims", (ClaimsPrincipal user) =>
             {
@@ -57,7 +58,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			group.MapPost("/Delete/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, long id) => Delete(dbContext, mapper, user, id));
 
 			// New endpoints
-			group.MapGet("/GetAllByTenantId/{tenantId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, long tenantId) => GetAllByTenantId(dbContext, mapper, user, tenantId)).RequireAuthorization("administrator");
+			group.MapGet("/GetAllByTenantId/{tenantId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, long tenantId) => GetAllByTenantId(dbContext, mapper, user, tenantId));
 			group.MapPost("/GetAllByTenantIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, List<long> tenantIds) => GetAllByTenantIds(dbContext, mapper, user, tenantIds));
 			group.MapGet("/GetAllBySubjectId/{subjectId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, long subjectId) => GetAllBySubjectId(dbContext, mapper, user, subjectId));
 			group.MapPost("/GetAllBySubjectIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, List<long> subjectIds) => GetAllBySubjectIds(dbContext, mapper, user, subjectIds));
