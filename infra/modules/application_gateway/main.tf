@@ -4,7 +4,7 @@ resource "azurerm_public_ip" "app_gateway_ip" {
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
-  domain_name_label   = "nationohdev-gateway"
+  domain_name_label   = "${var.resource_group_name}-gateway"
 }
 
 resource "azurerm_web_application_firewall_policy" "waf_policy" {
