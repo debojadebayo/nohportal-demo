@@ -6,7 +6,7 @@ using ComposedHealthBase.Server.Helpers;
 
 namespace ComposedHealthBase.Server.Auth.AuthorizationHandlers
 {
-    public class ResourceAccessAuthorizationHandler :
+    public class ResourceCreateAuthorizationHandler :
         AuthorizationHandler<IAuthorizationRequirement, IEntity>
     {
         protected override Task HandleRequirementAsync(

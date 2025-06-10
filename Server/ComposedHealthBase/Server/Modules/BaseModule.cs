@@ -1,5 +1,4 @@
-﻿
-using Azure.Storage.Blobs;
+﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using ComposedHealthBase.Server.Auth.AuthorizationHandlers;
 using ComposedHealthBase.Server.Services;
@@ -7,11 +6,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Reflection;
+using Server.ComposedHealthBase.Server.Auth.AuthDatabase;
 
 namespace ComposedHealthBase.Server.Modules
 {
@@ -39,11 +40,11 @@ namespace ComposedHealthBase.Server.Modules
 					options.MetadataAddress = configuration["Jwt:MetadataAddress"] ?? "";
 					options.RequireHttpsMetadata = requireHttpsMetadata;
 					options.Audience = configuration["Jwt:Audience"];
-					options.MapInboundClaims = false; 
+					options.MapInboundClaims = false;
 					options.TokenValidationParameters = new TokenValidationParameters
 					{
 						ValidateIssuer = true,
-						ValidIssuer = configuration["Jwt:Issuer"], 
+						ValidIssuer = configuration["Jwt:Issuer"],
 						ValidateAudience = true,
 						ValidateLifetime = true,
 						ValidateIssuerSigningKey = true,
@@ -63,6 +64,9 @@ namespace ComposedHealthBase.Server.Modules
 			});
 
 			services.AddOpenApi();
+
+			services.AddDbContext<AuthDbContext>(options =>
+				options.UseNpgsql(configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'AuthDb' not found.")));
 
 			var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");
 			var blobServiceClient = new BlobServiceClient(azureStorageConnectionString);
@@ -98,6 +102,12 @@ namespace ComposedHealthBase.Server.Modules
 			{
 				app.MapOpenApi();
 				app.MapScalarApiReference();
+
+				using (var scope = app.Services.CreateScope())
+				{
+					var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+					dbContext.Database.Migrate();
+				}
 			}
 			else
 			{

@@ -24,8 +24,7 @@ namespace ComposedHealthBase.Server.Endpoints
 		public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
 			var endpointName = typeof(T).Name;
-			var group = endpoints.MapGroup($"/api/{endpointName}")
-				.RequireAuthorization("resource-access");
+			var group = endpoints.MapGroup($"/api/{endpointName}");
 
 			group.MapGet("/debugclaims", (ClaimsPrincipal user) =>
             {
@@ -50,27 +49,94 @@ namespace ComposedHealthBase.Server.Endpoints
                 return Results.Unauthorized();
             }).RequireAuthorization();
 
-			group.MapGet("/GetAll", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user) => GetAll(dbContext, mapper, user));
-			group.MapGet("/GetById/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, long id) => GetById(dbContext, mapper, user, id));
-			group.MapPost("/GetByIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, List<long> ids) => GetByIds(dbContext, mapper, user, ids));
-			group.MapPost("/Create", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto) => Create(dbContext, mapper, user, dto));
-			group.MapPut("/Update", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto) => Update(dbContext, mapper, user, dto));
-			group.MapPost("/Delete/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, long id) => Delete(dbContext, mapper, user, id));
+			group.MapGet("/GetAll", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] GetAllQuery<T, TDto, TContext> getAllQuery,
+				ClaimsPrincipal user
+			) => GetAll(getAllQuery, user));
+
+			group.MapGet("/GetById/{id}", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] GetByIdQuery<T, TDto, TContext> getByIdQuery,
+				ClaimsPrincipal user,
+				long id
+			) => GetById(getByIdQuery, user, id));
+
+			group.MapPost("/GetByIds", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] GetByIdsQuery<T, TDto, TContext> getByIdsQuery,
+				ClaimsPrincipal user,
+				List<long> ids
+			) => GetByIds(getByIdsQuery, user, ids));
+
+			group.MapPost("/Create", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] CreateCommand<T, TDto, TContext> createCommand,
+				ClaimsPrincipal user,
+				TDto dto
+			) => Create(createCommand, user, dto));
+
+			group.MapPut("/Update", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] UpdateCommand<T, TDto, TContext> updateCommand,
+				ClaimsPrincipal user,
+				TDto dto
+			) => Update(updateCommand, user, dto));
+
+			group.MapPost("/Delete/{id}", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] DeleteCommand<T, TContext> deleteCommand,
+				ClaimsPrincipal user,
+				long id
+			) => Delete(deleteCommand, user, id));
 
 			// New endpoints
-			group.MapGet("/GetAllByTenantId/{tenantId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, long tenantId) => GetAllByTenantId(dbContext, mapper, user, tenantId));
-			group.MapPost("/GetAllByTenantIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, List<long> tenantIds) => GetAllByTenantIds(dbContext, mapper, user, tenantIds));
-			group.MapGet("/GetAllBySubjectId/{subjectId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, long subjectId) => GetAllBySubjectId(dbContext, mapper, user, subjectId));
-			group.MapPost("/GetAllBySubjectIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, List<long> subjectIds) => GetAllBySubjectIds(dbContext, mapper, user, subjectIds));
+			group.MapGet("/GetAllByTenantId/{tenantId}", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] GetAllByTenantIdQuery<T, TDto, TContext> getAllByTenantIdQuery,
+				ClaimsPrincipal user,
+				long tenantId
+			) => GetAllByTenantId(getAllByTenantIdQuery, user, tenantId));
+
+			group.MapPost("/GetAllByTenantIds", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] GetAllByTenantIdsQuery<T, TDto, TContext> getAllByTenantIdsQuery,
+				ClaimsPrincipal user,
+				List<long> tenantIds
+			) => GetAllByTenantIds(getAllByTenantIdsQuery, user, tenantIds));
+
+			group.MapGet("/GetAllBySubjectId/{subjectId}", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] GetAllBySubjectIdQuery<T, TDto, TContext> getAllBySubjectIdQuery,
+				ClaimsPrincipal user,
+				long subjectId
+			) => GetAllBySubjectId(getAllBySubjectIdQuery, user, subjectId));
+
+			group.MapPost("/GetAllBySubjectIds", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] GetAllBySubjectIdsQuery<T, TDto, TContext> getAllBySubjectIdsQuery,
+				ClaimsPrincipal user,
+				List<long> subjectIds
+			) => GetAllBySubjectIds(getAllBySubjectIdsQuery, user, subjectIds));
 
 			return endpoints;
 		}
 
-		protected async Task<IResult> GetAll(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user)
+		protected async Task<IResult> GetAll(GetAllQuery<T, TDto, TContext> getAllQuery, ClaimsPrincipal user)
 		{
 			try
 			{
-				var allEntities = await new GetAllQuery<T, TDto, TContext>(dbContext, mapper).Handle(user);
+				var allEntities = await getAllQuery.Handle(user);
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
@@ -80,11 +146,11 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetById(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, long id)
+		protected async Task<IResult> GetById(GetByIdQuery<T, TDto, TContext> getByIdQuery, ClaimsPrincipal user, long id)
 		{
 			try
 			{
-				var entity = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(id, user);
+				var entity = await getByIdQuery.Handle(id, user);
 				return Results.Ok(entity);
 			}
 			catch (Exception ex)
@@ -94,11 +160,11 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetByIds(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, List<long> ids)
+		protected async Task<IResult> GetByIds(GetByIdsQuery<T, TDto, TContext> getByIdsQuery, ClaimsPrincipal user, List<long> ids)
 		{
 			try
 			{
-				var entities = await new GetByIdsQuery<T, TDto, TContext>(dbContext, mapper).Handle(ids, user);
+				var entities = await getByIdsQuery.Handle(ids, user);
 				return Results.Ok(entities);
 			}
 			catch (Exception ex)
@@ -108,11 +174,11 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Create(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto)
+		protected async Task<IResult> Create(CreateCommand<T, TDto, TContext> createCommand, ClaimsPrincipal user, TDto dto)
 		{
 			try
 			{
-				var result = await new CreateCommand<T, TDto, TContext>(dbContext, mapper).Handle(dto, user);
+				var result = await createCommand.Handle(dto, user);
 				return Results.Ok(result);
 			}
 			catch (Exception ex)
@@ -122,11 +188,11 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Update(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto)
+		protected async Task<IResult> Update(UpdateCommand<T, TDto, TContext> updateCommand, ClaimsPrincipal user, TDto dto)
 		{
 			try
 			{
-				var result = await new UpdateCommand<T, TDto, TContext>(dbContext, mapper).Handle(dto, user);
+				var result = await updateCommand.Handle(dto, user);
 				return Results.Ok(result);
 			}
 			catch (Exception ex)
@@ -136,12 +202,11 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Delete(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, long id)
+		protected async Task<IResult> Delete(DeleteCommand<T, TContext> deleteCommand, ClaimsPrincipal user, long id)
 		{
 			try
 			{
-				var result = await new DeleteCommand<T, TContext>(dbContext).Handle(id, user);
-
+				var result = await deleteCommand.Handle(id, user);
 				return Results.Ok(result);
 			}
 			catch (Exception ex)
@@ -153,11 +218,11 @@ namespace ComposedHealthBase.Server.Endpoints
 
 		// New methods for tenant and subject filtering
 
-		protected async Task<IResult> GetAllByTenantId(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, long tenantId)
+		protected async Task<IResult> GetAllByTenantId(GetAllByTenantIdQuery<T, TDto, TContext> getAllByTenantIdQuery, ClaimsPrincipal user, long tenantId)
 		{
 			try
 			{
-				var entities = await new GetAllByTenantIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(tenantId, user);
+				var entities = await getAllByTenantIdQuery.Handle(tenantId, user);
 				return Results.Ok(entities);
 			}
 			catch (Exception ex)
@@ -167,11 +232,11 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetAllByTenantIds(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, List<long> tenantIds)
+		protected async Task<IResult> GetAllByTenantIds(GetAllByTenantIdsQuery<T, TDto, TContext> getAllByTenantIdsQuery, ClaimsPrincipal user, List<long> tenantIds)
 		{
 			try
 			{
-				var entities = await new GetAllByTenantIdsQuery<T, TDto, TContext>(dbContext, mapper).Handle(tenantIds, user);
+				var entities = await getAllByTenantIdsQuery.Handle(tenantIds, user);
 				return Results.Ok(entities);
 			}
 			catch (Exception ex)
@@ -181,11 +246,11 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetAllBySubjectId(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, long subjectId)
+		protected async Task<IResult> GetAllBySubjectId(GetAllBySubjectIdQuery<T, TDto, TContext> getAllBySubjectIdQuery, ClaimsPrincipal user, long subjectId)
 		{
 			try
 			{
-				var entities = await new GetAllBySubjectIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(subjectId, user);
+				var entities = await getAllBySubjectIdQuery.Handle(subjectId, user);
 				return Results.Ok(entities);
 			}
 			catch (Exception ex)
@@ -195,11 +260,11 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetAllBySubjectIds(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, List<long> subjectIds)
+		protected async Task<IResult> GetAllBySubjectIds(GetAllBySubjectIdsQuery<T, TDto, TContext> getAllBySubjectIdsQuery, ClaimsPrincipal user, List<long> subjectIds)
 		{
 			try
 			{
-				var entities = await new GetAllBySubjectIdsQuery<T, TDto, TContext>(dbContext, mapper).Handle(subjectIds, user);
+				var entities = await getAllBySubjectIdsQuery.Handle(subjectIds, user);
 				return Results.Ok(entities);
 			}
 			catch (Exception ex)

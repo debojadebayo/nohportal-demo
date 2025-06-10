@@ -24,16 +24,23 @@ namespace Server.Modules.Scheduling.Endpoints
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/clinician");
 
-			group.MapGet("/GetAllCliniciansWithSchedules", ([FromServices] SchedulingDbContext dbContext, [FromServices] IMapper<Clinician, ClinicianDto> mapper, ClaimsPrincipal user) => GetAllCliniciansWithSchedules(dbContext, mapper, user));
+			group.MapGet("/GetAllCliniciansWithSchedules", (
+				[FromServices] SchedulingDbContext dbContext,
+				[FromServices] IMapper<Clinician, ClinicianDto> mapper,
+				[FromServices] GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext> getAllQuery,
+				ClaimsPrincipal user
+			) => GetAllCliniciansWithSchedules(getAllQuery, user));
 
 			return endpoints;
 		}
 
-		protected async Task<IResult> GetAllCliniciansWithSchedules(SchedulingDbContext dbContext, IMapper<Clinician, ClinicianDto> mapper, ClaimsPrincipal user)
+		protected async Task<IResult> GetAllCliniciansWithSchedules(
+			GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext> getAllQuery,
+			ClaimsPrincipal user)
 		{
 			try
 			{
-				var allEntities = await new GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext>(dbContext, mapper).Handle(user, x => x.CalendarItems);
+				var allEntities = await getAllQuery.Handle(user, x => x.CalendarItems);
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)

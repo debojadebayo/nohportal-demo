@@ -9,6 +9,7 @@ using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Modules;
 using Server.Modules.CRM.Infrastructure.Auth;
 using Microsoft.AspNetCore.Authorization;
+using Server.Modules.CRM.Infrastructure.Queries;
 
 namespace Server.Modules.CRM.Infrastructure
 {
@@ -20,12 +21,8 @@ namespace Server.Modules.CRM.Infrastructure
 			services.AddDbContext<IDbContext<CRMDbContext>, CRMDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-			// services.Configure<AuthorizationOptions>(options =>
-			// {
-			// 	CRMPolicyBuilder.AddCRMPolicies(options);
-			// });
-
-			// services.AddScoped<IEntityPermissionService, CRMRolePermissionService>();
+			services.AddTransient<ISearchEmployeesQuery, SearchEmployeesQuery>();
+			services.AddTransient<ISearchCustomersQuery, SearchCustomersQuery>();
 
 			return services;
 		}

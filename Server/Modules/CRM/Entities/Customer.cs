@@ -4,7 +4,7 @@ using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Customer : BaseEntity<Customer>, IEntity
+	public class Customer : BaseEntity<Customer>, IEntity, ITenantEntity
 	{
 		public required string Name { get; set; }
 		public required string Telephone { get; set; }

@@ -1,4 +1,5 @@
 ﻿@page "/customers"
+@page "/customers/{selectedCustomerId:long}"
 @using ComposedHealthBase.Shared.DTOs
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
@@ -18,14 +19,20 @@
 
 @attribute [Authorize]
 
-<MudText Typo="Typo.h1">Customers</MudText>
+<AuthorizeView Roles="tenantadministrator">
+    <MudText Typo="Typo.h1">Welcome, @selectedCustomer?.Name</MudText>
+</AuthorizeView>
 
-<MudText Typo="Typo.body1">Select a customer to view details</MudText>
-<LazyLookup TDto="CustomerDto" @bind-ItemId="selectedCustomerId" Label="Company Name" />
-@if (selectedCustomer == null)
-{
-    <MudButton OnClick="CreateCustomer">Add New Customer</MudButton>
-}
+<AuthorizeView Roles="administrator">
+    <MudText Typo="Typo.h1">Customers</MudText>
+
+    <MudText Typo="Typo.body1">Select a customer to view details</MudText>
+    <LazyLookup TDto="CustomerDto" @bind-ItemId="selectedCustomerId" Label="Company Name" />
+    @if (selectedCustomer == null)
+    {
+        <MudButton OnClick="CreateCustomer">Add New Customer</MudButton>
+    }
+</AuthorizeView>
 
 @if (selectedCustomer != null)
 {
@@ -46,7 +53,8 @@
             <ContractsTab Contracts="contracts" OnContractSave="HandleContractSave" NewContract="newContract" />
         </MudTabPanel>
         <MudTabPanel Text="Services" OnClick="GetAllProductsByCustomerId">
-            <ProductsTab Products="products" ProductTypes="productTypes" OnProductSave="HandleProductSave" NewProduct="newProduct" />
+            <ProductsTab Products="products" ProductTypes="productTypes" OnProductSave="HandleProductSave"
+                NewProduct="newProduct" />
         </MudTabPanel>
         <MudTabPanel Text="Invoicing">
             <InvoicingTab />
@@ -67,8 +75,10 @@
 @code {
     private MudTabs tabs = default!;
     private CustomerDto? selectedCustomer =>
-    CustomerLookupService.ItemList.TryGetValue(selectedCustomerId, out var customer) ? customer : null;
-    private long selectedCustomerId { get; set; } = 0;
+        CustomerLookupService.ItemList.TryGetValue(selectedCustomerId, out var customer) ? customer : null;
+
+    [Parameter]
+    public long selectedCustomerId { get; set; } = 0;
     private List<ScheduleDto> appointments = new();
     private List<ReferralDto> referrals = new();
     private List<ContractDto> contracts = new();
@@ -79,6 +89,21 @@
     private CustomerDocumentDto newDocument = default!;
     private ContractDto newContract = default!;
     private ProductDto newProduct = default!;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (selectedCustomerId > 0)
+        {
+            await CustomerLookupService.GetItemById(selectedCustomerId, CancellationToken.None);
+            if (CustomerLookupService.ItemList.TryGetValue(selectedCustomerId, out var customer))
+            {
+                selectedCustomerId = customer.Id;
+            }
+        }
+    }
+
     private void CreateCustomer()
     {
         CustomerLookupService.ItemList.TryAdd(0, new CustomerDto());
@@ -135,7 +160,7 @@
         productTypes = (await ProductTypeLookupService.GetAllItems(CancellationToken.None)).ToList();
         newProduct = new ProductDto
         {
-            ProductType = new ProductTypeDto{ Id = 0, Name = "Select Product Type", Description = "", ChargeCode = "" },
+            ProductType = new ProductTypeDto { Id = 0, Name = "Select Product Type", Description = "", ChargeCode = "" },
             CustomerId = selectedCustomer.Id
         };
     }

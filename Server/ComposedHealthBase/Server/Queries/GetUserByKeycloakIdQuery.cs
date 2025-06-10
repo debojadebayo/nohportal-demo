@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Entities;
+using ComposedHealthBase.Server.Interfaces;
 using Microsoft.EntityFrameworkCore;
 namespace ComposedHealthBase.Server.Queries
 {
@@ -10,7 +11,8 @@ namespace ComposedHealthBase.Server.Queries
         Task<T?> Handle(Guid keycloakId);
     }
 
-    public class GetUserByKeycloakIdQuery<T, TContext> : IGetUserByKeycloakIdQuery<IApplicationUser, TContext>
+    public class GetUserByKeycloakIdQuery<T, TContext> : IGetUserByKeycloakIdQuery<IApplicationUser, TContext>, IQuery
+        where T : IApplicationUser
         where TContext : IDbContext<TContext>
     {
         public IDbContext<TContext> _dbContext { get; }

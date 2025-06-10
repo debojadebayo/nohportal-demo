@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Database;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using ComposedHealthBase.Server.Interfaces;
 
 namespace ComposedHealthBase.Server.Queries
 {
@@ -13,18 +15,20 @@ namespace ComposedHealthBase.Server.Queries
         Task<IEnumerable<TDto>> Handle(ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes);
     }
 
-    public class GetAllQuery<T, TDto, TContext> : IGetAllQuery<T, TDto, TContext>
-    where T : BaseEntity<T>
-    where TDto : IDto
-    where TContext : IDbContext<TContext>
+    public class GetAllQuery<T, TDto, TContext> : IGetAllQuery<T, TDto, TContext>, IQuery
+        where T : BaseEntity<T>
+        where TDto : IDto
+        where TContext : IDbContext<TContext>
     {
         public IDbContext<TContext> _dbContext { get; }
         public IMapper<T, TDto> _mapper { get; }
+        private readonly IAuthorizationService _authorizationService;
 
-        public GetAllQuery(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper)
+        public GetAllQuery(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, IAuthorizationService authorizationService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _authorizationService = authorizationService;
         }
         public async Task<IEnumerable<TDto>> Handle(ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes)
         {
@@ -37,7 +41,16 @@ namespace ComposedHealthBase.Server.Queries
                 }
             }
             var entities = await query.ToListAsync();
-            return _mapper.Map(entities);
+            var authorizedEntities = new List<TDto>();
+            foreach (var entity in entities)
+            {
+                var authResult = await _authorizationService.AuthorizeAsync(user, entity, "resource-access");
+                if (authResult.Succeeded)
+                {
+                    authorizedEntities.Add(_mapper.Map(entity));
+                }
+            }
+            return authorizedEntities;
         }
     }
 }

@@ -7,37 +7,57 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Server.Modules.CRM.Infrastructure.Database;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using ComposedHealthBase.Server.Interfaces;
 
 namespace Server.Modules.CRM.Infrastructure.Queries
 {
-    public class SearchCustomersQuery
+    public interface ISearchCustomersQuery
+    {
+        Task<List<CustomerDto>> Handle(ClaimsPrincipal user, string term);
+    }
+
+    public class SearchCustomersQuery : ISearchCustomersQuery, IQuery
     {
         private readonly CRMDbContext _dbContext;
         private readonly IMapper<Customer, CustomerDto> _mapper;
-        private readonly string _term;
+        private readonly IAuthorizationService _authorizationService;
 
-        public SearchCustomersQuery(CRMDbContext dbContext, IMapper<Customer, CustomerDto> mapper, string term)
+        public SearchCustomersQuery(
+            CRMDbContext dbContext,
+            IMapper<Customer, CustomerDto> mapper,
+            IAuthorizationService authorizationService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _term = term;
+            _authorizationService = authorizationService;
         }
 
-        public async Task<List<CustomerDto>> Handle()
+        public async Task<List<CustomerDto>> Handle(ClaimsPrincipal user, string term)
         {
-            if (string.IsNullOrWhiteSpace(_term))
+            if (string.IsNullOrWhiteSpace(term))
                 return new List<CustomerDto>();
 
-            var term = _term.Trim().ToLower();
-            bool isId = long.TryParse(term, out var idValue);
+            var searchTerm = term.Trim().ToLower();
+            bool isId = long.TryParse(searchTerm, out var idValue);
 
             var query = _dbContext.Customers.Where(c =>
-                (!string.IsNullOrEmpty(c.Name) && c.Name.ToLower().Contains(term)) ||
+                (!string.IsNullOrEmpty(c.Name) && c.Name.ToLower().Contains(searchTerm)) ||
                 (isId && c.Id == idValue)
             );
 
             var results = await query.ToListAsync();
-            return results.Select(_mapper.Map).ToList();
+            var authorizedResults = new List<CustomerDto>();
+            foreach (var entity in results)
+            {
+                var authResult = await _authorizationService.AuthorizeAsync(user, entity, "resource-access");
+                if (authResult.Succeeded)
+                {
+                    authorizedResults.Add(_mapper.Map(entity));
+                }
+            }
+            return authorizedResults;
         }
     }
 }

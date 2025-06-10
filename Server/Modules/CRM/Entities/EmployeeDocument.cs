@@ -14,5 +14,16 @@ namespace Server.Modules.CRM.Entities
         public required string BlobName { get; set; }
         public required string Name { get; set; }
         public string? Description { get; set; }
+        public long CustomerId
+        {
+            get
+            {
+                return TenantId;
+            }
+            set
+            {
+                TenantId = value;
+            }
+        }
     }
 }

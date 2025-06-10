@@ -32,26 +32,31 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] BlobServiceClient blobServiceClient,
+				[FromServices] Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
 				[FromForm] TDto documentDto,
 				[FromForm] IFormFile file,
 				ClaimsPrincipal user
-			) => await UploadDocument(dbContext, mapper, blobServiceClient, documentDto, file, user)).DisableAntiforgery();
+			) => await UploadDocument(dbContext, mapper, blobServiceClient, authorizationService, documentDto, file, user)).DisableAntiforgery();
 
 			group.MapGet("/getsaslink/{documentId}", async (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] BlobServiceClient blobServiceClient,
+				[FromServices] Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
+				[FromServices] GetByIdQuery<T, TDto, TContext> getByIdQuery,
 				long documentId,
 				ClaimsPrincipal user
-			) => await GetDocumentSasLink(dbContext, mapper, blobServiceClient, documentId, user));
+			) => await GetDocumentSasLink(getByIdQuery, blobServiceClient, authorizationService, documentId, user));
 
 			group.MapGet("/getcontent/{documentId}", async (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] BlobServiceClient blobServiceClient,
+				[FromServices] Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
+				[FromServices] GetByIdQuery<T, TDto, TContext> getByIdQuery,
 				long documentId,
 				ClaimsPrincipal user
-			) => await GetDocumentContent(dbContext, mapper, blobServiceClient, documentId, user));
+			) => await GetDocumentContent(getByIdQuery, blobServiceClient, authorizationService, documentId, user));
 
 			return endpoints;
 		}
@@ -61,6 +66,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			IDbContext<TContext> dbContext,
 			IMapper<T, TDto> mapper,
 			BlobServiceClient blobServiceClient,
+			Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
 			TDto documentDto,
 			IFormFile file,
 			ClaimsPrincipal user)
@@ -103,23 +109,23 @@ namespace ComposedHealthBase.Server.Endpoints
 				return Results.Problem("An error occurred while uploading the document.");
 			}
 		}
+
 		protected async Task<IResult> GetDocumentSasLink(
-			IDbContext<TContext> dbContext,
-			IMapper<T, TDto> mapper,
+			GetByIdQuery<T, TDto, TContext> getByIdQuery,
 			BlobServiceClient blobServiceClient,
+			Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
 			long documentId,
 			ClaimsPrincipal user)
 		{
 			try
 			{
-				// Retrieve the document entity from the database using the generic query handler
-				var document = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(documentId, user);
+				// Retrieve the document entity from the database using the injected query handler
+				var document = await getByIdQuery.Handle(documentId, user);
 				if (document == null)
 					return Results.NotFound("Document not found.");
-				//TODO Check the current user's claims against ownerId on the entity
+				//TODO: Use authorizationService to check access if needed
 
 				var containerClient = blobServiceClient.GetBlobContainerClient(document.BlobContainerName);
-				// Use the stored BlobName directly instead of extracting from FilePath
 				var blobClient = containerClient.GetBlobClient(document.BlobName);
 				var sasToken = blobClient.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
 
@@ -131,23 +137,23 @@ namespace ComposedHealthBase.Server.Endpoints
 				return Results.Problem("An error occurred while generating document access link.");
 			}
 		}
+
 		protected async Task<IResult> GetDocumentContent(
-			IDbContext<TContext> dbContext,
-			IMapper<T, TDto> mapper,
+			GetByIdQuery<T, TDto, TContext> getByIdQuery,
 			BlobServiceClient blobServiceClient,
+			Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
 			long documentId,
 			ClaimsPrincipal user)
 		{
 			try
 			{
-				// Retrieve the document entity from the database using the generic query handler
-				var document = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(documentId, user);
+				// Retrieve the document entity from the database using the injected query handler
+				var document = await getByIdQuery.Handle(documentId, user);
 				if (document == null)
 					return Results.NotFound("Document not found.");
-				//TODO Check the current user's claims against ownerId on the entity
+				//TODO: Use authorizationService to check access if needed
 
 				var containerClient = blobServiceClient.GetBlobContainerClient(document.BlobContainerName);
-				// Use the stored BlobName directly instead of extracting from FilePath
 				var blobClient = containerClient.GetBlobClient(document.BlobName);
 
 				var response = await blobClient.DownloadContentAsync();

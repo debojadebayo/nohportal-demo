@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ComposedHealthBase.Server.Database;
+using ComposedHealthBase.Server.Interfaces;
 
 namespace ComposedHealthBase.Server.Commands
 {
@@ -9,15 +11,17 @@ namespace ComposedHealthBase.Server.Commands
     {
         Task<bool> Handle(long id, ClaimsPrincipal user);
     }
-    public class DeleteCommand<T, TContext> : IDeleteCommand
-    where T : class
-    where TContext : IDbContext<TContext>
+    public class DeleteCommand<T, TContext> : IDeleteCommand, ICommand
+        where T : class
+        where TContext : IDbContext<TContext>
     {
         private readonly IDbContext<TContext> _dbContext;
+        private readonly IAuthorizationService _authorizationService;
 
-        public DeleteCommand(IDbContext<TContext> dbContext)
+        public DeleteCommand(IDbContext<TContext> dbContext, IAuthorizationService authorizationService)
         {
             _dbContext = dbContext;
+            _authorizationService = authorizationService;
         }
 
         public async Task<bool> Handle(long id, ClaimsPrincipal user)
@@ -27,7 +31,11 @@ namespace ComposedHealthBase.Server.Commands
             {
                 throw new KeyNotFoundException($"Entity with id {id} not found.");
             }
-
+            var authResult = await _authorizationService.AuthorizeAsync(user, entity, "resource-access");
+            if (!authResult.Succeeded)
+            {
+                throw new UnauthorizedAccessException("Authorization failed for resource-access policy.");
+            }
             _dbContext.Set<T>().Remove(entity);
             await _dbContext.SaveChangesWithAuditAsync(user);
             return true;

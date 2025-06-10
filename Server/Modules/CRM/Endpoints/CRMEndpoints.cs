@@ -16,6 +16,8 @@ using ComposedHealthBase.Shared.DTOs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Server.Modules.CRM.Endpoints
 {
@@ -26,17 +28,23 @@ namespace Server.Modules.CRM.Endpoints
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/employee");
 
-			group.MapGet("/search", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<Employee, EmployeeDto> mapper, [FromQuery] string term) => SearchEmployees(dbContext, mapper, term));
+			group.MapGet("/search", (
+				[FromServices] ISearchEmployeesQuery searchEmployeesQuery,
+				ClaimsPrincipal user,
+				[FromQuery] string term
+			) => SearchEmployees(searchEmployeesQuery, user, term));
 
 			return endpoints;
 		}
 
-		// New method for searching employees by free text
-		protected async Task<IResult> SearchEmployees(CRMDbContext dbContext, IMapper<Employee, EmployeeDto> mapper, string term)
+		protected async Task<IResult> SearchEmployees(
+			ISearchEmployeesQuery searchEmployeesQuery,
+			ClaimsPrincipal user,
+			string term)
 		{
 			try
 			{
-				var results = await new SearchEmployeesQuery(dbContext, mapper, term).Handle();
+				var results = await searchEmployeesQuery.Handle(user, term);
 				return Results.Ok(results);
 			}
 			catch (Exception ex)
@@ -53,16 +61,23 @@ namespace Server.Modules.CRM.Endpoints
 			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/customer");
 
-			group.MapGet("/search", ([FromServices] CRMDbContext dbContext, [FromServices] IMapper<Customer, CustomerDto> mapper, [FromQuery] string term) => SearchCustomers(dbContext, mapper, term));
+			group.MapGet("/search", (
+				[FromServices] ISearchCustomersQuery searchCustomersQuery,
+				ClaimsPrincipal user,
+				[FromQuery] string term
+			) => SearchCustomers(searchCustomersQuery, user, term));
 
 			return endpoints;
 		}
 
-		protected async Task<IResult> SearchCustomers(CRMDbContext dbContext, IMapper<Customer, CustomerDto> mapper, string term)
+		protected async Task<IResult> SearchCustomers(
+			ISearchCustomersQuery searchCustomersQuery,
+			ClaimsPrincipal user,
+			string term)
 		{
 			try
 			{
-				var results = await new SearchCustomersQuery(dbContext, mapper, term).Handle();
+				var results = await searchCustomersQuery.Handle(user, term);
 				return Results.Ok(results);
 			}
 			catch (Exception ex)
