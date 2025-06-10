@@ -1,0 +1,117 @@
+name: Build and Push Images
+
+on:
+  push:
+    branches: [master, devops-setup]
+    paths-ignore:
+      - "infra/**"
+      - "**.md"
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - "infra/**"
+      - "**.md"
+
+jobs:
+  build:
+    name: Build and Push
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      # Generate semantic version based on commits
+      - name: Generate Version
+        id: version
+        run: |
+          # Get short SHA
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          
+          # Get branch name
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          
+          # Generate timestamp in format YYYYMMDD-HHMMSS
+          TIMESTAMP=$(date -u +"%Y%m%d-%H%M%S")
+          
+          # Create version
+          VERSION="${BRANCH_NAME}-${TIMESTAMP}-${SHORT_SHA}"
+          
+          # Export as output
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "SHA=$SHORT_SHA" >> $GITHUB_OUTPUT
+          
+          # Set environment indicator
+          if [[ "$BRANCH_NAME" == "master" ]]; then
+            echo "ENV=dev" >> $GITHUB_OUTPUT
+          elif [[ "$BRANCH_NAME" == "production" ]]; then
+            echo "ENV=prod" >> $GITHUB_OUTPUT
+          else
+            echo "ENV=dev" >> $GITHUB_OUTPUT
+          fi
+      
+      # Login to Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      # Get ACR details from Terraform outputs
+      - name: Get ACR Details
+        id: acr
+        run: |
+          # Set working directory based on branch
+          RESOURCE_GROUP=$(az group list --query "[?tags.Environment=='${{ steps.version.outputs.ENV }}'].name" -o tsv)
+          
+          # Install Azure CLI and get ACR login server
+          ACR_LOGIN_SERVER=$(az acr list -g $RESOURCE_GROUP --query "[0].loginServer" -o tsv)
+          echo "LOGIN_SERVER=$ACR_LOGIN_SERVER" >> $GITHUB_OUTPUT
+      
+      # Log in to ACR
+      - name: ACR Login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ steps.acr.outputs.LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      
+      # Build and push server image
+      - name: Build and Push Server Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Server.Dockerfile
+          push: true
+          tags: |
+            ${{ steps.acr.outputs.LOGIN_SERVER }}/app.server:${{ steps.version.outputs.VERSION }}
+            ${{ steps.acr.outputs.LOGIN_SERVER }}/app.server:${{ steps.version.outputs.ENV }}-latest
+          build-args: |
+            BUILD_VERSION=${{ steps.version.outputs.VERSION }}
+      
+      # Build and push client image (if needed)
+      - name: Build and Push Client Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Client.Dockerfile
+          push: true
+          tags: |
+            ${{ steps.acr.outputs.LOGIN_SERVER }}/app.client:${{ steps.version.outputs.VERSION }}
+            ${{ steps.acr.outputs.LOGIN_SERVER }}/app.client:${{ steps.version.outputs.ENV }}-latest
+          build-args: |
+            BUILD_VERSION=${{ steps.version.outputs.VERSION }}
+
+      # Create deployment artifact with version info for deploy workflow
+      - name: Create Version Artifact
+        run: |
+          echo "VERSION=${{ steps.version.outputs.VERSION }}" > version.txt
+          echo "ENV=${{ steps.version.outputs.ENV }}" >> version.txt
+      
+      - name: Upload Version Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: version-info
+          path: version.txt
