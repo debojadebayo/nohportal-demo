@@ -68,6 +68,21 @@ resource "azurerm_key_vault" "kv" {
     ]
   }
 
+  # Add access policy for GitHub Actions service principal (when provided)
+  dynamic "access_policy" {
+    for_each = var.github_actions_service_principal_object_id != "" ? [1] : []
+    content {
+      tenant_id = data.azurerm_client_config.current.tenant_id
+      object_id = var.github_actions_service_principal_object_id
+
+      secret_permissions = [
+        "Get",
+        "List",
+        "Set"
+      ]
+    }
+  }
+
   # Prevent accidental deletion in production
   # lifecycle {
   #   prevent_destroy = true

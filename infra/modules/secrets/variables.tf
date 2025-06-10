@@ -28,3 +28,9 @@ variable "keycloak_managed_identity_object_id" {
   type        = string
   default     = "" # Default to empty to make it optional
 }
+
+variable "github_actions_service_principal_object_id" {
+  description = "Object ID of the GitHub Actions service principal for key vault access"
+  type        = string
+  default     = "" # Default to empty to make it optional
+}

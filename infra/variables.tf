@@ -50,3 +50,9 @@ variable "app_gateway_sku_tier" {
   description = "SKU tier for the Application Gateway"
   type        = string
 }
+
+variable "github_actions_service_principal_object_id" {
+  description = "Object ID of the GitHub Actions service principal for Key Vault access"
+  type        = string
+  default     = ""
+}

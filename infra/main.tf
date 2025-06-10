@@ -63,13 +63,14 @@ module "networking" {
 }
 
 module "secrets" {
-  source                              = "./modules/secrets"
-  location                            = var.location
-  resource_group_name                 = azurerm_resource_group.rg.name
-  subnet_ids                          = module.networking.subnets_ids
-  key_vault_name                      = "${var.resource_group_name}-kv"
-  vnet_id                             = module.networking.vnet_id
-  keycloak_managed_identity_object_id = azurerm_user_assigned_identity.uai_keycloak.principal_id
+  source                                        = "./modules/secrets"
+  location                                      = var.location
+  resource_group_name                           = azurerm_resource_group.rg.name
+  subnet_ids                                    = module.networking.subnets_ids
+  key_vault_name                                = "${var.resource_group_name}-kv"
+  vnet_id                                       = module.networking.vnet_id
+  keycloak_managed_identity_object_id           = azurerm_user_assigned_identity.uai_keycloak.principal_id
+  github_actions_service_principal_object_id    = var.github_actions_service_principal_object_id
 }
 
 module "monitoring" {
