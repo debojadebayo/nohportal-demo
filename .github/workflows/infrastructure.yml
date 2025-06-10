@@ -2,7 +2,7 @@ name: Terraform Infrastructure
 
 on:
   push: 
-    branches: [master, production]
+    branches: [master, production, devops-setup]
     paths:
       - "infra/**"
       - ".github/workflows/terraform.yml"

@@ -12,6 +12,25 @@ on:
       - "infra/**"
       - "**.md"
 
+# Manual trigger
+workflow_dispatch:
+  inputs:
+    environment:
+      description: 'Environment to deploy to'
+      required: true
+      default: 'dev'
+      type: choice
+      options:
+        - dev
+        - prod
+
+# Auto-trigger after infrastructure workflow completes
+workflow_run:
+  workflows: ["Terraform Infrastructure"]
+  branches: [master, devops-setup]
+  types:
+    - completed
+
 jobs:
   build:
     name: Build and Push
