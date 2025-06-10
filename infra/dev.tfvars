@@ -1,6 +1,6 @@
 # Dev variables 
 
-resource_group_name = "nationohdevjun2025"
+resource_group_name = "nohdevjun2025"
 location            = "uksouth"
 domain_name         = ""
 # will need to add a domain main
