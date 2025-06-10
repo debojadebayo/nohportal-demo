@@ -86,6 +86,41 @@ az storage container create \
   --account-name "nationohtfstatelatest"
 ```
 
+### ⚠️ CRITICAL: Terraform State Management
+
+**NEVER mix local and remote Terraform state!** This configuration uses **remote state storage** for CI/CD consistency.
+
+#### Local Development Rules
+
+If you need to run Terraform locally for testing:
+
+```bash
+cd infra
+
+# ALWAYS clean local state first
+rm -f terraform.tfstate*
+rm -f *.tfplan
+rm -rf .terraform/
+
+# Re-initialize to connect to remote backend
+terraform init
+
+# Now you can plan/apply safely
+terraform plan -var-file="dev.tfvars"
+```
+
+#### What NOT to Do
+
+❌ **Never run Terraform locally without cleaning state first**  
+❌ **Never commit `.tfstate` files to git**  
+❌ **Never run `terraform init` without remote backend configured**
+
+#### Why This Matters
+
+- **Local state conflicts** with remote state cause deployment failures
+- **Resource name/location mismatches** indicate state conflicts
+- **GitHub Actions and local runs** must use the same state source
+
 ### Step 2: Configure GitHub Secrets
 
 Create the following secrets in your GitHub repository (`Settings` → `Secrets and variables` → `Actions`):
@@ -221,6 +256,23 @@ After deployment completes, verify the application:
 4. **Keycloak Startup Issues**
    - Check Key Vault access for managed identity
    - Verify database connectivity
+
+5. **Terraform State Conflicts**
+   ```bash
+   # Symptoms: Resource name/location mismatches, "already exists" errors
+   # Solution: Clean local state and re-initialize
+   cd infra
+   rm -f terraform.tfstate*
+   rm -f *.tfplan  
+   rm -rf .terraform/
+   terraform init
+   terraform plan -var-file="dev.tfvars"
+   ```
+
+6. **Key Vault Permission Errors**
+   - **Error**: `does not have secrets get permission on key vault`
+   - **Cause**: GitHub Actions service principal missing Key Vault access
+   - **Solution**: Verify `github_actions_service_principal_object_id` in `dev.tfvars`
 
 ### Workflow Failures
 

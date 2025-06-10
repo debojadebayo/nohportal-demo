@@ -5,6 +5,24 @@ on:
     branches: [master, production, devops-setup]
   pull_request:
     branches: [master]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Terraform Action'
+        required: true
+        default: 'apply'
+        type: choice
+        options:
+          - apply
+          - destroy
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
       
 
 jobs:
@@ -29,32 +47,48 @@ jobs:
         fi
 
     - name: Setup Terraform
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true'
+      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
       uses: hashicorp/setup-terraform@v2
 
     - name: Azure Login
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true'
+      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
 # will need to remove the devops-setup branch when we move to client portal
     - name: Set Environment Variables 
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true'
+      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
       id: vars
       run: |
-        if [[ ${{ github.ref }} == "refs/heads/production" ]]; then
-           echo "ENV_NAME=prod" >> $GITHUB_OUTPUT
-           echo "TF_VAR_FILE=prod.tfvars" >> $GITHUB_OUTPUT
-           echo "TF_STATE_KEY=nationoh/prod.tfstate.latest" >> $GITHUB_OUTPUT
-        elif [[ ${{ github.ref }} == "refs/heads/master" ]]; then
-          echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
-          echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
-          echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
-        elif [[ ${{ github.ref }} == "refs/heads/devops-setup" ]]; then
-          echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
-          echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
-          echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
+        # Handle manual workflow dispatch
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${{ github.event.inputs.environment }}" == "prod" ]]; then
+            echo "ENV_NAME=prod" >> $GITHUB_OUTPUT
+            echo "TF_VAR_FILE=prod.tfvars" >> $GITHUB_OUTPUT
+            echo "TF_STATE_KEY=nationoh/prod.tfstate.latest" >> $GITHUB_OUTPUT
+          else
+            echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
+            echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
+            echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
+          fi
+          echo "TF_ACTION=${{ github.event.inputs.action }}" >> $GITHUB_OUTPUT
+        else
+          # Handle branch-based triggers
+          if [[ ${{ github.ref }} == "refs/heads/production" ]]; then
+             echo "ENV_NAME=prod" >> $GITHUB_OUTPUT
+             echo "TF_VAR_FILE=prod.tfvars" >> $GITHUB_OUTPUT
+             echo "TF_STATE_KEY=nationoh/prod.tfstate.latest" >> $GITHUB_OUTPUT
+          elif [[ ${{ github.ref }} == "refs/heads/master" ]]; then
+            echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
+            echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
+            echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
+          elif [[ ${{ github.ref }} == "refs/heads/devops-setup" ]]; then
+            echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
+            echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
+            echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
+          fi
+          echo "TF_ACTION=apply" >> $GITHUB_OUTPUT
         fi
 
     # - name: Clear Terraform Cache
@@ -65,29 +99,29 @@ jobs:
     #     rm -f terraform.tfstate*
 
     - name: Terraform Init
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true'
+      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
       working-directory: ./infra
       run: |
         terraform init \
           -backend-config="key=${{ steps.vars.outputs.TF_STATE_KEY }}"
 
-    # temporary fix for the issue of refreshing the state file to deploy in a different location 
-    - name: Terraform Refresh
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true'
-      working-directory: ./infra
-      run: terraform refresh -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}"
     
     - name: Terraform Format
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true'
+      if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
       working-directory: ./infra
       run: terraform fmt -check
 
     - name: Terraform Plan
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true'
+      if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
       working-directory: ./infra
       run: terraform plan -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}" -out=tfplan
 
     - name: Terraform Apply
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true'
+      if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
       working-directory: ./infra
       run: terraform apply -auto-approve tfplan
+
+    - name: Terraform Destroy
+      if: github.event_name == 'workflow_dispatch' && steps.vars.outputs.TF_ACTION == 'destroy'
+      working-directory: ./infra
+      run: terraform destroy -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}" -auto-approve
