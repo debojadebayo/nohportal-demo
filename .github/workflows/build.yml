@@ -1,18 +1,7 @@
 name: Build and Push Images
 
 on:
-  push:
-    branches: [master, devops-setup]
-    paths-ignore:
-      - "infra/**"
-      - "**.md"
-  pull_request:
-    branches: [master]
-    paths-ignore:
-      - "infra/**"
-      - "**.md"
-
-# Manual trigger
+  # Manual trigger
   workflow_dispatch:
     inputs:
       environment:
@@ -23,18 +12,33 @@ on:
         options:
           - dev
           - prod
-
-# Auto-trigger after infrastructure workflow completes
-    workflow_run:
-      workflows: ["Terraform Infrastructure"]
-      branches: [master, devops-setup]
-      types:
-        - completed
+  
+  # Auto-trigger after infrastructure workflow completes
+  workflow_run:
+    workflows: ["Terraform Infrastructure"]
+    branches: [master, devops-setup]
+    types:
+      - completed
+  
+  # Keep push trigger for code-only changes (excluding infra)
+  push:
+    branches: [master, devops-setup]
+    paths-ignore:
+      - "infra/**"
+      - "**.md"
+  
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - "infra/**"
+      - "**.md"
 
 jobs:
   build:
     name: Build and Push
     runs-on: ubuntu-latest
+    # Skip if workflow_run trigger comes from a failed infrastructure workflow
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     
     steps:
       - name: Checkout
