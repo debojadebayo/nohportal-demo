@@ -377,3 +377,4 @@ CLAUDE.md
 .terraform.lock.hcl
 tfplan
 tfplan.*
+DEPLOYMENT_PLAN.md
