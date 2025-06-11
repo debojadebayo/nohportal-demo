@@ -103,11 +103,8 @@ jobs:
       
       # Log in to ACR
       - name: ACR Login
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ steps.acr.outputs.LOGIN_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+        run: |
+          az acr login --name ${{ steps.vars.outputs.RESOURCE_GROUP }}registry
       
       # Build and push server image
       - name: Build and Push Server Image
