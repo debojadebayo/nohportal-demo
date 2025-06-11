@@ -171,8 +171,8 @@ module "containers" {
 
   # Frontend 
   frontend_container_app_name = "${var.resource_group_name}frontend"
-  api_url                     = "https://${module.application_gateway.gateway_fqdn}/api"
-  keycloak_url                = "https://${module.application_gateway.gateway_fqdn}/auth"
+  api_url                     = "https://${var.resource_group_name}-gateway.${var.location}.cloudapp.azure.com/api"
+  keycloak_url                = "https://${var.resource_group_name}-gateway.${var.location}.cloudapp.azure.com/auth"
 
   depends_on = [
     module.database,
