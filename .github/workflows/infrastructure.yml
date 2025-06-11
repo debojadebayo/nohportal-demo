@@ -3,6 +3,8 @@ name: Terraform Infrastructure
 on:
   push: 
     branches: [master, production, devops-setup]
+    paths-ignore:
+      - '.github/workflows/**'
   pull_request:
     branches: [master]
   workflow_dispatch:

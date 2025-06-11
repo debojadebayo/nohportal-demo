@@ -5,9 +5,9 @@ ARG INCLUDE_DEBUGGER=false
 WORKDIR /app
 
 RUN if [ "$INCLUDE_DEBUGGER" = "true" ]; then \
-    apt-get update \
-    && apt-get install unzip \
-    && curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg; 
+        apt-get update \
+        && apt-get install unzip \
+        && curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg; \
     fi
 
 COPY Server/ ./Server/

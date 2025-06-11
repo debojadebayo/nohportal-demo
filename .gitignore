@@ -377,4 +377,8 @@ CLAUDE.md
 .terraform.lock.hcl
 tfplan
 tfplan.*
+
+# Claude files 
+.claude/
+SESSION_SUMMARY.md
 DEPLOYMENT_PLAN.md
