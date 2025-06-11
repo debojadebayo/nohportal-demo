@@ -19,9 +19,13 @@ var app = builder.Build();
 
 app.ConfigureServicesAndMapEndpoints(builder.Environment.IsDevelopment(), ref moduleTypes, registeredModules);
 
-app.Run();
-
 if (app.Environment.IsDevelopment())
 {
-	await RoleSeeder.SeedRolesAndPermissions(registeredModules, app.Services.GetRequiredService<AuthDbContext>());
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+        await RoleSeeder.SeedRolesAndPermissions(dbContext);
+    }
 }
+
+app.Run();
