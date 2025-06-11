@@ -16,7 +16,7 @@ on:
   # Auto-trigger after build workflow completes (on master branch)
   workflow_run:
     workflows: ["Build and Push Images"]
-    branches: [master, devops-setup]
+    branches: [devops-setup]
     types:
       - completed
 

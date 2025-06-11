@@ -154,7 +154,7 @@ module "containers" {
 
   # Keycloak
   keycloak_container_app_name       = "${var.resource_group_name}keycloak"
-  keycloak_features                 = "organization"
+  keycloak_features                 = "organization,admin-fine-grained-authz"
   keycloak_db_url                   = "jdbc:postgresql://${module.database.postgresql_server_fqdn}:5432/${module.database.keycloak_db_name}"
   user_assigned_identity_id         = azurerm_user_assigned_identity.uai_keycloak.id
   keycloak_admin_username_secret_id = module.secrets.keycloak_admin_username_secret_id

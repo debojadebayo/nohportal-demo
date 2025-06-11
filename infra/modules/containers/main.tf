@@ -119,7 +119,7 @@ resource "azurerm_container_app" "keycloak_server" {
   template {
     container {
       name   = "keycloak"
-      image  = "quay.io/keycloak/keycloak:25.0"
+      image  = "keycloak/keycloak:${var.image_tags.keycloak}"
       cpu    = 0.5
       memory = "1Gi"
 
@@ -152,22 +152,6 @@ resource "azurerm_container_app" "keycloak_server" {
       env {
         name  = "KC_FEATURES"
         value = var.keycloak_features
-      }
-      env {
-        name  = "KC_HOSTNAME_STRICT"
-        value = "false"
-      }
-      env {
-        name  = "KC_HTTP_ENABLED"
-        value = "true"
-      }
-      env {
-        name  = "KEYCLOAK_ADMIN"
-        secret_name = "keycloak-admin-username"
-      }
-      env {
-        name  = "KEYCLOAK_ADMIN_PASSWORD"
-        secret_name = "keycloak-admin-password"
       }
 
       liveness_probe {
