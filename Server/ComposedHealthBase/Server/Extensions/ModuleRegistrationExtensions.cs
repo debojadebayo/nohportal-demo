@@ -57,48 +57,6 @@ namespace ComposedHealthBase.Server.Extensions
 						.First(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType);
 					services.AddTransient(interfaceType, mapperType);
 				}
-
-				// Register open generic query handlers
-				// var queryTypes = moduleType.Assembly.GetTypes()
-				// 	.Where(t => t.IsClass && !t.IsAbstract && typeof(IQuery).IsAssignableFrom(t) && t.IsGenericTypeDefinition);
-				// foreach (var queryType in queryTypes)
-				// {
-				// 	var specificInterfaces = queryType.GetInterfaces()
-				// 		.Where(i => i != typeof(IQuery) && typeof(IQuery).IsAssignableFrom(i) && i.IsGenericType)
-				// 		.ToList();
-				// 	foreach (var specificInterface in specificInterfaces)
-				// 	{
-				// 		if (specificInterface.IsGenericTypeDefinition)
-				// 		{
-				// 			services.AddTransient(specificInterface, queryType);
-				// 		}
-				// 		else if (specificInterface.ContainsGenericParameters)
-				// 		{
-				// 			services.AddTransient(specificInterface.GetGenericTypeDefinition(), queryType);
-				// 		}
-				// 	}
-				// }
-
-				// Register open generic command handlers
-				// var commandTypes = moduleType.Assembly.GetTypes()
-				// 	.Where(t => t.IsClass && !t.IsAbstract && typeof(ICommand).IsAssignableFrom(t) && t.IsGenericTypeDefinition);
-				// foreach (var commandType in commandTypes)
-				// {
-				// 	var specificInterfaces = commandType.GetInterfaces()
-				// 		.Where(i => i != typeof(ICommand) && typeof(ICommand).IsAssignableFrom(i) && i.IsGenericType)
-				// 		.ToList();
-				// 	foreach (var specificInterface in specificInterfaces)
-				// 	{
-				// 		if (specificInterface.IsGenericTypeDefinition)
-				// 		{
-				// 			services.AddTransient(specificInterface, commandType);
-				// 		}
-				// 		else if (specificInterface.ContainsGenericParameters)
-				// 		{
-				// 			services.AddTransient(specificInterface.GetGenericTypeDefinition(), commandType);
-				// 		}
-				// 	}
-				// }
 			}
 
 			return services;
