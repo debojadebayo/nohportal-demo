@@ -381,5 +381,4 @@ tfplan.*
 # Claude files and logs 
 .claude/
 DEPLOYMENT_PLAN.md
-CLAUDE.md
 SESSION_SUMMARY.md

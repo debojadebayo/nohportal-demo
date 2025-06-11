@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) or any alternative coding agent when working with code in this repository.
 
 ## Build Commands
 - Run Dockerized: `docker-compose up`
@@ -20,3 +20,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Implement interfaces and follow dependency injection patterns
 - Use EF Core for database operations
 - Document public APIs with XML comments
+
+## Terraform 
+- WHen making any changes to terraform code. Ensure to run terraform fmt -recursive first to ensure that the code is formatted correctly

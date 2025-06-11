@@ -144,6 +144,21 @@ jobs:
           echo "API FQDN: ${{ steps.resources.outputs.API_FQDN }}"
           echo "Keycloak FQDN: ${{ steps.resources.outputs.KEYCLOAK_FQDN }}"
           
+          # Check Application Gateway status first
+          echo "Checking Application Gateway status..."
+          GATEWAY_STATUS=$(az network application-gateway show \
+            --name $APP_GATEWAY_NAME \
+            --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
+            --query "operationalState" -o tsv)
+          echo "Application Gateway operational state: $GATEWAY_STATUS"
+          
+          # Check if backend pools exist
+          echo "Checking existing backend pools..."
+          az network application-gateway address-pool list \
+            --gateway-name $APP_GATEWAY_NAME \
+            --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
+            --query "[].{Name:name, Servers:backendAddresses[].fqdn}" -o table
+          
           # Update backend pools with actual Container App FQDNs
           if [[ -n "${{ steps.resources.outputs.FRONTEND_FQDN }}" ]]; then
             echo "Updating frontend backend pool..."
@@ -151,7 +166,9 @@ jobs:
               --gateway-name $APP_GATEWAY_NAME \
               --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
               --name "frontend-backend-pool" \
-              --servers ${{ steps.resources.outputs.FRONTEND_FQDN }}
+              --servers ${{ steps.resources.outputs.FRONTEND_FQDN }} || echo "Frontend pool update failed"
+          else
+            echo "WARNING: Frontend FQDN is empty"
           fi
           
           if [[ -n "${{ steps.resources.outputs.API_FQDN }}" ]]; then
@@ -160,7 +177,9 @@ jobs:
               --gateway-name $APP_GATEWAY_NAME \
               --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
               --name "api-backend-pool" \
-              --servers ${{ steps.resources.outputs.API_FQDN }}
+              --servers ${{ steps.resources.outputs.API_FQDN }} || echo "API pool update failed"
+          else
+            echo "WARNING: API FQDN is empty"
           fi
           
           if [[ -n "${{ steps.resources.outputs.KEYCLOAK_FQDN }}" ]]; then
@@ -169,8 +188,17 @@ jobs:
               --gateway-name $APP_GATEWAY_NAME \
               --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
               --name "auth-backend-pool" \
-              --servers ${{ steps.resources.outputs.KEYCLOAK_FQDN }}
+              --servers ${{ steps.resources.outputs.KEYCLOAK_FQDN }} || echo "Auth pool update failed"
+          else
+            echo "WARNING: Keycloak FQDN is empty"
           fi
+          
+          # Show updated backend pools
+          echo "Updated backend pools:"
+          az network application-gateway address-pool list \
+            --gateway-name $APP_GATEWAY_NAME \
+            --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
+            --query "[].{Name:name, Servers:backendAddresses[].fqdn}" -o table
           
           echo "Backend pool configuration completed!"
       
@@ -210,6 +238,26 @@ jobs:
             
             echo "Checking DNS resolution..."
             nslookup ${{ steps.resources.outputs.GATEWAY_FQDN }} || echo "DNS resolution failed"
+            
+            echo "Checking Application Gateway backend health..."
+            az network application-gateway show-backend-health \
+              --name "NationOHAppGateway" \
+              --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
+              --query "backendAddressPools[].{Pool:name, Health:backendHttpSettingsCollection[0].servers[0].health}" \
+              -o table || echo "Could not get backend health"
+            
+            echo "Checking Application Gateway listeners..."
+            az network application-gateway http-listener list \
+              --gateway-name "NationOHAppGateway" \
+              --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
+              --query "[].{Name:name, Port:frontendPort, Protocol:protocol}" \
+              -o table || echo "Could not get listeners"
+            
+            echo "Checking if this is WAF blocking (try HTTP instead)..."
+            HTTP_GATEWAY_URL="http://${{ steps.resources.outputs.GATEWAY_FQDN }}"
+            echo "Testing HTTP endpoint: $HTTP_GATEWAY_URL"
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$HTTP_GATEWAY_URL" || echo "failed")
+            echo "HTTP status: $HTTP_STATUS"
             
             exit 1
           elif [[ "$API_HEALTH" != "200" || "$FRONTEND_STATUS" != "200" ]]; then
