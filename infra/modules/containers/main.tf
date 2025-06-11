@@ -52,7 +52,7 @@ resource "azurerm_container_app" "api_server" {
 
       liveness_probe {
         path                    = "/api-health"
-        port                    = 5003
+        port                    = 8080
         transport               = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
         initial_delay           = 60
         interval_seconds        = 15
@@ -64,7 +64,7 @@ resource "azurerm_container_app" "api_server" {
 
   ingress {
     external_enabled = false
-    target_port      = 5003
+    target_port      = 8080
     transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
 
     traffic_weight {
@@ -119,7 +119,7 @@ resource "azurerm_container_app" "keycloak_server" {
   template {
     container {
       name   = "keycloak"
-      image  = "nginx:latest"
+      image  = "quay.io/keycloak/keycloak:25.0"
       cpu    = 0.5
       memory = "1Gi"
 
@@ -152,6 +152,22 @@ resource "azurerm_container_app" "keycloak_server" {
       env {
         name  = "KC_FEATURES"
         value = var.keycloak_features
+      }
+      env {
+        name  = "KC_HOSTNAME_STRICT"
+        value = "false"
+      }
+      env {
+        name  = "KC_HTTP_ENABLED"
+        value = "true"
+      }
+      env {
+        name  = "KEYCLOAK_ADMIN"
+        secret_name = "keycloak-admin-username"
+      }
+      env {
+        name  = "KEYCLOAK_ADMIN_PASSWORD"
+        secret_name = "keycloak-admin-password"
       }
 
       liveness_probe {
@@ -218,7 +234,7 @@ resource "azurerm_container_app" "frontend" {
 
       liveness_probe {
         path                    = "/health"
-        port                    = 5002
+        port                    = 8080
         transport               = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
         initial_delay           = 60
         interval_seconds        = 15
@@ -232,7 +248,7 @@ resource "azurerm_container_app" "frontend" {
 
   ingress {
     external_enabled = false
-    target_port      = 5002
+    target_port      = 8080
     transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
 
     traffic_weight {

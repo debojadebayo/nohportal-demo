@@ -121,7 +121,7 @@ resource "azurerm_application_gateway" "app_gateway" {
   backend_http_settings {
     name                                = "frontend-http-settings"
     cookie_based_affinity               = "Disabled"
-    port                                = 5002
+    port                                = 8080
     protocol                            = "Http"
     request_timeout                     = 60
     probe_name                          = "frontend-health-probe"
@@ -131,7 +131,7 @@ resource "azurerm_application_gateway" "app_gateway" {
   backend_http_settings {
     name                                = "api-http-settings"
     cookie_based_affinity               = "Disabled"
-    port                                = 5003
+    port                                = 8080
     protocol                            = "Http"
     request_timeout                     = 60
     probe_name                          = "api-health-probe"
