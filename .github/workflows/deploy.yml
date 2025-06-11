@@ -90,6 +90,15 @@ jobs:
           # Get Application Gateway FQDN (this is the public entry point)
           GATEWAY_FQDN=$(az network public-ip show -g $RESOURCE_GROUP -n "${RESOURCE_GROUP}-app-gateway-ip" --query "dnsSettings.fqdn" -o tsv)
           echo "GATEWAY_FQDN=$GATEWAY_FQDN" >> $GITHUB_OUTPUT
+          
+          # Get Container App FQDNs for Application Gateway backend pool configuration
+          FRONTEND_FQDN=$(az containerapp show -n $FRONTEND_APP -g $RESOURCE_GROUP --query "properties.configuration.ingress.fqdn" -o tsv)
+          API_FQDN=$(az containerapp show -n $API_APP -g $RESOURCE_GROUP --query "properties.configuration.ingress.fqdn" -o tsv)
+          KEYCLOAK_FQDN=$(az containerapp show -n "${RESOURCE_GROUP}keycloak" -g $RESOURCE_GROUP --query "properties.configuration.ingress.fqdn" -o tsv)
+          
+          echo "FRONTEND_FQDN=$FRONTEND_FQDN" >> $GITHUB_OUTPUT
+          echo "API_FQDN=$API_FQDN" >> $GITHUB_OUTPUT  
+          echo "KEYCLOAK_FQDN=$KEYCLOAK_FQDN" >> $GITHUB_OUTPUT
       
       # Update API container app with latest image
       - name: Update API Container App
@@ -122,6 +131,48 @@ jobs:
             --name ${{ steps.resources.outputs.FRONTEND_APP }} \
             --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
             --image $IMAGE_TAG
+      
+      # Configure Application Gateway backend pools (Phase 2 configuration)
+      - name: Configure Application Gateway Backend Pools
+        run: |
+          echo "=== Configuring Application Gateway Backend Pools ==="
+          
+          # Get Application Gateway name
+          APP_GATEWAY_NAME="NationOHAppGateway"
+          
+          echo "Frontend FQDN: ${{ steps.resources.outputs.FRONTEND_FQDN }}"
+          echo "API FQDN: ${{ steps.resources.outputs.API_FQDN }}"
+          echo "Keycloak FQDN: ${{ steps.resources.outputs.KEYCLOAK_FQDN }}"
+          
+          # Update backend pools with actual Container App FQDNs
+          if [[ -n "${{ steps.resources.outputs.FRONTEND_FQDN }}" ]]; then
+            echo "Updating frontend backend pool..."
+            az network application-gateway address-pool update \
+              --gateway-name $APP_GATEWAY_NAME \
+              --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
+              --name "frontend-backend-pool" \
+              --servers ${{ steps.resources.outputs.FRONTEND_FQDN }}
+          fi
+          
+          if [[ -n "${{ steps.resources.outputs.API_FQDN }}" ]]; then
+            echo "Updating API backend pool..."
+            az network application-gateway address-pool update \
+              --gateway-name $APP_GATEWAY_NAME \
+              --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
+              --name "api-backend-pool" \
+              --servers ${{ steps.resources.outputs.API_FQDN }}
+          fi
+          
+          if [[ -n "${{ steps.resources.outputs.KEYCLOAK_FQDN }}" ]]; then
+            echo "Updating auth backend pool..."
+            az network application-gateway address-pool update \
+              --gateway-name $APP_GATEWAY_NAME \
+              --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
+              --name "auth-backend-pool" \
+              --servers ${{ steps.resources.outputs.KEYCLOAK_FQDN }}
+          fi
+          
+          echo "Backend pool configuration completed!"
       
       # Run smoke test via Application Gateway (public endpoint)
       - name: Smoke Test
