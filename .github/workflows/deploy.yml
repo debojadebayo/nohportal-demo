@@ -26,6 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     # Skip if workflow_run trigger comes from a failed build
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      actions: read
+      contents: read
     
     steps:
       - name: Checkout
@@ -44,30 +47,15 @@ jobs:
       # Download version artifact if this was triggered by workflow_run
       - name: Download Version Info
         if: ${{ github.event_name == 'workflow_run' }}
-        uses: actions/github-script@v6
+        uses: actions/download-artifact@v4
         with:
-          script: |
-            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: ${{ github.event.workflow_run.id }}
-            });
-            const matchArtifact = artifacts.data.artifacts.find(artifact => {
-              return artifact.name == "version-info"
-            });
-            const download = await github.rest.actions.downloadArtifact({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              artifact_id: matchArtifact.id,
-              archive_format: 'zip'
-            });
-            const fs = require('fs');
-            fs.writeFileSync('version-info.zip', Buffer.from(download.data));
+          name: version-info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
       
       - name: Extract Version Info
         if: ${{ github.event_name == 'workflow_run' }}
         run: |
-          unzip version-info.zip
           export VERSION=$(grep VERSION version.txt | cut -d= -f2)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       
@@ -77,24 +65,21 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
-      # Get resource info from Terraform state
+      # Get resource info
       - name: Get Resource Info
         id: resources
         run: |
-          # Set tfstate key based on environment
+          # Set resource group based on environment
           if [[ "${{ steps.env.outputs.ENV }}" == "prod" ]]; then
-            export TF_STATE_KEY="nationoh/prod.tfstate.latest"
+            RESOURCE_GROUP="nationohprod"
           else
-            export TF_STATE_KEY="nationoh/dev.tfstate.latest"
+            RESOURCE_GROUP="nohdevjun2025"
           fi
-          
-          # Get Container App info
-          RESOURCE_GROUP=$(az group list --query "[?tags.Environment=='${{ steps.env.outputs.ENV }}'].name" -o tsv)
           echo "RESOURCE_GROUP=$RESOURCE_GROUP" >> $GITHUB_OUTPUT
           
-          # Get Container App names
-          API_APP=$(az containerapp list -g $RESOURCE_GROUP --query "[?contains(name, 'api')].name" -o tsv)
-          FRONTEND_APP=$(az containerapp list -g $RESOURCE_GROUP --query "[?contains(name, 'front')].name" -o tsv)
+          # Get Container App names based on naming convention: {resource_group_name}{service}
+          API_APP="${RESOURCE_GROUP}server"
+          FRONTEND_APP="${RESOURCE_GROUP}frontend"
           echo "API_APP=$API_APP" >> $GITHUB_OUTPUT
           echo "FRONTEND_APP=$FRONTEND_APP" >> $GITHUB_OUTPUT
           
