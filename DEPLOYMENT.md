@@ -49,17 +49,63 @@ Azure Storage Account (Blob Storage)
 
 ### Required Azure Resource Providers
 
-The following providers will be automatically registered by Terraform:
-- Microsoft.App (Container Apps)
-- Microsoft.ContainerRegistry
-- Microsoft.DBforPostgreSQL  
-- Microsoft.KeyVault
-- Microsoft.Network
-- Microsoft.Storage
+The following providers must be registered before deploying. **This is a one-time setup per subscription.**
+
+#### Manual Registration Required
+
+Run these commands to register all required providers:
+
+```bash
+# Essential providers for this deployment
+az provider register --namespace Microsoft.App
+az provider register --namespace Microsoft.ContainerRegistry
+az provider register --namespace Microsoft.DBforPostgreSQL
+az provider register --namespace Microsoft.KeyVault
+az provider register --namespace Microsoft.Network
+az provider register --namespace Microsoft.Storage
+az provider register --namespace Microsoft.OperationalInsights
+
+# Check registration status (providers must show "Registered")
+az provider show --namespace Microsoft.App --query "registrationState" --output tsv
+az provider show --namespace Microsoft.ContainerRegistry --query "registrationState" --output tsv
+az provider show --namespace Microsoft.DBforPostgreSQL --query "registrationState" --output tsv
+az provider show --namespace Microsoft.KeyVault --query "registrationState" --output tsv
+az provider show --namespace Microsoft.Network --query "registrationState" --output tsv
+az provider show --namespace Microsoft.Storage --query "registrationState" --output tsv
+az provider show --namespace Microsoft.OperationalInsights --query "registrationState" --output tsv
+```
+
+#### Wait for Registration
+
+Provider registration typically takes 1-2 minutes. Wait for all providers to show "Registered" status before proceeding with Terraform deployment.
+
+#### Why This is Required
+
+- Azure subscriptions don't automatically register all resource providers
+- First-time usage of services like Container Apps requires manual registration
+- Registration failures cause Terraform deployment errors with "MissingSubscriptionRegistration" messages
 
 ## 🚀 Deployment Process
 
-### Step 1: Bootstrap Terraform Backend
+### Step 1: Register Azure Resource Providers
+
+**IMPORTANT: Complete this step before running Terraform!**
+
+```bash
+# Register all required providers (run all commands)
+az provider register --namespace Microsoft.App
+az provider register --namespace Microsoft.ContainerRegistry
+az provider register --namespace Microsoft.DBforPostgreSQL
+az provider register --namespace Microsoft.KeyVault
+az provider register --namespace Microsoft.Network
+az provider register --namespace Microsoft.Storage
+az provider register --namespace Microsoft.OperationalInsights
+
+# Verify all are registered (wait for "Registered" status)
+az provider show --namespace Microsoft.App --query "registrationState"
+```
+
+### Step 2: Bootstrap Terraform Backend
 
 Create the Terraform state storage resources manually (one-time setup):
 
@@ -121,7 +167,7 @@ terraform plan -var-file="dev.tfvars"
 - **Resource name/location mismatches** indicate state conflicts
 - **GitHub Actions and local runs** must use the same state source
 
-### Step 2: Configure GitHub Secrets
+### Step 3: Configure GitHub Secrets
 
 Create the following secrets in your GitHub repository (`Settings` → `Secrets and variables` → `Actions`):
 
@@ -138,7 +184,7 @@ Create the following secrets in your GitHub repository (`Settings` → `Secrets 
    ```
    Copy the entire JSON output to the `AZURE_CREDENTIALS` secret.
 
-### Step 3: Environment Configuration
+### Step 4: Environment Configuration
 
 Choose your deployment environment and verify the configuration:
 
@@ -154,7 +200,7 @@ Choose your deployment environment and verify the configuration:
 - Container Resources: 1.0 CPU, 2Gi memory
 - Environment: Production
 
-### Step 4: Deploy Infrastructure
+### Step 5: Deploy Infrastructure
 
 The deployment uses automated GitHub Actions workflows:
 
@@ -185,7 +231,7 @@ You can also trigger workflows manually:
 3. Click `Run workflow`
 4. Choose the environment (dev/prod)
 
-### Step 5: Verification
+### Step 6: Verification
 
 After deployment completes, verify the application:
 

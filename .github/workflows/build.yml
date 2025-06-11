@@ -69,15 +69,36 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
-      # Get ACR details from Terraform outputs
+      # Set environment variables and get ACR details
+      - name: Set Environment Variables
+        id: vars
+        run: |
+          # Handle manual workflow dispatch
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ github.event.inputs.environment }}" == "prod" ]]; then
+              echo "ENV_NAME=prod" >> $GITHUB_OUTPUT
+              echo "RESOURCE_GROUP=nationohprod" >> $GITHUB_OUTPUT
+            else
+              echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
+              echo "RESOURCE_GROUP=nohdevjun2025" >> $GITHUB_OUTPUT
+            fi
+          else
+            # Handle branch-based triggers (workflow_run from infrastructure)
+            if [[ ${{ github.ref }} == "refs/heads/production" ]]; then
+              echo "ENV_NAME=prod" >> $GITHUB_OUTPUT
+              echo "RESOURCE_GROUP=nationohprod" >> $GITHUB_OUTPUT
+            elif [[ ${{ github.ref }} == "refs/heads/master" ]] || [[ ${{ github.ref }} == "refs/heads/devops-setup" ]]; then
+              echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
+              echo "RESOURCE_GROUP=nohdevjun2025" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      # Get ACR details
       - name: Get ACR Details
         id: acr
         run: |
-          # Set working directory based on branch
-          RESOURCE_GROUP=$(az group list --query "[?tags.Environment=='${{ steps.version.outputs.ENV }}'].name" -o tsv)
-          
-          # Install Azure CLI and get ACR login server
-          ACR_LOGIN_SERVER=$(az acr list -g $RESOURCE_GROUP --query "[0].loginServer" -o tsv)
+          # Get ACR login server from the resource group
+          ACR_LOGIN_SERVER=$(az acr list -g ${{ steps.vars.outputs.RESOURCE_GROUP }} --query "[0].loginServer" -o tsv)
           echo "LOGIN_SERVER=$ACR_LOGIN_SERVER" >> $GITHUB_OUTPUT
       
       # Log in to ACR
@@ -97,7 +118,7 @@ jobs:
           push: true
           tags: |
             ${{ steps.acr.outputs.LOGIN_SERVER }}/app.server:${{ steps.version.outputs.VERSION }}
-            ${{ steps.acr.outputs.LOGIN_SERVER }}/app.server:${{ steps.version.outputs.ENV }}-latest
+            ${{ steps.acr.outputs.LOGIN_SERVER }}/app.server:${{ steps.vars.outputs.ENV_NAME }}-latest
           build-args: |
             BUILD_VERSION=${{ steps.version.outputs.VERSION }}
       
@@ -110,7 +131,7 @@ jobs:
           push: true
           tags: |
             ${{ steps.acr.outputs.LOGIN_SERVER }}/app.client:${{ steps.version.outputs.VERSION }}
-            ${{ steps.acr.outputs.LOGIN_SERVER }}/app.client:${{ steps.version.outputs.ENV }}-latest
+            ${{ steps.acr.outputs.LOGIN_SERVER }}/app.client:${{ steps.vars.outputs.ENV_NAME }}-latest
           build-args: |
             BUILD_VERSION=${{ steps.version.outputs.VERSION }}
 
@@ -118,7 +139,7 @@ jobs:
       - name: Create Version Artifact
         run: |
           echo "VERSION=${{ steps.version.outputs.VERSION }}" > version.txt
-          echo "ENV=${{ steps.version.outputs.ENV }}" >> version.txt
+          echo "ENV=${{ steps.vars.outputs.ENV_NAME }}" >> version.txt
       
       - name: Upload Version Artifact
         uses: actions/upload-artifact@v4
