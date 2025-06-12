@@ -110,7 +110,7 @@ jobs:
           # Verify Application Gateway exists and is operational
           echo "Checking Application Gateway..."
           GATEWAY_STATUS=$(az network application-gateway show \
-            --name "${RESOURCE_GROUP}AppGateway" \
+            --name "NationOHAppGateway" \
             --resource-group $RESOURCE_GROUP \
             --query "operationalState" -o tsv 2>/dev/null || echo "NOT_FOUND")
           
