@@ -69,7 +69,7 @@ resource "azurerm_container_app" "api_server" {
   ingress {
     external_enabled = false
     target_port      = 8080
-    transport        = "HTTP"
+    transport        = "http"
 
     traffic_weight {
       percentage      = 100
