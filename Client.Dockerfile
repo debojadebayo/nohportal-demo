@@ -11,7 +11,7 @@ COPY . .
 WORKDIR /app/Client
 RUN dotnet publish "./Client.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
-FROM nginx:stable-perl
+FROM nginx:stable-alpine
 WORKDIR /app
 EXPOSE 8080
 COPY nginx.conf /etc/nginx/nginx.conf

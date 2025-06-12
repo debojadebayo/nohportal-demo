@@ -94,7 +94,7 @@ variable "nsg_rules" {
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "5003"
+        destination_port_range     = "8080"
         source_address_prefix      = "*"
         destination_address_prefix = "10.0.2.0/23"
       }
@@ -107,7 +107,7 @@ variable "nsg_rules" {
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "5003"
+        destination_port_range     = "8080"
         source_address_prefix      = "10.0.0.0/24"
         destination_address_prefix = "*"
       },
@@ -118,7 +118,7 @@ variable "nsg_rules" {
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "8180"
+        destination_port_range     = "8080"
         source_address_prefix      = "10.0.0.0/24"
         destination_address_prefix = "*"
       },

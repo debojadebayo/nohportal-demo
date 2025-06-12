@@ -49,11 +49,15 @@ resource "azurerm_container_app" "api_server" {
         name  = "ASPNETCORE_ENVIRONMENT"
         value = var.aspnetcore_environment
       }
+      env {
+        name  = "ASPNET_URLS"
+        value = "http://+:8080"
+      }
 
       liveness_probe {
         path                    = "/api-health"
         port                    = 8080
-        transport               = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
+        transport               = "HTTP"
         initial_delay           = 60
         interval_seconds        = 15
         timeout                 = 5
@@ -65,7 +69,7 @@ resource "azurerm_container_app" "api_server" {
   ingress {
     external_enabled = false
     target_port      = 8080
-    transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
+    transport        = "HTTP"
 
     traffic_weight {
       percentage      = 100
@@ -219,7 +223,7 @@ resource "azurerm_container_app" "frontend" {
       liveness_probe {
         path                    = "/health"
         port                    = 8080
-        transport               = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
+        transport               = "HTTP"
         initial_delay           = 60
         interval_seconds        = 15
         timeout                 = 5
@@ -233,7 +237,7 @@ resource "azurerm_container_app" "frontend" {
   ingress {
     external_enabled = false
     target_port      = 8080
-    transport        = var.aspnetcore_environment == "Development" ? "http" : "https"
+    transport        = "http"
 
     traffic_weight {
       percentage      = 100

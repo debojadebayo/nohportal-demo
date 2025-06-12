@@ -133,6 +133,8 @@ module "application_gateway" {
   ssl_certificate_path     = var.ssl_certificate_path
   ssl_certificate_password = var.ssl_certificate_password
   app_gateway_sku_tier     = var.app_gateway_sku_tier
+
+  depends_on = [module.containers]
 }
 
 module "containers" {
