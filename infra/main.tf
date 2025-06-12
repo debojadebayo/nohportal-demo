@@ -146,6 +146,7 @@ module "containers" {
   log_analytics_workspace_name = "${var.resource_group_name}-insights"
   container_cpu                = var.container_cpu
   container_memory             = var.container_memory
+  container_env_name           = "${var.resource_group_name}containerenv"
 
   # Managed identity 
   container_apps_identity_id = azurerm_user_assigned_identity.container_apps_identity.id
