@@ -100,6 +100,73 @@ jobs:
           echo "API_FQDN=$API_FQDN" >> $GITHUB_OUTPUT  
           echo "KEYCLOAK_FQDN=$KEYCLOAK_FQDN" >> $GITHUB_OUTPUT
       
+      # Verify Infrastructure Prerequisites
+      - name: Verify Infrastructure
+        run: |
+          RESOURCE_GROUP="${{ steps.resources.outputs.RESOURCE_GROUP }}"
+          
+          echo "🔍 Verifying infrastructure components exist and are accessible..."
+          
+          # Verify Application Gateway exists and is operational
+          echo "Checking Application Gateway..."
+          GATEWAY_STATUS=$(az network application-gateway show \
+            --name "${RESOURCE_GROUP}AppGateway" \
+            --resource-group $RESOURCE_GROUP \
+            --query "operationalState" -o tsv 2>/dev/null || echo "NOT_FOUND")
+          
+          if [[ "$GATEWAY_STATUS" != "Running" ]]; then
+            echo "❌ Application Gateway not running. Status: $GATEWAY_STATUS"
+            exit 1
+          fi
+          echo "✅ Application Gateway is running"
+          
+          # Verify Container Apps exist and have FQDNs
+          echo "Checking Container Apps..."
+          
+          # Check Frontend
+          if [[ -z "${{ steps.resources.outputs.FRONTEND_FQDN }}" ]]; then
+            echo "❌ Frontend Container App FQDN is empty"
+            exit 1
+          fi
+          echo "✅ Frontend Container App FQDN: ${{ steps.resources.outputs.FRONTEND_FQDN }}"
+          
+          # Check API
+          if [[ -z "${{ steps.resources.outputs.API_FQDN }}" ]]; then
+            echo "❌ API Container App FQDN is empty"
+            exit 1
+          fi
+          echo "✅ API Container App FQDN: ${{ steps.resources.outputs.API_FQDN }}"
+          
+          # Check Keycloak
+          if [[ -z "${{ steps.resources.outputs.KEYCLOAK_FQDN }}" ]]; then
+            echo "❌ Keycloak Container App FQDN is empty"
+            exit 1
+          fi
+          echo "✅ Keycloak Container App FQDN: ${{ steps.resources.outputs.KEYCLOAK_FQDN }}"
+          
+          # Verify DNS resolution for Container App FQDNs
+          echo "Testing DNS resolution..."
+          nslookup ${{ steps.resources.outputs.FRONTEND_FQDN }} || echo "⚠️ Frontend DNS resolution failed"
+          nslookup ${{ steps.resources.outputs.API_FQDN }} || echo "⚠️ API DNS resolution failed"
+          nslookup ${{ steps.resources.outputs.KEYCLOAK_FQDN }} || echo "⚠️ Keycloak DNS resolution failed"
+          
+          # Test basic connectivity to Application Gateway
+          echo "Testing Application Gateway connectivity..."
+          GATEWAY_FQDN="${{ steps.resources.outputs.GATEWAY_FQDN }}"
+          if [[ -n "$GATEWAY_FQDN" ]]; then
+            # Test HTTP connectivity (should get some response, even if 404)
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://$GATEWAY_FQDN" || echo "000")
+            if [[ "$HTTP_STATUS" != "000" ]]; then
+              echo "✅ Application Gateway is accessible (HTTP $HTTP_STATUS)"
+            else
+              echo "⚠️ Application Gateway HTTP connectivity test failed"
+            fi
+          else
+            echo "⚠️ Application Gateway FQDN not found"
+          fi
+          
+          echo "🔍 Infrastructure verification completed"
+      
       # Update API container app with latest image
       - name: Update API Container App
         run: |
