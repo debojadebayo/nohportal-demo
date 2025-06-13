@@ -54,8 +54,4 @@ resource "azurerm_linux_virtual_machine" "test_vm" {
     sku       = "22_04-lts-gen2"
     version   = "latest"
   }
-
-  custom_data = base64encode(templatefile("${path.module}/cloud-init.yml", {
-    admin_username = var.admin_username
-  }))
 }
