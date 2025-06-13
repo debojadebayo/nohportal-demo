@@ -29,6 +29,19 @@ resource "azurerm_subnet" "subnets" {
     }
   }
 
+  dynamic "delegation" {
+    for_each = each.value == "backend" ? [1] : []
+    content {
+      name = "container-apps-delegation"
+      service_delegation {
+        name = "Microsoft.App/environments"
+        actions = [
+          "Microsoft.Network/virtualNetworks/subnets/join/action"
+        ]
+      }
+    }
+  }
+
   service_endpoints = each.value == "data" || each.value == "backend" ? ["Microsoft.Storage", "Microsoft.KeyVault"] : []
 }
 
