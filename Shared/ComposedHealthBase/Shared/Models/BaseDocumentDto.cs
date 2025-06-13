@@ -3,7 +3,7 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace ComposedHealthBase.Shared.Models
 {
-    public class BaseDocumentDto : BaseDto<BaseDocumentDto>, IDto, IDocumentDto, ILazyLookup
+    public class BaseDocumentDto : BaseDto<BaseDocumentDto>, IDto, IAuditDto, IDocumentDto, ILazyLookup
     {
         public required string FilePath { get; set; }
         public string BlobName { get; set; } = string.Empty;

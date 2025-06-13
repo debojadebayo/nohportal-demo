@@ -11,14 +11,14 @@ using ComposedHealthBase.Server.Interfaces;
 namespace ComposedHealthBase.Server.Queries
 {
 	public interface IGetAllByTenantIdQuery<T, TDto, TContext>
-		where T : BaseEntity<T>
+		where T : class, IAuditEntity
 		where TDto : IDto
 		where TContext : IDbContext<TContext>
 	{
 		Task<IEnumerable<TDto>> Handle(long tenantId, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes);
 	}
 	public class GetAllByTenantIdQuery<T, TDto, TContext> : IGetAllByTenantIdQuery<T, TDto, TContext>, IQuery
-		where T : BaseEntity<T>
+		where T : class, IAuditEntity
 		where TDto : IDto
 		where TContext : IDbContext<TContext>
 	{

@@ -15,7 +15,7 @@ namespace ComposedHealthBase.Server.Queries
     }
 
     public class GetSingleQuery<T, TDto, TContext> : IGetSingleQuery<T, TDto, TContext>, IQuery
-        where T : BaseEntity<T>
+        where T : class, IAuditEntity
         where TDto : IDto
         where TContext : IDbContext<TContext>
     {

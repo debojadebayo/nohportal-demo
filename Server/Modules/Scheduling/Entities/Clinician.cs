@@ -4,7 +4,7 @@ using Shared.Enums;
 
 namespace Server.Modules.Scheduling.Entities
 {
-	public class Clinician : BaseEntity<Clinician>, IEntity, IApplicationUser
+	public class Clinician : BaseEntity<Clinician>, IEntity, IAuditEntity, IApplicationUser
 	{
 		public required string FirstName { get; set; }
 		public required string LastName { get; set; }

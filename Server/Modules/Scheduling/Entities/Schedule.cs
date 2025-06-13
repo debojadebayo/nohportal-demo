@@ -5,7 +5,7 @@ using Shared.Enums;
 
 namespace Server.Modules.Scheduling.Entities
 {
-	public class Schedule : BaseEntity<Schedule>, IEntity, IAnchorable
+	public class Schedule : BaseEntity<Schedule>, IEntity, IAuditEntity, IAnchorable
 	{
 		public long ReferralId { get; set; }
 		public long ClinicianId { get; set; }

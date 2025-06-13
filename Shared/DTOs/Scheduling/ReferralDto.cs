@@ -4,7 +4,7 @@ using Shared.DTOs;
 
 namespace Shared.DTOs.Scheduling
 {
-	public class ReferralDto : BaseDto<ReferralDto>, IDto, ILazyLookup
+	public class ReferralDto : BaseDto<ReferralDto>, IDto, IAuditDto, ILazyLookup
 	{
 		public string ReferralDetails { get; set; } = string.Empty;
 		public string DocumentId { get; set; } = string.Empty;

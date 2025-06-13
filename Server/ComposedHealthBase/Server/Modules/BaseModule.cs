@@ -12,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Reflection;
-using Server.ComposedHealthBase.Server.Auth.AuthDatabase;
 
 namespace ComposedHealthBase.Server.Modules
 {
@@ -64,10 +63,6 @@ namespace ComposedHealthBase.Server.Modules
 			});
 
 			services.AddOpenApi();
-
-			services.AddDbContext<AuthDbContext>(options =>
-				options.UseNpgsql(configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'AuthDb' not found.")));
-
 			var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");
 			var blobServiceClient = new BlobServiceClient(azureStorageConnectionString);
 			var properties = blobServiceClient.GetProperties();
@@ -102,12 +97,6 @@ namespace ComposedHealthBase.Server.Modules
 			{
 				app.MapOpenApi();
 				app.MapScalarApiReference();
-
-				using (var scope = app.Services.CreateScope())
-				{
-					var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
-					dbContext.Database.Migrate();
-				}
 			}
 			else
 			{

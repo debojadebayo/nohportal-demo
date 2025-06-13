@@ -6,7 +6,7 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.Scheduling
 {
-    public class ScheduleDto : BaseCalendarItem, IDto, ILazyLookup
+    public class ScheduleDto : BaseCalendarItem, IDto, IAuditDto, ILazyLookup
     {
         public new long Id { get; set; }
         public bool IsActive { get; set; }

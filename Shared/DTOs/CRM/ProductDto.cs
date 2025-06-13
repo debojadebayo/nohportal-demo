@@ -4,7 +4,7 @@ using Shared.DTOs;
 
 namespace Shared.DTOs.CRM
 {
-	public class ProductDto : BaseDto<ProductDto>, IDto, ILazyLookup
+	public class ProductDto : BaseDto<ProductDto>, IDto, IAuditDto, ILazyLookup
 	{
 		public required ProductTypeDto ProductType { get; set; }
 		public decimal Price { get; set; }

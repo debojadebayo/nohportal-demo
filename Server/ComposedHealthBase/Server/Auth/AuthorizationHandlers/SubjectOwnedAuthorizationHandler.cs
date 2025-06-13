@@ -7,12 +7,12 @@ namespace ComposedHealthBase.Server.Auth.AuthorizationHandlers
     public class SubjectOwnedRequirement : IAuthorizationRequirement
     {
     }
-    public class SubjectOwnedAuthorizationHandler : AuthorizationHandler<SubjectOwnedRequirement, IEntity>
+    public class SubjectOwnedAuthorizationHandler : AuthorizationHandler<SubjectOwnedRequirement, IAuditEntity>
     {
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             SubjectOwnedRequirement requirement,
-            IEntity resource)
+            IAuditEntity resource)
         {
             if (context.User.IsInRole("administrator"))
             {

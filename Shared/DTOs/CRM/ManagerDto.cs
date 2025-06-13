@@ -4,7 +4,7 @@ using System;
 
 namespace Shared.DTOs.CRM
 {
-    public class ManagerDto : BaseDto<ManagerDto>, IDto, ILazyLookup
+    public class ManagerDto : BaseDto<ManagerDto>, IDto, IAuditDto, ILazyLookup
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;

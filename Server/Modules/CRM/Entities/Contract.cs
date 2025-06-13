@@ -3,7 +3,7 @@
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Contract : BaseEntity<Contract>, IEntity
+	public class Contract : BaseEntity<Contract>, IEntity, IAuditEntity
 	{
 		public required string Reference { get; set; }
 		public string? Notes { get; set; }

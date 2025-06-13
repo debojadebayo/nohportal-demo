@@ -29,22 +29,7 @@ for i in "${!modules[@]}"; do
 done
 
 # Prompt the user to choose a module
-read -p "Enter the number of the module to migrate (0 for AuthDbContext): " choice
-
-# Handle AuthDbContext migration
-if [[ "$choice" == "0" ]]; then
-    read -p "Enter the migration name for AuthDbContext (or press Enter to skip): " migration_name
-    if [[ -z "$migration_name" ]]; then
-        echo "Skipping migration for AuthDbContext."
-        exit 0
-    fi
-    dotnet ef migrations add "$migration_name" \
-        --context "AuthDbContext" \
-        --output-dir "Auth/AuthDatabase/Migrations" \
-        --project "$(pwd)/ComposedHealthBase/Server/ComposedHealthBase.Server.csproj" \
-        --startup-project "$(pwd)/WebApi/WebApi.csproj"
-    exit 0
-fi
+read -p "Enter the number of the module to migrate: " choice
 
 # Validate the choice
 if [[ -n "$choice" && ! "$choice" =~ ^[0-9]+$ ]] || [[ "$choice" -lt 1 || "$choice" -gt ${#modules[@]} ]]; then
@@ -62,7 +47,7 @@ for i in "${!modules[@]}"; do
     module_name=$(basename "$(dirname "$module")")
 
     # Prompt for the migration name
-    read -p "Enter the migration name for $module_name (or press Enter to skip): " migration_name
+    read -p "Enter the migration name for $module_name: " migration_name
 
     # Skip if no migration name is provided
     if [[ -z "$migration_name" ]]; then

@@ -15,7 +15,7 @@
 	<MudAppBar Elevation="1">
 		<AuthorizeView>
 			<Authorized>
-				<MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start"
+				<MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" Variant="Variant.Text"
 					OnClick="@((e) => DrawerToggle())" />
 			</Authorized>
 		</AuthorizeView>
@@ -26,20 +26,11 @@
 				<MudAvatar>
 					<MudImage Src="https://mudblazor.com/images/mony.jpg"></MudImage>
 				</MudAvatar>
-				<MudButton @onclick="Logout" EndIcon="@Icons.Material.Filled.Logout">Log out</MudButton>
+				<MudButton @onclick="Logout" EndIcon="@Icons.Material.Filled.Logout" Variant="Variant.Text">Log out</MudButton>
 			</Authorized>
 			<NotAuthorized>
-				<MudButton Href="authentication/login" StartIcon="@Icons.Material.Filled.Login">Log in</MudButton>
+				<MudButton Href="authentication/login" StartIcon="@Icons.Material.Filled.Login" Variant="Variant.Text">Log in</MudButton>
 			</NotAuthorized>
-		</AuthorizeView>
-		<AuthorizeView Roles="administrator">
-			<p>(Administrator)</p>
-		</AuthorizeView>
-		<AuthorizeView Roles="tenantadministrator">
-			<p>(Tenant Administrator)</p>
-		</AuthorizeView>
-		<AuthorizeView Roles="seniorclinician">
-			<p>(Senior Clinician)</p>
 		</AuthorizeView>
 	</MudAppBar>
 	<AuthorizeView>

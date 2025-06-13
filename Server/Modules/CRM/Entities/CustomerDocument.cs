@@ -2,7 +2,7 @@ using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.CRM.Entities
 {
-    public class CustomerDocument : BaseEntity<CustomerDocument>, IEntity, IDocument
+    public class CustomerDocument : BaseEntity<CustomerDocument>, IEntity, IAuditEntity, IDocument
     {
         public long CustomerId
         {

@@ -2,7 +2,7 @@ using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.CRM.Entities
 {
-    public class Manager : BaseEntity<Manager>, IEntity, IApplicationUser
+    public class Manager : BaseEntity<Manager>, IEntity, IAuditEntity, IApplicationUser
     {
         public required string FirstName { get; set; }
 		public required string LastName { get; set; }

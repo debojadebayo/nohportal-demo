@@ -4,7 +4,7 @@ using Shared.DTOs;
 
 namespace Shared.DTOs.CRM
 {
-    public class ContractDto : BaseDto<ContractDto>, ILazyLookup, IDto
+    public class ContractDto : BaseDto<ContractDto>, ILazyLookup, IDto, IAuditDto
     {
         public required string Reference { get; set; }
         public string? Notes { get; set; }

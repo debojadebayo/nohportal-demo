@@ -5,7 +5,7 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.CRM
 {
-	public class CustomerDto : BaseDto<CustomerDto>, IDto, INotesTab, ILazyLookup
+	public class CustomerDto : BaseDto<CustomerDto>, IDto, IAuditDto, INotesTab, ILazyLookup
 	{
 		public string Name { get; set; } = string.Empty;
 		public string Telephone { get; set; } = string.Empty;

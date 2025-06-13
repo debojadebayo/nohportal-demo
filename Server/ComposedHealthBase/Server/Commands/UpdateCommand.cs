@@ -17,7 +17,7 @@ namespace ComposedHealthBase.Server.Commands
     }
 
     public class UpdateCommand<T, TDto, TContext> : IUpdateCommand<T, TDto, TContext>, ICommand
-        where T : BaseEntity<T>
+        where T : class, IAuditEntity
         where TDto : IDto
         where TContext : IDbContext<TContext>
     {

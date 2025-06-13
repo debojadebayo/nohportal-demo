@@ -3,7 +3,7 @@
 
 namespace Server.Modules.CRM.Entities
 {
-	public class ProductType : BaseEntity<ProductType>, IEntity
+	public class ProductType : BaseEntity<ProductType>, IEntity, IAuditEntity
 	{
 		public required string Name { get; set; }
 		public required string Description { get; set; }

@@ -7,7 +7,7 @@
 @inject IDialogService DialogService
 @inject ILazyLookupService<TDto> DocumentLookupService
 @inject IDocumentUploadService DocumentUploadService
-@typeparam TDto where TDto : IDocumentDto, ILazyLookup
+@typeparam TDto where TDto : IAuditDto, IDocumentDto, ILazyLookup
 
 <MudPaper Class="pa-4">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">

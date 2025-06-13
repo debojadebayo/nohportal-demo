@@ -1,6 +1,6 @@
 ﻿namespace ComposedHealthBase.Server.Entities
 {
-	public class BaseEntity<T> : IEntity
+	public class BaseEntity<T> : IAuditEntity
 	where T : class
 	{
 		public long Id { get; set; }

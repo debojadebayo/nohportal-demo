@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class BaseEndpoints<T, TDto, TContext>
-	where T : BaseEntity<T>
+	where T : class, IAuditEntity
 	where TDto : IDto
 	where TContext : IDbContext<TContext>
 	{
@@ -25,29 +25,6 @@ namespace ComposedHealthBase.Server.Endpoints
 		{
 			var endpointName = typeof(T).Name;
 			var group = endpoints.MapGroup($"/api/{endpointName}");
-
-			group.MapGet("/debugclaims", (ClaimsPrincipal user) =>
-            {
-                if (user?.Identity?.IsAuthenticated == true)
-                {
-                    var claimsInfo = user.Claims.Select(c => new { c.Type, c.Value }).ToList();
-                    var identityRoleClaimType = "Unknown";
-                    if (user.Identity is ClaimsIdentity claimsIdentity)
-                    {
-                        identityRoleClaimType = claimsIdentity.RoleClaimType;
-                    }
-                    return Results.Ok(new 
-                    { 
-                        IsAuthenticated = user.Identity.IsAuthenticated,
-                        AuthenticationType = user.Identity.AuthenticationType,
-                        NameClaimType = (user.Identity as ClaimsIdentity)?.NameClaimType,
-                        RoleClaimType = identityRoleClaimType,
-                        Claims = claimsInfo,
-                        IsInAdministratorRole = user.IsInRole("administrator")
-                    });
-                }
-                return Results.Unauthorized();
-            }).RequireAuthorization();
 
 			group.MapGet("/GetAll", (
 				[FromServices] IDbContext<TContext> dbContext,

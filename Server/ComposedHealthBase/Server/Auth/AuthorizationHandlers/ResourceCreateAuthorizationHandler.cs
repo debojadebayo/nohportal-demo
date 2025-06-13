@@ -7,12 +7,12 @@ using ComposedHealthBase.Server.Helpers;
 namespace ComposedHealthBase.Server.Auth.AuthorizationHandlers
 {
     public class ResourceCreateAuthorizationHandler :
-        AuthorizationHandler<IAuthorizationRequirement, IEntity>
+        AuthorizationHandler<IAuthorizationRequirement, IAuditEntity>
     {
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             IAuthorizationRequirement requirement,
-            IEntity resource)
+            IAuditEntity resource)
         {
             if (context.User.IsInRole("administrator"))
             {

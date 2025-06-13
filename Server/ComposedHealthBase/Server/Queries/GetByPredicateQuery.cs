@@ -18,7 +18,7 @@ namespace ComposedHealthBase.Server.Queries
     }
 
     public class GetByPredicateQuery<T, TDto, TContext> : IGetByPredicateQuery<T, TDto, TContext>, IQuery
-        where T : BaseEntity<T>
+        where T : class, IAuditEntity
         where TDto : IDto
         where TContext : IDbContext<TContext>
     {

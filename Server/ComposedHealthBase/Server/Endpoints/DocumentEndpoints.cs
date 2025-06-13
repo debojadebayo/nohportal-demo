@@ -18,7 +18,7 @@ using System.Security.Claims;
 namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class DocumentEndpoints<T, TDto, TContext> : BaseEndpoints<T, TDto, TContext>
-	where T : BaseEntity<T>, IDocument
+	where T : class, IAuditEntity, IDocument
 	where TDto : IDto, IDocumentDto
 	where TContext : IDbContext<TContext>
 	{

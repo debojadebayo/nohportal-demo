@@ -1,6 +1,6 @@
 namespace ComposedHealthBase.Shared.DTOs
 {
-	public class BaseDto<T> : IDto
+	public class BaseDto<T> : IAuditDto
 	where T : class
 	{
 		public long Id { get; set; }

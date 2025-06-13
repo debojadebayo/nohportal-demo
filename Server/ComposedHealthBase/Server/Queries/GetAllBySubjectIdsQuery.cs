@@ -19,7 +19,7 @@ namespace ComposedHealthBase.Server.Queries
 		Task<IEnumerable<TDto>> Handle(List<long> subjectIds, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes);
 	}
 	public class GetAllBySubjectIdsQuery<T, TDto, TContext> : IGetAllBySubjectIdsQuery<T, TDto, TContext>, IQuery
-		where T : BaseEntity<T>
+		where T : class, IAuditEntity
 		where TDto : IDto
 		where TContext : IDbContext<TContext>
 	{

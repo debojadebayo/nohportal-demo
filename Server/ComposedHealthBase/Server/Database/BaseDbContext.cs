@@ -27,7 +27,7 @@ namespace ComposedHealthBase.Server.Database
 
 			foreach (var entry in entries)
 			{
-				if (entry.Entity is IEntity entity)
+				if (entry.Entity is IAuditEntity entity)
 				{
 					if (entry.State == EntityState.Added)
 					{

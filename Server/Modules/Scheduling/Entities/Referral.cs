@@ -4,7 +4,7 @@ using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.Scheduling.Entities
 {
-	public class Referral : BaseEntity<Referral>, IEntity, IAnchor
+	public class Referral : BaseEntity<Referral>, IEntity, IAuditEntity, IAnchor
 	{
 		public required string ReferralDetails { get; set; }
 		public required string DocumentId { get; set; }

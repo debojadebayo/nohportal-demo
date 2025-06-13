@@ -34,6 +34,10 @@ namespace ComposedHealthBase.Server.Extensions
 			services.AddTransient(typeof(UpdateCommand<,,>), typeof(UpdateCommand<,,>));
 			services.AddTransient(typeof(DeleteCommand<,>), typeof(DeleteCommand<,>));
 
+			var baseModule = new BaseModule();
+			baseModule.RegisterModuleServices(services, configuration);
+			registeredModules.Add(baseModule);
+
 			foreach (var moduleType in moduleTypes)
 			{
 				//Create the module and register the module services
@@ -61,7 +65,7 @@ namespace ComposedHealthBase.Server.Extensions
 
 			return services;
 		}
-		public static WebApplication ConfigureServicesAndMapEndpoints(this WebApplication app, bool isDevelopment, ref List<Type> moduleTypes, List<IModule> registeredModules)
+		public static WebApplication ConfigureServicesAndMapEndpoints(this WebApplication app, bool isDevelopment, List<IModule> registeredModules)
 		{
 			foreach (var module in registeredModules)
 			{
