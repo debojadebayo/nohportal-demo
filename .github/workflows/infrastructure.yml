@@ -118,7 +118,10 @@ jobs:
     - name: Terraform Plan
       if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
       working-directory: ./infra
-      run: terraform plan -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}" -out=tfplan
+      run: |
+        # Taint the container environment to force recreation
+        terraform taint module.containers.azurerm_container_app_environment.container_env || true
+        terraform plan -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}" -out=tfplan
 
     - name: Terraform Apply
       if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
