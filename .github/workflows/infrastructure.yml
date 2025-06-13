@@ -101,7 +101,23 @@ jobs:
     #     rm -rf .terraform
     #     rm -f .terraform.lock.hcl
     #     rm -f terraform.tfstate*
+    - name: Clean Existing Container Resources
+      run: |
+        echo "Deleting Container Apps..."
+        az containerapp delete --name "nohdevjun2025frontend" 
+        --resource-group "nohdevjun2025" --yes || echo "Frontend not found"
+        az containerapp delete --name "nohdevjun2025server" --resource-group
+        "nohdevjun2025" --yes || echo "Server not found"
+        az containerapp delete --name "nohdevjun2025keycloak" 
+        --resource-group "nohdevjun2025" --yes || echo "Keycloak not found"
 
+        echo "Waiting for Container Apps to be deleted..."
+        sleep 30
+
+        echo "Deleting Container App Environment..."
+        az containerapp env delete --name "nohdevjun2025containerenv"
+        --resource-group "nohdevjun2025" --yes || echo "Environment not found"
+    
     - name: Terraform Init
       if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
       working-directory: ./infra
@@ -119,8 +135,6 @@ jobs:
       if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
       working-directory: ./infra
       run: |
-        # Taint the container environment to force recreation
-        terraform taint module.containers.azurerm_container_app_environment.container_env || true
         terraform plan -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}" -out=tfplan
 
     - name: Terraform Apply
