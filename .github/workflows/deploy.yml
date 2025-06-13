@@ -272,7 +272,7 @@ jobs:
       # Run smoke test via Application Gateway (public endpoint)
       - name: Smoke Test
         run: |
-          GATEWAY_URL="https://${{ steps.resources.outputs.GATEWAY_FQDN }}"
+          GATEWAY_URL="http://${{ steps.resources.outputs.GATEWAY_FQDN }}"
           
           echo "=== Smoke Test via Application Gateway ==="
           echo "Gateway URL: $GATEWAY_URL"

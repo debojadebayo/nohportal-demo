@@ -24,13 +24,13 @@ variable "address_space" {
 variable "subnet_names" {
   description = "List of subnet names"
   type        = list(string)
-  default     = ["appgateway", "backend", "data", "privatelink"]
+  default     = ["appgateway", "backend", "data", "privatelink", "vm"]
 }
 
 variable "subnet_prefixes" {
   description = "CIDR blocks for each subnet"
   type        = list(string)
-  default     = ["10.0.0.0/24", "10.0.2.0/23", "10.0.4.0/24", "10.0.5.0/24"]
+  default     = ["10.0.0.0/24", "10.0.2.0/23", "10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
 }
 
 variable "nsg_name" {
@@ -156,6 +156,30 @@ variable "nsg_rules" {
         destination_port_range     = "5434"
         source_address_prefix      = "10.0.2.0/23"
         destination_address_prefix = "*"
+      }
+    ],
+    vm = [
+      {
+        name                       = "allow-ssh"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "22"
+        source_address_prefix      = "Internet"
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "allow-outbound-to-backend"
+        priority                   = 110
+        direction                  = "Outbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "8080"
+        source_address_prefix      = "*"
+        destination_address_prefix = "10.0.2.0/23"
       }
     ]
   }

@@ -1,0 +1,44 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - curl
+  - wget
+  - net-tools
+  - dnsutils
+  - telnet
+  - nmap
+  - jq
+
+write_files:
+  - content: |
+      #!/bin/bash
+      echo "=== Network Connectivity Test Script ==="
+      echo "Testing connectivity from VM subnet to backend services..."
+      
+      # Test Container Apps directly (internal FQDNs)
+      echo ""
+      echo "Testing Container App connectivity:"
+      
+      # These will be filled in during deployment
+      # Example: curl -v http://internal-container-fqdn:8080/health
+      
+      echo ""
+      echo "Testing Application Gateway from internal network:"
+      # curl -v http://gateway-internal-ip/api/api-health
+      
+      echo ""
+      echo "Network troubleshooting tools available:"
+      echo "- curl: HTTP requests"
+      echo "- nslookup: DNS resolution"
+      echo "- telnet: Port connectivity"
+      echo "- nmap: Port scanning"
+      echo ""
+      echo "Use: sudo ./test-connectivity.sh to run connectivity tests"
+    path: /home/${admin_username}/test-connectivity.sh
+    permissions: '0755'
+
+runcmd:
+  - chown ${admin_username}:${admin_username} /home/${admin_username}/test-connectivity.sh
+  - echo "Test VM setup complete" >> /var/log/cloud-init-output.log

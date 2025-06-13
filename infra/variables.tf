@@ -56,3 +56,4 @@ variable "github_actions_service_principal_object_id" {
   type        = string
   default     = ""
 }
+
