@@ -7,6 +7,11 @@ output "container_app_urls" {
   }
 }
 
+output "debug_subnet_id" {
+  description = "Debug: Subnet ID being passed to Container App Environment"
+  value       = var.subnet_id
+}
+
 output "container_env_id" {
   description = "ID of the container app environment"
   value       = azurerm_container_app_environment.container_env.id
