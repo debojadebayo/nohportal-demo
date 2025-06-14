@@ -1,5 +1,5 @@
 using ComposedHealthBase.Server.Mappers;
-using Server.Modules.Clinical.Entities;
+using Server.Modules.Billing.Entities;
 
 public class ExampleEntityMapper : IMapper<ExampleEntity, ExampleEntityDto>
 {

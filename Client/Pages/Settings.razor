@@ -139,7 +139,7 @@
         addRoleDialogOpen = true;
     }
 
-    private void HandleAddRole()
+    private async Task HandleAddRole()
     {
         if (string.IsNullOrWhiteSpace(newRoleName))
         {
@@ -153,12 +153,26 @@
         }
 
         var newRole = new RoleDto { Name = newRoleName, Permissions = new List<PermissionDto>() };
-        roles.Add(newRole);
-        Snackbar.Add($"Role '{newRole.Name}' added successfully.", Severity.Success);
-        
-        addRoleDialogOpen = false;
-        newRoleName = string.Empty;
-        StateHasChanged();
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/auth/roles/create", newRole);
+            if (response.IsSuccessStatusCode)
+            {
+                roles.Add(newRole);
+                Snackbar.Add($"Role '{newRole.Name}' added successfully.", Severity.Success);
+                addRoleDialogOpen = false;
+                newRoleName = string.Empty;
+                StateHasChanged();
+            }
+            else
+            {
+                Snackbar.Add($"Failed to add role: {response.ReasonPhrase}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
+        }
     }
 
     private void OpenManagePermissionsDialog(RoleDto role)

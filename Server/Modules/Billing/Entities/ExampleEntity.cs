@@ -1,8 +1,8 @@
-// filepath: Modules/Clinical/Entities/ExampleEntity.cs
+// filepath: Modules/Billing/Entities/ExampleEntity.cs
 using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Shared.DTOs;
 
-namespace Server.Modules.Clinical.Entities;
+namespace Server.Modules.Billing.Entities;
 
 public class ExampleEntity : BaseEntity<ExampleEntity>, IEntity, IAuditEntity
 {

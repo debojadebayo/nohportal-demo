@@ -1,6 +1,7 @@
+// filepath: Modules/Billing/Endpoints/BillingEndpoints.cs
 using ComposedHealthBase.Server.Endpoints;
-using Server.Modules.Clinical.Entities;
-using Server.Modules.Clinical.Infrastructure.Database;
+using Server.Modules.Billing.Entities;
+using Server.Modules.Billing.Infrastructure.Database;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using ComposedHealthBase.Server.Mappers;
@@ -16,10 +17,8 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Shared.DTOs.Clinical;
 
-namespace Server.Modules.Clinical.Endpoints
+namespace Server.Modules.Billing.Endpoints
 {
-	public class ClinicalReportEndpoints : BaseEndpoints<ClinicalReport, ClinicalReportDto, ClinicalDbContext>, IEndpoints { }
-	public class CaseNoteEndpoints : BaseEndpoints<CaseNote, CaseNoteDto, ClinicalDbContext>, IEndpoints { }
+	//public class ManagerEndpoints : BaseEndpoints<Entity, EntityDto, BillingDbContext>, IEndpoints { }
 }

@@ -7,7 +7,8 @@ namespace Server.Modules.Clinical.Infrastructure.Database;
 
 public sealed class ClinicalDbContext(DbContextOptions<ClinicalDbContext> options) : BaseDbContext<ClinicalDbContext>(options), IDbContext<ClinicalDbContext>
 {
-    public DbSet<ExampleEntity> ExampleEntities { get; set; }
+    public DbSet<CaseNote> CaseNotes { get; set; }
+    public DbSet<ClinicalReport> ClinicalReports { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

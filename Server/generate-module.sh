@@ -166,11 +166,6 @@ using Server.Modules.${MODULE_NAME_PASCAL}.Entities;
 
 public class ExampleEntityMapper : IMapper<ExampleEntity, ExampleEntityDto>
 {
-    private readonly IMapper<ExampleEntity, ExampleEntityDto> _mapper;
-    public ExampleEntityMapper(IMapper<ExampleEntity, ExampleEntityDto> mapper)
-    {
-        _mapper = mapper;
-    }
     public ExampleEntityDto Map(ExampleEntity entity)
     {
         return new ExampleEntityDto
