@@ -1,0 +1,90 @@
+@page "/case-notes/{scheduleId:long}"
+@using Shared.DTOs.Clinical
+@using Shared.DTOs.Scheduling
+@using Shared.Enums
+@using MudBlazor
+@using MudExRichTextEditor
+
+<PageTitle>Case Notes</PageTitle>
+
+<MudItem xs="12" sm="6">
+    <MudText Typo="Typo.h1">Case Notes</MudText>
+</MudItem>
+
+<MudForm Model="@CaseNote" @ref="form">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudExRichTextEdit @bind-Value="CaseNote.CaseNotes" @ref="@Editor" ReadOnly="@_readOnly" Height="444" Class="m-2" Placeholder="">
+            </MudExRichTextEdit>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudSelect T="AppointmentTypeEnum" @bind-Value="CaseNote.AppointmentType" Label="Appointment Type"
+                Variant="Variant.Outlined">
+                @foreach (var value in Enum.GetValues(typeof(AppointmentTypeEnum)))
+                {
+                    <MudSelectItem Value="@(value)">@value</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudSelect T="FitForWorkStatusEnum" @bind-Value="CaseNote.FitForWorkStatus" Label="Fit For Work Status"
+                Variant="Variant.Outlined">
+                @foreach (var value in Enum.GetValues(typeof(FitForWorkStatusEnum)))
+                {
+                    <MudSelectItem Value="@(value)">@value</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="CaseNote.RecommendedAdjustments" Label="Recommended Adjustments"
+                Variant="Variant.Outlined" Lines="2" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudCheckBox @bind-Value="CaseNote.IsFollowUpNeeded" Color="Color.Primary" Label="Is Follow Up Needed?" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudDatePicker @bind-Date="CaseNote.FollowUpDate" Label="Follow Up Date" Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="CaseNote.FollowUpReasonForReferral" Label="Follow Up Reason For Referral"
+                Variant="Variant.Outlined" Lines="2" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudSelect T="long" @bind-Value="CaseNote.ClinicianId" Label="Clinician" Variant="Variant.Outlined">
+                @foreach (var clinician in Clinicians)
+                {
+                    <MudSelectItem Value="@clinician.Id">@clinician.DisplayName</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save">Save</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GenerateReport">Generate Report</MudButton>
+    </MudCardActions>
+</MudForm>
+
+@code {
+    [Parameter] public long ScheduleId { get; set; }
+    private CaseNoteDto CaseNote { get; set; } = new();
+    private MudForm form = default!;
+    private List<ClinicianDto> Clinicians = new(); // Populate this list as needed
+
+    bool _readOnly = false;
+    MudExRichTextEdit Editor = default!;
+
+    // TODO: Load Clinicians and CaseNote for ScheduleId, and implement Save logic
+    private async Task Save()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            // Save logic here
+        }
+    }
+    private async Task GenerateReport()
+    {
+        // Logic to generate report
+        // This could involve calling a service to create a PDF or other document format
+    }
+}

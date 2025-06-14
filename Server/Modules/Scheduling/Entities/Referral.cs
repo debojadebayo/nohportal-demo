@@ -1,15 +1,17 @@
 ﻿using ComposedHealthBase.Server.Auth;
 using ComposedHealthBase.Server.Entities;
+using Shared.Enums;
 
 
 namespace Server.Modules.Scheduling.Entities
 {
 	public class Referral : BaseEntity<Referral>, IEntity, IAuditEntity, IAnchor
 	{
-		public required string ReferralDetails { get; set; }
-		public required string DocumentId { get; set; }
-		public required string Title { get; set; }
-		public HashSet<Schedule> CalendarItems { get; set; } = new HashSet<Schedule>();
+	   public required string ReferralDetails { get; set; }
+	   public required string DocumentId { get; set; }
+	   public required string Title { get; set; }
+	   public ReferralStatusEnum ReferralStatus { get; set; } = Shared.Enums.ReferralStatusEnum.Pending;
+	   public HashSet<Schedule> CalendarItems { get; set; } = new HashSet<Schedule>();
 		public long CustomerId
 		{
 			get

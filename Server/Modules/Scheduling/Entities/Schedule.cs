@@ -10,7 +10,8 @@ namespace Server.Modules.Scheduling.Entities
 		public long ReferralId { get; set; }
 		public long ClinicianId { get; set; }
 		public long ProductId { get; set; }
-		public ScheduleStatusEnum Status { get; set; }
+	   public ScheduleStatusEnum Status { get; set; }
+	   public AppointmentStatusEnum AppointmentStatus { get; set; }
 		public DateTime? Start { get; set; }
 		public DateTime? End { get; set; }
 		public required string Title { get; set; }

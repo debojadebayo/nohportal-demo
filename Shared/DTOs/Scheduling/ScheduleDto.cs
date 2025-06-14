@@ -34,6 +34,7 @@ namespace Shared.DTOs.Scheduling
         }
         public required string Description { get; set; }
         public ScheduleStatusEnum Status { get; set; }
+        public AppointmentStatusEnum AppointmentStatus { get; set; }
         public string DisplayName => $"{Title} - {Description}";
     }
 }

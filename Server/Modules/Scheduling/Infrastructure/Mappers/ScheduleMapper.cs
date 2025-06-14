@@ -21,6 +21,8 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
             ModifiedDate = entity.ModifiedDate,
             Title = entity.Title,
             Description = entity.Description,
+            Status = entity.Status,
+            AppointmentStatus = entity.AppointmentStatus
         };
     }
 
@@ -36,6 +38,8 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
             End = dto.EndTime,
             Title = dto.Title,
             Description = dto.Description,
+            Status = dto.Status,
+            AppointmentStatus = dto.AppointmentStatus
         };
     }
 
@@ -59,6 +63,8 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
         entity.End = dto.EndTime;
         entity.Title = dto.Title;
         entity.Description = dto.Description;
+        entity.Status = dto.Status;
+        entity.AppointmentStatus = dto.AppointmentStatus;
     }
 
     public void Map(Schedule entity, ScheduleDto dto)
@@ -76,6 +82,8 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
         dto.ModifiedDate = entity.ModifiedDate;
         dto.Title = entity.Title;
         dto.Description = entity.Description;
+        dto.Status = entity.Status;
+        dto.AppointmentStatus = entity.AppointmentStatus;
     }
 
     public void Map(IEnumerable<ScheduleDto> dtos, IEnumerable<Schedule> entities)

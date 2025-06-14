@@ -19,6 +19,15 @@
                 <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
                 <PropertyColumn Property="x => x.EmployeeId" Title="Employee" />
                 <PropertyColumn Property="x => x.ProductId" Title="Product" />
+                <PropertyColumn Property="x => x.AppointmentStatus.ToString()" Title="Appointment Status" />
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate>
+                        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" 
+                                   Href="@($"/case-notes/{context.Item.Id}")">
+                            Case Notes
+                        </MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
             </Columns>
         </MudDataGrid>
     </MudExpansionPanel>
