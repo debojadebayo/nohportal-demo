@@ -55,19 +55,8 @@ variable "nsg_rules" {
   default = {
     appgateway = [
       {
-        name                       = "allow-app-gateway-management"
-        priority                   = 140
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_range     = "65200-65535"
-        source_address_prefix      = "GatewayManager"
-        destination_address_prefix = "*"
-      },
-      {
         name                       = "Allow-HTTP"
-        priority                   = 110
+        priority                   = 100
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -78,7 +67,7 @@ variable "nsg_rules" {
       },
       {
         name                       = "Allow-HTTPS"
-        priority                   = 120
+        priority                   = 110
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -88,7 +77,18 @@ variable "nsg_rules" {
         destination_address_prefix = "*"
       },
       {
-        name                       = "allow-outbound-to-backend"
+        name                       = "allow-app-gateway-management"
+        priority                   = 120
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "65200-65535"
+        source_address_prefix      = "GatewayManager"
+        destination_address_prefix = "*"
+      },
+      {
+        name                       = "allow-outbound-to-container-apps"
         priority                   = 130
         direction                  = "Outbound"
         access                     = "Allow"
@@ -97,11 +97,23 @@ variable "nsg_rules" {
         destination_port_range     = "8080"
         source_address_prefix      = "*"
         destination_address_prefix = "10.0.2.0/23"
+      }, 
+      {
+        name                       = "allow-outbound-to-container-apps-https"
+        priority                   = 140
+        direction                  = "Outbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "443"
+        source_address_prefix      = "*"
+        destination_address_prefix = "10.0.2.0/23"
       }
     ],
     backend = [
+      # Allow appgateway to reach containers 
       {
-        name                       = "allow-api-from-app-gateway"
+        name                       = "allow-api-from-app-gateway-http"
         priority                   = 100
         direction                  = "Inbound"
         access                     = "Allow"
@@ -112,48 +124,84 @@ variable "nsg_rules" {
         destination_address_prefix = "*"
       },
       {
-        name                       = "allow-keycloak"
+        name                       = "allow-api-from-app-gateway-https"
         priority                   = 110
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "8080"
+        destination_port_range     = "443"
         source_address_prefix      = "10.0.0.0/24"
         destination_address_prefix = "*"
       },
       {
-        name                       = "allow-inbound-from-db"
-        priority                   = 130
+        name                       = "allow-internal-container-apps"
+        priority                   = 120
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "5435"
-        source_address_prefix      = "10.0.4.0/24"
-        destination_address_prefix = "10.0.2.0/23"
-      }
-    ],
-    data = [
-      {
-        name                       = "allow-app-postgres"
-        priority                   = 100
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_range     = "5435"
+        destination_port_range     = "8080,443"
         source_address_prefix      = "10.0.2.0/23"
         destination_address_prefix = "*"
       },
       {
-        name                       = "allow-keycloak-postgres"
-        priority                   = 110
+        name                       = "allow-outbound-to-postgres"
+        priority                   = 200
+        direction                  = "Outbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "5432"
+        source_address_prefix      = "*"
+        destination_address_prefix = "10.0.5.0/24"  # privatelink subnet
+      },
+      {
+        name                       = "allow-outbound-internet"
+        priority                   = 210
+        direction                  = "Outbound" 
+        access                     = "Allow"
+        protocol                   = "*"
+        source_port_range          = "*"
+        destination_port_range     = "*"
+        source_address_prefix      = "*"
+        destination_address_prefix = "Internet"
+      },
+      {
+        name                       = "allow-outbound-vnet"
+        priority                   = 220
+        direction                  = "Outbound"
+        access                     = "Allow"
+        protocol                   = "*"
+        source_port_range          = "*"
+        destination_port_range     = "*"
+        source_address_prefix      = "*"
+        destination_address_prefix = "10.0.0.0/16"
+      }
+    ],
+    data = [
+      {
+        name                       = "allow-postgres-from-container-apps"
+        priority                   = 100
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "5434"
+        destination_port_range     = "5432"
+        source_address_prefix      = "10.0.2.0/23"
+        destination_address_prefix = "*"
+      }
+    ],
+     privatelink = [
+      # Private endpoints for PostgreSQL
+      {
+        name                       = "allow-postgres-private-endpoint"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "5432"
         source_address_prefix      = "10.0.2.0/23"
         destination_address_prefix = "*"
       }
