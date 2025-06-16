@@ -67,7 +67,7 @@ variable "nsg_rules" {
       },
       {
         name                       = "Allow-HTTPS"
-        priority                   = 110
+        priority                   = 120
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -78,7 +78,7 @@ variable "nsg_rules" {
       },
       {
         name                       = "allow-app-gateway-management"
-        priority                   = 120
+        priority                   = 140
         direction                  = "Inbound"
         access                     = "Allow"
         protocol                   = "Tcp"
@@ -97,7 +97,7 @@ variable "nsg_rules" {
         destination_port_range     = "8080"
         source_address_prefix      = "*"
         destination_address_prefix = "10.0.2.0/23"
-      }, 
+      },
       {
         name                       = "allow-outbound-to-container-apps-https"
         priority                   = 140
@@ -141,7 +141,7 @@ variable "nsg_rules" {
         access                     = "Allow"
         protocol                   = "Tcp"
         source_port_range          = "*"
-        destination_port_range     = "8080,443"
+        destination_port_range     = "8080"
         source_address_prefix      = "10.0.2.0/23"
         destination_address_prefix = "*"
       },
@@ -154,12 +154,12 @@ variable "nsg_rules" {
         source_port_range          = "*"
         destination_port_range     = "5432"
         source_address_prefix      = "*"
-        destination_address_prefix = "10.0.5.0/24"  # privatelink subnet
+        destination_address_prefix = "10.0.5.0/24" # privatelink subnet
       },
       {
         name                       = "allow-outbound-internet"
         priority                   = 210
-        direction                  = "Outbound" 
+        direction                  = "Outbound"
         access                     = "Allow"
         protocol                   = "*"
         source_port_range          = "*"
@@ -192,7 +192,7 @@ variable "nsg_rules" {
         destination_address_prefix = "*"
       }
     ],
-     privatelink = [
+    privatelink = [
       # Private endpoints for PostgreSQL
       {
         name                       = "allow-postgres-private-endpoint"
