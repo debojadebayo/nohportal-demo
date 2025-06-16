@@ -55,8 +55,52 @@ resource "azurerm_container_app" "api_server" {
         value = var.aspnetcore_environment
       }
       env {
-        name  = "ASPNET_URLS"
+        name  = "ASPNETCORE_URLS"
         value = "http://+:8080"
+      }
+      env {
+        name  = "ConnectionStrings__DefaultConnection"
+        value = var.app_database_connection_string
+      }
+      env {
+        name  = "ConnectionStrings__AzureBlobStorage"
+        value = var.azure_blob_storage_connection_string
+      }
+      env {
+        name  = "IdentityConfig__Issuer"
+        value = var.keycloak_issuer_url
+      }
+
+      # Keycloak authentication
+      env {
+        name  = "IdentityConfig__Audience"
+        value = "nationoh_webapi"
+      }
+      env {
+        name  = "IdentityConfig__RequireHttpsMetadata"
+        value = "true"
+      }
+      env {
+        name  = "AllowedHosts"
+        value = var.allowed_hosts
+      }
+
+      # Module configuration (from appsettings.json)
+      env {
+        name  = "Modules__0"
+        value = "Billing"
+      }
+      env {
+        name  = "Modules__1"
+        value = "CRM"
+      }
+      env {
+        name  = "Modules__2"
+        value = "Clinical"
+      }
+      env {
+        name  = "Modules__3"
+        value = "Schedule"
       }
 
       liveness_probe {

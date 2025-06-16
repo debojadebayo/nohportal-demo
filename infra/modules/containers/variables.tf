@@ -129,6 +129,35 @@ variable "container_apps_identity_id" {
   type        = string
 }
 
+variable "app_database_connection_string" {
+  description = "Connection string for the application database"
+  type        = string
+  sensitive   = true
+}
+
+variable "azure_blob_storage_connection_string" {
+  description = "Connection string for Azure Blob Storage"
+  type        = string
+  sensitive   = true
+}
+
+variable "keycloak_issuer_url" {
+  description = "Keycloak issuer URL"
+  type        = string
+}
+
+variable "keycloak_audience" {
+  description = "Keycloak audience"
+  type        = string
+}
+
+variable "allowed_hosts" {
+  description = "Allowed hosts for the API server"
+  type        = string
+  default     = "*"
+}
+
+
 # variable "container_app_server_name" {
 #   description = "Name of the container app server"
 #   type        = string

@@ -155,6 +155,13 @@ module "containers" {
   # API Server 
   server_container_app_name = "${var.resource_group_name}server"
 
+  # Server environment variables
+  keycloak_issuer_url                  = "http://localhost:8080/realms/NationOH"
+  keycloak_audience                    = "nationoh_webapi"
+  allowed_hosts                        = "*"
+  app_database_connection_string       = "Host=${module.database.postgresql_server_fqdn};Port=5432;Database=${module.database.app_database_name};Username=${module.secrets.postgresql_admin_username};Password=${module.secrets.postgresql_admin_password};SSL Mode=Require;Trust Server Certificate=true"
+  azure_blob_storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=${module.storage.storage_account_name};AccountKey=${module.storage.primary_access_key};EndpointSuffix=core.windows.net"
+
   # Keycloak
   keycloak_container_app_name       = "${var.resource_group_name}keycloak"
   keycloak_features                 = "organization,admin-fine-grained-authz"
