@@ -199,6 +199,34 @@ jobs:
             --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
             --image $IMAGE_TAG
       
+      # Update Server Container Environment Variables with Real FQDNs
+      - name: Update Server Environment Variables
+        run: |
+          echo "=== Updating Server Environment Variables ==="
+          
+          # Get Application Gateway FQDN for Keycloak issuer URL
+          GATEWAY_FQDN="${{ steps.resources.outputs.GATEWAY_FQDN }}"
+          
+          if [[ -n "$GATEWAY_FQDN" ]]; then
+            echo "Updating server environment variables with Gateway FQDN: $GATEWAY_FQDN"
+            
+            # Update server container with proper Keycloak issuer URL and allowed hosts
+            az containerapp update \
+              --name ${{ steps.resources.outputs.API_APP }} \
+              --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
+              --set-env-vars \
+                "IdentityConfig__Issuer=https://${GATEWAY_FQDN}/auth/realms/NationOH" \
+                "AllowedHosts=${GATEWAY_FQDN}" || echo "Failed to update server environment variables"
+            
+            echo "✅ Server environment variables updated successfully"
+          else
+            echo "⚠️ Warning: Gateway FQDN is empty, keeping placeholder values"
+          fi
+          
+          # Wait for container to restart with new environment variables
+          echo "Waiting 30 seconds for container restart..."
+          sleep 30
+      
       # Configure Application Gateway backend pools (Phase 2 configuration)
       - name: Configure Application Gateway Backend Pools
         run: |
