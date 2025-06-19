@@ -12,11 +12,12 @@ resource "azurerm_log_analytics_workspace" "log_analytics" {
 # Container Environment
 
 resource "azurerm_container_app_environment" "container_env" {
-  name                       = var.container_env_name
-  location                   = var.location
-  resource_group_name        = var.resource_group_name
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics.id
-  infrastructure_subnet_id   = var.subnet_id
+  name                           = var.container_env_name
+  location                       = var.location
+  resource_group_name            = var.resource_group_name
+  log_analytics_workspace_id     = azurerm_log_analytics_workspace.log_analytics.id
+  infrastructure_subnet_id       = var.subnet_id
+  internal_load_balancer_enabled = true
 
   workload_profile {
     name                  = "Consumption"

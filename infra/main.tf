@@ -185,6 +185,46 @@ module "containers" {
   ]
 }
 
+# Private DNS Zone for Container Apps (created after containers are deployed)
+resource "azurerm_private_dns_zone" "container_apps" {
+  name                = module.containers.container_env_default_domain
+  resource_group_name = azurerm_resource_group.rg.name
+
+  depends_on = [module.containers]
+}
+
+# Link the Container Apps DNS Zone to the VNet
+resource "azurerm_private_dns_zone_virtual_network_link" "container_apps" {
+  name                  = "container-apps-dns-link"
+  resource_group_name   = azurerm_resource_group.rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.container_apps.name
+  virtual_network_id    = module.networking.vnet_id
+
+  depends_on = [module.containers, module.networking]
+}
+
+# Wildcard A-record for Container Apps
+resource "azurerm_private_dns_a_record" "container_apps_wildcard" {
+  name                = "*"
+  zone_name           = azurerm_private_dns_zone.container_apps.name
+  resource_group_name = azurerm_resource_group.rg.name
+  ttl                 = 300
+  records             = [module.containers.container_env_static_ip]
+
+  depends_on = [azurerm_private_dns_zone.container_apps]
+}
+
+# Root A-record for Container Apps
+resource "azurerm_private_dns_a_record" "container_apps_root" {
+  name                = "@"
+  zone_name           = azurerm_private_dns_zone.container_apps.name
+  resource_group_name = azurerm_resource_group.rg.name
+  ttl                 = 300
+  records             = [module.containers.container_env_static_ip]
+
+  depends_on = [azurerm_private_dns_zone.container_apps]
+}
+
 # Test VM for connectivity testing (dev only)
 module "test_vm" {
   source              = "./modules/test_vm"

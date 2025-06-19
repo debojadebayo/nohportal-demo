@@ -16,3 +16,13 @@ output "container_env_id" {
   description = "ID of the container app environment"
   value       = azurerm_container_app_environment.container_env.id
 }
+
+output "container_env_static_ip" {
+  description = "Static IP address of the container app environment"
+  value       = azurerm_container_app_environment.container_env.static_ip_address
+}
+
+output "container_env_default_domain" {
+  description = "Default domain of the container app environment"
+  value       = azurerm_container_app_environment.container_env.default_domain
+}
