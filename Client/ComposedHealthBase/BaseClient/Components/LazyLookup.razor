@@ -1,0 +1,59 @@
+@namespace ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.Shared.Interfaces
+@using System.Linq.Expressions
+@typeparam TDto where TDto : ILazyLookup
+@inject ILazyLookupService<TDto> LookupService
+
+@switch (FieldType)
+{
+    case LazyLookupEnum.Text:
+        <MudText>@(SelectedItem?.DisplayName ?? "(Not set)")</MudText>
+        break;
+    case LazyLookupEnum.Search:
+        <MudAutocomplete T="long" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
+            ValueChanged="@OnItemChanged" SearchFunc="@LookupService.ItemSearch" Variant="Variant.Outlined"
+            ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
+        break;
+    case LazyLookupEnum.Select:
+        <MudSelect @bind-Value="ItemId" Label="@Label">
+            @foreach (var item in _items)
+            {
+                <MudSelectItem Value="item.Id">@item.DisplayName</MudSelectItem>
+            }
+        </MudSelect>
+        break;
+    default:
+        <MudText>(Not set)</MudText>
+        break;
+}
+
+
+
+@code {
+    [Parameter] public LazyLookupEnum FieldType { get; set; } = LazyLookupEnum.Text;
+    [Parameter] public long ItemId { get; set; } = 0;
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public EventCallback<long> ItemIdChanged { get; set; }
+    [Parameter] public Expression<Func<long>>? ItemIdValueExpression { get; set; }
+    public TDto? SelectedItem { get; set; }
+    private List<TDto> _items = new List<TDto>();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ItemId > 0)
+        {
+            SelectedItem = await LookupService.GetItemById(ItemId, CancellationToken.None);
+        }
+        if (FieldType == LazyLookupEnum.Select)
+        {
+            _items = (await LookupService.GetAllItems(CancellationToken.None)).ToList();
+        }
+        StateHasChanged();
+    }
+    private async Task OnItemChanged(long value)
+    {
+        ItemId = value;
+        await ItemIdChanged.InvokeAsync(value);
+    }
+}

@@ -2,8 +2,11 @@
 @using System.Collections.Generic
 @using MudBlazor
 @using Shared.DTOs.Scheduling
+@using Shared.DTOs.CRM
 @using Shared.Enums
 @using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Enums
 @inject ILazyLookupService<ScheduleDto> ScheduleLookupService
 
 <MudItem xs="12" sm="6">
@@ -17,13 +20,21 @@
                 <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
                 <PropertyColumn Property="x => x.Start" Title="Date & Time" />
                 <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
-                <PropertyColumn Property="x => x.EmployeeId" Title="Employee" />
-                <PropertyColumn Property="x => x.ProductId" Title="Product" />
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate>
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.EmployeeId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate>
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
+                    </CellTemplate>
+                </TemplateColumn>
                 <PropertyColumn Property="x => x.AppointmentStatus.ToString()" Title="Appointment Status" />
                 <TemplateColumn CellClass="d-flex justify-end">
                     <CellTemplate>
-                        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" 
-                                   Href="@($"/case-notes/{context.Item.Id}")">
+                        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary"
+                            Href="@($"/case-notes/{context.Item.Id}")">
                             Case Notes
                         </MudButton>
                     </CellTemplate>
@@ -37,8 +48,17 @@
                 <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
                 <PropertyColumn Property="x => x.Start" Title="Date & Time" />
                 <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
-                <PropertyColumn Property="x => x.EmployeeId" Title="Employee" />
-                <PropertyColumn Property="x => x.ProductId" Title="Product" />
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate>
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
+                            ItemId="context.Item.EmployeeId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate>
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
+                    </CellTemplate>
+                </TemplateColumn>
             </Columns>
         </MudDataGrid>
     </MudExpansionPanel>
@@ -48,8 +68,17 @@
                 <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
                 <PropertyColumn Property="x => x.Start" Title="Date & Time" />
                 <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
-                <PropertyColumn Property="x => x.EmployeeId" Title="Employee" />
-                <PropertyColumn Property="x => x.ProductId" Title="Product" />
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate>
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
+                            ItemId="context.Item.EmployeeId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate>
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
+                    </CellTemplate>
+                </TemplateColumn>
             </Columns>
         </MudDataGrid>
     </MudExpansionPanel>
@@ -59,8 +88,17 @@
                 <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
                 <PropertyColumn Property="x => x.Start" Title="Date & Time" />
                 <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
-                <PropertyColumn Property="x => x.EmployeeId" Title="Employee" />
-                <PropertyColumn Property="x => x.ProductId" Title="Product" />
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate>
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
+                            ItemId="context.Item.EmployeeId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate>
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
+                    </CellTemplate>
+                </TemplateColumn>
             </Columns>
         </MudDataGrid>
     </MudExpansionPanel>

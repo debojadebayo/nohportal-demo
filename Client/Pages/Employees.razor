@@ -1,4 +1,5 @@
 ﻿@page "/employees"
+@using ComposedHealthBase.BaseClient.Enums
 @using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.Shared.DTOs
 @using ComposedHealthBase.BaseClient.Components
@@ -19,17 +20,17 @@
 <MudText Typo="Typo.h1">Employees</MudText>
 
 <MudText Typo="Typo.body1">Select an employee to view details</MudText>
-<LazyLookup TDto="EmployeeDto" @bind-ItemId="selectedEmployeeId" Label="Employee Name" />
-@if (selectedEmployee == null)
+<LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="selectedEmployeeId" Label="Employee Name" @ref="employeeSelector" />
+@if (employeeSelector.SelectedItem == null)
 {
     <MudButton OnClick="CreateEmployee">Add New Employee</MudButton>
 }
 
-@if (selectedEmployee != null)
+@if (employeeSelector.SelectedItem != null)
 {
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @ref="tabs">
         <MudTabPanel Text="Employees">
-            <EmployeeDetailsTab Model="selectedEmployee" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee" />
+            <EmployeeDetailsTab Model="employeeSelector.SelectedItem" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee" />
         </MudTabPanel>
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByEmployeeId">
             <AppointmentsTab Appointments="appointments" />
@@ -45,7 +46,7 @@
                 OnSave="OnDocumentSave" />
         </MudTabPanel>
         <MudTabPanel Text="Notes">
-            <NotesTab Model="selectedEmployee" OnSave="HandleEmployeeSave" TDto="EmployeeDto" />
+            <NotesTab Model="employeeSelector.SelectedItem" OnSave="HandleEmployeeSave" TDto="EmployeeDto" />
         </MudTabPanel>
     </MudTabs>
 }
@@ -53,59 +54,56 @@
 
 @code {
     private MudTabs tabs = default!;
-    private EmployeeDto? selectedEmployee =>
-    EmployeeLookupService.ItemList.TryGetValue(selectedEmployeeId, out var employee) ? employee : null;
-    private long selectedEmployeeId { get; set; } = 0;
     private List<ScheduleDto> appointments = new();
     private List<ReferralDto> referrals = new();
     private List<ManagerDto> managers = new();
     private List<EmployeeDocumentDto> documents = new();
     private EmployeeDocumentDto newDocument = default!;
-
+    private long selectedEmployeeId = 0;
+    private LazyLookup<EmployeeDto> employeeSelector = default!;
     private void CreateEmployee()
     {
-        EmployeeLookupService.ItemList.TryAdd(0, new EmployeeDto());
-        selectedEmployeeId = 0;
+        employeeSelector.SelectedItem = new EmployeeDto();
     }
     private async Task HandleEmployeeSave()
     {
-        if (selectedEmployee == null) return;
-        if (selectedEmployee.Id == 0)
+        if (employeeSelector.SelectedItem == null) return;
+        if (employeeSelector.SelectedItem.Id == 0)
         {
-            await EmployeeLookupService.AddItem(selectedEmployee, CancellationToken.None);
+            await EmployeeLookupService.AddItem(employeeSelector.SelectedItem, CancellationToken.None);
         }
         else
         {
-            await EmployeeLookupService.UpdateItem(selectedEmployee, CancellationToken.None);
+            await EmployeeLookupService.UpdateItem(employeeSelector.SelectedItem, CancellationToken.None);
         }
     }
     async Task DeleteEmployee()
     {
-        if (selectedEmployee == null) return;
-        await EmployeeLookupService.DeleteItem(selectedEmployee.Id, CancellationToken.None);
+        if (employeeSelector.SelectedItem == null) return;
+        await EmployeeLookupService.DeleteItem(employeeSelector.SelectedItem.Id, CancellationToken.None);
     }
     private async Task GetAllAppointmentsByEmployeeId()
     {
-        if (selectedEmployee == null) return;
-        appointments = (await ScheduleLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
+        if (employeeSelector.SelectedItem == null) return;
+        appointments = (await ScheduleLookupService.GetAllByTenantId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
     }
     private async Task GetAllReferralsByEmployeeId()
     {
-        if (selectedEmployee == null) return;
-        referrals = (await ReferralLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
+        if (employeeSelector.SelectedItem == null) return;
+        referrals = (await ReferralLookupService.GetAllByTenantId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
     }
     private async Task GetAllManagersByEmployeeId()
     {
-        if (selectedEmployee == null) return;
-        managers = (await ManagerLookupService.GetAllByTenantId(selectedEmployee.Id, CancellationToken.None)).ToList();
+        if (employeeSelector.SelectedItem == null) return;
+        managers = (await ManagerLookupService.GetAllByTenantId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
     }
     private async Task GetAllDocumentsByEmployeeId()
     {
-        if (selectedEmployee == null) return;
-        documents = (await DocumentLookupService.GetAllBySubjectId(selectedEmployee.Id, CancellationToken.None)).ToList();
+        if (employeeSelector.SelectedItem == null) return;
+        documents = (await DocumentLookupService.GetAllBySubjectId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
         newDocument = new EmployeeDocumentDto
         {
-            EmployeeId = selectedEmployee.Id,
+            EmployeeId = employeeSelector.SelectedItem.Id,
             Name = "",
             FilePath = ""
         };

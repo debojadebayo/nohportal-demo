@@ -1,37 +1,39 @@
 using ComposedHealthBase.Shared.Interfaces;
 using Heron.MudCalendar;
-namespace ComposedHealthBase.Shared.Models;
-
-public class BaseCalendarItem : CalendarItem
+namespace ComposedHealthBase.Shared.Models
 {
-    public DateTime? StartTime
+    public class BaseCalendarItem : CalendarItem
     {
-        get
+        public DateTime? StartTime
         {
-            return Start;
-        }
-        set
-        {
-            if (value != null)
+            get
             {
-                Start = value.Value;
+                return Start;
             }
-            else
+            set
             {
-                Start = DateTime.UtcNow;
-                StartTime = Start;
+                if (value != null)
+                {
+                    Start = value.Value;
+                }
+                else
+                {
+                    Start = DateTime.UtcNow;
+                    StartTime = Start;
+                }
             }
         }
-    }
-    public DateTime? EndTime 
-    {
-        get
+        public DateTime? EndTime
         {
-            return End;
-        }
-        set
-        {
-            End = value;
+            get
+            {
+                return End;
+            }
+            set
+            {
+                End = value;
+            }
         }
     }
 }
+
