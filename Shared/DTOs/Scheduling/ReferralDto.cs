@@ -8,7 +8,7 @@ namespace Shared.DTOs.Scheduling
 	public class ReferralDto : BaseDto<ReferralDto>, IDto, IAuditDto, ILazyLookup
 	{
 	   public string ReferralDetails { get; set; } = string.Empty;
-	   public string DocumentId { get; set; } = string.Empty;
+	   public long EmployeeDocumentId { get; set; }
 	   public string Title { get; set; } = string.Empty;
 	   public ReferralStatusEnum ReferralStatus { get; set; } = Shared.Enums.ReferralStatusEnum.Pending;
 	   public string DisplayName => $"{Title} - {ReferralDetails}";

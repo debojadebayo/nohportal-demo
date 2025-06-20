@@ -28,7 +28,7 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 builder.Services.AddOidcAuthentication(options =>
 {
 	options.ProviderOptions.Authority = "http://localhost:8180/realms/NationOH";
-	options.ProviderOptions.ClientId = "nationoh_blazor";
+	options.ProviderOptions.ClientId = "nationoh_client";
 	options.ProviderOptions.ResponseType = "code";
 	options.ProviderOptions.DefaultScopes.Add("nationoh_webapi-scope");
 	options.UserOptions.RoleClaim = "role";

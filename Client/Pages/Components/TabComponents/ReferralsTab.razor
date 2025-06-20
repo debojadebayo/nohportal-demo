@@ -12,7 +12,7 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowAddReferralDialog"
             StartIcon="@Icons.Material.Filled.Add">Add New Referral</MudButton>
     </MudStack>
-    <MudDataGrid TDto="ReferralDto" Items="Referrals ?? new List<ReferralDto>()" Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true">
+    <MudDataGrid T="ReferralDto" Items="Referrals ?? new List<ReferralDto>()" Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true">
         <Columns>
             <PropertyColumn Property="x => x.CreatedDate" Title="Created" />
             <PropertyColumn Property="x => x.Title" />
@@ -29,7 +29,7 @@
                 </TemplateColumn>
                 <TemplateColumn CellClass="d-flex justify-end">
                     <CellTemplate>
-                        <LazyLookup TDto="EmployeeDocumentDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.DocumentId" />
+                        <LazyLookup TDto="EmployeeDocumentDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.EmployeeDocumentId" />
                     </CellTemplate>
                 </TemplateColumn>
         </Columns>
@@ -47,7 +47,7 @@
         <MudForm @ref="form" Model="_newReferral">
             <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" />
             <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" />
-            <MudTextField @bind-Value="_newReferral.DocumentId" Label="Document ID (Optional)" Variant="Variant.Outlined" Class="mt-3" />
+            <MudTextField @bind-Value="_newReferral.EmployeeDocumentId" Label="Document ID (Optional)" Variant="Variant.Outlined" Class="mt-3" />
             <!-- Optionally add dropdowns for Employee/Customer if needed, or let parent handle -->
         </MudForm>
     </DialogContent>

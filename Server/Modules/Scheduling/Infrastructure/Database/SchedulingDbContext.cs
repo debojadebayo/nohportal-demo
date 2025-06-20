@@ -29,16 +29,16 @@ namespace Server.Modules.Scheduling.Infrastructure.Database
 					);
 			modelBuilder.Entity<Referral>()
 				.HasData(
-					new Referral { Id = 1, CustomerId = 1, EmployeeId = 1, ReferralDetails = "Routine checkup for hypertension.", DocumentId = "DOC-1001", Title = "Hypertension Checkup", CreatedBy = "System", LastModifiedBy = "System" },
-					new Referral { Id = 2, CustomerId = 1, EmployeeId = 2, ReferralDetails = "Follow-up for diabetes management.", DocumentId = "DOC-1002", Title = "Diabetes Follow-up", CreatedBy = "System", LastModifiedBy = "System" },
-					new Referral { Id = 3, CustomerId = 1, EmployeeId = 3, ReferralDetails = "Initial consultation for back pain.", DocumentId = "DOC-1003", Title = "Back Pain Consultation", CreatedBy = "System", LastModifiedBy = "System" },
-					new Referral { Id = 4, CustomerId = 2, EmployeeId = 4, ReferralDetails = "Annual physical examination.", DocumentId = "DOC-1004", Title = "Annual Physical Exam", CreatedBy = "System", LastModifiedBy = "System" },
-					new Referral { Id = 5, CustomerId = 2, EmployeeId = 5, ReferralDetails = "Referral for allergy testing.", DocumentId = "DOC-1005", Title = "Allergy Testing", CreatedBy = "System", LastModifiedBy = "System" },
-					new Referral { Id = 6, CustomerId = 2, EmployeeId = 6, ReferralDetails = "Consultation for asthma symptoms.", DocumentId = "DOC-1006", Title = "Asthma Consultation", CreatedBy = "System", LastModifiedBy = "System" },
-					new Referral { Id = 7, CustomerId = 3, EmployeeId = 7, ReferralDetails = "Pre-surgery evaluation.", DocumentId = "DOC-1007", Title = "Pre-Surgery Evaluation", CreatedBy = "System", LastModifiedBy = "System" },
-					new Referral { Id = 8, CustomerId = 3, EmployeeId = 8, ReferralDetails = "Post-operative follow-up.", DocumentId = "DOC-1008", Title = "Post-Op Follow-up", CreatedBy = "System", LastModifiedBy = "System" },
-					new Referral { Id = 9, CustomerId = 3, EmployeeId = 9, ReferralDetails = "Referral for physical therapy.", DocumentId = "DOC-1009", Title = "Physical Therapy Referral", CreatedBy = "System", LastModifiedBy = "System" },
-					new Referral { Id = 10, CustomerId = 3, EmployeeId = 10, ReferralDetails = "Consultation for migraine headaches.", DocumentId = "DOC-1010", Title = "Migraine Consultation", CreatedBy = "System", LastModifiedBy = "System" }
+					new Referral { Id = 1, CustomerId = 1, EmployeeId = 1, EmployeeDocumentId=0, ReferralDetails = "Routine checkup for hypertension.", Title = "Hypertension Checkup", CreatedBy = "System", LastModifiedBy = "System" },
+					new Referral { Id = 2, CustomerId = 1, EmployeeId = 2, EmployeeDocumentId=0, ReferralDetails = "Follow-up for diabetes management.", Title = "Diabetes Follow-up", CreatedBy = "System", LastModifiedBy = "System" },
+					new Referral { Id = 3, CustomerId = 1, EmployeeId = 3, EmployeeDocumentId=0, ReferralDetails = "Initial consultation for back pain.", Title = "Back Pain Consultation", CreatedBy = "System", LastModifiedBy = "System" },
+					new Referral { Id = 4, CustomerId = 2, EmployeeId = 4, EmployeeDocumentId=0, ReferralDetails = "Annual physical examination.", Title = "Annual Physical Exam", CreatedBy = "System", LastModifiedBy = "System" },
+					new Referral { Id = 5, CustomerId = 2, EmployeeId = 5, EmployeeDocumentId=0, ReferralDetails = "Referral for allergy testing.", Title = "Allergy Testing", CreatedBy = "System", LastModifiedBy = "System" },
+					new Referral { Id = 6, CustomerId = 2, EmployeeId = 6, EmployeeDocumentId=0, ReferralDetails = "Consultation for asthma symptoms.", Title = "Asthma Consultation", CreatedBy = "System", LastModifiedBy = "System" },
+					new Referral { Id = 7, CustomerId = 3, EmployeeId = 7, EmployeeDocumentId=0, ReferralDetails = "Pre-surgery evaluation.", Title = "Pre-Surgery Evaluation", CreatedBy = "System", LastModifiedBy = "System" },
+					new Referral { Id = 8, CustomerId = 3, EmployeeId = 8, EmployeeDocumentId=0, ReferralDetails = "Post-operative follow-up.", Title = "Post-Op Follow-up", CreatedBy = "System", LastModifiedBy = "System" },
+					new Referral { Id = 9, CustomerId = 3, EmployeeId = 9, EmployeeDocumentId=0, ReferralDetails = "Referral for physical therapy.", Title = "Physical Therapy Referral", CreatedBy = "System", LastModifiedBy = "System" },
+					new Referral { Id = 10, CustomerId = 3, EmployeeId = 10, EmployeeDocumentId=0, ReferralDetails = "Consultation for migraine headaches.", Title = "Migraine Consultation", CreatedBy = "System", LastModifiedBy = "System" }
 						);
 			modelBuilder.Entity<Schedule>()
 				.HasData(
