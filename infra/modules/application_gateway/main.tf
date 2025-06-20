@@ -124,7 +124,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     port                                = 8080
     protocol                            = "Http"
     request_timeout                     = 60
-    probe_name                          = "frontend-health-probe"
+    # probe_name                          = "frontend-health-probe"
     pick_host_name_from_backend_address = true
   }
 
@@ -134,7 +134,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     port                                = 8080
     protocol                            = "Http"
     request_timeout                     = 60
-    probe_name                          = "api-health-probe"
+    # probe_name                          = "api-health-probe"
     pick_host_name_from_backend_address = true
   }
 
@@ -144,7 +144,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     port                                = 8080
     protocol                            = "Http"
     request_timeout                     = 60
-    probe_name                          = "auth-health-probe"
+    # probe_name                          = "auth-health-probe"
     pick_host_name_from_backend_address = true
   }
 
