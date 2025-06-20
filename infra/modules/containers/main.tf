@@ -104,15 +104,15 @@ resource "azurerm_container_app" "api_server" {
         value = "Schedule"
       }
 
-      liveness_probe {
-        path                    = "/api-health"
-        port                    = 8080
-        transport               = "HTTP"
-        initial_delay           = 60
-        interval_seconds        = 15
-        timeout                 = 5
-        failure_count_threshold = 3
-      }
+      # liveness_probe {
+      #   path                    = "/api-health"
+      #   port                    = 8080
+      #   transport               = "HTTP"
+      #   initial_delay           = 60
+      #   interval_seconds        = 15
+      #   timeout                 = 5
+      #   failure_count_threshold = 3
+      # }
     }
   }
 
@@ -270,15 +270,15 @@ resource "azurerm_container_app" "frontend" {
         value = var.keycloak_url
       }
 
-      liveness_probe {
-        path                    = "/health"
-        port                    = 8080
-        transport               = "HTTP"
-        initial_delay           = 60
-        interval_seconds        = 15
-        timeout                 = 5
-        failure_count_threshold = 3
-      }
+      # liveness_probe {
+      #   path                    = "/health"
+      #   port                    = 8080
+      #   transport               = "HTTP"
+      #   initial_delay           = 60
+      #   interval_seconds        = 15
+      #   timeout                 = 5
+      #   failure_count_threshold = 3
+      # }
     }
 
   }
