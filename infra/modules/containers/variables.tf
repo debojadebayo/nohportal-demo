@@ -118,8 +118,6 @@ variable "image_tags" {
   description = "Map of image tags for each container"
   type        = map(string)
   default = {
-    server   = "1.0.0"
-    frontend = "1.0.0"
     keycloak = "26.1"
   }
 }
@@ -155,6 +153,18 @@ variable "allowed_hosts" {
   description = "Allowed hosts for the API server"
   type        = string
   default     = "*"
+}
+
+variable "server_image" {
+  description = "Image for the server container"
+  type        = string
+  default     = "mcr.microsoft.com/dotnet/aspnet:9.0"
+}
+
+variable "frontend_image" {
+  description = "Image for the frontend container"
+  type        = string
+  default     = "nginx:alpine"
 }
 
 

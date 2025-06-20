@@ -47,7 +47,7 @@ resource "azurerm_container_app" "api_server" {
   template {
     container {
       name   = "server"
-      image  = "nginx:latest"
+      image  = var.server_image
       cpu    = var.container_cpu
       memory = var.container_memory
 
@@ -253,9 +253,9 @@ resource "azurerm_container_app" "frontend" {
   template {
     container {
       name   = "frontend"
-      image  = "nginx:latest"
-      cpu    = 1.0
-      memory = "2Gi"
+      image  = var.frontend_image
+      cpu    = var.container_cpu
+      memory = var.container_memory
 
       env {
         name  = "ASPNETCORE_ENVIRONMENT"
