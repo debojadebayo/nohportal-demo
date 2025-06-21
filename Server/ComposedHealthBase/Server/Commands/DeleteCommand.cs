@@ -9,7 +9,7 @@ namespace ComposedHealthBase.Server.Commands
 {
     public interface IDeleteCommand
     {
-        Task<bool> Handle(long id, ClaimsPrincipal user);
+        Task<bool> Handle(Guid id, ClaimsPrincipal user);
     }
     public class DeleteCommand<T, TContext> : IDeleteCommand, ICommand
         where T : class
@@ -24,7 +24,7 @@ namespace ComposedHealthBase.Server.Commands
             _authorizationService = authorizationService;
         }
 
-        public async Task<bool> Handle(long id, ClaimsPrincipal user)
+        public async Task<bool> Handle(Guid id, ClaimsPrincipal user)
         {
             var entity = await _dbContext.Set<T>().FindAsync(id);
             if (entity == null)

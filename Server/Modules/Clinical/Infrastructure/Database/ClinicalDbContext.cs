@@ -14,6 +14,15 @@ public sealed class ClinicalDbContext(DbContextOptions<ClinicalDbContext> option
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.HasDefaultSchema(ClinicalSchema.Name);
+
+        modelBuilder.Entity<CaseNote>()
+            .Property(p => p.Id)
+            .HasDefaultValueSql("gen_random_uuid()");
+
+        modelBuilder.Entity<ClinicalReport>()
+        .Property(p => p.Id)
+        .HasDefaultValueSql("gen_random_uuid()");
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ClinicalDbContext).Assembly);
     }
 }

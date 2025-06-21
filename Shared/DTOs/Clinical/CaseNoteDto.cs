@@ -14,6 +14,6 @@ namespace Shared.DTOs.Clinical
         public bool IsFollowUpNeeded { get; set; }
         public DateTime? FollowUpDate { get; set; }
         public string? FollowUpReasonForReferral { get; set; }
-        public long ClinicianId { get; set; }
+        public Guid ClinicianId { get; set; }
     }
 }

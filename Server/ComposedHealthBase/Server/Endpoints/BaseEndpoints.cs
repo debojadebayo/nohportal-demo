@@ -31,8 +31,8 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] GetAllQuery<T, TDto, TContext> getAllQuery,
 				ClaimsPrincipal user,
-				[FromQuery] long tenantId = 0,
-				[FromQuery] long subjectId = 0
+				[FromQuery] Guid? tenantId = null,
+				[FromQuery] Guid? subjectId = null
 			) => GetAll(getAllQuery, user, tenantId, subjectId));
 
 			group.MapGet("/GetById/{id}", (
@@ -40,9 +40,9 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] GetByIdQuery<T, TDto, TContext> getByIdQuery,
 				ClaimsPrincipal user,
-				long id,
-				[FromQuery] long tenantId = 0,
-				[FromQuery] long subjectId = 0
+				Guid id,
+				[FromQuery] Guid? tenantId = null,
+				[FromQuery] Guid? subjectId = null
 			) => GetById(getByIdQuery, user, id, tenantId, subjectId));
 
 			group.MapPost("/GetByIds", (
@@ -50,9 +50,9 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] GetByIdsQuery<T, TDto, TContext> getByIdsQuery,
 				ClaimsPrincipal user,
-				List<long> ids,
-				[FromQuery] long tenantId = 0,
-				[FromQuery] long subjectId = 0
+				List<Guid> ids,
+				[FromQuery] Guid? tenantId = null,
+				[FromQuery] Guid? subjectId = null
 			) => GetByIds(getByIdsQuery, user, ids, tenantId, subjectId));
 
 			group.MapGet("/Search", (
@@ -61,8 +61,8 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] SearchQuery<T, TDto, TContext> searchQuery,
 				ClaimsPrincipal user,
 				[FromQuery] string term,
-				[FromQuery] long tenantId = 0,
-				[FromQuery] long subjectId = 0
+				[FromQuery] Guid? tenantId = null,
+				[FromQuery] Guid? subjectId = null
 			) => Search(searchQuery, user, term, tenantId, subjectId));
 
 			group.MapPost("/Create", (
@@ -86,13 +86,13 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] DeleteCommand<T, TContext> deleteCommand,
 				ClaimsPrincipal user,
-				long id
+				Guid id
 			) => Delete(deleteCommand, user, id));
 
 			return endpoints;
 		}
 
-		protected async Task<IResult> GetAll(GetAllQuery<T, TDto, TContext> getAllQuery, ClaimsPrincipal user, long tenantId, long subjectId)
+		protected async Task<IResult> GetAll(GetAllQuery<T, TDto, TContext> getAllQuery, ClaimsPrincipal user, Guid? tenantId, Guid? subjectId)
 		{
 			try
 			{
@@ -106,7 +106,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetById(GetByIdQuery<T, TDto, TContext> getByIdQuery, ClaimsPrincipal user, long id, long tenantId, long subjectId)
+		protected async Task<IResult> GetById(GetByIdQuery<T, TDto, TContext> getByIdQuery, ClaimsPrincipal user, Guid id, Guid? tenantId, Guid? subjectId)
 		{
 			try
 			{
@@ -120,7 +120,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetByIds(GetByIdsQuery<T, TDto, TContext> getByIdsQuery, ClaimsPrincipal user, List<long> ids, long tenantId, long subjectId)
+		protected async Task<IResult> GetByIds(GetByIdsQuery<T, TDto, TContext> getByIdsQuery, ClaimsPrincipal user, List<Guid> ids, Guid? tenantId, Guid? subjectId)
 		{
 			try
 			{
@@ -134,7 +134,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Search(SearchQuery<T, TDto, TContext> searchQuery, ClaimsPrincipal user, string term, long tenantId, long subjectId)
+		protected async Task<IResult> Search(SearchQuery<T, TDto, TContext> searchQuery, ClaimsPrincipal user, string term, Guid? tenantId, Guid? subjectId)
 		{
 			try
 			{
@@ -176,7 +176,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Delete(DeleteCommand<T, TContext> deleteCommand, ClaimsPrincipal user, long id)
+		protected async Task<IResult> Delete(DeleteCommand<T, TContext> deleteCommand, ClaimsPrincipal user, Guid id)
 		{
 			try
 			{

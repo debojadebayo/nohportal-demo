@@ -8,7 +8,7 @@ namespace Shared.Validators
         public ContractValidator()
         {
             RuleFor(x => x.Reference).NotEmpty();
-            RuleFor(x => x.RepresentativeId).GreaterThan(0);
+            RuleFor(x => x.RepresentativeId).NotEmpty();
             RuleFor(x => x.StartTime).NotEmpty();
             RuleFor(x => x.EndTime).NotEmpty().GreaterThan(x => x.StartTime);
         }

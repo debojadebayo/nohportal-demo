@@ -12,7 +12,7 @@ namespace Server.Modules.Scheduling.Entities
 	   public ReferralStatusEnum ReferralStatus { get; set; } = Shared.Enums.ReferralStatusEnum.Pending;
 	   public HashSet<Schedule> CalendarItems { get; set; } = new HashSet<Schedule>();
 	   public Guid[] RelatedDocumentIds { get; set; } = Array.Empty<Guid>();
-		public long CustomerId
+		public Guid CustomerId
 		{
 			get
 			{
@@ -23,7 +23,7 @@ namespace Server.Modules.Scheduling.Entities
 				TenantId = value;
 			}
 		}
-		public long EmployeeId
+		public Guid EmployeeId
 		{
 			get
 			{

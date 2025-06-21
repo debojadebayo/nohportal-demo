@@ -10,7 +10,7 @@ namespace ComposedHealthBase.Server.Commands
 {
     public interface ICreateCommand<T, TDto, TContext>
     {
-        Task<long> Handle(TDto dto, ClaimsPrincipal user);
+        Task<Guid> Handle(TDto dto, ClaimsPrincipal user);
     }
 
     public class CreateCommand<T, TDto, TContext> : ICreateCommand<T, TDto, TContext>, ICommand
@@ -36,7 +36,7 @@ namespace ComposedHealthBase.Server.Commands
             //_authDbContext = authDbContext; // Assign here
         }
 
-        public async Task<long> Handle(TDto dto, ClaimsPrincipal user)
+        public async Task<Guid> Handle(TDto dto, ClaimsPrincipal user)
         {
             var newEntity = _mapper.Map(dto);
 

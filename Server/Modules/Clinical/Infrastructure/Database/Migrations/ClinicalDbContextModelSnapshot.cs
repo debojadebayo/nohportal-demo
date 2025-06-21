@@ -25,11 +25,10 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Server.Modules.Clinical.Entities.CaseNote", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<int>("AppointmentType")
                         .HasColumnType("integer");
@@ -37,8 +36,8 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                     b.Property<string>("CaseNotes")
                         .HasColumnType("text");
 
-                    b.Property<long>("ClinicianId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("ClinicianId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -78,14 +77,14 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                     b.Property<string>("RecommendedAdjustments")
                         .HasColumnType("text");
 
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("SubjectKeycloakId")
                         .HasColumnType("uuid");
 
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
@@ -97,17 +96,16 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Server.Modules.Clinical.Entities.ClinicalReport", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<DateTime>("AssessmentDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("ClinicianId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("ClinicianId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Company")
                         .HasColumnType("text");
@@ -128,8 +126,8 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                     b.Property<DateTime>("DateReportSubmitted")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("EmployeeId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("EmployeeName")
                         .HasColumnType("text");
@@ -156,14 +154,14 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                     b.Property<int>("ReportType")
                         .HasColumnType("integer");
 
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("SubjectKeycloakId")
                         .HasColumnType("uuid");
 
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");

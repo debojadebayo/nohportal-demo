@@ -1,5 +1,5 @@
 ﻿@page "/customers"
-@page "/customers/{SelectedCustomerId:long}"
+@page "/customers/{SelectedCustomerId:guid}"
 @using ComposedHealthBase.BaseClient.Enums
 @using ComposedHealthBase.Shared.DTOs
 @using Shared.DTOs.CRM
@@ -77,7 +77,7 @@
     private MudTabs tabs = default!;
 
     [Parameter]
-    public long SelectedCustomerId { get; set; } = 0;
+    public Guid SelectedCustomerId { get; set; } = Guid.Empty;
     private List<ScheduleDto> appointments = new();
     private List<ReferralDto> referrals = new();
     private List<ContractDto> contracts = new();
@@ -97,7 +97,7 @@
     private async Task HandleCustomerSave()
     {
         if (customerSelector.SelectedItem == null) return;
-        if (SelectedCustomerId == 0)
+        if (customerSelector.SelectedItem.Id == Guid.Empty)
         {
             await CustomerLookupService.AddItem(customerSelector.SelectedItem, CancellationToken.None);
         }
@@ -145,7 +145,7 @@
         productTypes = (await ProductTypeLookupService.GetAllItems(CancellationToken.None)).ToList();
         newProduct = new ProductDto
         {
-            ProductType = new ProductTypeDto { Id = 0, Name = "Select Product Type", Description = "", ChargeCode = "" },
+            ProductType = new ProductTypeDto { Id = Guid.NewGuid(), Name = "Select Product Type", Description = "", ChargeCode = "" },
             CustomerId = customerSelector.SelectedItem.Id
         };
     }
@@ -169,7 +169,7 @@
     private async Task HandleContractSave(ContractDto contract)
     {
         if (contract == null) return;
-        if (contract.Id == 0)
+        if (contract.Id == Guid.Empty)
         {
             await ContractLookupService.AddItem(contract, CancellationToken.None);
         }
@@ -188,7 +188,7 @@
     private async Task HandleProductSave(ProductDto product)
     {
         if (product == null) return;
-        if (product.Id == 0)
+        if (product.Id == Guid.Empty)
         {
             await ProductLookupService.AddItem(product, CancellationToken.None);
         }

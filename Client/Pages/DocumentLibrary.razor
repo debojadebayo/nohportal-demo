@@ -10,20 +10,20 @@
     private List<CustomerDocumentDto> documents = new();
     private CustomerDocumentDto newDocument = new CustomerDocumentDto
     {
-        CustomerId = 20,
+        CustomerId = new Guid("20202020-2020-2020-2020-202020202020"),
         Name = "",
         FilePath = ""
     };
     protected override async Task OnInitializedAsync()
     {
-        documents = (await DocumentLookupService.GetAllByTenantId(20, CancellationToken.None)).ToList();
+        documents = (await DocumentLookupService.GetAllByTenantId(new Guid("20202020-2020-2020-2020-202020202020"), CancellationToken.None)).ToList();
     }
     private async Task OnDocumentSave()
     {
-        documents = (await DocumentLookupService.GetAllByTenantId(20, CancellationToken.None)).ToList();
+        documents = (await DocumentLookupService.GetAllByTenantId(new Guid("20202020-2020-2020-2020-202020202020"), CancellationToken.None)).ToList();
         newDocument = new CustomerDocumentDto
         {
-            CustomerId = 20,
+            CustomerId = new Guid("20202020-2020-2020-2020-202020202020"),
             Name = "",
             FilePath = ""
         };

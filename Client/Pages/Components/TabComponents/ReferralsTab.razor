@@ -35,7 +35,7 @@
                 </TemplateColumn>
                 <TemplateColumn>
                     <CellTemplate>
-                                            <MudButton OnClick="() => OnDocumentSelected(context.Item)" Size="@Size.Small"
+                                            <MudButton Size="@Size.Small"
                         Variant="@Variant.Filled" Color="@Color.Primary">View Referral</MudButton>
                     </CellTemplate>
                 </TemplateColumn>
@@ -98,6 +98,7 @@
             EmployeeId = _newReferral.EmployeeId,
             Name = "",
             Description = "",
+            FilePath = "",
         };
         referral.RelatedDocumentIds.Add(documentGuid);
     }

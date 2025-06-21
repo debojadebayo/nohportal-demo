@@ -48,7 +48,7 @@
 
     private async Task OpenAddAppointmentModal(ScheduleDto? schedule = null)
     {
-        var isEdit = schedule != null && schedule.Id > 0;
+        var isEdit = schedule != null && schedule.Id != Guid.Empty;
         if (schedule == null)
         {
             schedule = new ScheduleDto

@@ -7,16 +7,16 @@ namespace Server.Modules.Scheduling.Entities
 {
 	public class Schedule : BaseEntity<Schedule>, IEntity, IAuditEntity, IAnchorable
 	{
-		public long ReferralId { get; set; }
-		public long ClinicianId { get; set; }
-		public long ProductId { get; set; }
+		public Guid ReferralId { get; set; }
+		public Guid ClinicianId { get; set; }
+		public Guid ProductId { get; set; }
 	   public ScheduleStatusEnum Status { get; set; }
 	   public AppointmentStatusEnum AppointmentStatus { get; set; }
 		public DateTime? Start { get; set; }
 		public DateTime? End { get; set; }
 		public required string Title { get; set; }
 		public required string Description { get; set; }
-		public long CustomerId
+		public Guid CustomerId
 		{
 			get
 			{
@@ -27,7 +27,7 @@ namespace Server.Modules.Scheduling.Entities
 				TenantId = value;
 			}
 		}
-		public long EmployeeId
+		public Guid EmployeeId
 		{
 			get
 			{
@@ -39,6 +39,6 @@ namespace Server.Modules.Scheduling.Entities
 			}
 		}
 
-		public long AnchorId => ReferralId;
+		public Guid AnchorId => ReferralId;
 	}
 }

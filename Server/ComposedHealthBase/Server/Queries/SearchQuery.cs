@@ -12,7 +12,7 @@ namespace ComposedHealthBase.Server.Queries
 {
     public interface ISearchQuery<T, TDto, TContext>
     {
-        Task<IEnumerable<TDto>> Handle(ClaimsPrincipal user, string searchTerm, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes);
+        Task<IEnumerable<TDto>> Handle(ClaimsPrincipal user, string searchTerm, Guid? tenantId = null, Guid? subjectId = null, params Expression<Func<T, object>>[]? includes);
     }
 
     public class SearchQuery<T, TDto, TContext> : ISearchQuery<T, TDto, TContext>, IQuery
@@ -31,7 +31,7 @@ namespace ComposedHealthBase.Server.Queries
             _authorizationService = authorizationService;
         }
 
-        public async Task<IEnumerable<TDto>> Handle(ClaimsPrincipal user, string searchTerm, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes)
+        public async Task<IEnumerable<TDto>> Handle(ClaimsPrincipal user, string searchTerm, Guid? tenantId = null, Guid? subjectId = null, params Expression<Func<T, object>>[]? includes)
         {
 
             if (string.IsNullOrWhiteSpace(searchTerm))
@@ -40,11 +40,11 @@ namespace ComposedHealthBase.Server.Queries
             }
             var query = _dbContext.Set<T>().AsQueryable();
 
-            if (tenantId != 0)
+            if (tenantId != null)
             {
                 query = query.Where(e => e.TenantId == tenantId);
             }
-            if (subjectId != 0)
+            if (subjectId != null)
             {
                 query = query.Where(e => e.SubjectId == subjectId);
             }

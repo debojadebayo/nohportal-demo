@@ -2,6 +2,6 @@ namespace ComposedHealthBase.Shared.DTOs
 {
     public interface IDto
     {
-        long Id { get; set; }
+        Guid Id { get; set; }
     }
 }

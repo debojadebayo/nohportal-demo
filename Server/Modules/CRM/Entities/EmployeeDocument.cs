@@ -5,7 +5,7 @@ namespace Server.Modules.CRM.Entities
 {
     public class EmployeeDocument : BaseEntity<EmployeeDocument>, IEntity, IAuditEntity, IDocument, ISearchTags
     {
-        public long EmployeeId
+        public Guid EmployeeId
         {
             get { return SubjectId; }
             set { SubjectId = value; }
@@ -15,7 +15,7 @@ namespace Server.Modules.CRM.Entities
         public required string BlobName { get; set; }
         public required string Name { get; set; }
         public string? Description { get; set; }
-        public long CustomerId
+        public Guid CustomerId
         {
             get
             {

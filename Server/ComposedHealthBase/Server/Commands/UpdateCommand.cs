@@ -13,7 +13,7 @@ namespace ComposedHealthBase.Server.Commands
 {
     public interface IUpdateCommand<T, TDto, TContext>
     {
-        Task<long> Handle(TDto dto, ClaimsPrincipal user);
+        Task<Guid> Handle(TDto dto, ClaimsPrincipal user);
     }
 
     public class UpdateCommand<T, TDto, TContext> : IUpdateCommand<T, TDto, TContext>, ICommand
@@ -32,7 +32,7 @@ namespace ComposedHealthBase.Server.Commands
             _authorizationService = authorizationService;
         }
 
-        public async Task<long> Handle(TDto dto, ClaimsPrincipal user)
+        public async Task<Guid> Handle(TDto dto, ClaimsPrincipal user)
         {
             var existingEntity = await _dbContext.Set<T>().FindAsync(dto.Id);
             if (existingEntity == null)

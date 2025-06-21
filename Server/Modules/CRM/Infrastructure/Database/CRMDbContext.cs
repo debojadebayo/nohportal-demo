@@ -20,6 +20,38 @@ namespace Server.Modules.CRM.Infrastructure.Database
 			modelBuilder.HasDefaultSchema(Schema.CRM);
 			modelBuilder.ApplyConfigurationsFromAssembly(typeof(CRMDbContext).Assembly);
 
+			modelBuilder.Entity<Contract>()
+				.Property(p => p.Id)
+				.HasDefaultValueSql("gen_random_uuid()");
+
+			modelBuilder.Entity<Product>()
+				.Property(p => p.Id)
+				.HasDefaultValueSql("gen_random_uuid()");
+
+			modelBuilder.Entity<ProductType>()
+				.Property(p => p.Id)
+				.HasDefaultValueSql("gen_random_uuid()");
+
+			modelBuilder.Entity<Employee>()
+				.Property(p => p.Id)
+				.HasDefaultValueSql("gen_random_uuid()");
+
+			modelBuilder.Entity<Customer>()
+				.Property(p => p.Id)
+				.HasDefaultValueSql("gen_random_uuid()");
+
+			modelBuilder.Entity<CustomerDocument>()
+				.Property(p => p.Id)
+				.HasDefaultValueSql("gen_random_uuid()");
+
+			modelBuilder.Entity<EmployeeDocument>()
+				.Property(p => p.Id)
+				.HasDefaultValueSql("gen_random_uuid()");
+
+			modelBuilder.Entity<Manager>()
+				.Property(p => p.Id)
+				.HasDefaultValueSql("gen_random_uuid()");
+
 			modelBuilder.Entity<Product>()
 				.Navigation(p => p.ProductType)
 				.AutoInclude();

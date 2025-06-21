@@ -29,8 +29,8 @@ namespace Server.Modules.Scheduling.Endpoints
 				[FromServices] IMapper<Clinician, ClinicianDto> mapper,
 				[FromServices] GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext> getAllQuery,
 				ClaimsPrincipal user,
-				[FromQuery] long tenantId = 0,
-				[FromQuery] long subjectId = 0
+				[FromQuery] Guid? tenantId = null,
+				[FromQuery] Guid? subjectId = null
 			) => GetAllCliniciansWithSchedules(getAllQuery, user, tenantId, subjectId));
 
 			return endpoints;
@@ -39,8 +39,8 @@ namespace Server.Modules.Scheduling.Endpoints
 		protected async Task<IResult> GetAllCliniciansWithSchedules(
 			GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext> getAllQuery,
 			ClaimsPrincipal user,
-			long tenantId,
-			long subjectId)
+			Guid? tenantId,
+			Guid? subjectId)
 		{
 			try
 			{

@@ -2,6 +2,6 @@
 {
 	public interface IEntity
 	{
-		long Id { get; set; }
+		Guid Id { get; set; }
 	}
 }

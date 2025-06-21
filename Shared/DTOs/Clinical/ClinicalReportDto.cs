@@ -7,7 +7,7 @@ namespace Shared.DTOs.Clinical
 {
     public class ClinicalReportDto : BaseDto<ClinicalReportDto>, IDto, IAuditDto
     {
-        public long EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public string? EmployeeName { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? Company { get; set; }
@@ -16,6 +16,6 @@ namespace Shared.DTOs.Clinical
         public DateTime AssessmentDate { get; set; }
         public DateTime DateReportSubmitted { get; set; }
         public string? ReportNotes { get; set; }
-        public long ClinicianId { get; set; }
+        public Guid ClinicianId { get; set; }
     }
 }

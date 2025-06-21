@@ -59,7 +59,7 @@
     private List<ManagerDto> managers = new();
     private List<EmployeeDocumentDto> documents = new();
     private EmployeeDocumentDto newDocument = default!;
-    private long selectedEmployeeId = 0;
+    private Guid selectedEmployeeId = Guid.Empty;
     private LazyLookup<EmployeeDto> employeeSelector = default!;
     private void CreateEmployee()
     {
@@ -68,7 +68,7 @@
     private async Task HandleEmployeeSave()
     {
         if (employeeSelector.SelectedItem == null) return;
-        if (employeeSelector.SelectedItem.Id == 0)
+        if (employeeSelector.SelectedItem.Id == Guid.Empty)
         {
             await EmployeeLookupService.AddItem(employeeSelector.SelectedItem, CancellationToken.None);
         }
@@ -110,6 +110,7 @@
     }
     private async Task OnDocumentSave()
     {
+        if (selectedEmployeeId == null) return;
         documents = (await DocumentLookupService.GetAllBySubjectId(selectedEmployeeId, CancellationToken.None)).ToList();
         newDocument = new EmployeeDocumentDto
         {

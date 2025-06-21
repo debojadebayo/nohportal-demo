@@ -6,7 +6,7 @@ namespace Server.Modules.Clinical.Entities;
 
 public class ClinicalReport : BaseEntity<ClinicalReport>, IEntity, IAuditEntity
 {
-    public long EmployeeId { get; set; }
+    public Guid EmployeeId { get; set; }
     public string? EmployeeName { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public string? Company { get; set; }
@@ -15,5 +15,5 @@ public class ClinicalReport : BaseEntity<ClinicalReport>, IEntity, IAuditEntity
     public DateTime AssessmentDate { get; set; }
     public DateTime DateReportSubmitted { get; set; }
     public string? ReportNotes { get; set; }
-    public long ClinicianId { get; set; }
+    public Guid ClinicianId { get; set; }
 }

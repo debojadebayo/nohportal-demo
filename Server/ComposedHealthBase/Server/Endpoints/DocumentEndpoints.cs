@@ -54,7 +54,7 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] BlobServiceClient blobServiceClient,
 				[FromServices] Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
 				[FromServices] GetByIdQuery<T, TDto, TContext> getByIdQuery,
-				long documentId,
+				Guid documentId,
 				ClaimsPrincipal user
 			) => await GetDocumentContent(getByIdQuery, blobServiceClient, authorizationService, documentId, user));
 
@@ -142,7 +142,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			GetByIdQuery<T, TDto, TContext> getByIdQuery,
 			BlobServiceClient blobServiceClient,
 			Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
-			long documentId,
+			Guid documentId,
 			ClaimsPrincipal user)
 		{
 			try

@@ -9,11 +9,11 @@ using Server.Modules.Auth.Infrastructure.Database;
 
 #nullable disable
 
-namespace ComposedHealthBase.Server.Auth.AuthDatabase.Migrations
+namespace Server.Modules.Auth.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20250611210418_MigrateBrokenPermissionRole")]
-    partial class MigrateBrokenPermissionRole
+    [Migration("20250621114652_First_Auth_Migration")]
+    partial class First_Auth_Migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,11 +28,10 @@ namespace ComposedHealthBase.Server.Auth.AuthDatabase.Migrations
 
             modelBuilder.Entity("Server.Modules.Auth.Entities.Permission", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -45,11 +44,10 @@ namespace ComposedHealthBase.Server.Auth.AuthDatabase.Migrations
 
             modelBuilder.Entity("Server.Modules.Auth.Entities.Role", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -62,18 +60,33 @@ namespace ComposedHealthBase.Server.Auth.AuthDatabase.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1L,
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
                             Name = "Administrator"
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Name = "TenantAdministrator"
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Name = "TenantLimitedAdministrator"
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Name = "Subject"
                         });
                 });
 
             modelBuilder.Entity("Server.Modules.Auth.Entities.RolePermission", b =>
                 {
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
 
-                    b.Property<long>("PermissionId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("PermissionId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("RoleId", "PermissionId");
 
@@ -84,17 +97,16 @@ namespace ComposedHealthBase.Server.Auth.AuthDatabase.Migrations
 
             modelBuilder.Entity("Server.Modules.Auth.Entities.SubjectKeycloakMap", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<Guid>("KeycloakId")
                         .HasColumnType("uuid");
 
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -103,17 +115,16 @@ namespace ComposedHealthBase.Server.Auth.AuthDatabase.Migrations
 
             modelBuilder.Entity("Server.Modules.Auth.Entities.TenantKeycloakMap", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<Guid>("KeycloakId")
                         .HasColumnType("uuid");
 
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 

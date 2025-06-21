@@ -13,7 +13,7 @@ namespace ComposedHealthBase.BaseClient.Services
     public interface IDocumentUploadService
     {
         Task<bool> UploadDocument<TDto>(Tuple<IDocumentDto, IBrowserFile> document, CancellationToken token = default) where TDto : IDocumentDto;
-        Task<string> GetSasLink<TDto>(long documentId, CancellationToken token = default) where TDto : IDocumentDto;
+        Task<string> GetSasLink<TDto>(Guid documentId, CancellationToken token = default) where TDto : IDocumentDto;
     }
 
     public class DocumentUploadService : IDocumentUploadService
@@ -33,10 +33,8 @@ namespace ComposedHealthBase.BaseClient.Services
             return typeName;
         }
 
-        public async Task<string> GetSasLink<TDto>(long documentId, CancellationToken token = default) where TDto : IDocumentDto
+        public async Task<string> GetSasLink<TDto>(Guid documentId, CancellationToken token = default) where TDto : IDocumentDto
         {
-            if (documentId == 0) return string.Empty;
-
             try
             {
                 var endpointType = GetEndpointType<TDto>();

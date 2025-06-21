@@ -7,16 +7,16 @@ namespace ComposedHealthBase.BaseClient.Services
     public interface ILazyLookupService<TDto>
 where TDto : ILazyLookup
     {
-        string ItemToString(long e);
-        Task<IEnumerable<long>> ItemSearch(string value, CancellationToken token);
-        Task<TDto?> GetItemById(long id, CancellationToken token, bool forceUpdate = false);
-        Task<IEnumerable<TDto>> GetItemsByIds(IEnumerable<long> ids, CancellationToken token, bool forceUpdate = false);
+        string ItemToString(Guid e);
+        Task<IEnumerable<Guid>> ItemSearch(string value, CancellationToken token);
+        Task<TDto?> GetItemById(Guid id, CancellationToken token, bool forceUpdate = false);
+        Task<IEnumerable<TDto>> GetItemsByIds(IEnumerable<Guid> ids, CancellationToken token, bool forceUpdate = false);
         Task<IEnumerable<TDto>> GetAllItems(CancellationToken token);
         Task AddItem(TDto item, CancellationToken token);
         Task UpdateItem(TDto item, CancellationToken token);
-        Task DeleteItem(long id, CancellationToken token);
-        Task<IEnumerable<TDto>> GetAllByTenantId(long tenantId, CancellationToken token);
-        Task<IEnumerable<TDto>> GetAllBySubjectId(long subjectId, CancellationToken token);
+        Task DeleteItem(Guid id, CancellationToken token);
+        Task<IEnumerable<TDto>> GetAllByTenantId(Guid tenantId, CancellationToken token);
+        Task<IEnumerable<TDto>> GetAllBySubjectId(Guid subjectId, CancellationToken token);
         Task<IEnumerable<TDto>> GetAllByCustom(string customRoute, CancellationToken token);
     }
 
@@ -24,7 +24,7 @@ where TDto : ILazyLookup
     where TDto : ILazyLookup
     {
         private static string EndpointType => typeof(TDto).Name.Replace("Dto", string.Empty).ToLowerInvariant();
-        private Dictionary<long, Tuple<TDto, DateTime>> _itemList { get; set; } = new();
+        private Dictionary<Guid, Tuple<TDto, DateTime>> _itemList { get; set; } = new();
         private readonly HttpClient _httpClient;
         private readonly ISnackbar _snackbar;
         public LazyLookupService(HttpClient httpClient, ISnackbar snackbar)
@@ -33,8 +33,8 @@ where TDto : ILazyLookup
             _snackbar = snackbar;
         }
 
-        public string ItemToString(long e) => e > 0 && _itemList.TryGetValue(e, out var item) ? $"{item.Item1.DisplayName}" : string.Empty;
-        public async Task<IEnumerable<long>> ItemSearch(string value, CancellationToken token)
+        public string ItemToString(Guid e) => e != Guid.Empty && _itemList.TryGetValue(e, out var item) ? $"{item.Item1.DisplayName}" : string.Empty;
+        public async Task<IEnumerable<Guid>> ItemSearch(string value, CancellationToken token)
         {
             if (string.IsNullOrWhiteSpace(value) || value.Length < 3)
             {
@@ -51,16 +51,16 @@ where TDto : ILazyLookup
                 {
                     _itemList.TryAdd(item.Id, new Tuple<TDto, DateTime>(item, DateTime.UtcNow));
                 }
-                return result?.Select(x => x.Id) ?? Enumerable.Empty<long>();
+                return result?.Select(x => x.Id) ?? Enumerable.Empty<Guid>();
             }
             catch (Exception ex)
             {
                 _snackbar.Add($"Failed to search items: {ex.Message}", Severity.Error);
-                return Enumerable.Empty<long>();
+                return Enumerable.Empty<Guid>();
             }
         }
 
-        public async Task<TDto?> GetItemById(long id, CancellationToken token, bool forceUpdate = false)
+        public async Task<TDto?> GetItemById(Guid id, CancellationToken token, bool forceUpdate = false)
         {
             if (_itemList.TryGetValue(id, out var item) && !forceUpdate)
             {
@@ -86,7 +86,7 @@ where TDto : ILazyLookup
             }
         }
 
-        public async Task<IEnumerable<TDto>> GetItemsByIds(IEnumerable<long> ids, CancellationToken token, bool forceUpdate = false)
+        public async Task<IEnumerable<TDto>> GetItemsByIds(IEnumerable<Guid> ids, CancellationToken token, bool forceUpdate = false)
         {
             if (ids == null || !ids.Any())
             {
@@ -152,8 +152,8 @@ where TDto : ILazyLookup
                 var response = await _httpClient.PostAsJsonAsync($"api/{EndpointType}/create", item, token);
                 if (response.IsSuccessStatusCode)
                 {
-                    var createdItemId = await response.Content.ReadFromJsonAsync<long>(token);
-                    if (createdItemId > 0)
+                    var createdItemId = await response.Content.ReadFromJsonAsync<Guid>(token);
+                    if (createdItemId != Guid.Empty)
                     {
                         item.Id = createdItemId;
                         _itemList[createdItemId] = new Tuple<TDto, DateTime>(item, DateTime.UtcNow);
@@ -174,8 +174,8 @@ where TDto : ILazyLookup
                 var response = await _httpClient.PutAsJsonAsync($"api/{EndpointType}/update", item, token);
                 if (response.IsSuccessStatusCode)
                 {
-                    var updatedItemId = await response.Content.ReadFromJsonAsync<long>(token);
-                    if (updatedItemId > 0)
+                    var updatedItemId = await response.Content.ReadFromJsonAsync<Guid>(token);
+                    if (updatedItemId != Guid.Empty)
                     {
                         _itemList[updatedItemId] = new Tuple<TDto, DateTime>(item, DateTime.UtcNow);
                     }
@@ -188,7 +188,7 @@ where TDto : ILazyLookup
             }
         }
 
-        public async Task DeleteItem(long id, CancellationToken token)
+        public async Task DeleteItem(Guid id, CancellationToken token)
         {
             try
             {
@@ -205,7 +205,7 @@ where TDto : ILazyLookup
             }
         }
 
-        public async Task<IEnumerable<TDto>> GetAllByTenantId(long tenantId, CancellationToken token)
+        public async Task<IEnumerable<TDto>> GetAllByTenantId(Guid tenantId, CancellationToken token)
         {
             try
             {
@@ -227,7 +227,7 @@ where TDto : ILazyLookup
             }
         }
 
-        public async Task<IEnumerable<TDto>> GetAllBySubjectId(long subjectId, CancellationToken token)
+        public async Task<IEnumerable<TDto>> GetAllBySubjectId(Guid subjectId, CancellationToken token)
         {
             try
             {

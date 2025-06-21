@@ -16,6 +16,22 @@ namespace Server.Modules.Auth.Infrastructure.Database
         {
             modelBuilder.HasDefaultSchema(Schema.Auth);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AuthDbContext).Assembly);
+
+            modelBuilder.Entity<Permission>()
+                .Property(p => p.Id)
+                .HasDefaultValueSql("gen_random_uuid()");
+
+            modelBuilder.Entity<Role>()
+                .Property(p => p.Id)
+                .HasDefaultValueSql("gen_random_uuid()");
+
+            modelBuilder.Entity<SubjectKeycloakMap>()
+                .Property(p => p.Id)
+                .HasDefaultValueSql("gen_random_uuid()");
+
+            modelBuilder.Entity<TenantKeycloakMap>()
+                .Property(p => p.Id)
+                .HasDefaultValueSql("gen_random_uuid()");
         }
     }
 }

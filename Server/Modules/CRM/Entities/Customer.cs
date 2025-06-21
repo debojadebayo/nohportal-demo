@@ -24,7 +24,7 @@ namespace Server.Modules.CRM.Entities
 		public HashSet<Employee> Employees { get; set; } = new();
 		public HashSet<Manager> Managers { get; set; } = new();
 		public required Guid KeycloakId { get; set; }
-		public long CustomerId
+		public Guid CustomerId
 		{
 			get
 			{

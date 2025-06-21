@@ -72,7 +72,7 @@
         <MudText Typo="Typo.h6">Upload New Document</MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="_newDto.Name" Label="Document Name" Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="_newDocument.Name" Label="Document Name" Variant="Variant.Outlined" />
         <MudTextField @bind-Value="_newDocument.Description" Label="Description" Variant="Variant.Outlined" Lines="3"
             Class="mt-3" />
         <MudFileUpload T="IBrowserFile" FilesChanged="HandleFileSelected">
@@ -103,10 +103,10 @@
 @code {
     [Parameter] public bool CompactMode { get; set; } = false;
     [Parameter] public List<Guid> DocumentIds { get; set; } = new();
-    [Parameter] public EventCallback<List<long>> DocumentIdsChanged { get; set; }
-    [Parameter] public Expression<Func<List<long>>>? DocumentIdsValueExpression { get; set; }
+    [Parameter] public EventCallback<List<Guid>> DocumentIdsChanged { get; set; }
+    [Parameter] public Expression<Func<List<Guid>>>? DocumentIdsValueExpression { get; set; }
     [Parameter] public EventCallback<TDto> OnDocumentUploaded { get; set; }
-
+    private TDto _newDocument { get; set; } = Activator.CreateInstance<TDto>();
     private List<TDto> _documents { get; set; } = new();
     private bool _uploadDocumentDialogOpen = false;
     private IBrowserFile? _fileToUpload;
@@ -142,14 +142,15 @@ private async Task UploadDocument()
 
     var newDto = Activator.CreateInstance<TDto>();
     newDto.DocumentGuid = Guid.NewGuid();
-    newDto.Name = NewDocument.Name;
-    newDto.Description = NewDocument.Description;
+    newDto.Name = string.Empty;
+    newDto.Description = string.Empty;
 
     await DocumentUploadService.UploadDocument<TDto>(
         new Tuple<IDocumentDto, IBrowserFile>(newDto, _fileToUpload),
         CancellationToken.None);
 
-    await OnSave.InvokeAsync();
+    _documents.Add(newDto);
+
     _uploadDocumentDialogOpen = false;
 }
 

@@ -5,7 +5,7 @@ namespace Server.Modules.CRM.Entities
 {
     public class CustomerDocument : BaseEntity<CustomerDocument>, IEntity, IAuditEntity, IDocument, ISearchTags
     {
-        public long CustomerId
+        public Guid CustomerId
         {
             get { return TenantId; }
             set { TenantId = value; }

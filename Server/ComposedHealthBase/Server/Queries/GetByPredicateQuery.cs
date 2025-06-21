@@ -15,7 +15,7 @@ namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetByPredicateQuery<T, TDto, TContext>
     {
-        Task<List<TDto>> Handle(Expression<Func<T, bool>> predicate, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes);
+        Task<List<TDto>> Handle(Expression<Func<T, bool>> predicate, ClaimsPrincipal user, Guid? tenantId = null, Guid? subjectId = null, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetByPredicateQuery<T, TDto, TContext> : IGetByPredicateQuery<T, TDto, TContext>, IQuery
@@ -34,14 +34,14 @@ namespace ComposedHealthBase.Server.Queries
             _authorizationService = authorizationService;
         }
 
-        public async Task<List<TDto>> Handle(Expression<Func<T, bool>> predicate, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes)
+        public async Task<List<TDto>> Handle(Expression<Func<T, bool>> predicate, ClaimsPrincipal user, Guid? tenantId = null, Guid? subjectId = null, params Expression<Func<T, object>>[]? includes)
         {
             var query = _dbContext.Set<T>().AsQueryable();
-            if (tenantId != 0)
+            if (tenantId != null)
             {
                 query = query.Where(e => e.TenantId == tenantId);
             }
-            if (subjectId != 0)
+            if (subjectId != null)
             {
                 query = query.Where(e => e.SubjectId == subjectId);
             }

@@ -29,7 +29,7 @@
     private async Task SaveReferral(ReferralDto referral)
     {
         if (referral == null) return;
-        if (referral.Id == 0)
+        if (referral.Id == Guid.Empty)
         {
             await ReferralLookupService.AddItem(referral, CancellationToken.None);
         }

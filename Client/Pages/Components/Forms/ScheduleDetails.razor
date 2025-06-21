@@ -17,18 +17,18 @@
         <MudForm Model="@model" @ref="@form" ValidationDelay="0">
             <MudGrid>
                 <MudItem xs="12" sm="6">
-                    <MudSelect T="long" Label="Referral" Value="model.ReferralId" ValueChanged="OnReferralSelected">
+                    <MudSelect T="Guid" Label="Referral" Value="model.ReferralId" ValueChanged="OnReferralSelected">
                         @foreach (var referral in Referrals)
                         {
-                            <MudSelectItem T="long" Value="@referral.Id">@referral.ReferralDetails</MudSelectItem>
+                            <MudSelectItem T="Guid" Value="@referral.Id">@referral.ReferralDetails</MudSelectItem>
                         }
                     </MudSelect>
                     <MudTextField T="string" Label="Referral Title" Value="@model.Title" />
                     <MudTextField T="string" Label="Referral Description" Value="@model.Description" />
-                    <MudSelect T="long" Label="Clinician" @bind-Value="model.ClinicianId">
+                    <MudSelect T="Guid" Label="Clinician" @bind-Value="model.ClinicianId">
                         @foreach (var clinician in Clinicians)
                         {
-                            <MudSelectItem T="long" Value="@clinician.Id">@clinician.FirstName @clinician.LastName</MudSelectItem>
+                            <MudSelectItem T="Guid" Value="@clinician.Id">@clinician.FirstName @clinician.LastName</MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>
@@ -104,7 +104,7 @@
     }
     private void Cancel() => MudDialog?.Cancel();
 
-    private void OnReferralSelected(long referralId)
+    private void OnReferralSelected(Guid referralId)
     {
         model.ReferralId = referralId;
         var selectedReferral = Referrals.FirstOrDefault(r => r.Id == referralId);

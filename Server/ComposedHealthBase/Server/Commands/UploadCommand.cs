@@ -12,7 +12,7 @@ namespace ComposedHealthBase.Server.Commands
 {
     public interface IUploadCommand<T, TDto, TContext>
     {
-        Task<long> Handle(TDto dto, ClaimsPrincipal user);
+        Task<Guid> Handle(TDto dto, ClaimsPrincipal user);
     }
 
     public class UploadCommand<T, TDto, TContext> : IUploadCommand<T, TDto, TContext>, ICommand
@@ -31,7 +31,7 @@ namespace ComposedHealthBase.Server.Commands
             _authorizationService = authorizationService;
         }
 
-        public async Task<long> Handle(TDto dto, ClaimsPrincipal user)
+        public async Task<Guid> Handle(TDto dto, ClaimsPrincipal user)
         {
             var newEntity = _mapper.Map(dto);
             var authResult = await _authorizationService.AuthorizeAsync(user, newEntity, "resource-access");

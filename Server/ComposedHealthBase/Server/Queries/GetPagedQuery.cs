@@ -12,7 +12,7 @@ namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetPagedQuery<T, TDto, TContext>
     {
-        Task<IEnumerable<TDto>> Handle(int page, int pageSize, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes);
+        Task<IEnumerable<TDto>> Handle(int page, int pageSize, ClaimsPrincipal user, Guid? tenantId = null, Guid? subjectId = null, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetPagedQuery<T, TDto, TContext> : IGetPagedQuery<T, TDto, TContext>, IQuery
@@ -30,14 +30,14 @@ namespace ComposedHealthBase.Server.Queries
             _mapper = mapper;
             _authorizationService = authorizationService;
         }
-        public async Task<IEnumerable<TDto>> Handle(int page, int pageSize, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes)
+        public async Task<IEnumerable<TDto>> Handle(int page, int pageSize, ClaimsPrincipal user, Guid? tenantId = null, Guid? subjectId = null, params Expression<Func<T, object>>[]? includes)
         {
             var query = _dbContext.Set<T>().AsQueryable();
-            if (tenantId != 0)
+            if (tenantId != null)
             {
                 query = query.Where(e => e.TenantId == tenantId);
             }
-            if (subjectId != 0)
+            if (subjectId != null)
             {
                 query = query.Where(e => e.SubjectId == subjectId);
             }

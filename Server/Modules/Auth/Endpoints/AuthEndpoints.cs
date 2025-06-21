@@ -45,7 +45,7 @@ namespace Server.Modules.Auth.Endpoints
 			group.MapGet("/GetById/{id}", async (
 				[FromServices] IDbContext<AuthDbContext> dbContext,
 				[FromServices] IMapper<Role, RoleDto> mapper,
-				long id
+				Guid id
 			) =>
 			{
 				try
@@ -158,7 +158,7 @@ namespace Server.Modules.Auth.Endpoints
 			group.MapPost("/Delete/{id}", async (
 				[FromServices] IDbContext<AuthDbContext> dbContext,
 				[FromServices] IMapper<Role, RoleDto> mapper,
-				long id
+				Guid id
 			) =>
 			{
 				try
@@ -207,7 +207,7 @@ namespace Server.Modules.Auth.Endpoints
 			group.MapGet("/GetById/{id}", async (
 				[FromServices] IDbContext<AuthDbContext> dbContext,
 				[FromServices] IMapper<Permission, PermissionDto> mapper,
-				long id
+				Guid id
 			) =>
 			{
 				try
@@ -270,7 +270,7 @@ namespace Server.Modules.Auth.Endpoints
 			group.MapPost("/Delete/{id}", async (
 				[FromServices] IDbContext<AuthDbContext> dbContext,
 				[FromServices] IMapper<Permission, PermissionDto> mapper,
-				long id
+				Guid id
 			) =>
 			{
 				try

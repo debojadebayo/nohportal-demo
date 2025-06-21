@@ -12,7 +12,7 @@
         <MudText>@(SelectedItem?.DisplayName ?? "(Not set)")</MudText>
         break;
     case LazyLookupEnum.Search:
-        <MudAutocomplete T="long" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
+        <MudAutocomplete T="Guid" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
             ValueChanged="@OnItemChanged" SearchFunc="@LookupService.ItemSearch" ShowProgressIndicator="true"
             ProgressIndicatorColor="Color.Default" />
         break;
@@ -30,20 +30,22 @@
 }
 
 @code {
-    [Parameter] public long TenantIdFilter { get; set; } = 0;
-    [Parameter] public long SubjectIdFilter { get; set; } = 0;
     [Parameter] public LazyLookupEnum FieldType { get; set; } = LazyLookupEnum.Text;
-    [Parameter] public long ItemId { get; set; } = 0;
+    [Parameter] public Guid ItemId { get; set; } = Guid.Empty;
     [Parameter] public string Label { get; set; } = "";
-    [Parameter] public EventCallback<long> ItemIdChanged { get; set; }
-    [Parameter] public Expression<Func<long>>? ItemIdValueExpression { get; set; }
+    [Parameter] public EventCallback<Guid> ItemIdChanged { get; set; }
+    [Parameter] public Expression<Func<Guid>>? ItemIdValueExpression { get; set; }
     public TDto? SelectedItem { get; set; }
     private List<TDto> _items = new List<TDto>();
     protected override async Task OnParametersSetAsync()
     {
-        if (ItemId > 0)
+        if (ItemId != null)
         {
             SelectedItem = await LookupService.GetItemById(ItemId, CancellationToken.None);
+        }
+        else
+        {
+            SelectedItem = default;
         }
         if (FieldType == LazyLookupEnum.Select)
         {
@@ -51,9 +53,9 @@
         }
         StateHasChanged();
     }
-    private async Task OnItemChanged(long value)
+    private async Task OnItemChanged(Guid value)
     {
-        if (value > 0)
+        if (value != Guid.Empty)
         {
             SelectedItem = await LookupService.GetItemById(value, CancellationToken.None);
         }

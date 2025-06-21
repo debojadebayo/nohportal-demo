@@ -15,7 +15,7 @@ namespace Shared.DTOs.CRM
         public string? AvatarTitle { get; set; }
         public string? AvatarDescription { get; set; }
         public string Department { get; set; } = string.Empty;
-        public long CustomerId { get; set; }
+        public Guid CustomerId { get; set; }
         public string DisplayName => $"{FirstName} {LastName} - {Department} - Id: {Id}";
     }
 }

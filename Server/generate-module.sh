@@ -100,7 +100,7 @@ public class ExampleEntity : BaseEntity<ExampleEntity>, IEntity, IAuditEntity
 }
 public class ExampleEntityDto : IDto
 {
-    public long Id { get; set; }
+    public Guid Id { get; set; }
     public string? Name { get; set; }
 }
 EOF

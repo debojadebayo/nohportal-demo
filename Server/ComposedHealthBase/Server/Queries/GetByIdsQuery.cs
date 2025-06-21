@@ -16,7 +16,7 @@ namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetByIdsQuery<T, TDto, TContext>
     {
-        Task<IEnumerable<TDto>> Handle(List<long> id, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes);
+        Task<IEnumerable<TDto>> Handle(List<Guid> id, ClaimsPrincipal user, Guid? tenantId = null, Guid? subjectId = null, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetByIdsQuery<T, TDto, TContext> : IGetByIdsQuery<T, TDto, TContext>, IQuery
@@ -35,15 +35,15 @@ namespace ComposedHealthBase.Server.Queries
             _authorizationService = authorizationService;
         }
 
-        public async Task<IEnumerable<TDto>> Handle(List<long> ids, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes)
+        public async Task<IEnumerable<TDto>> Handle(List<Guid> ids, ClaimsPrincipal user, Guid? tenantId = null, Guid? subjectId = null, params Expression<Func<T, object>>[]? includes)
         {
             var query = _dbContext.Set<T>().AsQueryable();
             query = query.Where(x => ids.Contains(x.Id));
-            if (tenantId != 0)
+            if (tenantId != null)
             {
                 query = query.Where(e => e.TenantId == tenantId);
             }
-            if (subjectId != 0)
+            if (subjectId != null)
             {
                 query = query.Where(e => e.SubjectId == subjectId);
             }

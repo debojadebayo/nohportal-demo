@@ -1,4 +1,4 @@
-@page "/case-notes/{scheduleId:long}"
+@page "/case-notes/{scheduleId:guid}"
 @using Shared.DTOs.Clinical
 @using Shared.DTOs.Scheduling
 @using Shared.Enums
@@ -50,7 +50,7 @@
                 Variant="Variant.Outlined" Lines="2" />
         </MudItem>
         <MudItem xs="12" sm="6">
-            <MudSelect T="long" @bind-Value="CaseNote.ClinicianId" Label="Clinician" Variant="Variant.Outlined">
+            <MudSelect T="Guid" @bind-Value="CaseNote.ClinicianId" Label="Clinician" Variant="Variant.Outlined">
                 @foreach (var clinician in Clinicians)
                 {
                     <MudSelectItem Value="@clinician.Id">@clinician.DisplayName</MudSelectItem>
@@ -65,7 +65,7 @@
 </MudForm>
 
 @code {
-    [Parameter] public long ScheduleId { get; set; }
+    [Parameter] public Guid ScheduleId { get; set; }
     private CaseNoteDto CaseNote { get; set; } = new();
     private MudForm form = default!;
     private List<ClinicianDto> Clinicians = new(); // Populate this list as needed

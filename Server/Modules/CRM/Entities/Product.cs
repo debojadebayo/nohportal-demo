@@ -9,7 +9,7 @@ namespace Server.Modules.CRM.Entities
 		public decimal Price { get; set; }
 		public DateTime? StartTime { get; set; }
 		public DateTime? EndTime { get; set; }
-		public long CustomerId
+		public Guid CustomerId
 		{
 			get
 			{

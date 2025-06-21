@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialTablesForClinical : Migration
+    public partial class First_Clinical_Migration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,8 +19,7 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                 schema: "clinical",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     CaseNotes = table.Column<string>(type: "text", nullable: true),
                     AppointmentType = table.Column<int>(type: "integer", nullable: false),
                     FitForWorkStatus = table.Column<int>(type: "integer", nullable: false),
@@ -29,14 +27,14 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                     IsFollowUpNeeded = table.Column<bool>(type: "boolean", nullable: false),
                     FollowUpDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     FollowUpReasonForReferral = table.Column<string>(type: "text", nullable: true),
-                    ClinicianId = table.Column<long>(type: "bigint", nullable: false),
+                    ClinicianId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     LastModifiedBy = table.Column<string>(type: "text", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TenantId = table.Column<long>(type: "bigint", nullable: false),
-                    SubjectId = table.Column<long>(type: "bigint", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SubjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     TenantKeycloakId = table.Column<Guid>(type: "uuid", nullable: false),
                     SubjectKeycloakId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedByKeycloakId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -52,9 +50,8 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                 schema: "clinical",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    EmployeeId = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
                     EmployeeName = table.Column<string>(type: "text", nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Company = table.Column<string>(type: "text", nullable: true),
@@ -63,14 +60,14 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                     AssessmentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DateReportSubmitted = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ReportNotes = table.Column<string>(type: "text", nullable: true),
-                    ClinicianId = table.Column<long>(type: "bigint", nullable: false),
+                    ClinicianId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     LastModifiedBy = table.Column<string>(type: "text", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TenantId = table.Column<long>(type: "bigint", nullable: false),
-                    SubjectId = table.Column<long>(type: "bigint", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SubjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     TenantKeycloakId = table.Column<Guid>(type: "uuid", nullable: false),
                     SubjectKeycloakId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedByKeycloakId = table.Column<Guid>(type: "uuid", nullable: false),

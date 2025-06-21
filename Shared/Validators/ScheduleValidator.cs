@@ -7,10 +7,10 @@ namespace Shared.Validators
     {
         public ScheduleValidator()
         {
-            RuleFor(x => x.CustomerId).GreaterThan(0);
-            RuleFor(x => x.ReferralId).GreaterThan(0);
-            RuleFor(x => x.EmployeeId).GreaterThan(0);
-            RuleFor(x => x.ClinicianId).GreaterThan(0);
+            RuleFor(x => x.CustomerId).NotEmpty();
+            RuleFor(x => x.ReferralId).NotEmpty();
+            RuleFor(x => x.EmployeeId).NotEmpty();
+            RuleFor(x => x.ClinicianId).NotEmpty();
             RuleFor(x => x.StartTime).NotEmpty();
             RuleFor(x => x.EndTime).NotEmpty().GreaterThan(x => x.StartTime);
         }

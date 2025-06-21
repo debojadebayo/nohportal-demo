@@ -4,7 +4,7 @@ namespace Server.Modules.Auth.Entities
 {
     public class RolePermission
     {
-        public long RoleId { get; set; }
-        public long PermissionId { get; set; }
+        public Guid RoleId { get; set; }
+        public Guid PermissionId { get; set; }
     }
 }

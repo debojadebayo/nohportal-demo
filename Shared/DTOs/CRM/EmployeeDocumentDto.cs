@@ -6,7 +6,7 @@ namespace Shared.DTOs.CRM
 {
     public class EmployeeDocumentDto : BaseDocumentDto, ILazyLookup
     {
-        public long EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         public EmployeeDocumentTypeEnum EmployeeDocumentType { get; set; }
     }
 }
