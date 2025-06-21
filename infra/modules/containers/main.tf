@@ -1,21 +1,9 @@
-# log analytics workspace 
-
-resource "azurerm_log_analytics_workspace" "log_analytics" {
-  name                = var.log_analytics_workspace_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
-}
-
-
 # Container Environment
-
 resource "azurerm_container_app_environment" "container_env" {
   name                           = var.container_env_name
   location                       = var.location
   resource_group_name            = var.resource_group_name
-  log_analytics_workspace_id     = azurerm_log_analytics_workspace.log_analytics.id
+  log_analytics_workspace_id     = var.log_analytics_workspace_id
   infrastructure_subnet_id       = var.subnet_id
   internal_load_balancer_enabled = true
 
@@ -25,9 +13,7 @@ resource "azurerm_container_app_environment" "container_env" {
   }
 }
 
-
 # Server API Container 
-
 resource "azurerm_container_app" "api_server" {
   name                         = var.server_container_app_name
   container_app_environment_id = azurerm_container_app_environment.container_env.id
@@ -36,12 +22,24 @@ resource "azurerm_container_app" "api_server" {
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [var.container_apps_identity_id]
+    identity_ids = [var.container_apps_identity_id, var.keycloak_identity_id]
   }
 
   registry {
     server   = var.container_registry_url
     identity = var.container_apps_identity_id
+  }
+
+  secret {
+    name                = "app-database-connection-string"
+    identity            = var.keycloak_identity_id
+    key_vault_secret_id = var.app_database_connection_string_secret_id
+  }
+
+  secret {
+    name                = "azure-blob-storage-connection-string"
+    identity            = var.keycloak_identity_id
+    key_vault_secret_id = var.azure_blob_storage_connection_string_secret_id
   }
 
   template {
@@ -60,12 +58,12 @@ resource "azurerm_container_app" "api_server" {
         value = "http://+:8080"
       }
       env {
-        name  = "ConnectionStrings__DefaultConnection"
-        value = var.app_database_connection_string
+        name        = "ConnectionStrings__DefaultConnection"
+        secret_name = "app-database-connection-string"
       }
       env {
-        name  = "ConnectionStrings__AzureBlobStorage"
-        value = var.azure_blob_storage_connection_string
+        name        = "ConnectionStrings__AzureBlobStorage"
+        secret_name = "azure-blob-storage-connection-string"
       }
       env {
         name  = "IdentityConfig__Issuer"
@@ -104,15 +102,15 @@ resource "azurerm_container_app" "api_server" {
         value = "Schedule"
       }
 
-      # liveness_probe {
-      #   path                    = "/api-health"
-      #   port                    = 8080
-      #   transport               = "HTTP"
-      #   initial_delay           = 60
-      #   interval_seconds        = 15
-      #   timeout                 = 5
-      #   failure_count_threshold = 3
-      # }
+      liveness_probe {
+        path                    = "/health"
+        port                    = 8080
+        transport               = "HTTP"
+        initial_delay           = 60
+        interval_seconds        = 30
+        timeout                 = 10
+        failure_count_threshold = 3
+      }
     }
   }
 
@@ -129,7 +127,6 @@ resource "azurerm_container_app" "api_server" {
 }
 
 # Keycloak 
-
 resource "azurerm_container_app" "keycloak_server" {
   name                         = var.keycloak_container_app_name
   container_app_environment_id = azurerm_container_app_environment.container_env.id
@@ -138,7 +135,7 @@ resource "azurerm_container_app" "keycloak_server" {
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [var.user_assigned_identity_id, var.container_apps_identity_id]
+    identity_ids = [var.keycloak_identity_id, var.container_apps_identity_id]
   }
 
   registry {
@@ -148,25 +145,25 @@ resource "azurerm_container_app" "keycloak_server" {
 
   secret {
     name                = "keycloak-admin-username"
-    identity            = var.user_assigned_identity_id
+    identity            = var.keycloak_identity_id
     key_vault_secret_id = var.keycloak_admin_username_secret_id
   }
 
   secret {
     name                = "keycloak-admin-password"
-    identity            = var.user_assigned_identity_id
+    identity            = var.keycloak_identity_id
     key_vault_secret_id = var.keycloak_admin_password_secret_id
   }
 
   secret {
     name                = "keycloak-db-username"
-    identity            = var.user_assigned_identity_id
+    identity            = var.keycloak_identity_id
     key_vault_secret_id = var.keycloak_db_username_secret_id
   }
 
   secret {
     name                = "keycloak-db-password"
-    identity            = var.user_assigned_identity_id
+    identity            = var.keycloak_identity_id
     key_vault_secret_id = var.keycloak_db_password_secret_id
   }
 
@@ -176,8 +173,6 @@ resource "azurerm_container_app" "keycloak_server" {
       image  = "keycloak/keycloak:${var.image_tags.keycloak}"
       cpu    = 0.5
       memory = "1Gi"
-
-
 
       env {
         name        = "KC_BOOTSTRAP_ADMIN_USERNAME"
@@ -209,13 +204,13 @@ resource "azurerm_container_app" "keycloak_server" {
       }
 
       liveness_probe {
-        path                    = "/auth/realms/master"
+        path                    = "/realms/master"
         port                    = 8080
-        transport               = var.aspnetcore_environment == "Development" ? "HTTP" : "HTTPS"
-        initial_delay           = 60
+        transport               = "HTTP"
+        initial_delay           = 120
         interval_seconds        = 30
         timeout                 = 10
-        failure_count_threshold = 3
+        failure_count_threshold = 5
       }
     }
   }
@@ -233,7 +228,6 @@ resource "azurerm_container_app" "keycloak_server" {
 }
 
 # Frontend 
-
 resource "azurerm_container_app" "frontend" {
   name                         = var.frontend_container_app_name
   container_app_environment_id = azurerm_container_app_environment.container_env.id
@@ -270,19 +264,17 @@ resource "azurerm_container_app" "frontend" {
         value = var.keycloak_url
       }
 
-      # liveness_probe {
-      #   path                    = "/health"
-      #   port                    = 8080
-      #   transport               = "HTTP"
-      #   initial_delay           = 60
-      #   interval_seconds        = 15
-      #   timeout                 = 5
-      #   failure_count_threshold = 3
-      # }
+      liveness_probe {
+        path                    = "/health"
+        port                    = 8080
+        transport               = "HTTP"
+        initial_delay           = 60
+        interval_seconds        = 30
+        timeout                 = 10
+        failure_count_threshold = 3
+      }
     }
-
   }
-
 
   ingress {
     external_enabled = false

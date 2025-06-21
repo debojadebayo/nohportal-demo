@@ -382,3 +382,6 @@ tfplan.*
 .claude/
 DEPLOYMENT_PLAN.md
 SESSION_SUMMARY.md
+
+# Log data from Azure Monitor 
+logs/

@@ -10,16 +10,31 @@ variable "resource_group_name" {
   default     = "nationohrg"
 }
 
+
+
+variable "github_actions_service_principal_object_id" {
+  description = "Object ID of the GitHub Actions service principal for Key Vault access"
+  type        = string
+  default     = ""
+}
+
+variable "environment" {
+  description = "Environment name (dev, prod, etc.)"
+  type        = string
+  default     = "dev"
+}
+
+# Container App Configuration
 variable "container_cpu" {
-  description = "CPU Allocation for the container"
+  description = "CPU allocation for the container"
   type        = number
-  default     = 1.0
+  default     = 0.5
 }
 
 variable "container_memory" {
   description = "Memory for the container"
   type        = string
-  default     = "2Gi"
+  default     = "1Gi"
 }
 
 variable "aspnetcore_environment" {
@@ -28,14 +43,59 @@ variable "aspnetcore_environment" {
   default     = "Development"
 }
 
-variable "domain_name" {
-  description = "Domain name"
+variable "keycloak_issuer_url" {
+  description = "Keycloak issuer URL"
+  type        = string
+  default     = "http://localhost:8080/realms/NationOH"
+}
+
+variable "keycloak_features" {
+  description = "Keycloak features to enable"
+  type        = string
+  default     = "organization"
+}
+
+variable "allowed_hosts" {
+  description = "Allowed hosts for the API server"
+  type        = string
+  default     = "*"
+}
+
+variable "api_url" {
+  description = "API URL"
   type        = string
   default     = ""
 }
 
-variable "ssl_certificate_password" {
-  description = "Password for the SSL certificate"
+variable "keycloak_url" {
+  description = "Keycloak URL"
+  type        = string
+  default     = ""
+}
+
+variable "server_image" {
+  description = "Image for the server container"
+  type        = string
+  default     = "mcr.microsoft.com/dotnet/aspnet:9.0"
+}
+
+variable "frontend_image" {
+  description = "Image for the frontend container"
+  type        = string
+  default     = "nginx:alpine"
+}
+
+variable "image_tags" {
+  description = "Map of image tags for each container"
+  type        = map(string)
+  default = {
+    keycloak = "26.1"
+  }
+}
+
+# Application Gateway Configuration
+variable "domain_name" {
+  description = "Domain name for the application"
   type        = string
   default     = ""
 }
@@ -46,14 +106,16 @@ variable "ssl_certificate_path" {
   default     = ""
 }
 
+variable "ssl_certificate_password" {
+  description = "Password for the SSL certificate"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 variable "app_gateway_sku_tier" {
   description = "SKU tier for the Application Gateway"
   type        = string
-}
-
-variable "github_actions_service_principal_object_id" {
-  description = "Object ID of the GitHub Actions service principal for Key Vault access"
-  type        = string
-  default     = ""
+  default     = "Standard_v2"
 }
 

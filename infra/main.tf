@@ -45,13 +45,6 @@ resource "azurerm_role_assignment" "acr_pull_role" {
   ]
 }
 
-# resource "azurerm_role_assignment" "ra_keycloak" {
-#   scope                = module.secrets.key_vault_id
-#   role_definition_name = "Key Vault Secrets Officer"
-#   principal_id         = azurerm_user_assigned_identity.uai_keycloak.principal_id
-# }
-
-
 # Get current Azure client config 
 data "azurerm_client_config" "current" {}
 
@@ -125,6 +118,60 @@ module "registry" {
   subnet_ids              = module.networking.subnets_ids
 }
 
+module "containers" {
+  source                     = "./modules/containers"
+  location                   = var.location
+  resource_group_name        = azurerm_resource_group.rg.name
+  subnet_id                  = module.networking.subnets_ids["backend"]
+  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
+  container_registry_url     = module.registry.acr_url
+  container_cpu              = var.container_cpu
+  container_memory           = var.container_memory
+  container_env_name         = "${var.resource_group_name}env"
+
+  # Managed identity 
+  container_apps_identity_id = azurerm_user_assigned_identity.container_apps_identity.id
+  keycloak_identity_id       = azurerm_user_assigned_identity.uai_keycloak.id
+
+  # API Server 
+  server_container_app_name = "${var.resource_group_name}server"
+
+  # Server environment variables
+  keycloak_issuer_url                            = var.keycloak_issuer_url
+  allowed_hosts                                  = var.allowed_hosts
+  app_database_connection_string_secret_id       = module.secrets.app_database_connection_string_secret_id
+  azure_blob_storage_connection_string_secret_id = module.secrets.azure_blob_storage_connection_string_secret_id
+
+  # Keycloak
+  keycloak_container_app_name       = "${var.resource_group_name}keycloak"
+  keycloak_features                 = var.keycloak_features
+  keycloak_db_url                   = "jdbc:postgresql://${module.database.postgresql_server_fqdn}:5432/${module.database.keycloak_db_name}"
+  keycloak_admin_username_secret_id = module.secrets.keycloak_admin_username_secret_id
+  keycloak_admin_password_secret_id = module.secrets.keycloak_admin_password_secret_id
+  keycloak_db_username_secret_id    = module.secrets.keycloak_db_username_secret_id
+  keycloak_db_password_secret_id    = module.secrets.keycloak_db_password_secret_id
+
+  # Frontend 
+  frontend_container_app_name = "${var.resource_group_name}frontend"
+  api_url                     = "https://${module.application_gateway.gateway_fqdn}/api"
+  keycloak_url                = "https://${module.application_gateway.gateway_fqdn}/auth"
+
+  # Container Images (applying commit 244a9e0 changes)
+  server_image   = var.server_image
+  frontend_image = var.frontend_image
+
+  # Environment
+  aspnetcore_environment = var.aspnetcore_environment
+  image_tags             = var.image_tags
+
+  depends_on = [
+    module.database,
+    module.secrets,
+    module.registry,
+    azurerm_role_assignment.acr_pull_role
+  ]
+}
+
 module "application_gateway" {
   source                   = "./modules/application_gateway"
   location                 = var.location
@@ -134,55 +181,12 @@ module "application_gateway" {
   ssl_certificate_password = var.ssl_certificate_password
   app_gateway_sku_tier     = var.app_gateway_sku_tier
 
+  # Backend FQDNs from container apps
+  frontend_fqdn = module.containers.container_app_urls.frontend
+  api_fqdn      = module.containers.container_app_urls.server
+  auth_fqdn     = module.containers.container_app_urls.keycloak
+
   depends_on = [module.containers]
-}
-
-module "containers" {
-  source                       = "./modules/containers"
-  location                     = var.location
-  resource_group_name          = azurerm_resource_group.rg.name
-  subnet_id                    = module.networking.subnets_ids["backend"]
-  container_registry_url       = module.registry.acr_url
-  log_analytics_workspace_name = "${var.resource_group_name}-insights"
-  container_cpu                = var.container_cpu
-  container_memory             = var.container_memory
-  container_env_name           = "${var.resource_group_name}containerenv"
-
-  # Managed identity 
-  container_apps_identity_id = azurerm_user_assigned_identity.container_apps_identity.id
-
-
-  # API Server 
-  server_container_app_name = "${var.resource_group_name}server"
-
-  # Server environment variables
-  keycloak_issuer_url                  = "http://localhost:8080/realms/NationOH"
-  keycloak_audience                    = "nationoh_webapi"
-  allowed_hosts                        = "*"
-  app_database_connection_string       = "Host=${module.database.postgresql_server_fqdn};Port=5432;Database=${module.database.app_database_name};Username=${module.secrets.postgresql_admin_username};Password=${module.secrets.postgresql_admin_password};SSL Mode=Require;Trust Server Certificate=true"
-  azure_blob_storage_connection_string = "DefaultEndpointsProtocol=https;AccountName=${module.storage.storage_account_name};AccountKey=${module.storage.primary_access_key};EndpointSuffix=core.windows.net"
-
-  # Keycloak
-  keycloak_container_app_name       = "${var.resource_group_name}keycloak"
-  keycloak_features                 = "organization,admin-fine-grained-authz"
-  keycloak_db_url                   = "jdbc:postgresql://${module.database.postgresql_server_fqdn}:5432/${module.database.keycloak_db_name}"
-  user_assigned_identity_id         = azurerm_user_assigned_identity.uai_keycloak.id
-  keycloak_admin_username_secret_id = module.secrets.keycloak_admin_username_secret_id
-  keycloak_admin_password_secret_id = module.secrets.keycloak_admin_password_secret_id
-  keycloak_db_username_secret_id    = module.secrets.keycloak_db_username_secret_id
-  keycloak_db_password_secret_id    = module.secrets.keycloak_db_password_secret_id
-
-  # Frontend 
-  frontend_container_app_name = "${var.resource_group_name}frontend"
-  api_url                     = "https://${var.resource_group_name}-gateway.${var.location}.cloudapp.azure.com/api"
-  keycloak_url                = "https://${var.resource_group_name}-gateway.${var.location}.cloudapp.azure.com/auth"
-
-  depends_on = [
-    module.database,
-    module.secrets,
-    module.registry,
-    azurerm_role_assignment.acr_pull_role
-  ]
 }
 
 # Private DNS Zone for Container Apps (created after containers are deployed)

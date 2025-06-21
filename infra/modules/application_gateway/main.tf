@@ -119,31 +119,31 @@ resource "azurerm_application_gateway" "app_gateway" {
   }
 
   backend_http_settings {
-    name                                = "frontend-http-settings"
-    cookie_based_affinity               = "Disabled"
-    port                                = 8080
-    protocol                            = "Http"
-    request_timeout                     = 60
+    name                  = "frontend-http-settings"
+    cookie_based_affinity = "Disabled"
+    port                  = 8080
+    protocol              = "Http"
+    request_timeout       = 60
     # probe_name                          = "frontend-health-probe"
     pick_host_name_from_backend_address = true
   }
 
   backend_http_settings {
-    name                                = "api-http-settings"
-    cookie_based_affinity               = "Disabled"
-    port                                = 8080
-    protocol                            = "Http"
-    request_timeout                     = 60
+    name                  = "api-http-settings"
+    cookie_based_affinity = "Disabled"
+    port                  = 8080
+    protocol              = "Http"
+    request_timeout       = 60
     # probe_name                          = "api-health-probe"
     pick_host_name_from_backend_address = true
   }
 
   backend_http_settings {
-    name                                = "auth-http-settings"
-    cookie_based_affinity               = "Enabled"
-    port                                = 8080
-    protocol                            = "Http"
-    request_timeout                     = 60
+    name                  = "auth-http-settings"
+    cookie_based_affinity = "Enabled"
+    port                  = 8080
+    protocol              = "Http"
+    request_timeout       = 60
     # probe_name                          = "auth-health-probe"
     pick_host_name_from_backend_address = true
   }
