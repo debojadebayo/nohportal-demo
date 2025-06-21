@@ -153,8 +153,8 @@ module "containers" {
 
   # Frontend 
   frontend_container_app_name = "${var.resource_group_name}frontend"
-  api_url                     = "https://${module.application_gateway.gateway_fqdn}/api"
-  keycloak_url                = "https://${module.application_gateway.gateway_fqdn}/auth"
+  api_url                     = "https://${var.resource_group_name}-gateway.${var.location}.cloudapp.azure.com/api"
+  keycloak_url                = "https://${var.resource_group_name}-gateway.${var.location}.cloudapp.azure.com/auth"
 
   # Container Images (applying commit 244a9e0 changes)
   server_image   = var.server_image
