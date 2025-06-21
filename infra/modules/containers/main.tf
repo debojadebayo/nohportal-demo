@@ -196,7 +196,7 @@ resource "azurerm_container_app" "keycloak_server" {
         path                    = "/realms/master"
         port                    = 8080
         transport               = "HTTP"
-        initial_delay           = 120
+        initial_delay           = 60
         interval_seconds        = 30
         timeout                 = 10
         failure_count_threshold = 5
