@@ -71,6 +71,7 @@
     [Parameter] public EventCallback<ReferralDto> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
+    [Parameter] public Guid EmployeeId { get; set; } = Guid.Empty;
 
     private bool _addReferralDialogOpen = false;
     private ReferralDto _newReferral = new ReferralDto();
@@ -80,7 +81,7 @@
 
     private void ShowAddReferralDialog()
     {
-        _newReferral = new ReferralDto { CustomerId = CustomerId };
+        _newReferral = new ReferralDto { CustomerId = CustomerId, EmployeeId = EmployeeId };
         _addReferralDialogOpen = true;
     }
 

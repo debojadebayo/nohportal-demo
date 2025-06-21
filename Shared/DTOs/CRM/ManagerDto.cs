@@ -16,6 +16,6 @@ namespace Shared.DTOs.CRM
         public string? AvatarDescription { get; set; }
         public string Department { get; set; } = string.Empty;
         public Guid CustomerId { get; set; }
-        public string DisplayName => $"{FirstName} {LastName} - {Department} - Id: {Id}";
+        public string DisplayName => $"{FirstName} {LastName}";
     }
 }

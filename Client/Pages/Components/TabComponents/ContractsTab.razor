@@ -1,4 +1,6 @@
 @namespace Client.Pages.Components.TabComponents
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Enums
 @using Shared.DTOs
 @using MudBlazor
 @using Shared.DTOs.CRM
@@ -15,7 +17,14 @@
             <PropertyColumn Property="x => x.Id" Title="Contract ID" />
             <PropertyColumn Property="x => x.Reference" />
             <PropertyColumn Property="x => x.Notes" />
-            <PropertyColumn Property="x => x.RepresentativeId" Title="Representative ID" />
+            <TemplateColumn>
+                <HeaderTemplate>
+                    <MudText Typo="Typo.subtitle2">Representative</MudText>
+                </HeaderTemplate>
+                <CellTemplate>
+                    <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.RepresentativeId" />
+                </CellTemplate>
+            </TemplateColumn>
             <PropertyColumn Property="x => x.StartTime" Title="Start Date" />
             <PropertyColumn Property="x => x.EndTime" Title="End Date" />
         </Columns>
@@ -33,7 +42,7 @@
         <MudForm @ref="contractForm" Model="NewContract">
             <MudTextField @bind-Value="NewContract.Reference" Label="Reference" Variant="Variant.Outlined" />
             <MudTextField @bind-Value="NewContract.Notes" Label="Notes" Variant="Variant.Outlined" />
-            <MudNumericField @bind-Value="NewContract.RepresentativeId" Label="Representative ID" Variant="Variant.Outlined" />
+            <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="NewContract.RepresentativeId" TenantConstraint="CustomerId" Label="Customer Representative" />
             <MudDatePicker @bind-Date="NewContract.StartTime" DateFormat="dd/MM/yyyy" Label="Start Date" />
             <MudDatePicker @bind-Date="NewContract.EndTime" DateFormat="dd/MM/yyyy" Label="End Date" />
         </MudForm>
@@ -49,6 +58,7 @@
     [Parameter] public EventCallback<ContractDto> OnContractSave { get; set; }
     [Parameter] public EventCallback OnContractCancel { get; set; }
     [Parameter] public ContractDto NewContract { get; set; } = default!;
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
     private bool _addContractDialogOpen = false;
     private MudForm contractForm = default!;
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };

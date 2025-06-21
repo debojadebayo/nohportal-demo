@@ -51,7 +51,7 @@
             <ManagersTab Managers="managers" />
         </MudTabPanel>
         <MudTabPanel Text="Contracts" OnClick="GetAllContractsByCustomerId">
-            <ContractsTab Contracts="contracts" OnContractSave="HandleContractSave" NewContract="newContract" />
+            <ContractsTab Contracts="contracts" CustomerId="customerSelector?.SelectedItem?.Id ?? Guid.Empty" OnContractSave="HandleContractSave" NewContract="newContract" />
         </MudTabPanel>
         <MudTabPanel Text="Services" OnClick="GetAllProductsByCustomerId">
             <ProductsTab Products="products" ProductTypes="productTypes" OnProductSave="HandleProductSave"
@@ -61,8 +61,7 @@
             <InvoicingTab />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByCustomerId">
-            <DocumentBrowser TDto="CustomerDocumentDto" Documents="documents" NewDocument="newDocument"
-                OnSave="OnDocumentSave" />
+            <DocumentBrowser TDto="CustomerDocumentDto" @bind-DocumentIds="customerSelector.SelectedItem.RelatedDocumentIds" OnDocumentUploaded="HandleCustomerSave" />
         </MudTabPanel>
         <MudTabPanel Text="Reports">
             <ReportsTab />
@@ -105,6 +104,7 @@
         {
             await CustomerLookupService.UpdateItem(customerSelector.SelectedItem, CancellationToken.None);
         }
+        StateHasChanged();
     }
     private async Task HandleReferralSave(ReferralDto referral)
     {

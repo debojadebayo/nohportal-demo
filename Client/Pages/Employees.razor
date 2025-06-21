@@ -36,14 +36,13 @@
             <AppointmentsTab Appointments="appointments" />
         </MudTabPanel>
         <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByEmployeeId">
-            <ReferralsTab Referrals="referrals" />
+            <ReferralsTab Referrals="referrals" CustomerId="employeeSelector.SelectedItem.CustomerId" EmployeeId="employeeSelector.SelectedItem.Id" />
         </MudTabPanel>
         <MudTabPanel Text="Managers" OnClick="GetAllManagersByEmployeeId">
             <ManagersTab Managers="managers" />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByEmployeeId">
-            <DocumentBrowser TDto="EmployeeDocumentDto" Documents="documents" NewDocument="newDocument"
-                OnSave="OnDocumentSave" />
+            <DocumentBrowser TDto="EmployeeDocumentDto" @bind-DocumentIds="employeeSelector.SelectedItem.RelatedDocumentIds" OnDocumentUploaded="HandleEmployeeSave" />
         </MudTabPanel>
         <MudTabPanel Text="Notes">
             <NotesTab Model="employeeSelector.SelectedItem" OnSave="HandleEmployeeSave" TDto="EmployeeDto" />
@@ -85,17 +84,17 @@
     private async Task GetAllAppointmentsByEmployeeId()
     {
         if (employeeSelector.SelectedItem == null) return;
-        appointments = (await ScheduleLookupService.GetAllByTenantId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
+        appointments = (await ScheduleLookupService.GetAllBySubjectId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
     }
     private async Task GetAllReferralsByEmployeeId()
     {
         if (employeeSelector.SelectedItem == null) return;
-        referrals = (await ReferralLookupService.GetAllByTenantId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
+        referrals = (await ReferralLookupService.GetAllBySubjectId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
     }
     private async Task GetAllManagersByEmployeeId()
     {
         if (employeeSelector.SelectedItem == null) return;
-        managers = (await ManagerLookupService.GetAllByTenantId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
+        managers = (await ManagerLookupService.GetAllBySubjectId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
     }
     private async Task GetAllDocumentsByEmployeeId()
     {

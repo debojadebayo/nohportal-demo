@@ -25,5 +25,6 @@ else
         if (customer == null)
             return;
         await LookupService.UpdateItem(customer, CancellationToken.None);
+        customer = await LookupService.GetItemById(new Guid("20202020-2020-2020-2020-202020202020"), CancellationToken.None);
     }
 }

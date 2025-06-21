@@ -127,6 +127,7 @@
 
     private void ShowDocumentUploadDialog()
     {
+        _newDocument = Activator.CreateInstance<TDto>();
         _uploadDocumentDialogOpen = true;
         _fileToUpload = null;
     }
@@ -151,8 +152,8 @@ private async Task UploadDocument()
         new Tuple<IDocumentDto, IBrowserFile>(newDto, _fileToUpload),
         CancellationToken.None);
 
-    _documents.Add(newDto);
     DocumentIds.Add(newDto.Id);
+    _documents = (await LookupService.GetItemsByIds(DocumentIds, CancellationToken.None)).ToList();
 
     await OnDocumentUploaded.InvokeAsync(newDto);
 
