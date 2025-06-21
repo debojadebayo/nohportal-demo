@@ -51,5 +51,6 @@ builder.Services.AddScoped<ILazyLookupService<CustomerDocumentDto>, LazyLookupSe
 builder.Services.AddScoped<ILazyLookupService<EmployeeDocumentDto>, LazyLookupService<EmployeeDocumentDto>>();
 builder.Services.AddScoped<ILazyLookupService<ContractDto>, LazyLookupService<ContractDto>>();
 builder.Services.AddScoped<IDocumentUploadService, DocumentUploadService>();
+builder.Services.AddScoped<IAuthHelperService, AuthHelperService>();
 
 await builder.Build().RunAsync();

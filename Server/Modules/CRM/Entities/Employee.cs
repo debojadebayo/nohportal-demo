@@ -22,7 +22,7 @@ namespace Server.Modules.CRM.Entities
         public required string Department { get; set; }
         public required string LineManager { get; set; }
         public string Notes { get; set; } = string.Empty;
-        public HashSet<EmployeeDocument> Documents { get; set; } = new();
+        public Guid[] RelatedDocumentIds { get; set; } = Array.Empty<Guid>();
         public Guid CustomerId
         {
             get

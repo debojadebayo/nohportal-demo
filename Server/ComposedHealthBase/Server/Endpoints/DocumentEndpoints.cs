@@ -18,7 +18,7 @@ using System.Security.Claims;
 namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class DocumentEndpoints<T, TDto, TContext> : BaseEndpoints<T, TDto, TContext>
-	where T : class, IAuditEntity, IDocument
+	where T : class, IEntity, IAuditEntity, IDocument
 	where TDto : IDto, IDocumentDto
 	where TContext : IDbContext<TContext>
 	{
@@ -38,25 +38,15 @@ namespace ComposedHealthBase.Server.Endpoints
 				ClaimsPrincipal user
 			) => await UploadDocument(dbContext, mapper, blobServiceClient, authorizationService, documentDto, file, user)).DisableAntiforgery();
 
-			group.MapGet("/getsaslink/{documentId}", async (
-				[FromServices] IDbContext<TContext> dbContext,
-				[FromServices] IMapper<T, TDto> mapper,
-				[FromServices] BlobServiceClient blobServiceClient,
-				[FromServices] Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
-				[FromServices] GetByPredicateQuery<T, TDto, TContext> getByPredicateQuery,
-				Guid documentGuid,
-				ClaimsPrincipal user
-			) => await GetDocumentSasLink(getByPredicateQuery, blobServiceClient, authorizationService, documentGuid, user));
-
-			group.MapGet("/getcontent/{documentId}", async (
+			group.MapGet("/getsaslink/{documentGuid}", async (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] BlobServiceClient blobServiceClient,
 				[FromServices] Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
 				[FromServices] GetByIdQuery<T, TDto, TContext> getByIdQuery,
-				Guid documentId,
+				Guid documentGuid,
 				ClaimsPrincipal user
-			) => await GetDocumentContent(getByIdQuery, blobServiceClient, authorizationService, documentId, user));
+			) => await GetDocumentSasLink(getByIdQuery, blobServiceClient, authorizationService, documentGuid, user));
 
 			return endpoints;
 		}
@@ -82,16 +72,13 @@ namespace ComposedHealthBase.Server.Endpoints
 
 				containerClient.CreateIfNotExists();
 
-				var blobName = $"{file.FileName}_{documentDto.DocumentGuid:N}";
+				var blobName = $"{file.FileName}_{documentDto.Id:N}";
 				var blobClient = containerClient.GetBlobClient(blobName);
 
 				using (var stream = file.OpenReadStream())
 				{
 					await blobClient.UploadAsync(stream, new BlobUploadOptions { HttpHeaders = new BlobHttpHeaders { ContentType = file.ContentType } });
 				}
-
-				// Optionally, update the TDto with the blob URL
-				documentDto.FilePath = blobClient.Uri.ToString();
 
 				documentDto.BlobContainerName = containerName;
 				documentDto.BlobName = blobName;
@@ -111,7 +98,7 @@ namespace ComposedHealthBase.Server.Endpoints
 		}
 
 		protected async Task<IResult> GetDocumentSasLink(
-			GetByPredicateQuery<T, TDto, TContext> getByPredicateQuery,
+			GetByIdQuery<T, TDto, TContext> getByIdQuery,
 			BlobServiceClient blobServiceClient,
 			Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
 			Guid documentGuid,
@@ -120,7 +107,7 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				// Retrieve the document entity from the database using the injected query handler
-				var document = (await getByPredicateQuery.Handle(d => d.DocumentGuid == documentGuid, user)).SingleOrDefault();
+				var document = await getByIdQuery.Handle(documentGuid, user);
 				if (document == null)
 					return Results.NotFound("Document not found.");
 				//TODO: Use authorizationService to check access if needed
@@ -135,36 +122,6 @@ namespace ComposedHealthBase.Server.Endpoints
 			{
 				Console.Error.WriteLine($"An error occurred: {ex.Message}");
 				return Results.Problem("An error occurred while generating document access link.");
-			}
-		}
-
-		protected async Task<IResult> GetDocumentContent(
-			GetByIdQuery<T, TDto, TContext> getByIdQuery,
-			BlobServiceClient blobServiceClient,
-			Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
-			Guid documentId,
-			ClaimsPrincipal user)
-		{
-			try
-			{
-				// Retrieve the document entity from the database using the injected query handler
-				var document = await getByIdQuery.Handle(documentId, user);
-				if (document == null)
-					return Results.NotFound("Document not found.");
-				//TODO: Use authorizationService to check access if needed
-
-				var containerClient = blobServiceClient.GetBlobContainerClient(document.BlobContainerName);
-				var blobClient = containerClient.GetBlobClient(document.BlobName);
-
-				var response = await blobClient.DownloadContentAsync();
-				return Results.File(response.Value.Content.ToArray(),
-								   response.Value.Details.ContentType,
-								   document.Name);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem("An error occurred while retrieving the document.");
 			}
 		}
 	}

@@ -103,9 +103,7 @@
         documents = (await DocumentLookupService.GetAllBySubjectId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
         newDocument = new EmployeeDocumentDto
         {
-            EmployeeId = employeeSelector.SelectedItem.Id,
-            Name = "",
-            FilePath = ""
+            Name = ""
         };
     }
     private async Task OnDocumentSave()
@@ -114,9 +112,7 @@
         documents = (await DocumentLookupService.GetAllBySubjectId(selectedEmployeeId, CancellationToken.None)).ToList();
         newDocument = new EmployeeDocumentDto
         {
-            EmployeeId = selectedEmployeeId,
-            Name = "",
-            FilePath = ""
+            Name = ""
         };
     }
 }

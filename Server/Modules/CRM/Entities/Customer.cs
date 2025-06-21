@@ -20,9 +20,9 @@ namespace Server.Modules.CRM.Entities
 		public string Notes { get; set; } = string.Empty;
 		public HashSet<Contract> Contracts { get; set; } = new();
 		public HashSet<Product> Products { get; set; } = new();
-		public HashSet<CustomerDocument> Documents { get; set; } = new();
 		public HashSet<Employee> Employees { get; set; } = new();
 		public HashSet<Manager> Managers { get; set; } = new();
+		public Guid[] RelatedDocumentIds { get; set; } = Array.Empty<Guid>();
 		public required Guid KeycloakId { get; set; }
 		public Guid CustomerId
 		{

@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class BaseEndpoints<T, TDto, TContext>
-	where T : class, IAuditEntity
+	where T : class, IEntity, IAuditEntity
 	where TDto : IDto
 	where TContext : IDbContext<TContext>
 	{

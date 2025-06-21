@@ -25,7 +25,8 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
-            ModifiedDate = entity.ModifiedDate
+            ModifiedDate = entity.ModifiedDate,
+            RelatedDocumentIds = entity.RelatedDocumentIds.ToList(),
         };
     }
 
@@ -48,6 +49,7 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
             Notes = dto.Notes,
             IsActive = dto.IsActive,
             KeycloakId = keycloakId,
+            RelatedDocumentIds = dto.RelatedDocumentIds.ToArray(),
             SearchTags = $"{dto.Id} {dto.Name} {dto.Telephone} {dto.Site} {dto.OHServicesRequired} {dto.Address} {dto.Industry} {dto.Postcode} {dto.Website} {dto.Email} {dto.InvoiceEmail} {dto.Notes}",
         };
     }
@@ -77,6 +79,7 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
         entity.InvoiceEmail = dto.InvoiceEmail;
         entity.Notes = dto.Notes;
         entity.IsActive = dto.IsActive;
+        entity.RelatedDocumentIds = dto.RelatedDocumentIds.ToArray();
         entity.SearchTags = $"{entity.Id} {dto.Name} {dto.Telephone} {dto.Address} {dto.Industry} {dto.Postcode} {dto.Website} {dto.Email} {dto.InvoiceEmail}";
     }
 
@@ -100,6 +103,7 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
         dto.LastModifiedBy = entity.LastModifiedBy;
         dto.CreatedDate = entity.CreatedDate;
         dto.ModifiedDate = entity.ModifiedDate;
+        dto.RelatedDocumentIds = entity.RelatedDocumentIds.ToList();
     }
 
     public Customer Map(CustomerDto dto)

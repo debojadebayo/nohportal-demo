@@ -5,6 +5,7 @@
 @using MudBlazor
 @using Gotho.BlazorPdf
 @using System.Linq.Expressions
+@inject IAuthHelperService AuthHelper
 @inject IDialogService DialogService
 @inject ILazyLookupService<TDto> LookupService
 @inject IDocumentUploadService DocumentUploadService
@@ -141,15 +142,19 @@ private async Task UploadDocument()
         return;
 
     var newDto = Activator.CreateInstance<TDto>();
-    newDto.DocumentGuid = Guid.NewGuid();
-    newDto.Name = string.Empty;
-    newDto.Description = string.Empty;
+    newDto.Name = _newDocument.Name;
+    newDto.Description = _newDocument.Description;
+    newDto.CreatedBy = await AuthHelper.GetFullNameAsync() ?? "Unknown User";
+    newDto.CreatedDate = DateTime.UtcNow;
 
     await DocumentUploadService.UploadDocument<TDto>(
         new Tuple<IDocumentDto, IBrowserFile>(newDto, _fileToUpload),
         CancellationToken.None);
 
     _documents.Add(newDto);
+    DocumentIds.Add(newDto.Id);
+
+    await OnDocumentUploaded.InvokeAsync(newDto);
 
     _uploadDocumentDialogOpen = false;
 }

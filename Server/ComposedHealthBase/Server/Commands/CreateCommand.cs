@@ -14,7 +14,7 @@ namespace ComposedHealthBase.Server.Commands
     }
 
     public class CreateCommand<T, TDto, TContext> : ICreateCommand<T, TDto, TContext>, ICommand
-        where T : class, IAuditEntity
+        where T : class, IEntity, IAuditEntity
         where TDto : IDto
         where TContext : IDbContext<TContext>
     {

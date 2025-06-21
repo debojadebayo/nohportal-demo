@@ -16,7 +16,7 @@ namespace ComposedHealthBase.Server.Commands
     }
 
     public class UploadCommand<T, TDto, TContext> : IUploadCommand<T, TDto, TContext>, ICommand
-        where T : class, IAuditEntity
+        where T : class, IEntity, IAuditEntity
         where TDto : IDto
         where TContext : IDbContext<TContext>
     {

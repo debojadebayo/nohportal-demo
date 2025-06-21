@@ -27,7 +27,8 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Department = entity.Department,
             LineManager = entity.LineManager,
             Notes = entity.Notes,
-            CustomerId = entity.CustomerId
+            CustomerId = entity.CustomerId,
+            RelatedDocumentIds = entity.RelatedDocumentIds.ToList(),
         };
     }
 
@@ -56,6 +57,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Notes = dto.Notes,
             KeycloakId = keycloakId,
             CustomerId = dto.CustomerId,
+            RelatedDocumentIds = dto.RelatedDocumentIds.ToArray(),
             SearchTags = $"{dto.Id} {dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}"
         };
     }
@@ -87,6 +89,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         entity.LineManager = dto.LineManager;
         entity.Notes = dto.Notes;
         entity.CustomerId = dto.CustomerId;
+        entity.RelatedDocumentIds = dto.RelatedDocumentIds.ToArray();
         entity.SearchTags = $"{entity.Id} {dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}";
     }
 
@@ -112,6 +115,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         dto.LineManager = entity.LineManager;
         dto.Notes = entity.Notes;
         dto.CustomerId = entity.CustomerId;
+        dto.RelatedDocumentIds = entity.RelatedDocumentIds.ToList();
     }
 
     public Employee Map(EmployeeDto dto)

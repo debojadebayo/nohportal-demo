@@ -1,10 +1,12 @@
 @namespace Client.Pages.Components.TabComponents
 @using ComposedHealthBase.BaseClient.Components
 @using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.Shared.DTOs
 @using Shared.DTOs.CRM
 @using MudBlazor
 @using Shared.DTOs.Scheduling
+@inject IAuthHelperService AuthHelper
 
 <MudPaper Class="pa-4">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
@@ -35,7 +37,7 @@
                 </TemplateColumn>
                 <TemplateColumn>
                     <CellTemplate>
-                                            <MudButton Size="@Size.Small"
+                                            <MudButton Size="@Size.Small" OnClick="() => ViewReferral(context.Item)"
                         Variant="@Variant.Filled" Color="@Color.Primary">View Referral</MudButton>
                     </CellTemplate>
                 </TemplateColumn>
@@ -52,14 +54,14 @@
     </TitleContent>
     <DialogContent>
         <MudForm @ref="form" Model="_newReferral">
-            <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.EmployeeId" Label="Employee" />
+            <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.EmployeeId" TenantConstraint="CustomerId" Label="Employee" />
             <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" />
             <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" />
-            <DocumentBrowser CompactMode="true" TDto="EmployeeDocumentDto" NewDocument="_newDocument" DocumentUploaded="OnDocumentUploaded" @bind-DocumentIds="_newReferral.RelatedDocumentIds" />
+            <DocumentBrowser CompactMode="true" TDto="EmployeeDocumentDto" @bind-DocumentIds="_newReferral.RelatedDocumentIds" />
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="AddReferral">Add Referral</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AddReferral">Save</MudButton>
         <MudButton OnClick="Cancel">Cancel</MudButton>
     </DialogActions>
 </MudDialog>
@@ -68,6 +70,7 @@
     [Parameter] public IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
     [Parameter] public EventCallback<ReferralDto> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
 
     private bool _addReferralDialogOpen = false;
     private ReferralDto _newReferral = new ReferralDto();
@@ -77,7 +80,7 @@
 
     private void ShowAddReferralDialog()
     {
-        _newReferral = new ReferralDto();
+        _newReferral = new ReferralDto { CustomerId = CustomerId };
         _addReferralDialogOpen = true;
     }
 
@@ -89,18 +92,10 @@
         _addReferralDialogOpen = false;
     }
 
-    private void OnDocumentUploaded(ReferralDto referral)
+    private void ViewReferral(ReferralDto referral)
     {
-        var documentGuid = Guid.NewGuid();
-        _newDocument = new EmployeeDocumentDto
-        {
-            DocumentGuid = documentGuid,
-            EmployeeId = _newReferral.EmployeeId,
-            Name = "",
-            Description = "",
-            FilePath = "",
-        };
-        referral.RelatedDocumentIds.Add(documentGuid);
+        _newReferral = referral;
+        _addReferralDialogOpen = true;
     }
 
     private async Task Cancel()

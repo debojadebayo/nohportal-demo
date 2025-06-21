@@ -1,17 +1,19 @@
 using System.Net.Http.Json;
 using MudBlazor;
 using ComposedHealthBase.Shared.Interfaces;
+using ComposedHealthBase.Shared.DTOs;
+using System.Text;
 
 namespace ComposedHealthBase.BaseClient.Services
 {
     public interface ILazyLookupService<TDto>
-where TDto : ILazyLookup
+where TDto : IDto, ILazyLookup
     {
         string ItemToString(Guid e);
-        Task<IEnumerable<Guid>> ItemSearch(string value, CancellationToken token);
-        Task<TDto?> GetItemById(Guid id, CancellationToken token, bool forceUpdate = false);
-        Task<IEnumerable<TDto>> GetItemsByIds(IEnumerable<Guid> ids, CancellationToken token, bool forceUpdate = false);
-        Task<IEnumerable<TDto>> GetAllItems(CancellationToken token);
+        Task<IEnumerable<Guid>> ItemSearch(string value, CancellationToken token, Guid? tenantConstraint = null, Guid? subjectConstraint = null);
+        Task<TDto?> GetItemById(Guid id, CancellationToken token, Guid? tenantConstraint = null, Guid? subjectConstraint = null, bool forceUpdate = false);
+        Task<IEnumerable<TDto>> GetItemsByIds(IEnumerable<Guid> ids, CancellationToken token, Guid? tenantConstraint = null, Guid? subjectConstraint = null, bool forceUpdate = false);
+        Task<IEnumerable<TDto>> GetAllItems(CancellationToken token, Guid? tenantConstraint = null, Guid? subjectConstraint = null);
         Task AddItem(TDto item, CancellationToken token);
         Task UpdateItem(TDto item, CancellationToken token);
         Task DeleteItem(Guid id, CancellationToken token);
@@ -21,7 +23,7 @@ where TDto : ILazyLookup
     }
 
     public class LazyLookupService<TDto> : ILazyLookupService<TDto>
-    where TDto : ILazyLookup
+    where TDto : IDto, ILazyLookup
     {
         private static string EndpointType => typeof(TDto).Name.Replace("Dto", string.Empty).ToLowerInvariant();
         private Dictionary<Guid, Tuple<TDto, DateTime>> _itemList { get; set; } = new();
@@ -34,7 +36,7 @@ where TDto : ILazyLookup
         }
 
         public string ItemToString(Guid e) => e != Guid.Empty && _itemList.TryGetValue(e, out var item) ? $"{item.Item1.DisplayName}" : string.Empty;
-        public async Task<IEnumerable<Guid>> ItemSearch(string value, CancellationToken token)
+        public async Task<IEnumerable<Guid>> ItemSearch(string value, CancellationToken token, Guid? tenantConstraint = null, Guid? subjectConstraint = null)
         {
             if (string.IsNullOrWhiteSpace(value) || value.Length < 3)
             {
@@ -42,7 +44,18 @@ where TDto : ILazyLookup
             }
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>($"api/{EndpointType}/search?term=" + value, token);
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"api/{EndpointType}/search?term=" + value);
+                if (tenantConstraint.HasValue)
+                {
+                    sb.Append($"&tenantId={tenantConstraint.Value}");
+                }
+                if (subjectConstraint.HasValue)
+                {
+                    sb.Append($"&subjectId={subjectConstraint.Value}");
+                }
+
+                var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>(sb.ToString(), token);
                 if (result == null || _itemList == null)
                 {
                     return default!;
@@ -60,7 +73,7 @@ where TDto : ILazyLookup
             }
         }
 
-        public async Task<TDto?> GetItemById(Guid id, CancellationToken token, bool forceUpdate = false)
+        public async Task<TDto?> GetItemById(Guid id, CancellationToken token, Guid? tenantConstraint, Guid? subjectConstraint, bool forceUpdate = false)
         {
             if (_itemList.TryGetValue(id, out var item) && !forceUpdate)
             {
@@ -72,7 +85,17 @@ where TDto : ILazyLookup
 
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<TDto>($"api/{EndpointType}/getbyid/{id}", token);
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"api/{EndpointType}/getbyid/{id}?1=1");
+                if (tenantConstraint.HasValue)
+                {
+                    sb.Append($"&tenantId={tenantConstraint.Value}");
+                }
+                if (subjectConstraint.HasValue)
+                {
+                    sb.Append($"&subjectId={subjectConstraint.Value}");
+                }
+                var result = await _httpClient.GetFromJsonAsync<TDto>(sb.ToString(), token);
                 if (result != null)
                 {
                     _itemList.TryAdd(id, new Tuple<TDto, DateTime>(result, DateTime.UtcNow));
@@ -86,7 +109,7 @@ where TDto : ILazyLookup
             }
         }
 
-        public async Task<IEnumerable<TDto>> GetItemsByIds(IEnumerable<Guid> ids, CancellationToken token, bool forceUpdate = false)
+        public async Task<IEnumerable<TDto>> GetItemsByIds(IEnumerable<Guid> ids, CancellationToken token, Guid? tenantConstraint, Guid? subjectConstraint, bool forceUpdate = false)
         {
             if (ids == null || !ids.Any())
             {
@@ -101,7 +124,17 @@ where TDto : ILazyLookup
 
             try
             {
-                var result = await _httpClient.PostAsJsonAsync($"api/{EndpointType}/getbyids", itemsToFetch, token);
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"api/{EndpointType}/getbyids?1=1");
+                if (tenantConstraint.HasValue)
+                {
+                    sb.Append($"&tenantId={tenantConstraint.Value}");
+                }
+                if (subjectConstraint.HasValue)
+                {
+                    sb.Append($"&subjectId={subjectConstraint.Value}");
+                }
+                var result = await _httpClient.PostAsJsonAsync(sb.ToString(), itemsToFetch, token);
                 if (result.IsSuccessStatusCode)
                 {
                     var items = await result.Content.ReadFromJsonAsync<IEnumerable<TDto>>(token);
@@ -123,11 +156,21 @@ where TDto : ILazyLookup
             }
         }
 
-        public async Task<IEnumerable<TDto>> GetAllItems(CancellationToken token)
+        public async Task<IEnumerable<TDto>> GetAllItems(CancellationToken token, Guid? tenantConstraint, Guid? subjectConstraint)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>($"api/{EndpointType}/getall", token);
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"api/{EndpointType}/getall");
+                if (tenantConstraint.HasValue)
+                {
+                    sb.Append($"&tenantId={tenantConstraint.Value}");
+                }
+                if (subjectConstraint.HasValue)
+                {
+                    sb.Append($"&subjectId={subjectConstraint.Value}");
+                }
+                var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>(sb.ToString(), token);
                 if (result != null)
                 {
                     foreach (var item in result)

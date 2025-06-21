@@ -17,7 +17,7 @@ namespace ComposedHealthBase.Server.Commands
     }
 
     public class UpdateCommand<T, TDto, TContext> : IUpdateCommand<T, TDto, TContext>, ICommand
-        where T : class, IAuditEntity
+        where T : class, IEntity, IAuditEntity
         where TDto : IDto
         where TContext : IDbContext<TContext>
     {
@@ -37,15 +37,14 @@ namespace ComposedHealthBase.Server.Commands
             var existingEntity = await _dbContext.Set<T>().FindAsync(dto.Id);
             if (existingEntity == null)
             {
-                throw new KeyNotFoundException($"Entity with id {dto.Id} not found.");
+                existingEntity = _mapper.Map(dto);
+                _dbContext.Set<T>().Add(existingEntity);
             }
-            var authResult = await _authorizationService.AuthorizeAsync(user, existingEntity, "resource-access");
-            if (!authResult.Succeeded)
+            else
             {
-                throw new UnauthorizedAccessException("Authorization failed for resource-access policy.");
+                _mapper.Map(dto, existingEntity);
+                _dbContext.Set<T>().Update(existingEntity);
             }
-            _mapper.Map(dto, existingEntity);
-            _dbContext.Set<T>().Update(existingEntity);
             await _dbContext.SaveChangesWithAuditAsync(user);
             return existingEntity.Id;
         }

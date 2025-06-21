@@ -45,7 +45,7 @@
             <AppointmentsTab Appointments="appointments" />
         </MudTabPanel>
         <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByCustomerId">
-            <ReferralsTab Referrals="referrals" />
+            <ReferralsTab Referrals="referrals" CustomerId="customerSelector?.SelectedItem?.Id ?? Guid.Empty" OnSave="HandleReferralSave" />
         </MudTabPanel>
         <MudTabPanel Text="Managers" OnClick="GetAllManagersByCustomerId">
             <ManagersTab Managers="managers" />
@@ -106,6 +106,19 @@
             await CustomerLookupService.UpdateItem(customerSelector.SelectedItem, CancellationToken.None);
         }
     }
+    private async Task HandleReferralSave(ReferralDto referral)
+    {
+        if (referral == null) return;
+        if (referral.Id == Guid.Empty)
+        {
+            await ReferralLookupService.AddItem(referral, CancellationToken.None);
+        }
+        else
+        {
+            await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
+        }
+        await GetAllReferralsByCustomerId();
+    }
     async Task DeleteCustomer()
     {
         if (customerSelector.SelectedItem == null) return;
@@ -156,9 +169,7 @@
         var creators = documents.Select(d => d.CreatedBy).Distinct().ToList();
         newDocument = new CustomerDocumentDto
         {
-            CustomerId = customerSelector.SelectedItem.Id,
-            Name = "",
-            FilePath = ""
+            Name = ""
         };
     }
     private async Task OnDocumentSave()

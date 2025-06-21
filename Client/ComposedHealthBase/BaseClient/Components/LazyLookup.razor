@@ -1,9 +1,10 @@
 @namespace ComposedHealthBase.BaseClient.Components
 @using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.Shared.DTOs
 @using ComposedHealthBase.Shared.Interfaces
 @using System.Linq.Expressions
-@typeparam TDto where TDto : ILazyLookup
+@typeparam TDto where TDto : IDto, ILazyLookup
 @inject ILazyLookupService<TDto> LookupService
 
 @switch (FieldType)
@@ -13,14 +14,14 @@
         break;
     case LazyLookupEnum.Search:
         <MudAutocomplete T="Guid" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
-            ValueChanged="@OnItemChanged" SearchFunc="@LookupService.ItemSearch" ShowProgressIndicator="true"
+            ValueChanged="@OnItemChanged" SearchFunc="@((v, ct) => LookupService.ItemSearch(v, ct, TenantConstraint, SubjectConstraint))" ShowProgressIndicator="true"
             ProgressIndicatorColor="Color.Default" />
         break;
     case LazyLookupEnum.Select:
         <MudSelect @bind-Value="ItemId" Label="@Label">
             @foreach (var item in _items)
             {
-                <MudSelectItem Value="item.Id">@item.DisplayName</MudSelectItem>
+                <MudSelectItem Value="@(((IDto)item).Id)">@item.DisplayName</MudSelectItem>
             }
         </MudSelect>
         break;
@@ -35,11 +36,14 @@
     [Parameter] public string Label { get; set; } = "";
     [Parameter] public EventCallback<Guid> ItemIdChanged { get; set; }
     [Parameter] public Expression<Func<Guid>>? ItemIdValueExpression { get; set; }
+    [Parameter] public Guid? TenantConstraint { get; set; }
+    [Parameter] public Guid? SubjectConstraint { get; set; }
+
     public TDto? SelectedItem { get; set; }
     private List<TDto> _items = new List<TDto>();
     protected override async Task OnParametersSetAsync()
     {
-        if (ItemId != null)
+        if (ItemId != Guid.Empty)
         {
             SelectedItem = await LookupService.GetItemById(ItemId, CancellationToken.None);
         }

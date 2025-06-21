@@ -16,7 +16,7 @@ namespace ComposedHealthBase.Server.Queries
     }
 
     public class GetPagedQuery<T, TDto, TContext> : IGetPagedQuery<T, TDto, TContext>, IQuery
-        where T : class, IAuditEntity
+        where T : class, IEntity, IAuditEntity
         where TDto : IDto
         where TContext : IDbContext<TContext>
     {
