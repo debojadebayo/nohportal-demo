@@ -103,14 +103,16 @@ variable "image_tags" {
   }
 }
 
-variable "app_database_connection_string_secret_id" {
-  description = "Key Vault secret ID for app database connection string"
+variable "app_database_connection_string" {
+  description = "Connection string for the application database"
   type        = string
+  sensitive   = true
 }
 
-variable "azure_blob_storage_connection_string_secret_id" {
-  description = "Key Vault secret ID for Azure blob storage connection string"
+variable "azure_blob_storage_connection_string" {
+  description = "Connection string for Azure Blob Storage"
   type        = string
+  sensitive   = true
 }
 
 variable "keycloak_admin_username_secret_id" {

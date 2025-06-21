@@ -40,10 +40,6 @@ output "key_vault_id" {
   value       = module.secrets.key_vault_id
 }
 
-output "key_vault_name" {
-  description = "Name of the Key Vault"
-  value       = module.secrets.key_vault_name
-}
 
 # Managed Identities
 output "container_apps_identity_id" {

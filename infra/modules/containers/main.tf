@@ -22,7 +22,7 @@ resource "azurerm_container_app" "api_server" {
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [var.container_apps_identity_id, var.keycloak_identity_id]
+    identity_ids = [var.container_apps_identity_id]
   }
 
   registry {
@@ -30,17 +30,6 @@ resource "azurerm_container_app" "api_server" {
     identity = var.container_apps_identity_id
   }
 
-  secret {
-    name                = "app-database-connection-string"
-    identity            = var.keycloak_identity_id
-    key_vault_secret_id = var.app_database_connection_string_secret_id
-  }
-
-  secret {
-    name                = "azure-blob-storage-connection-string"
-    identity            = var.keycloak_identity_id
-    key_vault_secret_id = var.azure_blob_storage_connection_string_secret_id
-  }
 
   template {
     container {
@@ -58,12 +47,12 @@ resource "azurerm_container_app" "api_server" {
         value = "http://+:8080"
       }
       env {
-        name        = "ConnectionStrings__DefaultConnection"
-        secret_name = "app-database-connection-string"
+        name  = "ConnectionStrings__DefaultConnection"
+        value = var.app_database_connection_string
       }
       env {
-        name        = "ConnectionStrings__AzureBlobStorage"
-        secret_name = "azure-blob-storage-connection-string"
+        name  = "ConnectionStrings__AzureBlobStorage"
+        value = var.azure_blob_storage_connection_string
       }
       env {
         name  = "IdentityConfig__Issuer"
