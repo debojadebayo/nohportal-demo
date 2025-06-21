@@ -65,7 +65,6 @@ namespace ComposedHealthBase.Server.Database
 		}
 		public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
 		{
-
 			return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
 		}
 

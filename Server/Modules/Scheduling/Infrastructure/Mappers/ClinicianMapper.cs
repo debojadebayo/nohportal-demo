@@ -51,8 +51,8 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             LastModifiedBy = dto.LastModifiedBy,
             CreatedDate = dto.CreatedDate,
             ModifiedDate = dto.ModifiedDate,
-            KeycloakId = keycloakId
-            // Add other properties as needed
+            KeycloakId = keycloakId,
+            SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email} {dto.LicenceNumber}".ToLower(),
         };
     }
 
@@ -83,6 +83,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         entity.AvatarImage = dto.AvatarImage;
         entity.AvatarTitle = dto.AvatarTitle;
         entity.AvatarDescription = dto.AvatarDescription;
+        entity.SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email} {dto.LicenceNumber}".ToLower();
     }
 
     public void Map(Clinician entity, ClinicianDto dto)

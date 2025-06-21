@@ -20,18 +20,28 @@
                 <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
                 <PropertyColumn Property="x => x.Start" Title="Date & Time" />
                 <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Employee</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
-                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.EmployeeId" />
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
+                            ItemId="context.Item.EmployeeId" />
                     </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Product</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
                     </CellTemplate>
                 </TemplateColumn>
                 <PropertyColumn Property="x => x.AppointmentStatus.ToString()" Title="Appointment Status" />
                 <TemplateColumn CellClass="d-flex justify-end">
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Actions</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
                         <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary"
                             Href="@($"/case-notes/{context.Item.Id}")">
@@ -48,13 +58,19 @@
                 <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
                 <PropertyColumn Property="x => x.Start" Title="Date & Time" />
                 <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Employee</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
                             ItemId="context.Item.EmployeeId" />
                     </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Product</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
                     </CellTemplate>
@@ -68,13 +84,19 @@
                 <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
                 <PropertyColumn Property="x => x.Start" Title="Date & Time" />
                 <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Employee</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
                             ItemId="context.Item.EmployeeId" />
                     </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Product</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
                     </CellTemplate>
@@ -88,13 +110,19 @@
                 <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
                 <PropertyColumn Property="x => x.Start" Title="Date & Time" />
                 <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Employee</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
                             ItemId="context.Item.EmployeeId" />
                     </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Product</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
                     </CellTemplate>

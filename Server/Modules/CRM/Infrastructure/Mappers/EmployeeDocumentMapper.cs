@@ -21,7 +21,9 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 Description = entity.Description,
                 BlobContainerName = entity.BlobContainerName,
                 BlobName = entity.BlobName,
-                EmployeeId = entity.EmployeeId
+                EmployeeId = entity.EmployeeId,
+                EmployeeDocumentType = entity.EmployeeDocumentType,
+                DocumentGuid = entity.DocumentGuid
             };
         }
 
@@ -36,7 +38,10 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 Description = dto.Description,
                 BlobContainerName = dto.BlobContainerName,
                 BlobName = dto.BlobName,
-                EmployeeId = dto.EmployeeId
+                EmployeeId = dto.EmployeeId,
+                SearchTags = $"{dto.Name} {dto.Description}".ToLower(),
+                EmployeeDocumentType = dto.EmployeeDocumentType,
+                DocumentGuid = dto.DocumentGuid
             };
         }
 
@@ -59,6 +64,9 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             entity.BlobContainerName = dto.BlobContainerName;
             entity.BlobName = dto.BlobName;
             entity.EmployeeId = dto.EmployeeId;
+            entity.SearchTags = $"{dto.Name} {dto.Description}".ToLower();
+            entity.DocumentGuid = dto.DocumentGuid;
+            entity.EmployeeDocumentType = dto.EmployeeDocumentType;
         }
 
         public void Map(EmployeeDocument entity, EmployeeDocumentDto dto)
@@ -75,6 +83,8 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             dto.BlobContainerName = entity.BlobContainerName;
             dto.BlobName = entity.BlobName;
             dto.EmployeeId = entity.EmployeeId;
+            dto.DocumentGuid = entity.DocumentGuid;
+            dto.EmployeeDocumentType = entity.EmployeeDocumentType;
         }
 
         public void Map(IEnumerable<EmployeeDocumentDto> dtos, IEnumerable<EmployeeDocument> entities)

@@ -2,7 +2,7 @@ using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.CRM.Entities
 {
-    public class Manager : BaseEntity<Manager>, IEntity, IAuditEntity, IApplicationUser
+    public class Manager : BaseEntity<Manager>, IEntity, IAuditEntity, IApplicationUser, ISearchTags
     {
         public required string FirstName { get; set; }
 		public required string LastName { get; set; }
@@ -26,5 +26,6 @@ namespace Server.Modules.CRM.Entities
                 TenantId = value;
             }
         }
+        public string SearchTags { get; set; } = string.Empty;
     }
 }

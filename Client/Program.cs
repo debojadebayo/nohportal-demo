@@ -36,8 +36,6 @@ builder.Services.AddOidcAuthentication(options =>
 
 builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
-MudGlobal.ButtonDefaults.Variant = Variant.Filled;
-MudGlobal.ButtonDefaults.Color = Color.Primary;
 builder.Services.AddBlazorPdfViewer();
 
 // Register application services

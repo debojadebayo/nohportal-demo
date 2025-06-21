@@ -26,10 +26,7 @@ namespace ComposedHealthBase.Server.Extensions
 			services.AddTransient(typeof(GetAllQuery<,,>), typeof(GetAllQuery<,,>));
 			services.AddTransient(typeof(GetByIdQuery<,,>), typeof(GetByIdQuery<,,>));
 			services.AddTransient(typeof(GetByIdsQuery<,,>), typeof(GetByIdsQuery<,,>));
-			services.AddTransient(typeof(GetAllByTenantIdQuery<,,>), typeof(GetAllByTenantIdQuery<,,>));
-			services.AddTransient(typeof(GetAllByTenantIdsQuery<,,>), typeof(GetAllByTenantIdsQuery<,,>));
-			services.AddTransient(typeof(GetAllBySubjectIdQuery<,,>), typeof(GetAllBySubjectIdQuery<,,>));
-			services.AddTransient(typeof(GetAllBySubjectIdsQuery<,,>), typeof(GetAllBySubjectIdsQuery<,,>));
+			services.AddTransient(typeof(SearchQuery<,,>), typeof(SearchQuery<,,>));
 			services.AddTransient(typeof(CreateCommand<,,>), typeof(CreateCommand<,,>));
 			services.AddTransient(typeof(UpdateCommand<,,>), typeof(UpdateCommand<,,>));
 			services.AddTransient(typeof(DeleteCommand<,>), typeof(DeleteCommand<,>));

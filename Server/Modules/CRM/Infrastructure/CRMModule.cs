@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Server.Modules.CRM.Infrastructure.Database;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Modules;
-using Server.Modules.CRM.Infrastructure.Queries;
 
 namespace Server.Modules.CRM.Infrastructure
 {
@@ -16,9 +15,6 @@ namespace Server.Modules.CRM.Infrastructure
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 			services.AddDbContext<IDbContext<CRMDbContext>, CRMDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-
-			services.AddTransient<ISearchEmployeesQuery, SearchEmployeesQuery>();
-			services.AddTransient<ISearchCustomersQuery, SearchCustomersQuery>();
 
 			return services;
 		}

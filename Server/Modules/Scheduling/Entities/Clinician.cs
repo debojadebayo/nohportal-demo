@@ -4,7 +4,7 @@ using Shared.Enums;
 
 namespace Server.Modules.Scheduling.Entities
 {
-	public class Clinician : BaseEntity<Clinician>, IEntity, IAuditEntity, IApplicationUser
+	public class Clinician : BaseEntity<Clinician>, IEntity, IAuditEntity, IApplicationUser, ISearchTags
 	{
 		public required string FirstName { get; set; }
 		public required string LastName { get; set; }
@@ -19,5 +19,6 @@ namespace Server.Modules.Scheduling.Entities
 		public RegulatorTypeEnum RegulatorType { get; set; }
 		public required string LicenceNumber { get; set; }
 		public HashSet<Schedule> CalendarItems { get; set; } = new HashSet<Schedule>();
-	}
+        public string SearchTags { get; set; } = string.Empty;
+    }
 }

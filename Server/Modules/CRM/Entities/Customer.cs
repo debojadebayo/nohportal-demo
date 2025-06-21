@@ -4,7 +4,7 @@ using ComposedHealthBase.Server.Entities;
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Customer : BaseEntity<Customer>, IEntity, IAuditEntity, ITenantEntity
+	public class Customer : BaseEntity<Customer>, IEntity, IAuditEntity, ITenantEntity, ISearchTags
 	{
 		public required string Name { get; set; }
 		public required string Telephone { get; set; }
@@ -35,5 +35,6 @@ namespace Server.Modules.CRM.Entities
 				TenantId = value;
 			}
 		}
+        public string SearchTags { get; set; } = string.Empty;
     }
 }

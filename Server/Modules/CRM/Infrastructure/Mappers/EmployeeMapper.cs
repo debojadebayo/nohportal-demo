@@ -55,7 +55,8 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             LineManager = dto.LineManager,
             Notes = dto.Notes,
             KeycloakId = keycloakId,
-            CustomerId = dto.CustomerId
+            CustomerId = dto.CustomerId,
+            SearchTags = $"{dto.Id} {dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}"
         };
     }
 
@@ -86,6 +87,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         entity.LineManager = dto.LineManager;
         entity.Notes = dto.Notes;
         entity.CustomerId = dto.CustomerId;
+        entity.SearchTags = $"{entity.Id} {dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}";
     }
 
     public void Map(Employee entity, EmployeeDto dto)

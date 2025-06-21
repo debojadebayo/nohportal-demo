@@ -1,8 +1,9 @@
 using ComposedHealthBase.Server.Entities;
+using Shared.Enums;
 
 namespace Server.Modules.CRM.Entities
 {
-    public class EmployeeDocument : BaseEntity<EmployeeDocument>, IEntity, IAuditEntity, IDocument
+    public class EmployeeDocument : BaseEntity<EmployeeDocument>, IEntity, IAuditEntity, IDocument, ISearchTags
     {
         public long EmployeeId
         {
@@ -25,5 +26,8 @@ namespace Server.Modules.CRM.Entities
                 TenantId = value;
             }
         }
+        public string SearchTags { get; set; } = string.Empty;
+        public Guid DocumentGuid { get; set; }
+        public EmployeeDocumentTypeEnum EmployeeDocumentType { get; set; } = EmployeeDocumentTypeEnum.Other;
     }
 }

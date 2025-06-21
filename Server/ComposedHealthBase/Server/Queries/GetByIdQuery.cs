@@ -12,7 +12,7 @@ namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetByIdQuery<T, TDto, TContext>
     {
-        Task<TDto?> Handle(long id, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes);
+        Task<TDto?> Handle(long id, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetByIdQuery<T, TDto, TContext> : IGetByIdQuery<T, TDto, TContext>, IQuery
@@ -31,9 +31,19 @@ namespace ComposedHealthBase.Server.Queries
             _authorizationService = authorizationService;
         }
 
-        public async Task<TDto?> Handle(long id, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes)
+        public async Task<TDto?> Handle(long id, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes)
         {
-            var query = _dbContext.Set<T>().AsNoTracking().Where(x => x.Id == id);
+            var query = _dbContext.Set<T>().AsQueryable();
+            query = query.Where(x => x.Id == id);
+            if (tenantId != 0)
+            {
+                query = query.Where(e => e.TenantId == tenantId);
+            }
+            if (subjectId != 0)
+            {
+                query = query.Where(e => e.SubjectId == subjectId);
+            }
+            query = query.AsNoTracking();
             if (includes != null && includes.Length > 0)
             {
                 foreach (var include in includes)

@@ -28,19 +28,23 @@ namespace Server.Modules.Scheduling.Endpoints
 				[FromServices] SchedulingDbContext dbContext,
 				[FromServices] IMapper<Clinician, ClinicianDto> mapper,
 				[FromServices] GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext> getAllQuery,
-				ClaimsPrincipal user
-			) => GetAllCliniciansWithSchedules(getAllQuery, user));
+				ClaimsPrincipal user,
+				[FromQuery] long tenantId = 0,
+				[FromQuery] long subjectId = 0
+			) => GetAllCliniciansWithSchedules(getAllQuery, user, tenantId, subjectId));
 
 			return endpoints;
 		}
 
 		protected async Task<IResult> GetAllCliniciansWithSchedules(
 			GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext> getAllQuery,
-			ClaimsPrincipal user)
+			ClaimsPrincipal user,
+			long tenantId,
+			long subjectId)
 		{
 			try
 			{
-				var allEntities = await getAllQuery.Handle(user, x => x.CalendarItems);
+				var allEntities = await getAllQuery.Handle(user, tenantId, subjectId, x => x.CalendarItems);
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)

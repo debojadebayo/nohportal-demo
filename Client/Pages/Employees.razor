@@ -21,15 +21,15 @@
 
 <MudText Typo="Typo.body1">Select an employee to view details</MudText>
 <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="selectedEmployeeId" Label="Employee Name" @ref="employeeSelector" />
-@if (employeeSelector.SelectedItem == null)
+@if (employeeSelector?.SelectedItem == null)
 {
     <MudButton OnClick="CreateEmployee">Add New Employee</MudButton>
 }
 
-@if (employeeSelector.SelectedItem != null)
+@if (employeeSelector?.SelectedItem != null)
 {
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @ref="tabs">
-        <MudTabPanel Text="Employees">
+        <MudTabPanel Text="Employee">
             <EmployeeDetailsTab Model="employeeSelector.SelectedItem" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee" />
         </MudTabPanel>
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByEmployeeId">

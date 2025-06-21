@@ -13,8 +13,8 @@
         break;
     case LazyLookupEnum.Search:
         <MudAutocomplete T="long" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
-            ValueChanged="@OnItemChanged" SearchFunc="@LookupService.ItemSearch" Variant="Variant.Outlined"
-            ShowProgressIndicator="true" ProgressIndicatorColor="Color.Default" />
+            ValueChanged="@OnItemChanged" SearchFunc="@LookupService.ItemSearch" ShowProgressIndicator="true"
+            ProgressIndicatorColor="Color.Default" />
         break;
     case LazyLookupEnum.Select:
         <MudSelect @bind-Value="ItemId" Label="@Label">
@@ -29,9 +29,9 @@
         break;
 }
 
-
-
 @code {
+    [Parameter] public long TenantIdFilter { get; set; } = 0;
+    [Parameter] public long SubjectIdFilter { get; set; } = 0;
     [Parameter] public LazyLookupEnum FieldType { get; set; } = LazyLookupEnum.Text;
     [Parameter] public long ItemId { get; set; } = 0;
     [Parameter] public string Label { get; set; } = "";
@@ -53,7 +53,16 @@
     }
     private async Task OnItemChanged(long value)
     {
+        if (value > 0)
+        {
+            SelectedItem = await LookupService.GetItemById(value, CancellationToken.None);
+        }
+        else
+        {
+            SelectedItem = default;
+        }
         ItemId = value;
         await ItemIdChanged.InvokeAsync(value);
+        StateHasChanged();
     }
 }

@@ -4,24 +4,38 @@
 @using ComposedHealthBase.Shared.Interfaces
 @using MudBlazor
 @using Gotho.BlazorPdf
+@using System.Linq.Expressions
 @inject IDialogService DialogService
-@inject ILazyLookupService<TDto> DocumentLookupService
+@inject ILazyLookupService<TDto> LookupService
 @inject IDocumentUploadService DocumentUploadService
 @typeparam TDto where TDto : IAuditDto, IDocumentDto, ILazyLookup
 
 <MudPaper Class="pa-4">
-    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
-        <MudText Typo="Typo.h1">Documents</MudText>
+    @if (!CompactMode)
+    {
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+            <MudText Typo="Typo.h1">Documents</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowDocumentUploadDialog"
+                StartIcon="@Icons.Material.Filled.UploadFile">Upload New Document</MudButton>
+        </MudStack>
+    }
+    else
+    {
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowDocumentUploadDialog"
             StartIcon="@Icons.Material.Filled.UploadFile">Upload New Document</MudButton>
-    </MudStack>
-    <MudDataGrid T="TDto" Items="Documents" Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true">
+    }
+
+    <MudDataGrid T="TDto" Items="_documents" Dense="true" Hover="true" Striped="true" Bordered="true"
+        Filterable="!CompactMode">
         <Columns>
             <PropertyColumn Property="x => x.Name" />
             <PropertyColumn Property="x => x.Description" />
             <PropertyColumn Property="x => x.CreatedBy" Title="Created By" />
             <PropertyColumn Property="x => x.CreatedDate" Title="Created Date" />
             <TemplateColumn CellClass="d-flex justify-end">
+                <HeaderTemplate>
+                    <MudText Typo="Typo.subtitle2">Actions</MudText>
+                </HeaderTemplate>
                 <CellTemplate>
                     <MudButton OnClick="() => OnDocumentSelected(context.Item)" Size="@Size.Small"
                         Variant="@Variant.Filled" Color="@Color.Primary">View Document</MudButton>
@@ -33,6 +47,7 @@
         </NoRecordsContent>
     </MudDataGrid>
 </MudPaper>
+
 <MudDialog @bind-Visible="@_documentViewerOpen" Options="_documentViewerOptions">
     <TitleContent>
         <MudText Typo="Typo.h6">Document Viewer</MudText>
@@ -57,8 +72,8 @@
         <MudText Typo="Typo.h6">Upload New Document</MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="NewDocument.Name" Label="Document Name" Variant="Variant.Outlined" />
-        <MudTextField @bind-Value="NewDocument.Description" Label="Description" Variant="Variant.Outlined" Lines="3"
+        <MudTextField @bind-Value="_newDto.Name" Label="Document Name" Variant="Variant.Outlined" />
+        <MudTextField @bind-Value="_newDocument.Description" Label="Description" Variant="Variant.Outlined" Lines="3"
             Class="mt-3" />
         <MudFileUpload T="IBrowserFile" FilesChanged="HandleFileSelected">
             <ActivatorContent>
@@ -86,39 +101,62 @@
 </MudDialog>
 
 @code {
-    [Parameter] public List<TDto> Documents { get; set; } = new();
-    [Parameter] public TDto NewDocument { get; set; } = default!;
-    [Parameter] public EventCallback OnSave { get; set; }
-    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public bool CompactMode { get; set; } = false;
+    [Parameter] public List<Guid> DocumentIds { get; set; } = new();
+    [Parameter] public EventCallback<List<long>> DocumentIdsChanged { get; set; }
+    [Parameter] public Expression<Func<List<long>>>? DocumentIdsValueExpression { get; set; }
+    [Parameter] public EventCallback<TDto> OnDocumentUploaded { get; set; }
+
+    private List<TDto> _documents { get; set; } = new();
     private bool _uploadDocumentDialogOpen = false;
     private IBrowserFile? _fileToUpload;
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
     private DialogOptions _documentViewerOptions = new() { FullScreen = true };
     private bool _documentViewerOpen = false;
     private string documentUrl = "";
-    private async Task OnDocumentSelected(TDto document)
+
+    protected override async Task OnParametersSetAsync()
     {
-        documentUrl = (await DocumentUploadService.GetSasLink<TDto>(((IDocumentDto)document).Id, CancellationToken.None)) ?? "";
-        _documentViewerOpen = true;
+        if (DocumentIds.Any())
+        {
+            _documents = (await LookupService.GetItemsByIds(DocumentIds, CancellationToken.None)).ToList();
+        }
         StateHasChanged();
     }
 
     private void ShowDocumentUploadDialog()
     {
         _uploadDocumentDialogOpen = true;
+        _fileToUpload = null;
     }
+
     private void HandleFileSelected(IBrowserFile file)
     {
         _fileToUpload = file;
     }
-    private async Task UploadDocument()
-    {
-        if (_fileToUpload == null || string.IsNullOrWhiteSpace(_fileToUpload.Name))
-            return;
 
-        await DocumentUploadService.UploadDocument<TDto>(new Tuple<IDocumentDto, IBrowserFile>(NewDocument, _fileToUpload),
+private async Task UploadDocument()
+{
+    if (_fileToUpload == null || string.IsNullOrWhiteSpace(_fileToUpload.Name))
+        return;
+
+    var newDto = Activator.CreateInstance<TDto>();
+    newDto.DocumentGuid = Guid.NewGuid();
+    newDto.Name = NewDocument.Name;
+    newDto.Description = NewDocument.Description;
+
+    await DocumentUploadService.UploadDocument<TDto>(
+        new Tuple<IDocumentDto, IBrowserFile>(newDto, _fileToUpload),
         CancellationToken.None);
-        await OnSave.InvokeAsync();
-        _uploadDocumentDialogOpen = false;
+
+    await OnSave.InvokeAsync();
+    _uploadDocumentDialogOpen = false;
+}
+
+    private async Task OnDocumentSelected(TDto document)
+    {
+        documentUrl = (await DocumentUploadService.GetSasLink<TDto>(((IDocumentDto)document).Id, CancellationToken.None)) ?? "";
+        _documentViewerOpen = true;
+        StateHasChanged();
     }
 }

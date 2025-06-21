@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Modules.Scheduling.Infrastructure.Database;
@@ -11,9 +12,11 @@ using Server.Modules.Scheduling.Infrastructure.Database;
 namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(SchedulingDbContext))]
-    partial class SchedulingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250620161726_AddSearchTagsToAllRelevantEntities")]
+    partial class AddSearchTagsToAllRelevantEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -409,6 +412,9 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("EmployeeDocumentId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("EmployeeId")
                         .HasColumnType("bigint");
 
@@ -431,10 +437,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
 
                     b.Property<int>("ReferralStatus")
                         .HasColumnType("integer");
-
-                    b.PrimitiveCollection<Guid[]>("RelatedDocumentIds")
-                        .IsRequired()
-                        .HasColumnType("uuid[]");
 
                     b.Property<long>("SubjectId")
                         .HasColumnType("bigint");
@@ -464,6 +466,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 1L,
+                            EmployeeDocumentId = 0L,
                             EmployeeId = 1L,
                             IsActive = false,
                             LastModifiedBy = "System",
@@ -471,7 +474,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Routine checkup for hypertension.",
                             ReferralStatus = 0,
-                            RelatedDocumentIds = new Guid[0],
                             SubjectId = 1L,
                             SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             TenantId = 1L,
@@ -485,6 +487,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 1L,
+                            EmployeeDocumentId = 0L,
                             EmployeeId = 2L,
                             IsActive = false,
                             LastModifiedBy = "System",
@@ -492,7 +495,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Follow-up for diabetes management.",
                             ReferralStatus = 0,
-                            RelatedDocumentIds = new Guid[0],
                             SubjectId = 2L,
                             SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             TenantId = 1L,
@@ -506,6 +508,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 1L,
+                            EmployeeDocumentId = 0L,
                             EmployeeId = 3L,
                             IsActive = false,
                             LastModifiedBy = "System",
@@ -513,7 +516,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Initial consultation for back pain.",
                             ReferralStatus = 0,
-                            RelatedDocumentIds = new Guid[0],
                             SubjectId = 3L,
                             SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             TenantId = 1L,
@@ -527,6 +529,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 2L,
+                            EmployeeDocumentId = 0L,
                             EmployeeId = 4L,
                             IsActive = false,
                             LastModifiedBy = "System",
@@ -534,7 +537,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Annual physical examination.",
                             ReferralStatus = 0,
-                            RelatedDocumentIds = new Guid[0],
                             SubjectId = 4L,
                             SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             TenantId = 2L,
@@ -548,6 +550,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 2L,
+                            EmployeeDocumentId = 0L,
                             EmployeeId = 5L,
                             IsActive = false,
                             LastModifiedBy = "System",
@@ -555,7 +558,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Referral for allergy testing.",
                             ReferralStatus = 0,
-                            RelatedDocumentIds = new Guid[0],
                             SubjectId = 5L,
                             SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             TenantId = 2L,
@@ -569,6 +571,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 2L,
+                            EmployeeDocumentId = 0L,
                             EmployeeId = 6L,
                             IsActive = false,
                             LastModifiedBy = "System",
@@ -576,7 +579,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Consultation for asthma symptoms.",
                             ReferralStatus = 0,
-                            RelatedDocumentIds = new Guid[0],
                             SubjectId = 6L,
                             SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             TenantId = 2L,
@@ -590,6 +592,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 3L,
+                            EmployeeDocumentId = 0L,
                             EmployeeId = 7L,
                             IsActive = false,
                             LastModifiedBy = "System",
@@ -597,7 +600,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Pre-surgery evaluation.",
                             ReferralStatus = 0,
-                            RelatedDocumentIds = new Guid[0],
                             SubjectId = 7L,
                             SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             TenantId = 3L,
@@ -611,6 +613,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 3L,
+                            EmployeeDocumentId = 0L,
                             EmployeeId = 8L,
                             IsActive = false,
                             LastModifiedBy = "System",
@@ -618,7 +621,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Post-operative follow-up.",
                             ReferralStatus = 0,
-                            RelatedDocumentIds = new Guid[0],
                             SubjectId = 8L,
                             SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             TenantId = 3L,
@@ -632,6 +634,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 3L,
+                            EmployeeDocumentId = 0L,
                             EmployeeId = 9L,
                             IsActive = false,
                             LastModifiedBy = "System",
@@ -639,7 +642,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Referral for physical therapy.",
                             ReferralStatus = 0,
-                            RelatedDocumentIds = new Guid[0],
                             SubjectId = 9L,
                             SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             TenantId = 3L,
@@ -653,6 +655,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = 3L,
+                            EmployeeDocumentId = 0L,
                             EmployeeId = 10L,
                             IsActive = false,
                             LastModifiedBy = "System",
@@ -660,7 +663,6 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Consultation for migraine headaches.",
                             ReferralStatus = 0,
-                            RelatedDocumentIds = new Guid[0],
                             SubjectId = 10L,
                             SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             TenantId = 3L,

@@ -48,6 +48,7 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
             Notes = dto.Notes,
             IsActive = dto.IsActive,
             KeycloakId = keycloakId,
+            SearchTags = $"{dto.Id} {dto.Name} {dto.Telephone} {dto.Site} {dto.OHServicesRequired} {dto.Address} {dto.Industry} {dto.Postcode} {dto.Website} {dto.Email} {dto.InvoiceEmail} {dto.Notes}",
         };
     }
 
@@ -76,6 +77,7 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
         entity.InvoiceEmail = dto.InvoiceEmail;
         entity.Notes = dto.Notes;
         entity.IsActive = dto.IsActive;
+        entity.SearchTags = $"{entity.Id} {dto.Name} {dto.Telephone} {dto.Address} {dto.Industry} {dto.Postcode} {dto.Website} {dto.Email} {dto.InvoiceEmail}";
     }
 
     public void Map(Customer entity, CustomerDto dto)

@@ -10,13 +10,15 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
         {
             Id = entity.Id,
             ReferralDetails = entity.ReferralDetails,
-            EmployeeDocumentId = entity.EmployeeDocumentId,
             Title = entity.Title,
             ReferralStatus = entity.ReferralStatus,
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
-            ModifiedDate = entity.ModifiedDate
+            ModifiedDate = entity.ModifiedDate,
+            CustomerId = entity.CustomerId,
+            EmployeeId = entity.EmployeeId,
+            RelatedDocumentIds = entity.RelatedDocumentIds.ToList()
         };
     }
 
@@ -25,9 +27,11 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
         return new Referral
         {
             ReferralDetails = dto.ReferralDetails,
-            EmployeeDocumentId = dto.EmployeeDocumentId,
             Title = dto.Title,
-            ReferralStatus = dto.ReferralStatus
+            ReferralStatus = dto.ReferralStatus,
+            CustomerId = dto.CustomerId,
+            EmployeeId = dto.EmployeeId,
+            RelatedDocumentIds = dto.RelatedDocumentIds.ToArray(),
         };
     }
 
@@ -44,22 +48,26 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
     public void Map(ReferralDto dto, Referral entity)
     {
         entity.ReferralDetails = dto.ReferralDetails;
-        entity.EmployeeDocumentId = dto.EmployeeDocumentId;
         entity.Title = dto.Title;
         entity.ReferralStatus = dto.ReferralStatus;
+        entity.CustomerId = dto.CustomerId;
+        entity.EmployeeId = dto.EmployeeId;
+        entity.RelatedDocumentIds = dto.RelatedDocumentIds.ToArray();
     }
 
     public void Map(Referral entity, ReferralDto dto)
     {
         dto.Id = entity.Id;
         dto.ReferralDetails = entity.ReferralDetails;
-        dto.EmployeeDocumentId = entity.EmployeeDocumentId;
         dto.Title = entity.Title;
         dto.ReferralStatus = entity.ReferralStatus;
         dto.CreatedBy = entity.CreatedBy;
         dto.LastModifiedBy = entity.LastModifiedBy;
         dto.CreatedDate = entity.CreatedDate;
         dto.ModifiedDate = entity.ModifiedDate;
+        dto.CustomerId = entity.CustomerId;
+        dto.EmployeeId = entity.EmployeeId;
+        dto.RelatedDocumentIds = entity.RelatedDocumentIds.ToList();
     }
 
     public void Map(IEnumerable<ReferralDto> dtos, IEnumerable<Referral> entities)

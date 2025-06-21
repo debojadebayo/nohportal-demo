@@ -17,19 +17,26 @@
             <PropertyColumn Property="x => x.CreatedDate" Title="Created" />
             <PropertyColumn Property="x => x.Title" />
             <PropertyColumn Property="x => x.ReferralDetails" Title="Referral Details" />
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Employee</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.EmployeeId" />
                     </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Customer</MudText>
+                    </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.CustomerId" />
                     </CellTemplate>
                 </TemplateColumn>
-                <TemplateColumn CellClass="d-flex justify-end">
+                <TemplateColumn>
                     <CellTemplate>
-                        <LazyLookup TDto="EmployeeDocumentDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.EmployeeDocumentId" />
+                                            <MudButton OnClick="() => OnDocumentSelected(context.Item)" Size="@Size.Small"
+                        Variant="@Variant.Filled" Color="@Color.Primary">View Referral</MudButton>
                     </CellTemplate>
                 </TemplateColumn>
         </Columns>
@@ -45,10 +52,10 @@
     </TitleContent>
     <DialogContent>
         <MudForm @ref="form" Model="_newReferral">
+            <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.EmployeeId" Label="Employee" />
             <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" />
             <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" />
-            <MudTextField @bind-Value="_newReferral.EmployeeDocumentId" Label="Document ID (Optional)" Variant="Variant.Outlined" Class="mt-3" />
-            <!-- Optionally add dropdowns for Employee/Customer if needed, or let parent handle -->
+            <DocumentBrowser CompactMode="true" TDto="EmployeeDocumentDto" NewDocument="_newDocument" DocumentUploaded="OnDocumentUploaded" @bind-DocumentIds="_newReferral.RelatedDocumentIds" />
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -64,6 +71,7 @@
 
     private bool _addReferralDialogOpen = false;
     private ReferralDto _newReferral = new ReferralDto();
+    private EmployeeDocumentDto _newDocument = default!;
     private MudForm form = default!;
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
@@ -79,6 +87,19 @@
         if (!form.IsValid) return;
         await OnSave.InvokeAsync(_newReferral);
         _addReferralDialogOpen = false;
+    }
+
+    private void OnDocumentUploaded(ReferralDto referral)
+    {
+        var documentGuid = Guid.NewGuid();
+        _newDocument = new EmployeeDocumentDto
+        {
+            DocumentGuid = documentGuid,
+            EmployeeId = _newReferral.EmployeeId,
+            Name = "",
+            Description = "",
+        };
+        referral.RelatedDocumentIds.Add(documentGuid);
     }
 
     private async Task Cancel()

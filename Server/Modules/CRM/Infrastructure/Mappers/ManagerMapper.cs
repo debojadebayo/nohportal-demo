@@ -39,7 +39,8 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 AvatarDescription = dto.AvatarDescription,
                 KeycloakId = keycloakId,
                 Department = dto.Department,
-                CustomerId = dto.CustomerId
+                CustomerId = dto.CustomerId,
+                SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}".ToLower(),
             };
         }
 
@@ -65,6 +66,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             entity.AvatarDescription = dto.AvatarDescription;
             entity.Department = dto.Department;
             entity.CustomerId = dto.CustomerId;
+            entity.SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}".ToLower();
         }
 
         public void Map(Manager entity, ManagerDto dto)

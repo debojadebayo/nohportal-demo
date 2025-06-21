@@ -1,24 +1,21 @@
 using Microsoft.AspNetCore.Authorization;
-using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Entities;
-using Shared.DTOs;
+using ComposedHealthBase.Server.Database;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
 using System.Linq.Expressions;
-using ComposedHealthBase.Server.Interfaces;
 using System.Security.Claims;
+using ComposedHealthBase.Server.Interfaces;
 
 namespace ComposedHealthBase.Server.Queries
 {
-    public interface IGetByPredicateQuery<T, TDto, TContext>
+    public interface ISearchQuery<T, TDto, TContext>
     {
-        Task<List<TDto>> Handle(Expression<Func<T, bool>> predicate, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes);
+        Task<IEnumerable<TDto>> Handle(ClaimsPrincipal user, string searchTerm, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes);
     }
 
-    public class GetByPredicateQuery<T, TDto, TContext> : IGetByPredicateQuery<T, TDto, TContext>, IQuery
+    public class SearchQuery<T, TDto, TContext> : ISearchQuery<T, TDto, TContext>, IQuery
         where T : class, IAuditEntity
         where TDto : IDto
         where TContext : IDbContext<TContext>
@@ -27,16 +24,22 @@ namespace ComposedHealthBase.Server.Queries
         public IMapper<T, TDto> _mapper { get; }
         private readonly IAuthorizationService _authorizationService;
 
-        public GetByPredicateQuery(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, IAuthorizationService authorizationService)
+        public SearchQuery(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, IAuthorizationService authorizationService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _authorizationService = authorizationService;
         }
 
-        public async Task<List<TDto>> Handle(Expression<Func<T, bool>> predicate, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes)
+        public async Task<IEnumerable<TDto>> Handle(ClaimsPrincipal user, string searchTerm, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes)
         {
+
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return Enumerable.Empty<TDto>();
+            }
             var query = _dbContext.Set<T>().AsQueryable();
+
             if (tenantId != 0)
             {
                 query = query.Where(e => e.TenantId == tenantId);
@@ -45,7 +48,20 @@ namespace ComposedHealthBase.Server.Queries
             {
                 query = query.Where(e => e.SubjectId == subjectId);
             }
-            query = query.AsNoTracking().Where(predicate);
+
+            query = query.AsNoTracking();
+            if (typeof(ISearchTags).IsAssignableFrom(typeof(T)))
+            {
+                var loweredTerm = searchTerm.ToLower();
+                query = query.Where(c =>
+                    EF.Property<string>(c, "SearchTags") != null &&
+                    EF.Property<string>(c, "SearchTags").ToLower().Contains(loweredTerm)
+                );
+            }
+            else
+            {
+                throw new InvalidOperationException($"The type {typeof(T).Name} is not searchable.");
+            }
             if (includes != null && includes.Length > 0)
             {
                 foreach (var include in includes)

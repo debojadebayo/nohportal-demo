@@ -6,12 +6,13 @@ using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
 using System.Linq.Expressions;
 using ComposedHealthBase.Server.Interfaces;
+using System.Security.Claims;
 
 namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetPagedQuery<T, TDto, TContext>
     {
-        Task<IEnumerable<TDto>> Handle(int page, int pageSize, params Expression<Func<T, object>>[]? includes);
+        Task<IEnumerable<TDto>> Handle(int page, int pageSize, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetPagedQuery<T, TDto, TContext> : IGetPagedQuery<T, TDto, TContext>, IQuery
@@ -29,9 +30,18 @@ namespace ComposedHealthBase.Server.Queries
             _mapper = mapper;
             _authorizationService = authorizationService;
         }
-        public async Task<IEnumerable<TDto>> Handle(int page, int pageSize, params Expression<Func<T, object>>[]? includes)
+        public async Task<IEnumerable<TDto>> Handle(int page, int pageSize, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes)
         {
-            var query = _dbContext.Set<T>().AsNoTracking();
+            var query = _dbContext.Set<T>().AsQueryable();
+            if (tenantId != 0)
+            {
+                query = query.Where(e => e.TenantId == tenantId);
+            }
+            if (subjectId != 0)
+            {
+                query = query.Where(e => e.SubjectId == subjectId);
+            }
+            query = query.AsNoTracking();
             if (includes != null && includes.Length > 0)
             {
                 foreach (var include in includes)
@@ -43,7 +53,7 @@ namespace ComposedHealthBase.Server.Queries
             var authorizedEntities = new List<TDto>();
             foreach (var entity in entities)
             {
-                var authResult = await _authorizationService.AuthorizeAsync(user: null, resource: entity, policyName: "resource-access"); // You may want to pass a ClaimsPrincipal here
+                var authResult = await _authorizationService.AuthorizeAsync(user, entity, "resource-access");
                 if (authResult.Succeeded)
                 {
                     authorizedEntities.Add(_mapper.Map(entity));

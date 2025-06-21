@@ -7,5 +7,6 @@
 		string BlobName { get; set; }
 		string Name { get; set; }
 		string? Description { get; set; }
+		Guid DocumentGuid { get; set; }
 	}
 }

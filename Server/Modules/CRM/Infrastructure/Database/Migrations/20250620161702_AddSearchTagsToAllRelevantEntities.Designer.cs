@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Modules.CRM.Infrastructure.Database;
@@ -11,9 +12,11 @@ using Server.Modules.CRM.Infrastructure.Database;
 namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(CRMDbContext))]
-    partial class CRMDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250620161702_AddSearchTagsToAllRelevantEntities")]
+    partial class AddSearchTagsToAllRelevantEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -345,17 +348,11 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CustomerDocumentType")
-                        .HasColumnType("integer");
-
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<Guid>("DocumentGuid")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("FilePath")
                         .IsRequired()
@@ -870,12 +867,6 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<Guid>("DocumentGuid")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("EmployeeDocumentType")
-                        .HasColumnType("integer");
 
                     b.Property<long>("EmployeeId")
                         .HasColumnType("bigint");

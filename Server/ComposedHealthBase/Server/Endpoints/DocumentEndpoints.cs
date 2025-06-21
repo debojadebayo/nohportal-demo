@@ -43,10 +43,10 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] BlobServiceClient blobServiceClient,
 				[FromServices] Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
-				[FromServices] GetByIdQuery<T, TDto, TContext> getByIdQuery,
-				long documentId,
+				[FromServices] GetByPredicateQuery<T, TDto, TContext> getByPredicateQuery,
+				Guid documentGuid,
 				ClaimsPrincipal user
-			) => await GetDocumentSasLink(getByIdQuery, blobServiceClient, authorizationService, documentId, user));
+			) => await GetDocumentSasLink(getByPredicateQuery, blobServiceClient, authorizationService, documentGuid, user));
 
 			group.MapGet("/getcontent/{documentId}", async (
 				[FromServices] IDbContext<TContext> dbContext,
@@ -82,7 +82,7 @@ namespace ComposedHealthBase.Server.Endpoints
 
 				containerClient.CreateIfNotExists();
 
-				var blobName = $"{file.FileName}_{Guid.NewGuid()}";
+				var blobName = $"{file.FileName}_{documentDto.DocumentGuid:N}";
 				var blobClient = containerClient.GetBlobClient(blobName);
 
 				using (var stream = file.OpenReadStream())
@@ -111,16 +111,16 @@ namespace ComposedHealthBase.Server.Endpoints
 		}
 
 		protected async Task<IResult> GetDocumentSasLink(
-			GetByIdQuery<T, TDto, TContext> getByIdQuery,
+			GetByPredicateQuery<T, TDto, TContext> getByPredicateQuery,
 			BlobServiceClient blobServiceClient,
 			Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
-			long documentId,
+			Guid documentGuid,
 			ClaimsPrincipal user)
 		{
 			try
 			{
 				// Retrieve the document entity from the database using the injected query handler
-				var document = await getByIdQuery.Handle(documentId, user);
+				var document = (await getByPredicateQuery.Handle(d => d.DocumentGuid == documentGuid, user)).SingleOrDefault();
 				if (document == null)
 					return Results.NotFound("Document not found.");
 				//TODO: Use authorizationService to check access if needed

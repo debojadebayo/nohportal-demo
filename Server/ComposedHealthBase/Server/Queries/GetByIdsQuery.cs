@@ -16,7 +16,7 @@ namespace ComposedHealthBase.Server.Queries
 {
     public interface IGetByIdsQuery<T, TDto, TContext>
     {
-        Task<IEnumerable<TDto>> Handle(List<long> id, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes);
+        Task<IEnumerable<TDto>> Handle(List<long> id, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes);
     }
 
     public class GetByIdsQuery<T, TDto, TContext> : IGetByIdsQuery<T, TDto, TContext>, IQuery
@@ -35,9 +35,19 @@ namespace ComposedHealthBase.Server.Queries
             _authorizationService = authorizationService;
         }
 
-        public async Task<IEnumerable<TDto>> Handle(List<long> ids, ClaimsPrincipal user, params Expression<Func<T, object>>[]? includes)
+        public async Task<IEnumerable<TDto>> Handle(List<long> ids, ClaimsPrincipal user, long tenantId = 0, long subjectId = 0, params Expression<Func<T, object>>[]? includes)
         {
-            var query = _dbContext.Set<T>().AsNoTracking().Where(x => ids.Contains(x.Id));
+            var query = _dbContext.Set<T>().AsQueryable();
+            query = query.Where(x => ids.Contains(x.Id));
+            if (tenantId != 0)
+            {
+                query = query.Where(e => e.TenantId == tenantId);
+            }
+            if (subjectId != 0)
+            {
+                query = query.Where(e => e.SubjectId == subjectId);
+            }
+            query = query.AsNoTracking();
             if (includes != null && includes.Length > 0)
             {
                 foreach (var include in includes)

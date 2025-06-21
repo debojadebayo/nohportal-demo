@@ -30,24 +30,40 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] GetAllQuery<T, TDto, TContext> getAllQuery,
-				ClaimsPrincipal user
-			) => GetAll(getAllQuery, user));
+				ClaimsPrincipal user,
+				[FromQuery] long tenantId = 0,
+				[FromQuery] long subjectId = 0
+			) => GetAll(getAllQuery, user, tenantId, subjectId));
 
 			group.MapGet("/GetById/{id}", (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] GetByIdQuery<T, TDto, TContext> getByIdQuery,
 				ClaimsPrincipal user,
-				long id
-			) => GetById(getByIdQuery, user, id));
+				long id,
+				[FromQuery] long tenantId = 0,
+				[FromQuery] long subjectId = 0
+			) => GetById(getByIdQuery, user, id, tenantId, subjectId));
 
 			group.MapPost("/GetByIds", (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] GetByIdsQuery<T, TDto, TContext> getByIdsQuery,
 				ClaimsPrincipal user,
-				List<long> ids
-			) => GetByIds(getByIdsQuery, user, ids));
+				List<long> ids,
+				[FromQuery] long tenantId = 0,
+				[FromQuery] long subjectId = 0
+			) => GetByIds(getByIdsQuery, user, ids, tenantId, subjectId));
+
+			group.MapGet("/Search", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] SearchQuery<T, TDto, TContext> searchQuery,
+				ClaimsPrincipal user,
+				[FromQuery] string term,
+				[FromQuery] long tenantId = 0,
+				[FromQuery] long subjectId = 0
+			) => Search(searchQuery, user, term, tenantId, subjectId));
 
 			group.MapPost("/Create", (
 				[FromServices] IDbContext<TContext> dbContext,
@@ -73,47 +89,14 @@ namespace ComposedHealthBase.Server.Endpoints
 				long id
 			) => Delete(deleteCommand, user, id));
 
-			// New endpoints
-			group.MapGet("/GetAllByTenantId/{tenantId}", (
-				[FromServices] IDbContext<TContext> dbContext,
-				[FromServices] IMapper<T, TDto> mapper,
-				[FromServices] GetAllByTenantIdQuery<T, TDto, TContext> getAllByTenantIdQuery,
-				ClaimsPrincipal user,
-				long tenantId
-			) => GetAllByTenantId(getAllByTenantIdQuery, user, tenantId));
-
-			group.MapPost("/GetAllByTenantIds", (
-				[FromServices] IDbContext<TContext> dbContext,
-				[FromServices] IMapper<T, TDto> mapper,
-				[FromServices] GetAllByTenantIdsQuery<T, TDto, TContext> getAllByTenantIdsQuery,
-				ClaimsPrincipal user,
-				List<long> tenantIds
-			) => GetAllByTenantIds(getAllByTenantIdsQuery, user, tenantIds));
-
-			group.MapGet("/GetAllBySubjectId/{subjectId}", (
-				[FromServices] IDbContext<TContext> dbContext,
-				[FromServices] IMapper<T, TDto> mapper,
-				[FromServices] GetAllBySubjectIdQuery<T, TDto, TContext> getAllBySubjectIdQuery,
-				ClaimsPrincipal user,
-				long subjectId
-			) => GetAllBySubjectId(getAllBySubjectIdQuery, user, subjectId));
-
-			group.MapPost("/GetAllBySubjectIds", (
-				[FromServices] IDbContext<TContext> dbContext,
-				[FromServices] IMapper<T, TDto> mapper,
-				[FromServices] GetAllBySubjectIdsQuery<T, TDto, TContext> getAllBySubjectIdsQuery,
-				ClaimsPrincipal user,
-				List<long> subjectIds
-			) => GetAllBySubjectIds(getAllBySubjectIdsQuery, user, subjectIds));
-
 			return endpoints;
 		}
 
-		protected async Task<IResult> GetAll(GetAllQuery<T, TDto, TContext> getAllQuery, ClaimsPrincipal user)
+		protected async Task<IResult> GetAll(GetAllQuery<T, TDto, TContext> getAllQuery, ClaimsPrincipal user, long tenantId, long subjectId)
 		{
 			try
 			{
-				var allEntities = await getAllQuery.Handle(user);
+				var allEntities = await getAllQuery.Handle(user, tenantId, subjectId);
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
@@ -123,11 +106,11 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetById(GetByIdQuery<T, TDto, TContext> getByIdQuery, ClaimsPrincipal user, long id)
+		protected async Task<IResult> GetById(GetByIdQuery<T, TDto, TContext> getByIdQuery, ClaimsPrincipal user, long id, long tenantId, long subjectId)
 		{
 			try
 			{
-				var entity = await getByIdQuery.Handle(id, user);
+				var entity = await getByIdQuery.Handle(id, user, tenantId, subjectId);
 				return Results.Ok(entity);
 			}
 			catch (Exception ex)
@@ -137,17 +120,31 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetByIds(GetByIdsQuery<T, TDto, TContext> getByIdsQuery, ClaimsPrincipal user, List<long> ids)
+		protected async Task<IResult> GetByIds(GetByIdsQuery<T, TDto, TContext> getByIdsQuery, ClaimsPrincipal user, List<long> ids, long tenantId, long subjectId)
 		{
 			try
 			{
-				var entities = await getByIdsQuery.Handle(ids, user);
+				var entities = await getByIdsQuery.Handle(ids, user, tenantId, subjectId);
 				return Results.Ok(entities);
 			}
 			catch (Exception ex)
 			{
 				Console.Error.WriteLine($"An error occurred: {ex.Message}");
 				return Results.Problem($"An error occurred while retrieving the {typeof(T).Name} entities.");
+			}
+		}
+
+		protected async Task<IResult> Search(SearchQuery<T, TDto, TContext> searchQuery, ClaimsPrincipal user, string term, long tenantId, long subjectId)
+		{
+			try
+			{
+				var results = await searchQuery.Handle(user, term, tenantId, subjectId);
+				return Results.Ok(results);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while searching for {typeof(T).Name} entities.");
 			}
 		}
 
@@ -190,64 +187,6 @@ namespace ComposedHealthBase.Server.Endpoints
 			{
 				Console.Error.WriteLine($"An error occurred: {ex.Message}");
 				return Results.Problem($"An error occurred while deleting the {typeof(T).Name}.");
-			}
-		}
-
-		// New methods for tenant and subject filtering
-
-		protected async Task<IResult> GetAllByTenantId(GetAllByTenantIdQuery<T, TDto, TContext> getAllByTenantIdQuery, ClaimsPrincipal user, long tenantId)
-		{
-			try
-			{
-				var entities = await getAllByTenantIdQuery.Handle(tenantId, user);
-				return Results.Ok(entities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by tenantId.");
-			}
-		}
-
-		protected async Task<IResult> GetAllByTenantIds(GetAllByTenantIdsQuery<T, TDto, TContext> getAllByTenantIdsQuery, ClaimsPrincipal user, List<long> tenantIds)
-		{
-			try
-			{
-				var entities = await getAllByTenantIdsQuery.Handle(tenantIds, user);
-				return Results.Ok(entities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by tenantIds.");
-			}
-		}
-
-		protected async Task<IResult> GetAllBySubjectId(GetAllBySubjectIdQuery<T, TDto, TContext> getAllBySubjectIdQuery, ClaimsPrincipal user, long subjectId)
-		{
-			try
-			{
-				var entities = await getAllBySubjectIdQuery.Handle(subjectId, user);
-				return Results.Ok(entities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by subjectId.");
-			}
-		}
-
-		protected async Task<IResult> GetAllBySubjectIds(GetAllBySubjectIdsQuery<T, TDto, TContext> getAllBySubjectIdsQuery, ClaimsPrincipal user, List<long> subjectIds)
-		{
-			try
-			{
-				var entities = await getAllBySubjectIdsQuery.Handle(subjectIds, user);
-				return Results.Ok(entities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by subjectIds.");
 			}
 		}
 	}
