@@ -35,6 +35,7 @@
     [Parameter] public Guid ItemId { get; set; } = Guid.Empty;
     [Parameter] public string Label { get; set; } = "";
     [Parameter] public EventCallback<Guid> ItemIdChanged { get; set; }
+    [Parameter] public EventCallback<TDto?> SelectedItemChanged { get; set; }
     [Parameter] public Expression<Func<Guid>>? ItemIdValueExpression { get; set; }
     [Parameter] public Guid? TenantConstraint { get; set; }
     [Parameter] public Guid? SubjectConstraint { get; set; }
@@ -69,6 +70,7 @@
         }
         ItemId = value;
         await ItemIdChanged.InvokeAsync(value);
+        await SelectedItemChanged.InvokeAsync(SelectedItem);
         StateHasChanged();
     }
 }
