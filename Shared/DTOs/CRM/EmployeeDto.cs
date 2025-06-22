@@ -5,8 +5,9 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.CRM
 {
-    public class EmployeeDto : BaseDto<EmployeeDto>, IDto, IAuditDto, INotesTab, ILazyLookup
+    public class EmployeeDto : BaseDto<EmployeeDto>, IDto, IAuditDto, INotesTab, ILazyLookup, ISubject
     {
+        public string? Username { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public DateTime? DOB { get; set; }

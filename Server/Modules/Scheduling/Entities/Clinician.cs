@@ -1,11 +1,13 @@
 ﻿using ComposedHealthBase.Server.Entities;
 
 using Shared.Enums;
+using ComposedHealthBase.Shared.Interfaces;
 
 namespace Server.Modules.Scheduling.Entities
 {
-	public class Clinician : BaseEntity<Clinician>, IEntity, IAuditEntity, IApplicationUser, ISearchTags
+	public class Clinician : BaseEntity<Clinician>, IEntity, IAuditEntity, ISearchTags, ISubject
 	{
+		public required string Username { get; set; }
 		public required string FirstName { get; set; }
 		public required string LastName { get; set; }
         public string? UserName { get; set; }

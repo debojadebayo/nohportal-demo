@@ -6,10 +6,11 @@ using Shared.Enums;
 
 namespace Shared.DTOs.Scheduling
 {
-    public class ClinicianDto : BaseDto<ClinicianDto>, ICalendarResource<ScheduleDto>, IDto, IAuditDto, ILazyLookup
+    public class ClinicianDto : BaseDto<ClinicianDto>, ICalendarResource<ScheduleDto>, IDto, IAuditDto, ILazyLookup, ISubject
     {
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
+        public string? Username { get; set; }
         public required string Telephone { get; set; }
         public required string Email { get; set; }
         public ClinicianTypeEnum ClinicianType { get; set; }

@@ -4,11 +4,11 @@ using System;
 
 namespace Shared.DTOs.CRM
 {
-    public class ManagerDto : BaseDto<ManagerDto>, IDto, IAuditDto, ILazyLookup
+    public class ManagerDto : BaseDto<ManagerDto>, IDto, IAuditDto, ILazyLookup, ISubject
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public string? UserName { get; set; }
+        public string? Username { get; set; }
         public string Telephone { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? AvatarImage { get; set; }

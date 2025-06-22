@@ -13,7 +13,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 Id = entity.Id,
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,
-                UserName = entity.UserName,
+                Username = entity.Username,
                 Telephone = entity.Telephone,
                 Email = entity.Email,
                 AvatarImage = entity.AvatarImage,
@@ -31,7 +31,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 Id = dto.Id,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
-                UserName = dto.UserName,
+                Username = dto.Username ?? $"{dto.FirstName}.{dto.LastName}".ToLower(),
                 Telephone = dto.Telephone,
                 Email = dto.Email,
                 AvatarImage = dto.AvatarImage,
@@ -56,9 +56,10 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
 
         public void Map(ManagerDto dto, Manager entity)
         {
+            entity.Id = dto.Id;
             entity.FirstName = dto.FirstName;
             entity.LastName = dto.LastName;
-            entity.UserName = dto.UserName;
+            entity.Username = dto.Username ?? $"{dto.FirstName}.{dto.LastName}".ToLower();
             entity.Telephone = dto.Telephone;
             entity.Email = dto.Email;
             entity.AvatarImage = dto.AvatarImage;
@@ -74,7 +75,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             dto.Id = entity.Id;
             dto.FirstName = entity.FirstName;
             dto.LastName = entity.LastName;
-            dto.UserName = entity.UserName;
+            dto.Username = entity.Username;
             dto.Telephone = entity.Telephone;
             dto.Email = entity.Email;
             dto.AvatarImage = entity.AvatarImage;

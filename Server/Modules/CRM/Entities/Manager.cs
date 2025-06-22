@@ -1,9 +1,11 @@
 using ComposedHealthBase.Server.Entities;
+using ComposedHealthBase.Shared.Interfaces;
 
 namespace Server.Modules.CRM.Entities
 {
-    public class Manager : BaseEntity<Manager>, IEntity, IAuditEntity, IApplicationUser, ISearchTags
+    public class Manager : BaseEntity<Manager>, IEntity, IAuditEntity, ISearchTags, ISubject
     {
+        public required string Username { get; set; }
         public required string FirstName { get; set; }
 		public required string LastName { get; set; }
         public string? UserName { get; set; }

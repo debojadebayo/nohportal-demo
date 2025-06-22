@@ -1,12 +1,14 @@
 ﻿using ComposedHealthBase.Server.Auth;
 using ComposedHealthBase.Server.Entities;
+using ComposedHealthBase.Shared.Interfaces;
 
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Customer : BaseEntity<Customer>, IEntity, IAuditEntity, ITenantEntity, ISearchTags
+	public class Customer : BaseEntity<Customer>, IEntity, IAuditEntity, ITenantEntity, ISearchTags, ITenant
 	{
 		public required string Name { get; set; }
+		public required string Domain { get; set; }
 		public required string Telephone { get; set; }
 		public int NumberOfEmployees { get; set; }
 		public required string Site { get; set; }
@@ -23,7 +25,7 @@ namespace Server.Modules.CRM.Entities
 		public HashSet<Employee> Employees { get; set; } = new();
 		public HashSet<Manager> Managers { get; set; } = new();
 		public Guid[] RelatedDocumentIds { get; set; } = Array.Empty<Guid>();
-		public required Guid KeycloakId { get; set; }
+		public Guid KeycloakId { get; set; } = Guid.Empty; // This is used to link the customer to a Keycloak user
 		public Guid CustomerId
 		{
 			get

@@ -6,25 +6,38 @@ using ComposedHealthBase.Shared.DTOs;
 using ComposedHealthBase.Server.Mappers;
 using System.Security.Claims;
 using ComposedHealthBase.Server.Interfaces;
+using ComposedHealthBase.Shared.Interfaces;
 namespace ComposedHealthBase.Server.Commands
 {
-    public interface ICreateOrganizationCommand
+    public interface ICreateTenantCommand<T, TDto, TContext>
     {
-        Task<Guid> Handle(string orgId, string orgName, ClaimsPrincipal user);
+        Task<Guid> Handle(TDto dto, ClaimsPrincipal user);
     }
 
-    public class CreateOrganizationCommand : ICreateOrganizationCommand
+    public class CreateTenantCommand<T, TDto, TContext> : ICreateTenantCommand<T, TDto, TContext>, ICommand
+        where T : class, IEntity, IAuditEntity, ITenant
+        where TDto : IDto, ITenant
+        where TContext : IDbContext<TContext>
     {
+        private IDbContext<TContext> _dbContext { get; }
+        private IMapper<T, TDto> _mapper { get; }
         private readonly IAuthorizationService _authorizationService;
+        //private readonly AuthDbContext _authDbContext; // Add this line
 
-        public CreateOrganizationCommand(
+        public CreateTenantCommand(
+            IDbContext<TContext> dbContext,
+            IMapper<T, TDto> mapper,
             IAuthorizationService authorizationService
+            //AuthDbContext authDbContext // Add this parameter
         )
         {
+            _dbContext = dbContext;
+            _mapper = mapper;
             _authorizationService = authorizationService;
+            //_authDbContext = authDbContext; // Assign here
         }
 
-        public async Task<Guid> Handle(string orgId, string orgName, ClaimsPrincipal user)
+        public async Task<Guid> Handle(TDto dto, ClaimsPrincipal user)
         {
             // Extract access token from ClaimsPrincipal
             var accessToken = user.FindFirst("access_token")?.Value
@@ -42,8 +55,8 @@ namespace ComposedHealthBase.Server.Commands
 
             var orgBody = new
             {
-                id = orgId,
-                name = orgName,
+                id = dto.Id.ToString(),
+                name = dto.Name,
                 enabled = true
             };
 
@@ -61,28 +74,11 @@ namespace ComposedHealthBase.Server.Commands
                 throw new Exception($"Keycloak API error: {response.StatusCode} - {error}");
             }
 
-            // Try to get the created org id from the Location header or response body
-            Guid orgId = Guid.Empty;
-            if (response.Headers.Location != null)
-            {
-                // e.g. Location: .../organizations/{id}
-                var segments = response.Headers.Location.Segments;
-                if (segments.Length > 0 && Guid.TryParse(segments[^1], out var parsedId))
-                    orgId = parsedId;
-            }
-            else
-            {
-                // fallback: try to parse response body for id
-                var body = await response.Content.ReadAsStringAsync();
-                using var doc = System.Text.Json.JsonDocument.Parse(body);
-                if (doc.RootElement.TryGetProperty("id", out var idProp) && Guid.TryParse(idProp.GetString(), out var parsedId))
-                    orgId = parsedId;
-            }
+            var newEntity = _mapper.Map(dto);
 
-            if (orgId == Guid.Empty)
-                throw new Exception("Could not determine organization id from Keycloak response.");
-
-            return orgId;
+            _dbContext.Set<T>().Add(newEntity);
+            await _dbContext.SaveChangesWithAuditAsync(user);
+            return newEntity.Id;
         }
     }
 }

@@ -16,6 +16,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             Id = entity.Id,
             FirstName = entity.FirstName,
             LastName = entity.LastName,
+            Username = entity.Username,
             Telephone = entity.Telephone,
             Email = entity.Email,
             ClinicianType = entity.ClinicianType,
@@ -39,6 +40,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             Id = dto.Id,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
+            Username = dto.Username ?? $"{dto.FirstName}.{dto.LastName}".ToLower(),
             Telephone = dto.Telephone,
             Email = dto.Email,
             ClinicianType = dto.ClinicianType,
@@ -73,6 +75,8 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
 
     public void Map(ClinicianDto dto, Clinician entity)
     {
+        entity.Id = dto.Id;
+        entity.Username = dto.Username ?? $"{dto.FirstName}.{dto.LastName}".ToLower();
         entity.FirstName = dto.FirstName;
         entity.LastName = dto.LastName;
         entity.Telephone = dto.Telephone;
@@ -91,6 +95,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         dto.Id = entity.Id;
         dto.FirstName = entity.FirstName;
         dto.LastName = entity.LastName;
+        dto.Username = entity.Username; // Ensure non-null
         dto.Telephone = entity.Telephone;
         dto.Email = entity.Email;
         dto.ClinicianType = entity.ClinicianType;
