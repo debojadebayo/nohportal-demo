@@ -17,6 +17,7 @@
 @inject ILazyLookupService<CustomerDocumentDto> DocumentLookupService
 @inject ILazyLookupService<ProductDto> ProductLookupService
 @inject ILazyLookupService<ProductTypeDto> ProductTypeLookupService
+@inject IAuthHelperService AuthHelperService
 
 @attribute [Authorize]
 
@@ -110,7 +111,9 @@
     private async Task HandleCustomerSave(CustomerDto customer)
     {
         if (newCustomer){
-            
+            selectedCustomer = await AuthHelperService.CreateTenant<CustomerDto>(customer, CancellationToken.None)!;
+            newCustomer = false;
+            return;
         }
         await CustomerLookupService.UpdateItem(customer, CancellationToken.None);
     }

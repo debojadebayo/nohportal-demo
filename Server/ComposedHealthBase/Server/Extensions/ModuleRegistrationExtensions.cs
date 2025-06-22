@@ -30,6 +30,8 @@ namespace ComposedHealthBase.Server.Extensions
 			services.AddTransient(typeof(CreateCommand<,,>), typeof(CreateCommand<,,>));
 			services.AddTransient(typeof(UpdateCommand<,,>), typeof(UpdateCommand<,,>));
 			services.AddTransient(typeof(DeleteCommand<,>), typeof(DeleteCommand<,>));
+			services.AddTransient(typeof(CreateSubjectCommand<,,>), typeof(CreateSubjectCommand<,,>));
+			services.AddTransient(typeof(CreateTenantCommand<,,>), typeof(CreateTenantCommand<,,>));
 
 			var baseModule = new BaseModule();
 			baseModule.RegisterModuleServices(services, configuration);

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MudBlazor;
 using Shared.DTOs.CRM;
 using System.Net.Http.Json;
+using ComposedHealthBase.Shared.Interfaces;
 
 namespace ComposedHealthBase.BaseClient.Services
 {
@@ -13,6 +14,8 @@ namespace ComposedHealthBase.BaseClient.Services
         Task<string?> GetEmailAsync();
         Task<string?> GetUserNameAsync();
         Task<ClaimsPrincipal?> GetUserAsync();
+        Task<TTenantDto?> CreateTenant<TTenantDto>(TTenantDto item, CancellationToken token) where TTenantDto : class, ITenant;
+        Task<TSubjectDto?> CreateSubject<TSubjectDto>(TSubjectDto item, CancellationToken token) where TSubjectDto : class, ISubject;
     }
 
     public class AuthHelperService : IAuthHelperService
@@ -51,35 +54,41 @@ namespace ComposedHealthBase.BaseClient.Services
             return user?.FindFirst("preferred_username")?.Value;
         }
 
-        public async Task CreateTenant(CustomerDto item, CancellationToken token)
+        public async Task<TTenantDto?> CreateTenant<TTenantDto>(TTenantDto item, CancellationToken token)
+            where TTenantDto : class, ITenant
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync($"api/security/createtenant", item, token);
                 if (response.IsSuccessStatusCode)
                 {
-                    _snackbar.Add($"Successfully added new customer", Severity.Success);
+                    _snackbar.Add($"Successfully added new tenant", Severity.Success);
+                    return await response.Content.ReadFromJsonAsync<TTenantDto>(cancellationToken: token);
                 }
             }
             catch (Exception ex)
             {
                 _snackbar.Add($"Failed to add item: {ex.Message}", Severity.Error);
             }
+            return null;
         }
-        public async Task CreateSubject(EmployeeDto item, CancellationToken token)
+        public async Task<TSubjectDto?> CreateSubject<TSubjectDto>(TSubjectDto item, CancellationToken token)
+            where TSubjectDto : class, ISubject
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync($"api/security/createtenant", item, token);
+                var response = await _httpClient.PostAsJsonAsync($"api/security/createsubject", item, token);
                 if (response.IsSuccessStatusCode)
                 {
-                    _snackbar.Add($"Successfully added new employee", Severity.Success);
+                    _snackbar.Add($"Successfully added new subject", Severity.Success);
+                    return await response.Content.ReadFromJsonAsync<TSubjectDto>(cancellationToken: token);
                 }
             }
             catch (Exception ex)
             {
                 _snackbar.Add($"Failed to add item: {ex.Message}", Severity.Error);
             }
+            return null;
         }
     }
 }

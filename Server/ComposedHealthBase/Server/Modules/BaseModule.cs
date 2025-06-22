@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using ComposedHealthBase.Server.Auth.AuthorizationHandlers;
+using ComposedHealthBase.Server.Config;
 using ComposedHealthBase.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,9 @@ namespace ComposedHealthBase.Server.Modules
 	{
 		public IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration)
 		{
+			services.Configure<AppOptions>(configuration);
+			services.AddSingleton<IKeycloakService, KeycloakService>();
+
 			services.AddDatabaseDeveloperPageExceptionFilter();
 			services.AddCors(options =>
 			{
@@ -82,8 +86,6 @@ namespace ComposedHealthBase.Server.Modules
 			services.AddSingleton(x => blobServiceClient);
 
 			services.AddHttpContextAccessor();
-
-			services.AddTransient<IUserContextService, UserContextService>();
 
 			return services;
 		}

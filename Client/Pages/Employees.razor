@@ -14,38 +14,41 @@
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
 @inject ILazyLookupService<ContractDto> ContractLookupService
 @inject ILazyLookupService<EmployeeDocumentDto> DocumentLookupService
+@inject IAuthHelperService AuthHelperService
 
 @attribute [Authorize]
 
 <MudText Typo="Typo.h1">Employees</MudText>
 
 <MudText Typo="Typo.body1">Select an employee to view details</MudText>
-<LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="selectedEmployeeId" Label="Employee Name" @ref="employeeSelector" />
-@if (employeeSelector?.SelectedItem == null)
+<LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="selectedEmployeeId"
+    Label="Employee Name" SelectedItemChanged="OnEmployeeSelected" />
+@if (selectedEmployee == null)
 {
     <MudButton OnClick="CreateEmployee">Add New Employee</MudButton>
 }
 
-@if (employeeSelector?.SelectedItem != null)
+@if (selectedEmployee != null)
 {
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @ref="tabs">
         <MudTabPanel Text="Employee">
-            <EmployeeDetailsTab Model="employeeSelector.SelectedItem" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee" />
+            <EmployeeDetailsTab Model="selectedEmployee" OnSave="HandleEmployeeSave" OnDelete="DeleteEmployee" />
         </MudTabPanel>
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByEmployeeId">
             <AppointmentsTab Appointments="appointments" />
         </MudTabPanel>
         <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByEmployeeId">
-            <ReferralsTab Referrals="referrals" CustomerId="employeeSelector.SelectedItem.CustomerId" EmployeeId="employeeSelector.SelectedItem.Id" />
+            <ReferralsTab Referrals="referrals" CustomerId="selectedEmployee.CustomerId" EmployeeId="selectedEmployee.Id" />
         </MudTabPanel>
         <MudTabPanel Text="Managers" OnClick="GetAllManagersByEmployeeId">
             <ManagersTab Managers="managers" />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByEmployeeId">
-            <DocumentBrowser TDto="EmployeeDocumentDto" @bind-DocumentIds="employeeSelector.SelectedItem.RelatedDocumentIds" OnDocumentUploaded="HandleEmployeeSave" />
+            <DocumentBrowser TDto="EmployeeDocumentDto" @bind-DocumentIds="selectedEmployee.RelatedDocumentIds"
+                OnDocumentUploaded="() => HandleEmployeeSave(selectedEmployee)" />
         </MudTabPanel>
         <MudTabPanel Text="Notes">
-            <NotesTab Model="employeeSelector.SelectedItem" OnSave="HandleEmployeeSave" TDto="EmployeeDto" />
+            <NotesTab Model="selectedEmployee" OnSave="HandleEmployeeSave" TDto="EmployeeDto" />
         </MudTabPanel>
     </MudTabs>
 }
@@ -59,47 +62,47 @@
     private List<EmployeeDocumentDto> documents = new();
     private EmployeeDocumentDto newDocument = default!;
     private Guid selectedEmployeeId = Guid.Empty;
-    private LazyLookup<EmployeeDto> employeeSelector = default!;
+    private EmployeeDto? selectedEmployee = default!;
+    private bool newEmployee = false;
     private void CreateEmployee()
     {
-        employeeSelector.SelectedItem = new EmployeeDto();
+        selectedEmployee = new EmployeeDto();
+        newEmployee = true;
     }
-    private async Task HandleEmployeeSave()
+    private async Task HandleEmployeeSave(EmployeeDto employee)
     {
-        if (employeeSelector.SelectedItem == null) return;
-        if (employeeSelector.SelectedItem.Id == Guid.Empty)
+        if (newEmployee && employee != null)
         {
-            await EmployeeLookupService.AddItem(employeeSelector.SelectedItem, CancellationToken.None);
+            selectedEmployee = await AuthHelperService.CreateSubject<EmployeeDto>(employee, CancellationToken.None)!;
+            newEmployee = false;
+            return;
         }
-        else
-        {
-            await EmployeeLookupService.UpdateItem(employeeSelector.SelectedItem, CancellationToken.None);
-        }
+        await EmployeeLookupService.UpdateItem(employee, CancellationToken.None);
     }
     async Task DeleteEmployee()
     {
-        if (employeeSelector.SelectedItem == null) return;
-        await EmployeeLookupService.DeleteItem(employeeSelector.SelectedItem.Id, CancellationToken.None);
+        if (selectedEmployee == null) return;
+        await EmployeeLookupService.DeleteItem(selectedEmployee.Id, CancellationToken.None);
     }
     private async Task GetAllAppointmentsByEmployeeId()
     {
-        if (employeeSelector.SelectedItem == null) return;
-        appointments = (await ScheduleLookupService.GetAllBySubjectId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
+        if (selectedEmployee == null) return;
+        appointments = (await ScheduleLookupService.GetAllBySubjectId(selectedEmployee.Id, CancellationToken.None)).ToList();
     }
     private async Task GetAllReferralsByEmployeeId()
     {
-        if (employeeSelector.SelectedItem == null) return;
-        referrals = (await ReferralLookupService.GetAllBySubjectId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
+        if (selectedEmployee == null) return;
+        referrals = (await ReferralLookupService.GetAllBySubjectId(selectedEmployee.Id, CancellationToken.None)).ToList();
     }
     private async Task GetAllManagersByEmployeeId()
     {
-        if (employeeSelector.SelectedItem == null) return;
-        managers = (await ManagerLookupService.GetAllBySubjectId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
+        if (selectedEmployee == null) return;
+        managers = (await ManagerLookupService.GetAllBySubjectId(selectedEmployee.Id, CancellationToken.None)).ToList();
     }
     private async Task GetAllDocumentsByEmployeeId()
     {
-        if (employeeSelector.SelectedItem == null) return;
-        documents = (await DocumentLookupService.GetAllBySubjectId(employeeSelector.SelectedItem.Id, CancellationToken.None)).ToList();
+        if (selectedEmployee == null) return;
+        documents = (await DocumentLookupService.GetAllBySubjectId(selectedEmployee.Id, CancellationToken.None)).ToList();
         newDocument = new EmployeeDocumentDto
         {
             Name = ""
@@ -113,5 +116,10 @@
         {
             Name = ""
         };
+    }
+        private void OnEmployeeSelected(EmployeeDto employee)
+    {
+        selectedEmployee = employee;
+
     }
 }

@@ -18,14 +18,13 @@ using System.Security.Claims;
 
 namespace ComposedHealthBase.Server.Endpoints
 {
-	public abstract class KeycloakSubjectEndpoints<T, TDto, TContext> : BaseEndpoints<T, TDto, TContext>
+	public abstract class KeycloakSubjectEndpoints<T, TDto, TContext>
 	where T : class, IEntity, IAuditEntity, ISubject
 	where TDto : IDto, ISubject
 	where TContext : IDbContext<TContext>
 	{
-		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
 		{
-			endpoints = base.MapEndpoints(endpoints);
 			var group = endpoints.MapGroup($"/api/security");
 
 			group.MapPost("/createsubject", async (
@@ -43,8 +42,8 @@ namespace ComposedHealthBase.Server.Endpoints
 			ClaimsPrincipal user,
 			TDto dto)
 		{
-			var id = await createSubjectCommand.Handle(dto, user);
-			return Results.Ok(id);
+			var result = await createSubjectCommand.Handle(dto, user);
+			return Results.Ok(result);
 		}
 	}
 }

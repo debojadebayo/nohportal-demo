@@ -7,11 +7,23 @@ using ComposedHealthBase.Server.Mappers;
 using System.Security.Claims;
 using ComposedHealthBase.Server.Interfaces;
 using ComposedHealthBase.Shared.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
+
+using FS.Keycloak.RestApiClient.Api;
+using FS.Keycloak.RestApiClient.Authentication.ClientFactory;
+using FS.Keycloak.RestApiClient.Authentication.Flow;
+using FS.Keycloak.RestApiClient.ClientFactory;
+using FS.Keycloak.RestApiClient.Model;
+using Microsoft.Extensions.Options;
+using ComposedHealthBase.Server.Config;
+using ComposedHealthBase.Server.Services;
+
 namespace ComposedHealthBase.Server.Commands
 {
     public interface ICreateTenantCommand<T, TDto, TContext>
     {
-        Task<Guid> Handle(TDto dto, ClaimsPrincipal user);
+        Task<TDto> Handle(TDto dto, ClaimsPrincipal user);
     }
 
     public class CreateTenantCommand<T, TDto, TContext> : ICreateTenantCommand<T, TDto, TContext>, ICommand
@@ -22,63 +34,43 @@ namespace ComposedHealthBase.Server.Commands
         private IDbContext<TContext> _dbContext { get; }
         private IMapper<T, TDto> _mapper { get; }
         private readonly IAuthorizationService _authorizationService;
-        //private readonly AuthDbContext _authDbContext; // Add this line
+        private readonly IKeycloakService _keycloakService;
 
         public CreateTenantCommand(
             IDbContext<TContext> dbContext,
             IMapper<T, TDto> mapper,
-            IAuthorizationService authorizationService
-            //AuthDbContext authDbContext // Add this parameter
+            IAuthorizationService authorizationService,
+            IKeycloakService keycloakService
         )
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _authorizationService = authorizationService;
-            //_authDbContext = authDbContext; // Assign here
+            _keycloakService = keycloakService;
         }
 
-        public async Task<Guid> Handle(TDto dto, ClaimsPrincipal user)
+        public async Task<TDto> Handle(TDto dto, ClaimsPrincipal user)
         {
-            // Extract access token from ClaimsPrincipal
-            var accessToken = user.FindFirst("access_token")?.Value
-                ?? user.FindFirst("jwt")?.Value
-                ?? user.FindFirst("Authorization")?.Value
-                ?? null;
-
-            if (string.IsNullOrEmpty(accessToken))
-                throw new UnauthorizedAccessException("No access token found in user claims.");
-
-            using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://keycloak:8080");
-            httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-
-            var orgBody = new
+            var orgBody = new OrganizationRepresentation
             {
-                id = dto.Id.ToString(),
-                name = dto.Name,
-                enabled = true
+                Name = dto.Name,
+                Domains = new List<OrganizationDomainRepresentation> { new OrganizationDomainRepresentation { Name = dto.Domain } },
+                Enabled = true
             };
 
-            var content = new StringContent(
-                System.Text.Json.JsonSerializer.Serialize(orgBody),
-                System.Text.Encoding.UTF8,
-                "application/json"
-            );
+            using var organizationsApi = _keycloakService.CreateOrganizationsApi();
+            await organizationsApi.PostOrganizationsAsync(_keycloakService.GetRealmName(), orgBody);
 
-            var response = await httpClient.PostAsync("/admin/realms/NationOH/organizations", content);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Keycloak API error: {response.StatusCode} - {error}");
-            }
+            var newId = (await organizationsApi.GetOrganizationsAsync(_keycloakService.GetRealmName(), true, true, null, 1, null, dto.Name)).FirstOrDefault()?.Id;
 
             var newEntity = _mapper.Map(dto);
 
+            newEntity.Id = newId != null ? Guid.Parse(newId) : Guid.NewGuid();
+
             _dbContext.Set<T>().Add(newEntity);
             await _dbContext.SaveChangesWithAuditAsync(user);
-            return newEntity.Id;
+            dto.Id = newEntity.Id;
+            return dto;
         }
     }
 }
