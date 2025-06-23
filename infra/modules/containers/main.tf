@@ -34,7 +34,7 @@ resource "azurerm_container_app" "api_server" {
   template {
     min_replicas = 1
     max_replicas = 3
-    
+
     container {
       name   = "server"
       image  = var.server_image
@@ -243,7 +243,7 @@ resource "azurerm_container_app" "frontend" {
   template {
     min_replicas = 1
     max_replicas = 3
-    
+
     container {
       name   = "frontend"
       image  = var.frontend_image
