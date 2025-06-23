@@ -7,6 +7,7 @@ resource "azurerm_key_vault" "kv" {
   soft_delete_retention_days  = 90
   purge_protection_enabled    = true
   sku_name                    = "standard"
+  enable_rbac_authorization   = false
 
   # Network ACLs for restricting access
   network_acls {
@@ -75,19 +76,53 @@ resource "azurerm_key_vault" "kv" {
   }
 
   # Add access policy for GitHub Actions service principal (when provided)
-  dynamic "access_policy" {
-    for_each = var.github_actions_service_principal_object_id != "" ? [1] : []
-    content {
-      tenant_id = data.azurerm_client_config.current.tenant_id
-      object_id = var.github_actions_service_principal_object_id
+  # dynamic "access_policy" {
+  #   for_each = var.github_actions_service_principal_object_id != "" ? [1] : []
+  #   content {
+  #     tenant_id = data.azurerm_client_config.current.tenant_id
+  #     object_id = var.github_actions_service_principal_object_id
 
-      secret_permissions = [
-        "Get",
-        "List",
-        "Set"
-      ]
-    }
+  #     secret_permissions = [
+  #       "Get",
+  #       "List",
+  #       "Set", 
+  #       "Delete"
+  #     ]
+  #   }
+  # }
+
+  # Add access policy for GitHub Actions service principal
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = "4e4da53e-e85a-430f-9bcf-168ca0d53bc6"
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Backup",
+      "Restore",
+      "Purge"
+    ]
   }
+
+  # Add access policy for local Terraform user
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = "deb2fbb9-f05e-4aa3-ab29-b8fb021224e4"
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Backup",
+      "Restore",
+      "Purge"
+    ]
+  }
+
 
   # Prevent accidental deletion in production
   # lifecycle {
