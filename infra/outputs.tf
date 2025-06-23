@@ -52,15 +52,15 @@ output "container_apps_identity_principal_id" {
   value       = azurerm_user_assigned_identity.container_apps_identity.principal_id
 }
 
-output "keycloak_identity_id" {
-  description = "ID of the Keycloak managed identity"
-  value       = azurerm_user_assigned_identity.uai_keycloak.id
-}
+# output "keycloak_identity_id" {
+#   description = "ID of the Keycloak managed identity"
+#   value       = azurerm_user_assigned_identity.uai_keycloak.id
+# }
 
-output "keycloak_identity_principal_id" {
-  description = "Principal ID of the Keycloak managed identity"
-  value       = azurerm_user_assigned_identity.uai_keycloak.principal_id
-}
+# output "keycloak_identity_principal_id" {
+#   description = "Principal ID of the Keycloak managed identity"
+#   value       = azurerm_user_assigned_identity.uai_keycloak.principal_id
+# }
 
 # Database
 output "postgresql_server_fqdn" {
