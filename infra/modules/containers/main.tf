@@ -128,7 +128,7 @@ resource "azurerm_container_app" "keycloak_server" {
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [var.container_apps_identity_id]
+    identity_ids = [var.keycloak_identity_id, var.container_apps_identity_id]
   }
 
   registry {
@@ -138,25 +138,25 @@ resource "azurerm_container_app" "keycloak_server" {
 
   secret {
     name                = "keycloak-admin-username"
-    identity            = var.container_apps_identity_id
+    identity            = var.keycloak_identity_id
     key_vault_secret_id = var.keycloak_admin_username_secret_id
   }
 
   secret {
     name                = "keycloak-admin-password"
-    identity            = var.container_apps_identity_id
+    identity            = var.keycloak_identity_id
     key_vault_secret_id = var.keycloak_admin_password_secret_id
   }
 
   secret {
     name                = "keycloak-db-username"
-    identity            = var.container_apps_identity_id
+    identity            = var.keycloak_identity_id
     key_vault_secret_id = var.keycloak_db_username_secret_id
   }
 
   secret {
     name                = "keycloak-db-password"
-    identity            = var.container_apps_identity_id
+    identity            = var.keycloak_identity_id
     key_vault_secret_id = var.keycloak_db_password_secret_id
   }
 
