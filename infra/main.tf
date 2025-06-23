@@ -45,10 +45,10 @@ resource "azurerm_role_assignment" "acr_pull_role" {
   ]
 }
 
-resource "azurerm_role_assignment" "kv_secrets_officer" { 
+resource "azurerm_role_assignment" "kv_secrets_officer" {
   scope                = module.secrets.key_vault_id
-  role_definition_name = "Key Vault Secrets Officer" 
-  principal_id         = "4e4da53e-e85a-430f-9bcf-168ca0d53bc6" 
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = "4e4da53e-e85a-430f-9bcf-168ca0d53bc6"
 
   depends_on = [
     module.secrets
