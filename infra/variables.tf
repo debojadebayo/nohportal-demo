@@ -46,7 +46,6 @@ variable "aspnetcore_environment" {
 variable "keycloak_issuer_url" {
   description = "Keycloak issuer URL"
   type        = string
-  default     = "http://localhost:8080/realms/NationOH"
 }
 
 variable "keycloak_features" {
