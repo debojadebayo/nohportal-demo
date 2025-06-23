@@ -23,11 +23,11 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
-resource "azurerm_user_assigned_identity" "uai_keycloak" {
-  name                = "${var.resource_group_name}-uai-keycloak"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
-}
+# resource "azurerm_user_assigned_identity" "uai_keycloak" {
+#   name                = "${var.resource_group_name}-uai-keycloak"
+#   location            = var.location
+#   resource_group_name = azurerm_resource_group.rg.name
+# }
 
 resource "azurerm_user_assigned_identity" "container_apps_identity" {
   name                = "${var.resource_group_name}-uai-container-apps"
@@ -48,7 +48,7 @@ resource "azurerm_role_assignment" "acr_pull_role" {
 resource "azurerm_role_assignment" "keycloak_kv_secrets_user" {
   scope                = module.secrets.key_vault_id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = azurerm_user_assigned_identity.uai_keycloak.principal_id
+  principal_id         = azurerm_user_assigned_identity.container_apps_identity.principal_id
 
   depends_on = [
     module.secrets
@@ -72,7 +72,7 @@ module "secrets" {
   subnet_ids                                 = module.networking.subnets_ids
   key_vault_name                             = "${var.resource_group_name}-kv"
   vnet_id                                    = module.networking.vnet_id
-  keycloak_managed_identity_object_id        = azurerm_user_assigned_identity.uai_keycloak.principal_id
+  keycloak_managed_identity_object_id        = azurerm_user_assigned_identity.container_apps_identity.principal_id
   github_actions_service_principal_object_id = var.github_actions_service_principal_object_id
 }
 

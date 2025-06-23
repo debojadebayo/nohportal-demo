@@ -34,7 +34,7 @@ resource "azurerm_container_app" "api_server" {
   template {
     min_replicas = 1
     max_replicas = 3
-    
+
     container {
       name   = "server"
       image  = var.server_image
@@ -165,10 +165,10 @@ resource "azurerm_container_app" "keycloak_server" {
     max_replicas = 3
 
     container {
-      name   = "keycloak"
-      image  = "keycloak/keycloak:${var.image_tags.keycloak}"
-      cpu    = 0.5
-      memory = "1Gi"
+      name    = "keycloak"
+      image   = "keycloak/keycloak:${var.image_tags.keycloak}"
+      cpu     = 0.5
+      memory  = "1Gi"
       command = ["start-dev"]
 
       env {
@@ -205,7 +205,7 @@ resource "azurerm_container_app" "keycloak_server" {
         value = "true"
       }
       env {
-        name  = "KC_HTTP_PORT" 
+        name  = "KC_HTTP_PORT"
         value = "8080"
       }
       env {
