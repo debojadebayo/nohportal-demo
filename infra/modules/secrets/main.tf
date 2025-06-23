@@ -94,6 +94,7 @@ resource "azurerm_key_vault" "kv" {
   # Add access policy for GitHub Actions service principal
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
+    # Will need to change this to the actual object id of the github actions service principal
     object_id = "4e4da53e-e85a-430f-9bcf-168ca0d53bc6"
 
     secret_permissions = [
@@ -110,6 +111,7 @@ resource "azurerm_key_vault" "kv" {
   # Add access policy for local Terraform user
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
+    # Will need to change this to the actual object id of the terraform user
     object_id = "deb2fbb9-f05e-4aa3-ab29-b8fb021224e4"
 
     secret_permissions = [

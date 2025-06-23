@@ -131,11 +131,6 @@ resource "azurerm_container_app" "keycloak_server" {
     identity_ids = [var.keycloak_identity_id, var.container_apps_identity_id]
   }
 
-  registry {
-    server   = var.container_registry_url
-    identity = var.container_apps_identity_id
-  }
-
   secret {
     name                = "keycloak-admin-username"
     identity            = var.keycloak_identity_id
@@ -165,11 +160,11 @@ resource "azurerm_container_app" "keycloak_server" {
     max_replicas = 3
 
     container {
-      name    = "keycloak"
-      image   = "keycloak/keycloak:${var.image_tags.keycloak}"
-      cpu     = 0.5
-      memory  = "1Gi"
-      command = ["start-dev"]
+      name   = "keycloak"
+      image  = "quay.io/keycloak/keycloak:${var.image_tags.keycloak}"
+      cpu    = 0.5
+      memory = "1Gi"
+      args   = ["start-dev"]
 
       env {
         name        = "KC_BOOTSTRAP_ADMIN_USERNAME"

@@ -193,6 +193,11 @@ jobs:
             # Otherwise use the latest tag for the specified environment
             IMAGE_TAG="${{ steps.resources.outputs.ACR_LOGIN_SERVER }}/app.client:${{ steps.env.outputs.ENV }}-latest"
           fi
+          
+          az containerapp update \
+            --name ${{ steps.resources.outputs.FRONTEND_APP }} \
+            --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
+            --image $IMAGE_TAG
         
       # Update Server Container Environment Variables with Real FQDNs
       - name: Update Server Environment Variables
@@ -205,11 +210,10 @@ jobs:
           if [[ -n "$GATEWAY_FQDN" ]]; then
             echo "Updating server environment variables with Gateway FQDN: $GATEWAY_FQDN"
             
-            # Update server container with proper Keycloak issuer URL and allowed hosts
+            # Update server container with proper Keycloak issuer URL and allowed hosts (no image update needed)
             az containerapp update \
               --name ${{ steps.resources.outputs.API_APP }} \
               --resource-group ${{ steps.resources.outputs.RESOURCE_GROUP }} \
-              --image $IMAGE_TAG \
               --set-env-vars \
                 "IdentityConfig__Issuer=https://${GATEWAY_FQDN}/auth/realms/NationOH" \
                 "AllowedHosts=${GATEWAY_FQDN}" || echo "Failed to update server environment variables"
