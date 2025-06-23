@@ -32,6 +32,9 @@ resource "azurerm_container_app" "api_server" {
 
 
   template {
+    min_replicas = 1
+    max_replicas = 3
+    
     container {
       name   = "server"
       image  = var.server_image
@@ -54,6 +57,7 @@ resource "azurerm_container_app" "api_server" {
         name  = "ConnectionStrings__AzureBlobStorage"
         value = var.azure_blob_storage_connection_string
       }
+
       env {
         name  = "IdentityConfig__Issuer"
         value = var.keycloak_issuer_url
@@ -157,6 +161,9 @@ resource "azurerm_container_app" "keycloak_server" {
   }
 
   template {
+    min_replicas = 1
+    max_replicas = 3
+
     container {
       name   = "keycloak"
       image  = "keycloak/keycloak:${var.image_tags.keycloak}"
@@ -234,6 +241,9 @@ resource "azurerm_container_app" "frontend" {
   }
 
   template {
+    min_replicas = 1
+    max_replicas = 3
+    
     container {
       name   = "frontend"
       image  = var.frontend_image

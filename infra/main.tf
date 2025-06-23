@@ -45,6 +45,16 @@ resource "azurerm_role_assignment" "acr_pull_role" {
   ]
 }
 
+resource "azurerm_role_assignment" "keycloak_kv_secrets_user" {
+  scope                = module.secrets.key_vault_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_user_assigned_identity.uai_keycloak.principal_id
+
+  depends_on = [
+    module.secrets
+  ]
+}
+
 # Get current Azure client config 
 data "azurerm_client_config" "current" {}
 
