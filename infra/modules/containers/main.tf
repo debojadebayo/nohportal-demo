@@ -141,7 +141,7 @@ resource "azurerm_container_app" "keycloak_server" {
     identity            = var.container_apps_identity_id
     key_vault_secret_id = var.keycloak_admin_username_secret_id
   }
-
+  
   secret {
     name                = "keycloak-admin-password"
     identity            = var.container_apps_identity_id

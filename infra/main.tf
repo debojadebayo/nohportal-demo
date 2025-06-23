@@ -141,7 +141,7 @@ module "containers" {
 
   # Managed identity 
   container_apps_identity_id = azurerm_user_assigned_identity.container_apps_identity.id
-  keycloak_identity_id       = azurerm_user_assigned_identity.uai_keycloak.id
+  keycloak_identity_id       = azurerm_user_assigned_identity.container_apps_identity.id
 
   # API Server 
   server_container_app_name = "${var.resource_group_name}server"

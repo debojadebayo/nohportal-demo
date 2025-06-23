@@ -27,8 +27,3 @@ image_tags = {
 
 # Application Gateway Configuration
 app_gateway_sku_tier = "WAF_v2"
-
-# Domain and SSL Configuration (empty for dev)
-domain_name              = ""
-ssl_certificate_path     = ""
-ssl_certificate_password = ""
