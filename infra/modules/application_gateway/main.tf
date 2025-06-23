@@ -124,7 +124,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     port                  = 8080
     protocol              = "Http"
     request_timeout       = 60
-    # probe_name                          = "frontend-health-probe"
+    probe_name                          = "frontend-health-probe"
     pick_host_name_from_backend_address = true
   }
 
@@ -134,7 +134,7 @@ resource "azurerm_application_gateway" "app_gateway" {
     port                  = 8080
     protocol              = "Http"
     request_timeout       = 60
-    # probe_name                          = "api-health-probe"
+    probe_name                          = "api-health-probe"
     pick_host_name_from_backend_address = true
   }
 
@@ -144,43 +144,40 @@ resource "azurerm_application_gateway" "app_gateway" {
     port                  = 8080
     protocol              = "Http"
     request_timeout       = 60
-    # probe_name                          = "auth-health-probe"
+    probe_name                          = "auth-health-probe"
     pick_host_name_from_backend_address = true
   }
 
   # Health probes
-  # probe {
-  #   name = "frontend-health-probe"
-  #   # host                = var.frontend_fqdn
-  #   protocol                                  = "Http"
-  #   path                                      = "/health"
-  #   interval                                  = 30
-  #   timeout                                   = 30
-  #   unhealthy_threshold                       = 3
-  #   pick_host_name_from_backend_http_settings = true
-  # }
+  probe {
+    name = "frontend-health-probe"
+    protocol                                  = "Http"
+    path                                      = "/health"
+    interval                                  = 30
+    timeout                                   = 30
+    unhealthy_threshold                       = 3
+    pick_host_name_from_backend_http_settings = true
+  }
 
-  # probe {
-  #   name = "api-health-probe"
-  #   # host                = var.api_fqdn
-  #   protocol                                  = "Http"
-  #   path                                      = "/api-health"
-  #   interval                                  = 30
-  #   timeout                                   = 30
-  #   unhealthy_threshold                       = 3
-  #   pick_host_name_from_backend_http_settings = true
-  # }
+  probe {
+    name = "api-health-probe"
+    protocol                                  = "Http"
+    path                                      = "/api-health"
+    interval                                  = 30
+    timeout                                   = 30
+    unhealthy_threshold                       = 3
+    pick_host_name_from_backend_http_settings = true
+  }
 
-  # probe {
-  #   name = "auth-health-probe"
-  #   # host                = var.auth_fqdn
-  #   protocol                                  = "Http"
-  #   path                                      = "/auth/realms/master"
-  #   interval                                  = 30
-  #   timeout                                   = 30
-  #   unhealthy_threshold                       = 3
-  #   pick_host_name_from_backend_http_settings = true
-  # }
+  probe {
+    name = "auth-health-probe"
+    protocol                                  = "Http"
+    path                                      = "/health/live"
+    interval                                  = 30
+    timeout                                   = 30
+    unhealthy_threshold                       = 3
+    pick_host_name_from_backend_http_settings = true
+  }
 
   #   HTTP listener
   http_listener {

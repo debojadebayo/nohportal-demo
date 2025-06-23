@@ -34,7 +34,7 @@ resource "azurerm_container_app" "api_server" {
   template {
     min_replicas = 1
     max_replicas = 3
-
+    
     container {
       name   = "server"
       image  = var.server_image
@@ -169,6 +169,7 @@ resource "azurerm_container_app" "keycloak_server" {
       image  = "keycloak/keycloak:${var.image_tags.keycloak}"
       cpu    = 0.5
       memory = "1Gi"
+      command = ["start-dev"]
 
       env {
         name        = "KC_BOOTSTRAP_ADMIN_USERNAME"
@@ -199,8 +200,25 @@ resource "azurerm_container_app" "keycloak_server" {
         value = var.keycloak_features
       }
 
+      env {
+        name  = "KC_HTTP_ENABLED"
+        value = "true"
+      }
+      env {
+        name  = "KC_HTTP_PORT" 
+        value = "8080"
+      }
+      env {
+        name  = "KC_PROXY"
+        value = "edge"
+      }
+      env {
+        name  = "KC_HOSTNAME_STRICT"
+        value = "false"
+      }
+
       liveness_probe {
-        path                    = "/realms/master"
+        path                    = "/health/live"
         port                    = 8080
         transport               = "HTTP"
         initial_delay           = 60
