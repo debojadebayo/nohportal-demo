@@ -95,7 +95,11 @@ where TDto : IDto, ILazyLookup
                 {
                     sb.Append($"&subjectId={subjectConstraint.Value}");
                 }
-                var result = await _httpClient.GetFromJsonAsync<TDto>(sb.ToString(), token);
+                var response = await _httpClient.GetAsync(sb.ToString(), token);
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return default;
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadFromJsonAsync<TDto>(cancellationToken: token);
                 if (result != null)
                 {
                     _itemList.TryAdd(id, new Tuple<TDto, DateTime>(result, DateTime.UtcNow));
@@ -134,10 +138,12 @@ where TDto : IDto, ILazyLookup
                 {
                     sb.Append($"&subjectId={subjectConstraint.Value}");
                 }
-                var result = await _httpClient.PostAsJsonAsync(sb.ToString(), itemsToFetch, token);
-                if (result.IsSuccessStatusCode)
+                var response = await _httpClient.PostAsJsonAsync(sb.ToString(), itemsToFetch, token);
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return Enumerable.Empty<TDto>();
+                if (response.IsSuccessStatusCode)
                 {
-                    var items = await result.Content.ReadFromJsonAsync<IEnumerable<TDto>>(token);
+                    var items = await response.Content.ReadFromJsonAsync<IEnumerable<TDto>>(token);
                     if (items != null)
                     {
                         foreach (var item in items)
@@ -170,7 +176,11 @@ where TDto : IDto, ILazyLookup
                 {
                     sb.Append($"&subjectId={subjectConstraint.Value}");
                 }
-                var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>(sb.ToString(), token);
+                var response = await _httpClient.GetAsync(sb.ToString(), token);
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return Enumerable.Empty<TDto>();
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadFromJsonAsync<IEnumerable<TDto>>(cancellationToken: token);
                 if (result != null)
                 {
                     foreach (var item in result)

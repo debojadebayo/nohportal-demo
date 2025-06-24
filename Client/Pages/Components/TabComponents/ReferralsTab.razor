@@ -39,6 +39,11 @@
                     <CellTemplate>
                                             <MudButton Size="@Size.Small" OnClick="() => ViewReferral(context.Item)"
                         Variant="@Variant.Filled" Color="@Color.Primary">View Referral</MudButton>
+                            @if (AppointmentMode)
+                            {
+                                <MudButton Size="@Size.Small" OnClick="() => OnSelectForAppointment.InvokeAsync(context.Item)"
+                                    Variant="@Variant.Filled" Color="@Color.Primary">Select for Appointment</MudButton>
+                            }
                     </CellTemplate>
                 </TemplateColumn>
         </Columns>
@@ -50,10 +55,11 @@
 
 <MudDialog @bind-Visible="_addReferralDialogOpen" Options="_dialogOptions">
     <TitleContent>
-        <MudText Typo="Typo.h6">Add New Referral</MudText>
+        <MudText Typo="Typo.h6">Referral</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="form" Model="_newReferral">
+            <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.CustomerId" TenantConstraint="CustomerId" Label="Customer" />
             <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.EmployeeId" TenantConstraint="CustomerId" Label="Employee" />
             <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" />
             <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" />
@@ -72,6 +78,8 @@
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
     [Parameter] public Guid EmployeeId { get; set; } = Guid.Empty;
+    [Parameter] public bool AppointmentMode { get; set; } = false;
+    [Parameter] public EventCallback<ReferralDto> OnSelectForAppointment { get; set; }
 
     private bool _addReferralDialogOpen = false;
     private ReferralDto _newReferral = new ReferralDto();

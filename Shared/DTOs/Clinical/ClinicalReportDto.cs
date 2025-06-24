@@ -1,11 +1,12 @@
 using ComposedHealthBase.Shared.DTOs;
+using ComposedHealthBase.Shared.Interfaces;
 using Shared.DTOs;
 using Shared.Enums;
 using System;
 
 namespace Shared.DTOs.Clinical
 {
-    public class ClinicalReportDto : BaseDto<ClinicalReportDto>, IDto, IAuditDto
+    public class ClinicalReportDto : BaseDto<ClinicalReportDto>, IDto, IAuditDto, ILazyLookup
     {
         public Guid EmployeeId { get; set; }
         public string? EmployeeName { get; set; }
@@ -17,5 +18,6 @@ namespace Shared.DTOs.Clinical
         public DateTime DateReportSubmitted { get; set; }
         public string? ReportNotes { get; set; }
         public Guid ClinicianId { get; set; }
+        public string DisplayName { get; set; } = string.Empty;
     }
 }

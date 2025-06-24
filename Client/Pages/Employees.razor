@@ -21,8 +21,8 @@
 <MudText Typo="Typo.h1">Employees</MudText>
 
 <MudText Typo="Typo.body1">Select an employee to view details</MudText>
-<LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="selectedEmployeeId"
-    Label="Employee Name" SelectedItemChanged="OnEmployeeSelected" />
+<LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="selectedEmployeeId" Label="Employee Name"
+    SelectedItemChanged="OnEmployeeSelected" />
 @if (selectedEmployee == null)
 {
     <MudButton OnClick="CreateEmployee">Add New Employee</MudButton>
@@ -38,7 +38,8 @@
             <AppointmentsTab Appointments="appointments" />
         </MudTabPanel>
         <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByEmployeeId">
-            <ReferralsTab Referrals="referrals" CustomerId="selectedEmployee.CustomerId" EmployeeId="selectedEmployee.Id" />
+            <ReferralsTab Referrals="referrals" CustomerId="selectedEmployee.CustomerId" EmployeeId="selectedEmployee.Id"
+                OnSave="HandleReferralSave" />
         </MudTabPanel>
         <MudTabPanel Text="Managers" OnClick="GetAllManagersByEmployeeId">
             <ManagersTab Managers="managers" />
@@ -117,9 +118,22 @@
             Name = ""
         };
     }
-        private void OnEmployeeSelected(EmployeeDto employee)
+    private void OnEmployeeSelected(EmployeeDto employee)
     {
         selectedEmployee = employee;
 
+    }
+    private async Task HandleReferralSave(ReferralDto referral)
+    {
+        if (referral == null) return;
+        if (referral.Id == Guid.Empty)
+        {
+            await ReferralLookupService.AddItem(referral, CancellationToken.None);
+        }
+        else
+        {
+            await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
+        }
+        await GetAllReferralsByEmployeeId();
     }
 }

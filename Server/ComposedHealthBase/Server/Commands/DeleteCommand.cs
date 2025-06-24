@@ -29,7 +29,7 @@ namespace ComposedHealthBase.Server.Commands
             var entity = await _dbContext.Set<T>().FindAsync(id);
             if (entity == null)
             {
-                throw new KeyNotFoundException($"Entity with id {id} not found.");
+                return false;
             }
             var authResult = await _authorizationService.AuthorizeAsync(user, entity, "resource-access");
             if (!authResult.Succeeded)

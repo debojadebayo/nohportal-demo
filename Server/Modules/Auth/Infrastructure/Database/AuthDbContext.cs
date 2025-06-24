@@ -12,6 +12,7 @@ namespace Server.Modules.Auth.Infrastructure.Database
         public DbSet<Role> Roles { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<LocalStorageKey> LocalStorageKeys { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(Schema.Auth);
@@ -30,6 +31,10 @@ namespace Server.Modules.Auth.Infrastructure.Database
                 .HasDefaultValueSql("gen_random_uuid()");
 
             modelBuilder.Entity<TenantKeycloakMap>()
+                .Property(p => p.Id)
+                .HasDefaultValueSql("gen_random_uuid()");
+
+            modelBuilder.Entity<LocalStorageKey>()
                 .Property(p => p.Id)
                 .HasDefaultValueSql("gen_random_uuid()");
         }

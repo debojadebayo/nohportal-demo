@@ -8,6 +8,7 @@ public class ClinicalReportMapper : IMapper<ClinicalReport, ClinicalReportDto>
     {
         return new ClinicalReportDto
         {
+            Id = entity.Id,
             EmployeeId = entity.EmployeeId,
             EmployeeName = entity.EmployeeName,
             DateOfBirth = entity.DateOfBirth,
@@ -21,10 +22,11 @@ public class ClinicalReportMapper : IMapper<ClinicalReport, ClinicalReportDto>
         };
     }
 
-    public ClinicalReport MapWithKeycloakId(ClinicalReportDto dto, Guid keycloakId)
+    public ClinicalReport Map(ClinicalReportDto dto)
     {
         return new ClinicalReport
         {
+            Id = dto.Id,
             EmployeeId = dto.EmployeeId,
             EmployeeName = dto.EmployeeName,
             DateOfBirth = dto.DateOfBirth,
@@ -36,11 +38,6 @@ public class ClinicalReportMapper : IMapper<ClinicalReport, ClinicalReportDto>
             ReportNotes = dto.ReportNotes,
             ClinicianId = dto.ClinicianId
         };
-    }
-
-    public ClinicalReport Map(ClinicalReportDto dto)
-    {
-        throw new NotImplementedException("Map method without KeycloakId is not implemented. Use MapWithKeycloakId instead.");
     }
 
     public IEnumerable<ClinicalReportDto> Map(IEnumerable<ClinicalReport> entities)
@@ -55,6 +52,7 @@ public class ClinicalReportMapper : IMapper<ClinicalReport, ClinicalReportDto>
 
     public void Map(ClinicalReportDto dto, ClinicalReport entity)
     {
+        entity.Id = dto.Id;
         entity.EmployeeId = dto.EmployeeId;
         entity.EmployeeName = dto.EmployeeName;
         entity.DateOfBirth = dto.DateOfBirth;
@@ -69,6 +67,7 @@ public class ClinicalReportMapper : IMapper<ClinicalReport, ClinicalReportDto>
 
     public void Map(ClinicalReport entity, ClinicalReportDto dto)
     {
+        dto.Id = entity.Id;
         dto.EmployeeId = entity.EmployeeId;
         dto.EmployeeName = entity.EmployeeName;
         dto.DateOfBirth = entity.DateOfBirth;

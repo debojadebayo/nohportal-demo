@@ -45,6 +45,8 @@ namespace Server.Modules.Scheduling.Endpoints
 			try
 			{
 				var allEntities = await getAllQuery.Handle(user, tenantId, subjectId, x => x.CalendarItems);
+				if (allEntities == null || !allEntities.Any())
+					return Results.NoContent();
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)

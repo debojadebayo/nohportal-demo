@@ -6,6 +6,12 @@ using Server.Modules.Auth.Infrastructure.Database;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Modules;
 using Server.Modules.Auth.Infrastructure.Database.Extensions;
+using ComposedHealthBase.Server.Mappers;
+using Server.Modules.Auth.Entities;
+using Shared.DTOs.Auth;
+using Server.Modules.Auth.Infrastructure.Mappers;
+using Server.Modules.Auth.Infrastructure.Commands;
+using Server.Modules.Auth.Infrastructure.Queries;
 
 namespace Server.Modules.Auth.Infrastructure
 {
@@ -16,6 +22,13 @@ namespace Server.Modules.Auth.Infrastructure
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 			services.AddDbContext<IDbContext<AuthDbContext>, AuthDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+			// Register mappers
+			services.AddScoped<IMapper<LocalStorageKey, LocalStorageKeyDto>, LocalStorageKeyMapper>();
+
+			// Register commands and queries
+			services.AddScoped<IGenerateRSAKeyCommand, GenerateRSAKeyCommand>();
+			services.AddScoped<IGetLocalStorageKeyQuery, GetLocalStorageKeyQuery>();
 
 			return services;
 		}

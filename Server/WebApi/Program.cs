@@ -4,12 +4,14 @@ using Server.Modules.Clinical.Infrastructure;
 using Server.Modules.CRM.Infrastructure;
 using Server.Modules.Scheduling.Infrastructure;
 using Server.Modules.Auth.Infrastructure;
+using Server.Modules.Billing.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var moduleTypes = new List<Type>
 {
     typeof(AuthModule),
+    typeof(BillingModule),
 	typeof(ClinicalModule),
 	typeof(CRMModule),
 	typeof(SchedulingModule)

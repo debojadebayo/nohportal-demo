@@ -1,90 +1,220 @@
 @page "/case-notes/{scheduleId:guid}"
+@using Blazor.SubtleCrypto
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.BaseClient.Services
+@using Shared.DTOs.CRM
 @using Shared.DTOs.Clinical
 @using Shared.DTOs.Scheduling
 @using Shared.Enums
 @using MudBlazor
 @using MudExRichTextEditor
+@using Blazored.LocalStorage
+@inject ISnackbar Snackbar
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject ILazyLookupService<CaseNoteDto> CaseNoteLookupService
+@inject ILazyLookupService<ClinicianDto> ClinicianLookupService
+    @inject ILazyLookupService<ScheduleDto> ScheduleLookupService
+        @inject ICryptoService Crypto
 
 <PageTitle>Case Notes</PageTitle>
 
-<MudItem xs="12" sm="6">
+<MudItem xs="12" sm="6" Class="d-flex align-items-center justify-content-between">
     <MudText Typo="Typo.h1">Case Notes</MudText>
+    <MudText Typo="Typo.caption" Class="ml-auto" Style="color: grey;">
+        @if (!string.IsNullOrEmpty(_lastSavedStatus))
+        {
+            <span>@_lastSavedStatus</span>
+        }
+    </MudText>
 </MudItem>
+@if (CaseNote != null)
+{
+    @if (_schedule != null){
+            <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="_schedule.CustomerId" />
+            <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_schedule.EmployeeId" />
+            <MudTextField @bind-Value="_schedule.Title" Label="Title" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="_schedule.Description" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" />
+    }
 
-<MudForm Model="@CaseNote" @ref="form">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudExRichTextEdit @bind-Value="CaseNote.CaseNotes" @ref="@Editor" ReadOnly="@_readOnly" Height="444" Class="m-2" Placeholder="">
-            </MudExRichTextEdit>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudSelect T="AppointmentTypeEnum" @bind-Value="CaseNote.AppointmentType" Label="Appointment Type"
-                Variant="Variant.Outlined">
-                @foreach (var value in Enum.GetValues(typeof(AppointmentTypeEnum)))
-                {
-                    <MudSelectItem Value="@(value)">@value</MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudSelect T="FitForWorkStatusEnum" @bind-Value="CaseNote.FitForWorkStatus" Label="Fit For Work Status"
-                Variant="Variant.Outlined">
-                @foreach (var value in Enum.GetValues(typeof(FitForWorkStatusEnum)))
-                {
-                    <MudSelectItem Value="@(value)">@value</MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12">
-            <MudTextField @bind-Value="CaseNote.RecommendedAdjustments" Label="Recommended Adjustments"
-                Variant="Variant.Outlined" Lines="2" />
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudCheckBox @bind-Value="CaseNote.IsFollowUpNeeded" Color="Color.Primary" Label="Is Follow Up Needed?" />
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudDatePicker @bind-Date="CaseNote.FollowUpDate" Label="Follow Up Date" Variant="Variant.Outlined" />
-        </MudItem>
-        <MudItem xs="12">
-            <MudTextField @bind-Value="CaseNote.FollowUpReasonForReferral" Label="Follow Up Reason For Referral"
-                Variant="Variant.Outlined" Lines="2" />
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudSelect T="Guid" @bind-Value="CaseNote.ClinicianId" Label="Clinician" Variant="Variant.Outlined">
-                @foreach (var clinician in Clinicians)
-                {
-                    <MudSelectItem Value="@clinician.Id">@clinician.DisplayName</MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>
-    </MudGrid>
-    <MudCardActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save">Save</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GenerateReport">Generate Report</MudButton>
-    </MudCardActions>
-</MudForm>
+    <MudForm Model="@CaseNote" @ref="form">
+        <MudGrid>
+            <MudItem xs="12">
+                <MudExRichTextEdit @bind-Value="CaseNote.CaseNotes" @ref="@Editor" ReadOnly="@_readOnly" Height="444"
+                    Class="m-2" Immediate="true">
+                </MudExRichTextEdit>
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudSelect T="AppointmentTypeEnum" @bind-Value="CaseNote.AppointmentType" Label="Appointment Type"
+                    Variant="Variant.Outlined">
+@foreach (var value in Enum.GetValues(typeof(AppointmentTypeEnum)).Cast<AppointmentTypeEnum>())
+{
+    <MudSelectItem Value="@(value)">@value</MudSelectItem>
+}
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudSelect T="FitForWorkStatusEnum" @bind-Value="CaseNote.FitForWorkStatus" Label="Fit For Work Status"
+                    Variant="Variant.Outlined">
+@foreach (var value in Enum.GetValues(typeof(FitForWorkStatusEnum)).Cast<FitForWorkStatusEnum>())
+{
+    <MudSelectItem Value="@(value)">@value</MudSelectItem>
+}
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="CaseNote.RecommendedAdjustments" Label="Recommended Adjustments"
+                    Variant="Variant.Outlined" Lines="2" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudCheckBox @bind-Value="CaseNote.IsFollowUpNeeded" Color="Color.Primary" Label="Is Follow Up Needed?" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudDatePicker @bind-Date="CaseNote.FollowUpDate" Label="Follow Up Date" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="CaseNote.FollowUpReasonForReferral" Label="Follow Up Reason For Referral"
+                    Variant="Variant.Outlined" Lines="2" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                    <LazyLookup TDto="ClinicianDto" FieldType="LazyLookupEnum.Search"
+                        @bind-ItemId="CaseNote.ClinicianId" Label="Clinician" />
+            </MudItem>
+        </MudGrid>
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save">Save</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GenerateReport">Generate Report</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="RetrieveOfflineCopy">Restore Offline Copy</MudButton>
+        </MudCardActions>
+    </MudForm>
+}
+
 
 @code {
-    [Parameter] public Guid ScheduleId { get; set; }
-    private CaseNoteDto CaseNote { get; set; } = new();
+    [Parameter] public Guid ScheduleId { get; set; } = Guid.Empty;
+    private CaseNoteDto? CaseNote { get; set; }
     private MudForm form = default!;
+    private MudForm scheduleForm = default!;
     private List<ClinicianDto> Clinicians = new(); // Populate this list as needed
+    
+    private string _tempKey {get; set;} = string.Empty;
 
     bool _readOnly = false;
-    MudExRichTextEdit Editor = default!;
+    MudExRichTextEdit Editor;
 
-    // TODO: Load Clinicians and CaseNote for ScheduleId, and implement Save logic
+    private ScheduleDto? _schedule;
+    private string _lastSavedStatus = "";
+    private DateTime? _lastSavedTime = null;
+    private string? _lastSavedMode = null; // "offline" or "online"
+    private string? _lastCaseNoteJson = null;
+    private Timer? _autoSaveTimer;
+    private bool _isSaving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Start autosave timer
+        _autoSaveTimer = new Timer(async _ => await AutoSaveIfChanged(), null, 30000, 30000);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ScheduleId != Guid.Empty)
+        {
+            var caseNote = await CaseNoteLookupService.GetItemById(ScheduleId, CancellationToken.None);
+            if (caseNote != null){
+                CaseNote = caseNote;
+            }
+            else
+            {
+                _schedule = await ScheduleLookupService.GetItemById(ScheduleId, CancellationToken.None);
+                CaseNote = new CaseNoteDto
+                {
+                    Id = ScheduleId,
+                    ClinicianId = _schedule?.EmployeeId ?? Guid.Empty
+                };
+            }
+        }
+        else
+        {
+            throw new ArgumentException("ScheduleId cannot be empty.", nameof(ScheduleId));
+        }
+        if (CaseNote != null)
+        {
+            _lastCaseNoteJson = System.Text.Json.JsonSerializer.Serialize(CaseNote);
+        }
+        StateHasChanged();
+    }
+
+    private async Task AutoSaveIfChanged()
+    {
+        if (_isSaving) return;
+        if (CaseNote == null) return;
+        var currentJson = System.Text.Json.JsonSerializer.Serialize(CaseNote);
+        if (_lastCaseNoteJson != currentJson)
+        {
+            _isSaving = true;
+            await InvokeAsync(async () =>
+            {
+                await SaveOfflineCopy();
+                _lastCaseNoteJson = currentJson;
+            });
+            _isSaving = false;
+        }
+    }
+
     private async Task Save()
     {
         await form.Validate();
         if (form.IsValid)
         {
-            // Save logic here
+            try
+            {
+                await CaseNoteLookupService.UpdateItem(CaseNote, CancellationToken.None);
+                _lastSavedTime = DateTime.Now;
+                _lastSavedMode = "online";
+                _lastSavedStatus = $"Last saved (online) {_lastSavedTime:dd-MM-yyyy HH:mm:ss}";
+                _lastCaseNoteJson = System.Text.Json.JsonSerializer.Serialize(CaseNote);
+            }
+            catch
+            {
+                // fallback to offline save
+                await SaveOfflineCopy();
+            }
+            StateHasChanged();
         }
     }
+
     private async Task GenerateReport()
     {
         // Logic to generate report
         // This could involve calling a service to create a PDF or other document format
+    }
+
+    private async Task SaveOfflineCopy()
+    {
+        if (CaseNote == null) return;
+        var json = System.Text.Json.JsonSerializer.Serialize(CaseNote);
+        CryptoResult encrypted = await Crypto.EncryptAsync(json);
+        await localStorage.SetItemAsync($"offline-case-note-{ScheduleId}", encrypted.Value);
+        _tempKey = encrypted.Secret.Key;
+        _lastSavedTime = DateTime.Now;
+        _lastSavedMode = "offline";
+        _lastSavedStatus = $"Last saved (offline copy) {_lastSavedTime:yyyy-MM-dd HH:mm:ss}";
+        Snackbar.Add("Offline copy saved. It will be available when you're back online.", Severity.Success);
+        StateHasChanged();
+    }
+    private async Task RetrieveOfflineCopy()
+    {
+        var encrypted = await localStorage.GetItemAsync<string>($"offline-case-note-{ScheduleId}");
+        string decrypted = await Crypto.DecryptAsync(new CryptoInput { Value = encrypted, Key = _tempKey });
+        CaseNote = System.Text.Json.JsonSerializer.Deserialize<CaseNoteDto>(decrypted);
+        StateHasChanged();
+        Snackbar.Add("Offline copy restored.", Severity.Success);
+    }
+
+    public void Dispose()
+    {
+        _autoSaveTimer?.Dispose();
     }
 }

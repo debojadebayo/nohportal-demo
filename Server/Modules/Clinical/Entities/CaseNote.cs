@@ -15,4 +15,5 @@ public class CaseNote : BaseEntity<CaseNote>, IEntity, IAuditEntity
     public DateTime? FollowUpDate { get; set; }
     public string? FollowUpReasonForReferral { get; set; }
     public Guid ClinicianId { get; set; }
+    public string? LocalEncryptionKey { get; set; }
 }

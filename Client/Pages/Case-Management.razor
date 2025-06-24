@@ -26,7 +26,7 @@
                     </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
-                            ItemId="context.Item.EmployeeId" />
+                            @bind-ItemId="context.Item.EmployeeId" />
                     </CellTemplate>
                 </TemplateColumn>
                 <TemplateColumn>
@@ -34,7 +34,7 @@
                         <MudText Typo="Typo.subtitle2">Product</MudText>
                     </HeaderTemplate>
                     <CellTemplate>
-                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.ProductId" />
                     </CellTemplate>
                 </TemplateColumn>
                 <PropertyColumn Property="x => x.AppointmentStatus.ToString()" Title="Appointment Status" />
@@ -64,7 +64,7 @@
                     </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
-                            ItemId="context.Item.EmployeeId" />
+                            @bind-ItemId="context.Item.EmployeeId" />
                     </CellTemplate>
                 </TemplateColumn>
                 <TemplateColumn>
@@ -72,7 +72,7 @@
                         <MudText Typo="Typo.subtitle2">Product</MudText>
                     </HeaderTemplate>
                     <CellTemplate>
-                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.ProductId" />
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>
@@ -90,7 +90,7 @@
                     </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
-                            ItemId="context.Item.EmployeeId" />
+                            @bind-ItemId="context.Item.EmployeeId" />
                     </CellTemplate>
                 </TemplateColumn>
                 <TemplateColumn>
@@ -98,7 +98,7 @@
                         <MudText Typo="Typo.subtitle2">Product</MudText>
                     </HeaderTemplate>
                     <CellTemplate>
-                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.ProductId" />
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>
@@ -116,7 +116,7 @@
                     </HeaderTemplate>
                     <CellTemplate>
                         <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
-                            ItemId="context.Item.EmployeeId" />
+                            @bind-ItemId="context.Item.EmployeeId" />
                     </CellTemplate>
                 </TemplateColumn>
                 <TemplateColumn>
@@ -124,7 +124,7 @@
                         <MudText Typo="Typo.subtitle2">Product</MudText>
                     </HeaderTemplate>
                     <CellTemplate>
-                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" ItemId="context.Item.ProductId" />
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.ProductId" />
                     </CellTemplate>
                 </TemplateColumn>
             </Columns>

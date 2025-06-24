@@ -54,7 +54,7 @@ namespace ComposedHealthBase.Server.Queries
             var entity = await query.SingleOrDefaultAsync();
             if (entity == null)
             {
-                throw new KeyNotFoundException($"Entity of type {typeof(T).Name} with id {id} not found");
+                return default(TDto);
             }
             var authResult = await _authorizationService.AuthorizeAsync(user, entity, "resource-access");
             if (!authResult.Succeeded)

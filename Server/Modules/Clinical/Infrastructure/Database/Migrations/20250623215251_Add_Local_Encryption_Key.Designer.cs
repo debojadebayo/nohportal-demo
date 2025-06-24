@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Modules.Clinical.Infrastructure.Database;
@@ -11,9 +12,11 @@ using Server.Modules.Clinical.Infrastructure.Database;
 namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ClinicalDbContext))]
-    partial class ClinicalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250623215251_Add_Local_Encryption_Key")]
+    partial class Add_Local_Encryption_Key
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

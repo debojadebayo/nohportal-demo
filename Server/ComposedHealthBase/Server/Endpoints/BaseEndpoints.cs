@@ -97,6 +97,8 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var allEntities = await getAllQuery.Handle(user, tenantId, subjectId);
+				if (allEntities == null || !allEntities.Any())
+					return Results.NoContent();
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
@@ -111,6 +113,8 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var entity = await getByIdQuery.Handle(id, user, tenantId, subjectId);
+				if (entity == null)
+					return Results.NoContent();
 				return Results.Ok(entity);
 			}
 			catch (Exception ex)
@@ -125,6 +129,8 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var entities = await getByIdsQuery.Handle(ids, user, tenantId, subjectId);
+				if (entities == null || !entities.Any())
+					return Results.NoContent();
 				return Results.Ok(entities);
 			}
 			catch (Exception ex)
@@ -139,6 +145,8 @@ namespace ComposedHealthBase.Server.Endpoints
 			try
 			{
 				var results = await searchQuery.Handle(user, term, tenantId, subjectId);
+				if (results == null || !results.Any())
+					return Results.NoContent();
 				return Results.Ok(results);
 			}
 			catch (Exception ex)

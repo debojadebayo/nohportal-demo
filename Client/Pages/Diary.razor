@@ -66,15 +66,19 @@
             { "Clinicians", Clinicians },
             { "Referrals", Referrals }
         };
-        var dialogReference = await DialogService.ShowAsync<Forms.ScheduleDetails>(isEdit ? "Edit Appointment" : "Add Appointment", parameters);
+        var dialogReference = await DialogService.ShowAsync<Forms.ScheduleDetails>(isEdit ? "Edit Appointment" : "Add Appointment", parameters, options: new DialogOptions
+        {
+            FullWidth = true,
+            MaxWidth = MaxWidth.ExtraLarge,
+            CloseButton = true,
+            CloseOnEscapeKey = true
+        });
         var dialogResult = await dialogReference.Result;
 
         if (dialogResult?.Data is ScheduleDto editedSchedule)
         {
-            if(isEdit){
                 await ScheduleLookupService.UpdateItem(editedSchedule, CancellationToken.None);
-            }
-            await ScheduleLookupService.AddItem(editedSchedule, CancellationToken.None);
+                Clinicians = await ClinicianLookupService.GetAllByCustom("api/clinician/getallclinicianswithschedules", CancellationToken.None);
         }
     }
 

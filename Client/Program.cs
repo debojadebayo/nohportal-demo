@@ -9,6 +9,10 @@ using MudBlazor;
 using ComposedHealthBase.BaseClient.Services;
 using Shared.DTOs.CRM;
 using Shared.DTOs.Scheduling;
+using Shared.DTOs.Clinical;
+using Blazored.LocalStorage;
+using Blazor.SubtleCrypto;
+using Shared.DTOs.Billing;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -37,6 +41,8 @@ builder.Services.AddOidcAuthentication(options =>
 builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
 builder.Services.AddBlazorPdfViewer();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddSubtleCrypto();
 
 // Register application services
 builder.Services.AddScoped<ILazyLookupService<CustomerDto>, LazyLookupService<CustomerDto>>();
@@ -50,6 +56,10 @@ builder.Services.AddScoped<ILazyLookupService<ScheduleDto>, LazyLookupService<Sc
 builder.Services.AddScoped<ILazyLookupService<CustomerDocumentDto>, LazyLookupService<CustomerDocumentDto>>();
 builder.Services.AddScoped<ILazyLookupService<EmployeeDocumentDto>, LazyLookupService<EmployeeDocumentDto>>();
 builder.Services.AddScoped<ILazyLookupService<ContractDto>, LazyLookupService<ContractDto>>();
+builder.Services.AddScoped<ILazyLookupService<CaseNoteDto>, LazyLookupService<CaseNoteDto>>();
+builder.Services.AddScoped<ILazyLookupService<ClinicalReportDto>, LazyLookupService<ClinicalReportDto>>();
+builder.Services.AddScoped<ILazyLookupService<InvoiceDto>, LazyLookupService<InvoiceDto>>();
+
 builder.Services.AddScoped<IDocumentUploadService, DocumentUploadService>();
 builder.Services.AddScoped<IAuthHelperService, AuthHelperService>();
 

@@ -15,6 +15,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ComposedHealthBase.Server.Mappers;
 using Server.Modules.Auth.Infrastructure.Database;
+using Server.Modules.Auth.Infrastructure.Commands;
+using Server.Modules.Auth.Infrastructure.Queries;
 
 namespace Server.Modules.Auth.Endpoints
 {
@@ -286,6 +288,81 @@ namespace Server.Modules.Auth.Endpoints
 				{
 					Console.Error.WriteLine($"An error occurred: {ex.Message}");
 					return Results.Problem("An error occurred while deleting the Permission.");
+				}
+			});
+
+			return endpoints;
+		}
+	}
+
+	public class LocalStorageKeyEndpoints : IEndpoints
+	{
+		public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+		{
+			var group = endpoints.MapGroup($"/api/auth/localstoragekeys");
+
+			group.MapPost("/generate", async (
+				[FromServices] IDbContext<AuthDbContext> dbContext,
+				[FromServices] IMapper<LocalStorageKey, LocalStorageKeyDto> mapper,
+				[FromServices] IGenerateRSAKeyCommand generateKeyCommand,
+				[FromServices] IGetLocalStorageKeyQuery getKeyQuery,
+				ClaimsPrincipal user,
+				[FromBody] GenerateKeyRequestDto request
+			) =>
+			{
+				try
+				{
+					// Check if a key already exists for this object
+					var existingKey = await getKeyQuery.Handle(request.ObjectTypeName, request.ObjectGuid, user);
+					if (existingKey != null)
+					{
+						return Results.Conflict("A key already exists for this object. Delete the existing key first if you want to generate a new one.");
+					}
+
+					// Generate new RSA keypair
+					var newKey = await generateKeyCommand.Handle(request.ObjectTypeName, request.ObjectGuid, user);
+					var dto = mapper.Map(newKey);
+					
+					return Results.Ok(new 
+					{ 
+						message = "RSA keypair generated successfully",
+						keyId = dto.Id,
+						publicKey = dto.PublicKey,
+						keyGeneratedDate = dto.KeyGeneratedDate
+					});
+				}
+				catch (Exception ex)
+				{
+					Console.Error.WriteLine($"An error occurred: {ex.Message}");
+					return Results.Problem("An error occurred while generating the RSA keypair.");
+				}
+			});
+
+			group.MapGet("/GetByObject", async (
+				[FromServices] IGetLocalStorageKeyQuery getKeyQuery,
+				ClaimsPrincipal user,
+				[FromQuery] string objectTypeName,
+				[FromQuery] Guid objectGuid
+			) =>
+			{
+				try
+				{
+					var key = await getKeyQuery.Handle(objectTypeName, objectGuid, user);
+					if (key == null)
+						return Results.NotFound("No key found for the specified object.");
+					
+					return Results.Ok(new 
+					{ 
+						keyId = key.Id,
+						publicKey = key.PublicKey,
+						keyGeneratedDate = key.KeyGeneratedDate,
+						keyExpiryDate = key.KeyExpiryDate
+					});
+				}
+				catch (Exception ex)
+				{
+					Console.Error.WriteLine($"An error occurred: {ex.Message}");
+					return Results.Problem("An error occurred while retrieving the key.");
 				}
 			});
 
