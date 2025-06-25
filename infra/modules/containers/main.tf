@@ -108,7 +108,7 @@ resource "azurerm_container_app" "api_server" {
   }
 
   ingress {
-    external_enabled = false
+    external_enabled = true
     target_port      = 8080
     transport        = "http"
 
@@ -164,7 +164,7 @@ resource "azurerm_container_app" "keycloak_server" {
       image  = "quay.io/keycloak/keycloak:${var.image_tags.keycloak}"
       cpu    = 0.5
       memory = "1Gi"
-      args   = ["start-dev"]
+      args   = ["start --optimized"]
 
       env {
         name        = "KC_BOOTSTRAP_ADMIN_USERNAME"
@@ -225,7 +225,7 @@ resource "azurerm_container_app" "keycloak_server" {
   }
 
   ingress {
-    external_enabled = false
+    external_enabled = true
     target_port      = 8080
     transport        = "http"
 
@@ -289,7 +289,7 @@ resource "azurerm_container_app" "frontend" {
   }
 
   ingress {
-    external_enabled = false
+    external_enabled = true
     target_port      = 8080
     transport        = "http"
 
