@@ -108,7 +108,7 @@ resource "azurerm_container_app" "api_server" {
   }
 
   ingress {
-    external_enabled = true
+    external_enabled = false
     target_port      = 8080
     transport        = "http"
 
@@ -225,7 +225,7 @@ resource "azurerm_container_app" "keycloak_server" {
   }
 
   ingress {
-    external_enabled = true
+    external_enabled = false
     target_port      = 8080
     transport        = "http"
 
@@ -289,7 +289,7 @@ resource "azurerm_container_app" "frontend" {
   }
 
   ingress {
-    external_enabled = true
+    external_enabled = false
     target_port      = 8080
     transport        = "http"
 

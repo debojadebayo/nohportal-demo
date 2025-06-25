@@ -113,8 +113,8 @@ jobs:
           context: .
           file: ./Server.Dockerfile
           push: true
-          tags: |
           # May change the label of the image to something else in the future
+          tags: |
             ${{ steps.acr.outputs.LOGIN_SERVER }}/app.server:${{ steps.version.outputs.VERSION }}
             ${{ steps.acr.outputs.LOGIN_SERVER }}/app.server:${{ steps.vars.outputs.ENV_NAME }}-latest
           build-args: |
