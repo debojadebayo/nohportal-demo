@@ -66,10 +66,10 @@ resource "azurerm_postgresql_flexible_server_database" "keycloak_db" {
 }
 
 # Firewall rule to allow connections from the container apps subnet
-# resource "azurerm_postgresql_flexible_server_firewall_rule" "container_apps" {
-#   name             = var.firewall_rule_name
-#   server_id        = azurerm_postgresql_flexible_server.postgresql_main.id
-#   start_ip_address = var.container_subnet_cidr_start
-#   end_ip_address   = var.container_subnet_cidr_end
-# }
+resource "azurerm_postgresql_flexible_server_firewall_rule" "container_apps" {
+  name             = var.firewall_rule_name
+  server_id        = azurerm_postgresql_flexible_server.postgresql_main.id
+  start_ip_address = var.container_subnet_cidr_start
+  end_ip_address   = var.container_subnet_cidr_end
+}
     
