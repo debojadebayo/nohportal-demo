@@ -125,7 +125,8 @@ resource "azurerm_application_gateway" "app_gateway" {
     protocol                            = "Http"
     request_timeout                     = 60
     probe_name                          = "frontend-health-probe"
-    pick_host_name_from_backend_address = true
+    pick_host_name_from_backend_address = false
+    host_name                           = var.frontend_fqdn
   }
 
   backend_http_settings {
@@ -135,7 +136,8 @@ resource "azurerm_application_gateway" "app_gateway" {
     protocol                            = "Http"
     request_timeout                     = 60
     probe_name                          = "api-health-probe"
-    pick_host_name_from_backend_address = true
+    pick_host_name_from_backend_address = false
+    host_name                           = var.api_fqdn
   }
 
   backend_http_settings {
@@ -145,14 +147,15 @@ resource "azurerm_application_gateway" "app_gateway" {
     protocol                            = "Http"
     request_timeout                     = 60
     probe_name                          = "auth-health-probe"
-    pick_host_name_from_backend_address = true
+    pick_host_name_from_backend_address = false
+    host_name                           = var.auth_fqdn
   }
 
   # Health probes
   probe {
     name                                      = "frontend-health-probe"
     protocol                                  = "Http"
-    path                                      = "/health"
+    path                                      = "/"
     interval                                  = 30
     timeout                                   = 30
     unhealthy_threshold                       = 3
@@ -162,7 +165,7 @@ resource "azurerm_application_gateway" "app_gateway" {
   probe {
     name                                      = "api-health-probe"
     protocol                                  = "Http"
-    path                                      = "/api-health"
+    path                                      = "/health"
     interval                                  = 30
     timeout                                   = 30
     unhealthy_threshold                       = 3

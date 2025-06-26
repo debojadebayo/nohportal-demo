@@ -154,7 +154,18 @@ variable "nsg_rules" {
         source_port_range          = "*"
         destination_port_range     = "5432"
         source_address_prefix      = "*"
-        destination_address_prefix = "10.0.5.0/24" # privatelink subnet
+        destination_address_prefix = "10.0.4.0/24"
+      },
+      {
+        name                       = "allow-outbound-to-privatelink"
+        priority                   = 201
+        direction                  = "Outbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "5432"
+        source_address_prefix      = "*"
+        destination_address_prefix = "10.0.5.0/24"
       },
       {
         name                       = "allow-outbound-internet"
@@ -188,7 +199,7 @@ variable "nsg_rules" {
         protocol                   = "Tcp"
         source_port_range          = "*"
         destination_port_range     = "5432"
-        source_address_prefix      = "10.0.2.0/23"
+        source_address_prefix      = "10.0.2.0/23" # backend subnet
         destination_address_prefix = "*"
       }
     ],

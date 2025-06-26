@@ -99,7 +99,7 @@ resource "azurerm_container_app" "api_server" {
         path                    = "/health"
         port                    = 8080
         transport               = "HTTP"
-        initial_delay           = 60
+        initial_delay           = 30
         interval_seconds        = 30
         timeout                 = 10
         failure_count_threshold = 3
@@ -216,7 +216,7 @@ resource "azurerm_container_app" "keycloak_server" {
         path                    = "/health/live"
         port                    = 8080
         transport               = "HTTP"
-        initial_delay           = 60
+        initial_delay           = 30
         interval_seconds        = 30
         timeout                 = 10
         failure_count_threshold = 5
@@ -280,7 +280,7 @@ resource "azurerm_container_app" "frontend" {
         path                    = "/health"
         port                    = 8080
         transport               = "HTTP"
-        initial_delay           = 60
+        initial_delay           = 30
         interval_seconds        = 30
         timeout                 = 10
         failure_count_threshold = 3
