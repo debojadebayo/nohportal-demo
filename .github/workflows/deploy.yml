@@ -311,8 +311,8 @@ jobs:
           sleep 30
           
           # Test API health endpoint via Application Gateway (matches container liveness probe)
-          echo "Testing API health endpoint: $GATEWAY_URL/api/api-health"
-          API_HEALTH=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 --retry 3 --retry-delay 10 "$GATEWAY_URL/api/api-health" || echo "failed")
+          echo "Testing API health endpoint: $GATEWAY_URL/api/health"
+          API_HEALTH=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 --retry 3 --retry-delay 10 "$GATEWAY_URL/api/health" || echo "failed")
           echo "API health check status: $API_HEALTH"
           
           # Test Frontend via Application Gateway
@@ -321,8 +321,8 @@ jobs:
           echo "Frontend status: $FRONTEND_STATUS"
           
           # Test Keycloak auth endpoint via Application Gateway
-          echo "Testing Keycloak: $GATEWAY_URL/auth/realms/master"
-          AUTH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 --retry 3 --retry-delay 10 "$GATEWAY_URL/auth/realms/master" || echo "failed")
+          echo "Testing Keycloak: $GATEWAY_URL/auth/realms/master/.well-known/openid-configuration"
+          AUTH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 --retry 3 --retry-delay 10 "$GATEWAY_URL/auth/realms/master/.well-known/openid-configuration" || echo "failed")
           echo "Auth status: $AUTH_STATUS"
           
           # Detailed debugging if tests fail
