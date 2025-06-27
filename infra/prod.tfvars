@@ -29,6 +29,6 @@ image_tags = {
 app_gateway_sku_tier = "WAF_v2"
 
 # Domain and SSL Configuration
-domain_name              = "app.nationoh.co.uk"
+domain_name              = ""
 ssl_certificate_path     = ""
 ssl_certificate_password = ""
