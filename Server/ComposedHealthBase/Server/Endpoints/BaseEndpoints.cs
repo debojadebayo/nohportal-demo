@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Commands;
 using ComposedHealthBase.Server.Queries;
 using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
+using ComposedHealthBase.Server.Auth.Constants;
+using ComposedHealthBase.Server.Auth.Requirements;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -26,6 +29,9 @@ namespace ComposedHealthBase.Server.Endpoints
 			var endpointName = typeof(T).Name;
 			var group = endpoints.MapGroup($"/api/{endpointName}");
 
+			// View permissions for GET operations (GetAll, GetById, GetByIds, Search)
+			var viewPermission = PermissionHelper.GeneratePermission<T>(PermissionOperations.View);
+			
 			group.MapGet("/GetAll", (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
@@ -33,7 +39,8 @@ namespace ComposedHealthBase.Server.Endpoints
 				ClaimsPrincipal user,
 				[FromQuery] Guid? tenantId = null,
 				[FromQuery] Guid? subjectId = null
-			) => GetAll(getAllQuery, user, tenantId, subjectId));
+			) => GetAll(getAllQuery, user, tenantId, subjectId))
+			.RequireAuthorization($"Permission:{viewPermission}");
 
 			group.MapGet("/GetById/{id}", (
 				[FromServices] IDbContext<TContext> dbContext,
@@ -43,7 +50,8 @@ namespace ComposedHealthBase.Server.Endpoints
 				Guid id,
 				[FromQuery] Guid? tenantId = null,
 				[FromQuery] Guid? subjectId = null
-			) => GetById(getByIdQuery, user, id, tenantId, subjectId));
+			) => GetById(getByIdQuery, user, id, tenantId, subjectId))
+			.RequireAuthorization($"Permission:{viewPermission}");
 
 			group.MapPost("/GetByIds", (
 				[FromServices] IDbContext<TContext> dbContext,
@@ -53,7 +61,8 @@ namespace ComposedHealthBase.Server.Endpoints
 				List<Guid> ids,
 				[FromQuery] Guid? tenantId = null,
 				[FromQuery] Guid? subjectId = null
-			) => GetByIds(getByIdsQuery, user, ids, tenantId, subjectId));
+			) => GetByIds(getByIdsQuery, user, ids, tenantId, subjectId))
+			.RequireAuthorization($"Permission:{viewPermission}");
 
 			group.MapGet("/Search", (
 				[FromServices] IDbContext<TContext> dbContext,
@@ -63,31 +72,44 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromQuery] string term,
 				[FromQuery] Guid? tenantId = null,
 				[FromQuery] Guid? subjectId = null
-			) => Search(searchQuery, user, term, tenantId, subjectId));
+			) => Search(searchQuery, user, term, tenantId, subjectId))
+			.RequireAuthorization($"Permission:{viewPermission}");
 
+			// Create permission for POST operations
+			var createPermission = PermissionHelper.GeneratePermission<T>(PermissionOperations.Create);
+			
 			group.MapPost("/Create", (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] CreateCommand<T, TDto, TContext> createCommand,
 				ClaimsPrincipal user,
 				TDto dto
-			) => Create(createCommand, user, dto));
+			) => Create(createCommand, user, dto))
+			.RequireAuthorization($"Permission:{createPermission}");
 
+			// Update permission for PUT operations
+			var updatePermission = PermissionHelper.GeneratePermission<T>(PermissionOperations.Update);
+			
 			group.MapPut("/Update", (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] UpdateCommand<T, TDto, TContext> updateCommand,
 				ClaimsPrincipal user,
 				TDto dto
-			) => Update(updateCommand, user, dto));
+			) => Update(updateCommand, user, dto))
+			.RequireAuthorization($"Permission:{updatePermission}");
 
+			// Delete permission for DELETE operations  
+			var deletePermission = PermissionHelper.GeneratePermission<T>(PermissionOperations.Delete);
+			
 			group.MapPost("/Delete/{id}", (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] DeleteCommand<T, TContext> deleteCommand,
 				ClaimsPrincipal user,
 				Guid id
-			) => Delete(deleteCommand, user, id));
+			) => Delete(deleteCommand, user, id))
+			.RequireAuthorization($"Permission:{deletePermission}");
 
 			return endpoints;
 		}

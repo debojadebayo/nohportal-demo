@@ -9,7 +9,7 @@
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
 @inject ILazyLookupService<ProductDto> ProductLookupService
 @inject ILazyLookupService<InvoiceDto> InvoiceLookupService
-@inject IHttpClientFactory HttpClientFactory
+@inject HttpClient HttpClient
 @inject ISnackbar Snackbar
 @inject IJSRuntime JSRuntime
 @attribute [Authorize]
@@ -200,8 +200,7 @@
             invoiceFilter.ToDate = toDate ?? DateTime.Today;
             invoiceFilter.ProductId = SelectedProductId;
 
-            var httpClient = HttpClientFactory.CreateClient();
-            var response = await httpClient.PostAsJsonAsync("/api/billing/invoice/generate", invoiceFilter);
+            var response = await HttpClient.PostAsJsonAsync("api/billing/invoice/generate", invoiceFilter);
 
             if (response.IsSuccessStatusCode)
             {
@@ -283,8 +282,7 @@
             await InvoiceLookupService.UpdateItem(generatedInvoice, CancellationToken.None);
 
             // Export to CSV
-            var httpClient = HttpClientFactory.CreateClient();
-            var response = await httpClient.GetAsync($"/api/billing/invoice/export-csv/{generatedInvoice.Id}");
+            var response = await HttpClient.GetAsync($"api/billing/invoice/export-csv/{generatedInvoice.Id}");
 
             if (response.IsSuccessStatusCode)
             {

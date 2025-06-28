@@ -111,7 +111,11 @@
     private async Task HandleCustomerSave(CustomerDto customer)
     {
         if (newCustomer){
-            selectedCustomer = await AuthHelperService.CreateTenant<CustomerDto>(customer, CancellationToken.None)!;
+            var createdCustomer = await AuthHelperService.CreateTenant<CustomerDto>(customer, CancellationToken.None);
+            if (createdCustomer != null)
+            {
+                selectedCustomer = createdCustomer;
+            }
             newCustomer = false;
             return;
         }
@@ -120,14 +124,7 @@
     private async Task HandleReferralSave(ReferralDto referral)
     {
         if (referral == null) return;
-        if (referral.Id == Guid.Empty)
-        {
-            await ReferralLookupService.AddItem(referral, CancellationToken.None);
-        }
-        else
-        {
-            await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
-        }
+        await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
         await GetAllReferralsByCustomerId();
     }
     async Task DeleteCustomer()
@@ -203,14 +200,7 @@
     private async Task HandleContractSave(ContractDto contract)
     {
         if (contract == null) return;
-        if (contract.Id == Guid.Empty)
-        {
-            await ContractLookupService.AddItem(contract, CancellationToken.None);
-        }
-        else
-        {
-            await ContractLookupService.UpdateItem(contract, CancellationToken.None);
-        }
+        await ContractLookupService.UpdateItem(contract, CancellationToken.None);
         await GetAllContractsByCustomerId();
     }
 
@@ -222,14 +212,7 @@
     private async Task HandleProductSave(ProductDto product)
     {
         if (product == null) return;
-        if (product.Id == Guid.Empty)
-        {
-            await ProductLookupService.AddItem(product, CancellationToken.None);
-        }
-        else
-        {
-            await ProductLookupService.UpdateItem(product, CancellationToken.None);
-        }
+        await ProductLookupService.UpdateItem(product, CancellationToken.None);
         await GetAllProductsByCustomerId();
     }
 

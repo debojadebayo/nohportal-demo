@@ -41,7 +41,7 @@ namespace Server.Modules.Auth.Infrastructure.Commands
             };
 
             _dbContext.Set<LocalStorageKey>().Add(localStorageKey);
-            await _dbContext.SaveChangesWithAuditAsync(user);
+            await _dbContext.SaveChangesAsync();
 
             return localStorageKey;
         }

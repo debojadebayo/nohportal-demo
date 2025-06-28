@@ -1,6 +1,9 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using ComposedHealthBase.Server.Auth.AuthorizationHandlers;
+using ComposedHealthBase.Server.Auth.Requirements;
+using ComposedHealthBase.Server.Auth.Constants;
+using ComposedHealthBase.Server.Auth.Extensions;
 using ComposedHealthBase.Server.Config;
 using ComposedHealthBase.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -56,6 +59,7 @@ namespace ComposedHealthBase.Server.Modules
 				});
 
 			services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
+			services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 			services.AddAuthorization(options =>
 			{
 				options.AddPolicy("resource-access",
@@ -64,6 +68,9 @@ namespace ComposedHealthBase.Server.Modules
 					policy.Requirements.Add(new SubjectOwnedRequirement());
 					policy.Requirements.Add(new TenantOwnedRequirement());
 				});
+
+				// Add permission-based policies for common entities
+				options.AddPermissionPoliciesForEntities();
 			});
 
 			services.AddOpenApi();
@@ -86,6 +93,10 @@ namespace ComposedHealthBase.Server.Modules
 			services.AddSingleton(x => blobServiceClient);
 
 			services.AddHttpContextAccessor();
+			services.AddHttpClient();
+
+			services.AddSingleton<IRolePermissionCacheService, RolePermissionCacheService>();
+			services.AddScoped<IUserContextService, UserContextService>();
 
 			return services;
 		}
@@ -95,6 +106,9 @@ namespace ComposedHealthBase.Server.Modules
 			app.UseCors("Client");
 			app.UseAuthentication();
 			app.UseAuthorization();
+
+			InitializeRolePermissionCache(app).GetAwaiter().GetResult();
+
 			if (isDevelopment)
 			{
 				app.MapOpenApi();
@@ -106,5 +120,27 @@ namespace ComposedHealthBase.Server.Modules
 			}
 			return app;
 		}
+
+		private async Task InitializeRolePermissionCache(WebApplication app)
+		{
+			try
+			{
+				Console.WriteLine("Starting role permission cache initialization...");
+
+				using var scope = app.Services.CreateScope();
+				var cacheService = scope.ServiceProvider.GetRequiredService<IRolePermissionCacheService>();
+
+				Console.WriteLine("Cache service obtained, calling InitAsync...");
+				await cacheService.InitAsync();
+
+				Console.WriteLine("Role permission cache initialized successfully with!");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Failed to initialize role permission cache: {ex.Message}");
+				Console.WriteLine($"Exception details: {ex}");
+			}
+		}
+
 	}
 }

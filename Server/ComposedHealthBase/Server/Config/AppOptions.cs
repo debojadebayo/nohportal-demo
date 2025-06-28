@@ -8,6 +8,7 @@ namespace ComposedHealthBase.Server.Config
         public required string AllowedHosts { get; set; }
         public required JwtOptions Jwt { get; set; }
         public required KeycloakAdminClientOptions KeycloakAdminClient { get; set; }
+        public required AuthModuleOptions AuthModule { get; set; }
         public required string[] Modules { get; set; }
     }
 
@@ -51,5 +52,10 @@ namespace ComposedHealthBase.Server.Config
         public required string Realm { get; set; }
         public required string ClientId { get; set; }
         public required string ClientSecret { get; set; }
+    }
+
+    public class AuthModuleOptions
+    {
+        public required string BaseUrl { get; set; }
     }
 }
