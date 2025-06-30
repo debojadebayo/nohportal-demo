@@ -63,6 +63,9 @@ builder.Services.AddScoped<ILazyLookupService<InvoiceDto>, LazyLookupService<Inv
 builder.Services.AddScoped<IDocumentUploadService, DocumentUploadService>();
 builder.Services.AddScoped<IAuthHelperService, AuthHelperService>();
 
-System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = new System.Globalization.CultureInfo("en-GB");
+// Set the culture to UK for proper currency formatting
+var culture = new System.Globalization.CultureInfo("en-GB");
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
 
 await builder.Build().RunAsync();

@@ -9,7 +9,6 @@
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
 @inject ILazyLookupService<ProductDto> ProductLookupService
 @inject ILazyLookupService<InvoiceDto> InvoiceLookupService
-@inject ILazyLookupService<LineItemDto> LineItemLookupService
 @inject HttpClient HttpClient
 @inject ISnackbar Snackbar
 @inject IJSRuntime JSRuntime
@@ -209,7 +208,7 @@
                 var invoiceId = Guid.Parse(result.GetProperty("invoiceId").GetString());
 
                 // Fetch the generated invoice details
-                generatedInvoice = await InvoiceLookupService.GetItemByCustom(invoiceId, CancellationToken.None);
+                generatedInvoice = await InvoiceLookupService.GetItemById(invoiceId, CancellationToken.None);
 
                 if (generatedInvoice != null)
                 {
