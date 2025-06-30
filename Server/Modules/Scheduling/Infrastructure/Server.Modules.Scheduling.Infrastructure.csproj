@@ -10,6 +10,7 @@
     <ProjectReference Include="..\..\..\..\Shared\Shared.csproj" />
     <ProjectReference Include="..\..\..\ComposedHealthBase\Server\ComposedHealthBase.Server.csproj" />
     <ProjectReference Include="..\Entities\Server.Modules.Scheduling.Entities.csproj" />
+    <ProjectReference Include="..\..\Shared\Server.Modules.Shared.csproj" />
   </ItemGroup>
 
 </Project>

@@ -28,6 +28,7 @@ public sealed class BillingDbContext(DbContextOptions<BillingDbContext> options)
             entity.Property(e => e.Status).HasMaxLength(20);
             entity.HasIndex(e => e.InvoiceNumber).IsUnique();
             entity.HasIndex(e => e.CustomerId);
+            entity.Navigation(e => e.LineItems).AutoInclude();
         });
 
         // Configure LineItem entity

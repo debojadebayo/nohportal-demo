@@ -63,4 +63,6 @@ builder.Services.AddScoped<ILazyLookupService<InvoiceDto>, LazyLookupService<Inv
 builder.Services.AddScoped<IDocumentUploadService, DocumentUploadService>();
 builder.Services.AddScoped<IAuthHelperService, AuthHelperService>();
 
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = new System.Globalization.CultureInfo("en-GB");
+
 await builder.Build().RunAsync();

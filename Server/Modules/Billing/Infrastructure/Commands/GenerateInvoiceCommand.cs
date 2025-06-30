@@ -12,6 +12,8 @@ using Shared.DTOs.Billing;
 using Shared.DTOs.Scheduling;
 using Shared.DTOs.CRM;
 using Microsoft.EntityFrameworkCore;
+using ComposedHealthBase.Server.Queries;
+using Server.Modules.Shared.Contracts;
 
 namespace Server.Modules.Billing.Infrastructure.Commands
 {
@@ -22,39 +24,40 @@ namespace Server.Modules.Billing.Infrastructure.Commands
 
     public class GenerateInvoiceCommand : IGenerateInvoiceCommand, ICommand
     {
-        private readonly IDbContext<BillingDbContext> _billingDbContext;
-        private readonly IMapper<Invoice, InvoiceDto> _invoiceMapper;
-        private readonly IMapper<LineItem, LineItemDto> _lineItemMapper;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IGetSchedulesForInvoiceQuery _getSchedulesForInvoiceQuery;
+        private readonly IGetProductsByIdsQuery _getProductsByIdsQuery;
+        private readonly BillingDbContext _billingDbContext;
 
         public GenerateInvoiceCommand(
-            IDbContext<BillingDbContext> billingDbContext,
-            IMapper<Invoice, InvoiceDto> invoiceMapper,
-            IMapper<LineItem, LineItemDto> lineItemMapper,
-            IHttpClientFactory httpClientFactory,
-            IAuthorizationService authorizationService)
+            IGetSchedulesForInvoiceQuery getSchedulesForInvoiceQuery,
+            IGetProductsByIdsQuery getProductsByIdsQuery,
+            IAuthorizationService authorizationService,
+            BillingDbContext billingDbContext)
         {
-            _billingDbContext = billingDbContext;
-            _invoiceMapper = invoiceMapper;
-            _lineItemMapper = lineItemMapper;
-            _httpClientFactory = httpClientFactory;
             _authorizationService = authorizationService;
+            _getProductsByIdsQuery = getProductsByIdsQuery;
+            _billingDbContext = billingDbContext;
+            _getSchedulesForInvoiceQuery = getSchedulesForInvoiceQuery;
         }
 
         public async Task<Guid> Handle(InvoiceFilterDto filterDto, ClaimsPrincipal user)
         {
-            // Step 1: Fetch schedules from scheduling module
-            var schedules = await FetchSchedulesFromSchedulingModule(filterDto);
-            
+            // Step 1: Fetch schedules using the shared interface
+            var schedules = await _getSchedulesForInvoiceQuery.Handle(
+                filterDto.CustomerId,
+                filterDto.FromDate,
+                filterDto.ToDate,
+                filterDto.ProductId);
+
             if (!schedules.Any())
             {
                 throw new InvalidOperationException("No schedules found for the specified criteria.");
             }
 
-            // Step 2: Fetch products from CRM module
+            // Step 2: Fetch products using the shared interface
             var productIds = schedules.Select(s => s.ProductId).Distinct().ToList();
-            var products = await FetchProductsFromCRMModule(productIds);
+            var products = await _getProductsByIdsQuery.Handle(productIds);
 
             // Step 3: Create invoice
             var invoice = new Invoice
@@ -66,14 +69,9 @@ namespace Server.Modules.Billing.Infrastructure.Commands
                 FromDate = filterDto.FromDate,
                 ToDate = filterDto.ToDate,
                 CustomerId = filterDto.CustomerId,
-                ProductId = filterDto.ProductId,
                 Status = "Draft",
                 TaxRate = 0.20m, // 20% VAT
                 IsActive = true,
-                CreatedDate = DateTime.UtcNow,
-                ModifiedDate = DateTime.UtcNow,
-                CreatedBy = user.Identity?.Name ?? "System",
-                LastModifiedBy = user.Identity?.Name ?? "System",
                 TenantId = filterDto.CustomerId
             };
 
@@ -118,53 +116,6 @@ namespace Server.Modules.Billing.Infrastructure.Commands
             await _billingDbContext.SaveChangesWithAuditAsync(user);
 
             return invoice.Id;
-        }
-
-        private async Task<List<ScheduleDto>> FetchSchedulesFromSchedulingModule(InvoiceFilterDto filterDto)
-        {
-            using var httpClient = _httpClientFactory.CreateClient();
-            
-            // Build query parameters
-            var queryParams = new List<string>
-            {
-                $"customerId={filterDto.CustomerId}",
-                $"fromDate={filterDto.FromDate:yyyy-MM-dd}",
-                $"toDate={filterDto.ToDate:yyyy-MM-dd}"
-            };
-
-            if (filterDto.ProductId.HasValue)
-            {
-                queryParams.Add($"productId={filterDto.ProductId.Value}");
-            }
-
-            var queryString = string.Join("&", queryParams);
-            var response = await httpClient.GetAsync($"/api/schedule/filter?{queryString}");
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                return System.Text.Json.JsonSerializer.Deserialize<List<ScheduleDto>>(content) ?? new List<ScheduleDto>();
-            }
-
-            throw new HttpRequestException($"Failed to fetch schedules: {response.StatusCode}");
-        }
-
-        private async Task<List<ProductDto>> FetchProductsFromCRMModule(List<Guid> productIds)
-        {
-            using var httpClient = _httpClientFactory.CreateClient();
-            
-            var json = System.Text.Json.JsonSerializer.Serialize(productIds);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            
-            var response = await httpClient.PostAsync("/api/product/getbyids/", content);
-            
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadAsStringAsync();
-                return System.Text.Json.JsonSerializer.Deserialize<List<ProductDto>>(result) ?? new List<ProductDto>();
-            }
-
-            throw new HttpRequestException($"Failed to fetch products: {response.StatusCode}");
         }
 
         private async Task<string> GenerateInvoiceNumber()

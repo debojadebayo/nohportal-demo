@@ -18,7 +18,7 @@
             ProgressIndicatorColor="Color.Default" />
         break;
     case LazyLookupEnum.Select:
-        <MudSelect @bind-Value="ItemId" Label="@Label">
+        <MudSelect T="Guid" Value="@ItemId" ValueChanged="@OnItemChanged" Label="@Label">
             @foreach (var item in _items)
             {
                 <MudSelectItem Value="@(((IDto)item).Id)">@item.DisplayName</MudSelectItem>

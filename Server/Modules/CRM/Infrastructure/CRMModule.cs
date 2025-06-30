@@ -5,6 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Server.Modules.CRM.Infrastructure.Database;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Modules;
+using Server.Modules.Shared.Contracts;
+using ComposedHealthBase.Server.Queries;
+using Server.Modules.CRM.Entities;
+using Shared.DTOs.CRM;
+using Server.Modules.CRM.Infrastructure.Queries;
 
 namespace Server.Modules.CRM.Infrastructure
 {
@@ -15,6 +20,9 @@ namespace Server.Modules.CRM.Infrastructure
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 			services.AddDbContext<IDbContext<CRMDbContext>, CRMDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+							
+			services.AddScoped<IGetCustomerByIdQuery, GetCustomerByIdQuery>();
+			services.AddScoped<IGetProductsByIdsQuery, GetProductsByIdsQuery>();
 
 			return services;
 		}

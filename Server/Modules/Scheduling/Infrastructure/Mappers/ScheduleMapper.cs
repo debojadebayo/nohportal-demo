@@ -13,6 +13,7 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
             ReferralId = entity.ReferralId,
             EmployeeId = entity.EmployeeId,
             ClinicianId = entity.ClinicianId,
+            ProductId = entity.ProductId,
             StartTime = entity.Start,
             EndTime = entity.End,
             CreatedBy = entity.CreatedBy,
@@ -30,10 +31,12 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
     {
         return new Schedule
         {
+            Id = dto.Id,
             CustomerId = dto.CustomerId,
             ReferralId = dto.ReferralId,
             EmployeeId = dto.EmployeeId,
             ClinicianId = dto.ClinicianId,
+            ProductId = dto.ProductId,
             Start = dto.StartTime,
             End = dto.EndTime,
             Title = dto.Title,
@@ -55,10 +58,12 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
 
     public void Map(ScheduleDto dto, Schedule entity)
     {
+        entity.Id = dto.Id;
         entity.CustomerId = dto.CustomerId;
         entity.ReferralId = dto.ReferralId;
         entity.EmployeeId = dto.EmployeeId;
         entity.ClinicianId = dto.ClinicianId;
+        entity.ProductId = dto.ProductId;
         entity.Start = dto.StartTime;
         entity.End = dto.EndTime;
         entity.Title = dto.Title;
@@ -74,6 +79,7 @@ public class ScheduleMapper : IMapper<Schedule, ScheduleDto>
         dto.ReferralId = entity.ReferralId;
         dto.EmployeeId = entity.EmployeeId;
         dto.ClinicianId = entity.ClinicianId;
+        dto.ProductId = entity.ProductId;
         dto.StartTime = entity.Start;
         dto.End = entity.End;
         dto.CreatedBy = entity.CreatedBy;
