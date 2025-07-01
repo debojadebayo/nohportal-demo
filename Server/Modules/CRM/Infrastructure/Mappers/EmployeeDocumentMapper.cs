@@ -16,12 +16,11 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 LastModifiedBy = entity.LastModifiedBy,
                 CreatedDate = entity.CreatedDate,
                 ModifiedDate = entity.ModifiedDate,
-                FilePath = entity.FilePath,
                 Name = entity.Name,
                 Description = entity.Description,
                 BlobContainerName = entity.BlobContainerName,
                 BlobName = entity.BlobName,
-                EmployeeId = entity.EmployeeId
+                EmployeeDocumentType = entity.EmployeeDocumentType,
             };
         }
 
@@ -29,14 +28,15 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
         {
             return new EmployeeDocument
             {
+                Id = dto.Id,
                 IsActive = dto.IsActive,
                 CreatedBy = dto.CreatedBy,
-                FilePath = dto.FilePath,
                 Name = dto.Name,
                 Description = dto.Description,
                 BlobContainerName = dto.BlobContainerName,
                 BlobName = dto.BlobName,
-                EmployeeId = dto.EmployeeId
+                SearchTags = $"{dto.Name} {dto.Description}".ToLower(),
+                EmployeeDocumentType = dto.EmployeeDocumentType,
             };
         }
 
@@ -52,13 +52,14 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
 
         public void Map(EmployeeDocumentDto dto, EmployeeDocument entity)
         {
+            entity.Id = dto.Id;
             entity.IsActive = dto.IsActive;
-            entity.FilePath = dto.FilePath;
             entity.Name = dto.Name;
             entity.Description = dto.Description;
             entity.BlobContainerName = dto.BlobContainerName;
             entity.BlobName = dto.BlobName;
-            entity.EmployeeId = dto.EmployeeId;
+            entity.SearchTags = $"{dto.Name} {dto.Description}".ToLower();
+            entity.EmployeeDocumentType = dto.EmployeeDocumentType;
         }
 
         public void Map(EmployeeDocument entity, EmployeeDocumentDto dto)
@@ -69,12 +70,11 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             dto.LastModifiedBy = entity.LastModifiedBy;
             dto.CreatedDate = entity.CreatedDate;
             dto.ModifiedDate = entity.ModifiedDate;
-            dto.FilePath = entity.FilePath;
             dto.Name = entity.Name;
             dto.Description = entity.Description;
             dto.BlobContainerName = entity.BlobContainerName;
             dto.BlobName = entity.BlobName;
-            dto.EmployeeId = entity.EmployeeId;
+            dto.EmployeeDocumentType = entity.EmployeeDocumentType;
         }
 
         public void Map(IEnumerable<EmployeeDocumentDto> dtos, IEnumerable<EmployeeDocument> entities)

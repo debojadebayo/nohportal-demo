@@ -3,6 +3,10 @@
 # Navigate to the Server directory
 cd "$(dirname "$0")"
 
+# Option to migrate AuthDbContext
+echo "0. AuthDbContext (auth database)"
+echo
+
 # Collect all modules
 modules=()
 for module in Modules/*/Infrastructure; do
@@ -25,7 +29,7 @@ for i in "${!modules[@]}"; do
 done
 
 # Prompt the user to choose a module
-read -p "Enter the number of the module to migrate (or press Enter to migrate all): " choice
+read -p "Enter the number of the module to migrate: " choice
 
 # Validate the choice
 if [[ -n "$choice" && ! "$choice" =~ ^[0-9]+$ ]] || [[ "$choice" -lt 1 || "$choice" -gt ${#modules[@]} ]]; then
@@ -43,7 +47,7 @@ for i in "${!modules[@]}"; do
     module_name=$(basename "$(dirname "$module")")
 
     # Prompt for the migration name
-    read -p "Enter the migration name for $module_name (or press Enter to skip): " migration_name
+    read -p "Enter the migration name for $module_name: " migration_name
 
     # Skip if no migration name is provided
     if [[ -z "$migration_name" ]]; then

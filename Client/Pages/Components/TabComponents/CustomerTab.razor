@@ -12,6 +12,9 @@
             <MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)" Immediate="true" Label="Name"
                 Variant="Variant.Outlined" />
 
+            <MudTextField @bind-Value="Model.Domain" For="@(() => Model.Domain)" Immediate="true" Label="Domain"
+                Variant="Variant.Outlined" />
+
             <MudTextField @bind-Value="Model.Telephone" For="@(() => Model.Telephone)" Immediate="true"
                 Label="Phone Number" Variant="Variant.Outlined" />
 
@@ -41,8 +44,8 @@
         </MudItem>
     </MudGrid>
     <MudCardActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"
-            OnClick="@(async () => await Save())">Save Changes
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Save())">
+            Save Changes
         </MudButton>
     </MudCardActions>
 </MudForm>

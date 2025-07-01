@@ -2,30 +2,29 @@
 @using ComposedHealthBase.BaseClient.Components
 @using ComposedHealthBase.BaseClient.Services
 @using Shared.DTOs.CRM
-@inject ILazyLookupService<CustomerDocumentDto> DocumentLookupService
+@inject ILazyLookupService<CustomerDto> LookupService
 
-<DocumentBrowser TDto="CustomerDocumentDto" Documents="documents" NewDocument="newDocument" OnSave="OnDocumentSave" />
+@if (customer == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <DocumentBrowser TDto="CustomerDocumentDto" @bind-DocumentIds="customer!.RelatedDocumentIds" OnDocumentUploaded="SaveCustomer" />
+}
+
 
 @code {
-    private List<CustomerDocumentDto> documents = new();
-    private CustomerDocumentDto newDocument = new CustomerDocumentDto
-    {
-        CustomerId = 20,
-        Name = "",
-        FilePath = ""
-    };
+    private CustomerDto? customer { get; set; } = default!;
     protected override async Task OnInitializedAsync()
     {
-        documents = (await DocumentLookupService.GetAllByTenantId(20, CancellationToken.None)).ToList();
+        customer = await LookupService.GetItemById(new Guid("20202020-2020-2020-2020-202020202020"), CancellationToken.None);
     }
-    private async Task OnDocumentSave()
+    private async Task SaveCustomer(CustomerDocumentDto document)
     {
-        documents = (await DocumentLookupService.GetAllByTenantId(20, CancellationToken.None)).ToList();
-        newDocument = new CustomerDocumentDto
-        {
-            CustomerId = 20,
-            Name = "",
-            FilePath = ""
-        };
+        if (customer == null)
+            return;
+        await LookupService.UpdateItem(customer, CancellationToken.None);
+        customer = await LookupService.GetItemById(new Guid("20202020-2020-2020-2020-202020202020"), CancellationToken.None);
     }
 }

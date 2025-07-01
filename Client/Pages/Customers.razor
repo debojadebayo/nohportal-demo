@@ -1,4 +1,6 @@
 ﻿@page "/customers"
+@page "/customers/{SelectedCustomerId:guid}"
+@using ComposedHealthBase.BaseClient.Enums
 @using ComposedHealthBase.Shared.DTOs
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
@@ -15,45 +17,57 @@
 @inject ILazyLookupService<CustomerDocumentDto> DocumentLookupService
 @inject ILazyLookupService<ProductDto> ProductLookupService
 @inject ILazyLookupService<ProductTypeDto> ProductTypeLookupService
+@inject IAuthHelperService AuthHelperService
 
 @attribute [Authorize]
 
-<MudText Typo="Typo.h1">Customers</MudText>
+<AuthorizeView Roles="tenantadministrator">
+    <MudText Typo="Typo.h1">Welcome, @selectedCustomer?.Name</MudText>
+</AuthorizeView>
 
-<MudText Typo="Typo.body1">Select a customer to view details</MudText>
-<LazyLookup TDto="CustomerDto" @bind-ItemId="selectedCustomerId" Label="Company Name" />
-@if (selectedCustomer == null)
-{
-    <MudButton OnClick="CreateCustomer">Add New Customer</MudButton>
-}
+<AuthorizeView Roles="administrator">
+    <MudText Typo="Typo.h1">Customers</MudText>
+
+    <MudText Typo="Typo.body1">Select a customer to view details</MudText>
+    <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="SelectedCustomerId"
+        Label="Company Name" SelectedItemChanged="OnCustomerSelected" />
+    @if (selectedCustomer == null)
+    {
+        <MudButton OnClick="CreateCustomer">Add New Customer</MudButton>
+    }
+</AuthorizeView>
 
 @if (selectedCustomer != null)
 {
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @ref="tabs">
-        <MudTabPanel Text="Customers">
-            <CustomerTab Model="selectedCustomer" OnSave="HandleCustomerSave" OnDelete="DeleteCustomer" />
+        <MudTabPanel Text="Customer">
+            <CustomerTab Model="selectedCustomer" OnSave="HandleCustomerSave"
+                OnDelete="DeleteCustomer" />
         </MudTabPanel>
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByCustomerId">
             <AppointmentsTab Appointments="appointments" />
         </MudTabPanel>
         <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByCustomerId">
-            <ReferralsTab Referrals="referrals" />
+            <ReferralsTab Referrals="referrals" CustomerId="selectedCustomer?.Id ?? Guid.Empty"
+                OnSave="HandleReferralSave" />
         </MudTabPanel>
         <MudTabPanel Text="Managers" OnClick="GetAllManagersByCustomerId">
             <ManagersTab Managers="managers" />
         </MudTabPanel>
         <MudTabPanel Text="Contracts" OnClick="GetAllContractsByCustomerId">
-            <ContractsTab Contracts="contracts" OnContractSave="HandleContractSave" NewContract="newContract" />
+            <ContractsTab Contracts="contracts" CustomerId="selectedCustomer?.Id ?? Guid.Empty"
+                OnContractSave="HandleContractSave" NewContract="newContract" />
         </MudTabPanel>
         <MudTabPanel Text="Services" OnClick="GetAllProductsByCustomerId">
-            <ProductsTab Products="products" ProductTypes="productTypes" OnProductSave="HandleProductSave" NewProduct="newProduct" />
+            <ProductsTab Products="products" ProductTypes="productTypes" OnProductSave="HandleProductSave"
+                NewProduct="newProduct" />
         </MudTabPanel>
         <MudTabPanel Text="Invoicing">
             <InvoicingTab />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByCustomerId">
-            <DocumentBrowser TDto="CustomerDocumentDto" Documents="documents" NewDocument="newDocument"
-                OnSave="OnDocumentSave" />
+            <DocumentBrowser TDto="CustomerDocumentDto" @bind-DocumentIds="selectedCustomer.RelatedDocumentIds"
+                OnDocumentUploaded="() => HandleCustomerSave(selectedCustomer)" />
         </MudTabPanel>
         <MudTabPanel Text="Reports">
             <ReportsTab />
@@ -66,9 +80,9 @@
 
 @code {
     private MudTabs tabs = default!;
-    private CustomerDto? selectedCustomer =>
-    CustomerLookupService.ItemList.TryGetValue(selectedCustomerId, out var customer) ? customer : null;
-    private long selectedCustomerId { get; set; } = 0;
+
+    [Parameter]
+    public Guid SelectedCustomerId { get; set; } = Guid.Empty;
     private List<ScheduleDto> appointments = new();
     private List<ReferralDto> referrals = new();
     private List<ContractDto> contracts = new();
@@ -79,22 +93,39 @@
     private CustomerDocumentDto newDocument = default!;
     private ContractDto newContract = default!;
     private ProductDto newProduct = default!;
+    
+    private CustomerDto selectedCustomer { get; set; } = default!;
+    private bool newCustomer = false;
+
     private void CreateCustomer()
     {
-        CustomerLookupService.ItemList.TryAdd(0, new CustomerDto());
-        selectedCustomerId = 0;
+        selectedCustomer = new CustomerDto();
+        newCustomer = true;
     }
-    private async Task HandleCustomerSave()
+
+    private void OnCustomerSelected(CustomerDto customer)
     {
-        if (selectedCustomer == null) return;
-        if (selectedCustomer.Id == 0)
-        {
-            await CustomerLookupService.AddItem(selectedCustomer, CancellationToken.None);
+        selectedCustomer = customer;
+
+    }
+    private async Task HandleCustomerSave(CustomerDto customer)
+    {
+        if (newCustomer){
+            var createdCustomer = await AuthHelperService.CreateTenant<CustomerDto>(customer, CancellationToken.None);
+            if (createdCustomer != null)
+            {
+                selectedCustomer = createdCustomer;
+            }
+            newCustomer = false;
+            return;
         }
-        else
-        {
-            await CustomerLookupService.UpdateItem(selectedCustomer, CancellationToken.None);
-        }
+        await CustomerLookupService.UpdateItem(customer, CancellationToken.None);
+    }
+    private async Task HandleReferralSave(ReferralDto referral)
+    {
+        if (referral == null) return;
+        await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
+        await GetAllReferralsByCustomerId();
     }
     async Task DeleteCustomer()
     {
@@ -104,23 +135,27 @@
     private async Task GetAllAppointmentsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        appointments = (await ScheduleLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
+        appointments = (await ScheduleLookupService.GetAllByTenantId(selectedCustomer.Id,
+        CancellationToken.None)).ToList();
     }
     private async Task GetAllReferralsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        referrals = (await ReferralLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
+        referrals = (await ReferralLookupService.GetAllByTenantId(selectedCustomer.Id,
+        CancellationToken.None)).ToList();
     }
     private async Task GetAllManagersByCustomerId()
     {
         if (selectedCustomer == null) return;
-        managers = (await ManagerLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
+        managers = (await ManagerLookupService.GetAllByTenantId(selectedCustomer.Id,
+        CancellationToken.None)).ToList();
     }
 
     private async Task GetAllContractsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        contracts = (await ContractLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
+        contracts = (await ContractLookupService.GetAllByTenantId(selectedCustomer.Id,
+        CancellationToken.None)).ToList();
         newContract = new ContractDto
         {
             Reference = "",
@@ -131,24 +166,30 @@
     private async Task GetAllProductsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        products = (await ProductLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
+        products = (await ProductLookupService.GetAllByTenantId(selectedCustomer.Id,
+        CancellationToken.None)).ToList();
         productTypes = (await ProductTypeLookupService.GetAllItems(CancellationToken.None)).ToList();
         newProduct = new ProductDto
         {
-            ProductType = new ProductTypeDto{ Id = 0, Name = "Select Product Type", Description = "", ChargeCode = "" },
+            ProductType = new ProductTypeDto
+            {
+                Id = Guid.NewGuid(),
+                Name = "Select Product Type",
+                Description = "",
+                ChargeCode = ""
+            },
             CustomerId = selectedCustomer.Id
         };
     }
     private async Task GetAllDocumentsByCustomerId()
     {
         if (selectedCustomer == null) return;
-        documents = (await DocumentLookupService.GetAllByTenantId(selectedCustomer.Id, CancellationToken.None)).ToList();
+        documents = (await DocumentLookupService.GetAllByTenantId(selectedCustomer.Id,
+        CancellationToken.None)).ToList();
         var creators = documents.Select(d => d.CreatedBy).Distinct().ToList();
         newDocument = new CustomerDocumentDto
         {
-            CustomerId = selectedCustomer.Id,
-            Name = "",
-            FilePath = ""
+            Name = ""
         };
     }
     private async Task OnDocumentSave()
@@ -159,14 +200,7 @@
     private async Task HandleContractSave(ContractDto contract)
     {
         if (contract == null) return;
-        if (contract.Id == 0)
-        {
-            await ContractLookupService.AddItem(contract, CancellationToken.None);
-        }
-        else
-        {
-            await ContractLookupService.UpdateItem(contract, CancellationToken.None);
-        }
+        await ContractLookupService.UpdateItem(contract, CancellationToken.None);
         await GetAllContractsByCustomerId();
     }
 
@@ -178,14 +212,7 @@
     private async Task HandleProductSave(ProductDto product)
     {
         if (product == null) return;
-        if (product.Id == 0)
-        {
-            await ProductLookupService.AddItem(product, CancellationToken.None);
-        }
-        else
-        {
-            await ProductLookupService.UpdateItem(product, CancellationToken.None);
-        }
+        await ProductLookupService.UpdateItem(product, CancellationToken.None);
         await GetAllProductsByCustomerId();
     }
 

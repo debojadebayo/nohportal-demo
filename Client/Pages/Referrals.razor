@@ -29,13 +29,6 @@
     private async Task SaveReferral(ReferralDto referral)
     {
         if (referral == null) return;
-        if (referral.Id == 0)
-        {
-            await ReferralLookupService.AddItem(referral, CancellationToken.None);
-        }
-        else
-        {
-            await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
-        }
+        await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
     }
 }

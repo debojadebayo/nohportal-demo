@@ -3,13 +3,13 @@
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Product : BaseEntity<Product>, IEntity
+	public class Product : BaseEntity<Product>, IEntity, IAuditEntity
 	{
 		public required ProductType ProductType { get; set; }
 		public decimal Price { get; set; }
 		public DateTime? StartTime { get; set; }
 		public DateTime? EndTime { get; set; }
-		public long CustomerId
+		public Guid CustomerId
 		{
 			get
 			{

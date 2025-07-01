@@ -1,7 +1,12 @@
 @namespace Client.Pages.Components.TabComponents
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.Shared.DTOs
 @using Shared.DTOs.CRM
 @using MudBlazor
 @using Shared.DTOs.Scheduling
+@inject IAuthHelperService AuthHelper
 
 <MudPaper Class="pa-4">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
@@ -14,9 +19,33 @@
             <PropertyColumn Property="x => x.CreatedDate" Title="Created" />
             <PropertyColumn Property="x => x.Title" />
             <PropertyColumn Property="x => x.ReferralDetails" Title="Referral Details" />
-            <PropertyColumn Property="x => x.EmployeeId" Title="Employee" />
-            <PropertyColumn Property="x => x.CustomerId" Title="Customer" />
-            <PropertyColumn Property="x => x.DocumentId" Title="Document Id" />
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Employee</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.EmployeeId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Customer</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.CustomerId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn>
+                    <CellTemplate>
+                                            <MudButton Size="@Size.Small" OnClick="() => ViewReferral(context.Item)"
+                        Variant="@Variant.Filled" Color="@Color.Primary">View Referral</MudButton>
+                            @if (AppointmentMode)
+                            {
+                                <MudButton Size="@Size.Small" OnClick="() => OnSelectForAppointment.InvokeAsync(context.Item)"
+                                    Variant="@Variant.Filled" Color="@Color.Primary">Select for Appointment</MudButton>
+                            }
+                    </CellTemplate>
+                </TemplateColumn>
         </Columns>
         <NoRecordsContent>
             <MudText>No referrals found.</MudText>
@@ -26,18 +55,19 @@
 
 <MudDialog @bind-Visible="_addReferralDialogOpen" Options="_dialogOptions">
     <TitleContent>
-        <MudText Typo="Typo.h6">Add New Referral</MudText>
+        <MudText Typo="Typo.h6">Referral</MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="form" Model="_newReferral">
+            <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.CustomerId" TenantConstraint="CustomerId" Label="Customer" />
+            <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.EmployeeId" TenantConstraint="CustomerId" Label="Employee" />
             <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" />
             <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" />
-            <MudTextField @bind-Value="_newReferral.DocumentId" Label="Document ID (Optional)" Variant="Variant.Outlined" Class="mt-3" />
-            <!-- Optionally add dropdowns for Employee/Customer if needed, or let parent handle -->
+            <DocumentBrowser CompactMode="true" TDto="EmployeeDocumentDto" @bind-DocumentIds="_newReferral.RelatedDocumentIds" />
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="AddReferral">Add Referral</MudButton>
+        <MudButton Color="Color.Primary" OnClick="AddReferral">Save</MudButton>
         <MudButton OnClick="Cancel">Cancel</MudButton>
     </DialogActions>
 </MudDialog>
@@ -46,15 +76,20 @@
     [Parameter] public IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
     [Parameter] public EventCallback<ReferralDto> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
+    [Parameter] public Guid EmployeeId { get; set; } = Guid.Empty;
+    [Parameter] public bool AppointmentMode { get; set; } = false;
+    [Parameter] public EventCallback<ReferralDto> OnSelectForAppointment { get; set; }
 
     private bool _addReferralDialogOpen = false;
     private ReferralDto _newReferral = new ReferralDto();
+    private EmployeeDocumentDto _newDocument = default!;
     private MudForm form = default!;
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
     private void ShowAddReferralDialog()
     {
-        _newReferral = new ReferralDto();
+        _newReferral = new ReferralDto { CustomerId = CustomerId, EmployeeId = EmployeeId };
         _addReferralDialogOpen = true;
     }
 
@@ -64,6 +99,12 @@
         if (!form.IsValid) return;
         await OnSave.InvokeAsync(_newReferral);
         _addReferralDialogOpen = false;
+    }
+
+    private void ViewReferral(ReferralDto referral)
+    {
+        _newReferral = referral;
+        _addReferralDialogOpen = true;
     }
 
     private async Task Cancel()

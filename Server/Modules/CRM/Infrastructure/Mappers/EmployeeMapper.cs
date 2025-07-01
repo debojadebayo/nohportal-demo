@@ -16,6 +16,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             ModifiedDate = entity.ModifiedDate,
             FirstName = entity.FirstName,
             LastName = entity.LastName,
+            Username = entity.Username,
             DOB = entity.DOB,
             Address1 = entity.Address1,
             Address2 = entity.Address2!,
@@ -27,11 +28,12 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Department = entity.Department,
             LineManager = entity.LineManager,
             Notes = entity.Notes,
-            CustomerId = entity.CustomerId
+            CustomerId = entity.CustomerId,
+            RelatedDocumentIds = entity.RelatedDocumentIds.ToList(),
         };
     }
 
-    public Employee MapWithKeycloakId(EmployeeDto dto, Guid keycloakId)
+    public Employee Map(EmployeeDto dto)
     {
         return new Employee
         {
@@ -43,6 +45,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             ModifiedDate = dto.ModifiedDate,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
+            Username = dto.Username ?? $"{dto.FirstName}.{dto.LastName}".ToLower(),
             DOB = dto.DOB,
             Address1 = dto.Address1,
             Address2 = dto.Address2!,
@@ -54,8 +57,9 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Department = dto.Department,
             LineManager = dto.LineManager,
             Notes = dto.Notes,
-            KeycloakId = keycloakId,
-            CustomerId = dto.CustomerId
+            CustomerId = dto.CustomerId,
+            RelatedDocumentIds = dto.RelatedDocumentIds.ToArray(),
+            SearchTags = $"{dto.Id} {dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}"
         };
     }
 
@@ -74,6 +78,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         entity.IsActive = dto.IsActive;
         entity.FirstName = dto.FirstName;
         entity.LastName = dto.LastName;
+        entity.Username = dto.Username ?? $"{dto.FirstName}.{dto.LastName}".ToLower();
         entity.DOB = dto.DOB;
         entity.Address1 = dto.Address1;
         entity.Address2 = dto.Address2;
@@ -86,6 +91,8 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         entity.LineManager = dto.LineManager;
         entity.Notes = dto.Notes;
         entity.CustomerId = dto.CustomerId;
+        entity.RelatedDocumentIds = dto.RelatedDocumentIds.ToArray();
+        entity.SearchTags = $"{entity.Id} {dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}";
     }
 
     public void Map(Employee entity, EmployeeDto dto)
@@ -98,6 +105,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         dto.ModifiedDate = entity.ModifiedDate;
         dto.FirstName = entity.FirstName;
         dto.LastName = entity.LastName;
+        dto.Username = entity.Username;
         dto.DOB = entity.DOB;
         dto.Address1 = entity.Address1;
         dto.Address2 = entity.Address2!;
@@ -110,10 +118,6 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         dto.LineManager = entity.LineManager;
         dto.Notes = entity.Notes;
         dto.CustomerId = entity.CustomerId;
-    }
-
-    public Employee Map(EmployeeDto dto)
-    {
-        throw new NotImplementedException("Mapping from DTO to Entity without KeycloakId is not supported.");
+        dto.RelatedDocumentIds = entity.RelatedDocumentIds.ToList();
     }
 }

@@ -4,6 +4,8 @@ ARG INCLUDE_DEBUGGER=false
 
 WORKDIR /app
 
+# Exclude .bin and .obj files when copying
+
 RUN if [ "$INCLUDE_DEBUGGER" = "true" ]; then \
         apt-get update \
         && apt-get install unzip \
@@ -12,6 +14,8 @@ RUN if [ "$INCLUDE_DEBUGGER" = "true" ]; then \
 
 COPY Server/ ./Server/
 COPY Shared/ ./Shared/
+RUN find ./Server -type d \( -name bin -o -name obj \) -exec rm -rf {} + || true
+RUN find ./Shared -type d \( -name bin -o -name obj \) -exec rm -rf {} + || true
 
 WORKDIR /app/Server/WebApi
 RUN dotnet restore 

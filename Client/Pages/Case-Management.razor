@@ -1,0 +1,149 @@
+﻿@page "/case-management"
+@using System.Collections.Generic
+@using MudBlazor
+@using Shared.DTOs.Scheduling
+@using Shared.DTOs.CRM
+@using Shared.Enums
+@using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Enums
+@inject ILazyLookupService<ScheduleDto> ScheduleLookupService
+
+<MudItem xs="12" sm="6">
+    <MudText Typo="Typo.h1">Case Management</MudText>
+</MudItem>
+
+<MudExpansionPanels>
+    <MudExpansionPanel Text="Upcoming appointments" Expanded="true">
+        <MudDataGrid Items="@_upcomingAppointments" Dense="true" Hover="true">
+            <Columns>
+                <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+                <PropertyColumn Property="x => x.Start" Title="Date & Time" />
+                <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Employee</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
+                            @bind-ItemId="context.Item.EmployeeId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Product</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.ProductId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.AppointmentStatus.ToString()" Title="Appointment Status" />
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Actions</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary"
+                            Href="@($"/case-notes/{context.Item.Id}")">
+                            Case Notes
+                        </MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    </MudExpansionPanel>
+    <MudExpansionPanel Text="Completed appointments">
+        <MudDataGrid Items="@_completedAppointments" Dense="true" Hover="true">
+            <Columns>
+                <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+                <PropertyColumn Property="x => x.Start" Title="Date & Time" />
+                <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Employee</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
+                            @bind-ItemId="context.Item.EmployeeId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Product</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.ProductId" />
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    </MudExpansionPanel>
+    <MudExpansionPanel Text="Missed appointments">
+        <MudDataGrid Items="@_missedAppointments" Dense="true" Hover="true">
+            <Columns>
+                <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+                <PropertyColumn Property="x => x.Start" Title="Date & Time" />
+                <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Employee</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
+                            @bind-ItemId="context.Item.EmployeeId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Product</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.ProductId" />
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    </MudExpansionPanel>
+    <MudExpansionPanel Text="Cancelled appointments">
+        <MudDataGrid Items="@_cancelledAppointments" Dense="true" Hover="true">
+            <Columns>
+                <PropertyColumn Property="x => x.ReferralId" Title="Referral ID" />
+                <PropertyColumn Property="x => x.Start" Title="Date & Time" />
+                <PropertyColumn Property="x => x.CreatedDate" Title="Booked On" />
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Employee</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text"
+                            @bind-ItemId="context.Item.EmployeeId" />
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn>
+                    <HeaderTemplate>
+                        <MudText Typo="Typo.subtitle2">Product</MudText>
+                    </HeaderTemplate>
+                    <CellTemplate>
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.ProductId" />
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+@code {
+    [Parameter] public List<ScheduleDto> AllAppointments { get; set; } = new();
+    private List<ScheduleDto> _upcomingAppointments => AllAppointments.Where(x => x.Start > DateTime.UtcNow).ToList();
+    private List<ScheduleDto> _completedAppointments => AllAppointments.Where(x => x.Start < DateTime.UtcNow && x.Status ==
+    ScheduleStatusEnum.Entered).ToList();
+    private List<ScheduleDto> _missedAppointments => AllAppointments.Where(x => x.Start < DateTime.UtcNow && x.Status ==
+    ScheduleStatusEnum.Missed).ToList();
+    private List<ScheduleDto> _cancelledAppointments => AllAppointments.Where(x => x.Status ==
+    ScheduleStatusEnum.Cancelled).ToList();
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        AllAppointments = (await ScheduleLookupService.GetAllItems(CancellationToken.None)).ToList();
+    }
+}

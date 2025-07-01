@@ -12,9 +12,9 @@
             <MudTh>Active</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd>@context.Name</MudTd>
+            <MudTd>@context.FirstName @context.LastName</MudTd>
             <MudTd>@context.Email</MudTd>
-            <MudTd>@context.Phone</MudTd>
+            <MudTd>@context.Telephone</MudTd>
             <MudTd>@context.Department</MudTd>
             <MudTd>
                 <MudChip T="string" Color="@(context.IsActive ? Color.Success : Color.Error)">

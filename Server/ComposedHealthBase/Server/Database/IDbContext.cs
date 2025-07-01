@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ComposedHealthBase.Server.Database
 {
@@ -7,7 +8,7 @@ namespace ComposedHealthBase.Server.Database
         DbSet<T> Set<T>() where T : class;
 
         int SaveChanges();
-        Task<int> SaveChangesWithAuditAsync(string userFullName, CancellationToken cancellationToken = default);
+        Task<int> SaveChangesWithAuditAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default);
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

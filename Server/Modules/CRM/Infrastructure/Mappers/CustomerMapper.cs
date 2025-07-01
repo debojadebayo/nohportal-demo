@@ -10,6 +10,7 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
         {
             Id = entity.Id,
             Name = entity.Name,
+            Domain = entity.Domain,
             Telephone = entity.Telephone,
             NumberOfEmployees = entity.NumberOfEmployees,
             Site = entity.Site,
@@ -25,16 +26,18 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
-            ModifiedDate = entity.ModifiedDate
+            ModifiedDate = entity.ModifiedDate,
+            RelatedDocumentIds = entity.RelatedDocumentIds.ToList(),
         };
     }
 
-    public Customer MapWithKeycloakId(CustomerDto dto, Guid keycloakId)
+    public Customer Map(CustomerDto dto)
     {
         return new Customer
         {
             Id = dto.Id,
             Name = dto.Name,
+            Domain = dto.Domain,
             Telephone = dto.Telephone,
             NumberOfEmployees = dto.NumberOfEmployees,
             Site = dto.Site,
@@ -47,7 +50,8 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
             InvoiceEmail = dto.InvoiceEmail,
             Notes = dto.Notes,
             IsActive = dto.IsActive,
-            KeycloakId = keycloakId,
+            RelatedDocumentIds = dto.RelatedDocumentIds.ToArray(),
+            SearchTags = $"{dto.Id} {dto.Name} {dto.Telephone} {dto.Site} {dto.OHServicesRequired} {dto.Address} {dto.Industry} {dto.Postcode} {dto.Website} {dto.Email} {dto.InvoiceEmail} {dto.Notes}",
         };
     }
 
@@ -63,6 +67,8 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
 
     public void Map(CustomerDto dto, Customer entity)
     {
+        entity.Id = dto.Id;
+        entity.Domain = dto.Domain;
         entity.Name = dto.Name;
         entity.Telephone = dto.Telephone;
         entity.NumberOfEmployees = dto.NumberOfEmployees;
@@ -76,12 +82,15 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
         entity.InvoiceEmail = dto.InvoiceEmail;
         entity.Notes = dto.Notes;
         entity.IsActive = dto.IsActive;
+        entity.RelatedDocumentIds = dto.RelatedDocumentIds.ToArray();
+        entity.SearchTags = $"{entity.Id} {dto.Name} {dto.Telephone} {dto.Address} {dto.Industry} {dto.Postcode} {dto.Website} {dto.Email} {dto.InvoiceEmail}";
     }
 
     public void Map(Customer entity, CustomerDto dto)
     {
         dto.Id = entity.Id;
         dto.Name = entity.Name;
+        dto.Domain = entity.Domain;
         dto.Telephone = entity.Telephone;
         dto.NumberOfEmployees = entity.NumberOfEmployees;
         dto.Site = entity.Site;
@@ -98,10 +107,6 @@ public class CustomerMapper : IMapper<Customer, CustomerDto>
         dto.LastModifiedBy = entity.LastModifiedBy;
         dto.CreatedDate = entity.CreatedDate;
         dto.ModifiedDate = entity.ModifiedDate;
-    }
-
-    public Customer Map(CustomerDto dto)
-    {
-        throw new NotImplementedException("Mapping from CustomerDto to Customer without KeycloakId is not supported. Use MapWithKeycloakId instead.");
+        dto.RelatedDocumentIds = entity.RelatedDocumentIds.ToList();
     }
 }

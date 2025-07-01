@@ -11,11 +11,14 @@ using Microsoft.AspNetCore.Mvc;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
+using System.Threading.Tasks;
+using System;
+using System.Security.Claims;
 
 namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class DocumentEndpoints<T, TDto, TContext> : BaseEndpoints<T, TDto, TContext>
-	where T : BaseEntity<T>, IDocument
+	where T : class, IEntity, IAuditEntity, IDocument
 	where TDto : IDto, IDocumentDto
 	where TContext : IDbContext<TContext>
 	{
@@ -29,23 +32,21 @@ namespace ComposedHealthBase.Server.Endpoints
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] BlobServiceClient blobServiceClient,
+				[FromServices] Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
 				[FromForm] TDto documentDto,
-				[FromForm] IFormFile file
-			) => await UploadDocument(dbContext, mapper, blobServiceClient, documentDto, file)).DisableAntiforgery();
+				[FromForm] IFormFile file,
+				ClaimsPrincipal user
+			) => await UploadDocument(dbContext, mapper, blobServiceClient, authorizationService, documentDto, file, user)).DisableAntiforgery();
 
-			group.MapGet("/getsaslink/{documentId}", async (
+			group.MapGet("/getsaslink/{documentGuid}", async (
 				[FromServices] IDbContext<TContext> dbContext,
 				[FromServices] IMapper<T, TDto> mapper,
 				[FromServices] BlobServiceClient blobServiceClient,
-				long documentId
-			) => await GetDocumentSasLink(dbContext, mapper, blobServiceClient, documentId));
-
-			group.MapGet("/getcontent/{documentId}", async (
-				[FromServices] IDbContext<TContext> dbContext,
-				[FromServices] IMapper<T, TDto> mapper,
-				[FromServices] BlobServiceClient blobServiceClient,
-				long documentId) =>
-					await GetDocumentContent(dbContext, mapper, blobServiceClient, documentId));
+				[FromServices] Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
+				[FromServices] GetByIdQuery<T, TDto, TContext> getByIdQuery,
+				Guid documentGuid,
+				ClaimsPrincipal user
+			) => await GetDocumentSasLink(getByIdQuery, blobServiceClient, authorizationService, documentGuid, user));
 
 			return endpoints;
 		}
@@ -55,8 +56,10 @@ namespace ComposedHealthBase.Server.Endpoints
 			IDbContext<TContext> dbContext,
 			IMapper<T, TDto> mapper,
 			BlobServiceClient blobServiceClient,
+			Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
 			TDto documentDto,
-			IFormFile file)
+			IFormFile file,
+			ClaimsPrincipal user)
 		{
 			if (file == null || file.Length == 0)
 				return Results.BadRequest("File is required.");
@@ -69,7 +72,7 @@ namespace ComposedHealthBase.Server.Endpoints
 
 				containerClient.CreateIfNotExists();
 
-				var blobName = $"{file.FileName}_{Guid.NewGuid()}";
+				var blobName = $"{file.FileName}_{documentDto.Id:N}";
 				var blobClient = containerClient.GetBlobClient(blobName);
 
 				using (var stream = file.OpenReadStream())
@@ -77,16 +80,13 @@ namespace ComposedHealthBase.Server.Endpoints
 					await blobClient.UploadAsync(stream, new BlobUploadOptions { HttpHeaders = new BlobHttpHeaders { ContentType = file.ContentType } });
 				}
 
-				// Optionally, update the TDto with the blob URL
-				documentDto.FilePath = blobClient.Uri.ToString();
-
 				documentDto.BlobContainerName = containerName;
 				documentDto.BlobName = blobName;
 
 				// Map and save the Document entity as needed
 				var entity = mapper.Map(documentDto);
 				dbContext.Set<T>().Add(entity);
-				await dbContext.SaveChangesWithAuditAsync("System");
+				await dbContext.SaveChangesWithAuditAsync(user);
 
 				return Results.Ok(new { url = blobClient.Uri.ToString() });
 			}
@@ -96,22 +96,23 @@ namespace ComposedHealthBase.Server.Endpoints
 				return Results.Problem("An error occurred while uploading the document.");
 			}
 		}
+
 		protected async Task<IResult> GetDocumentSasLink(
-			IDbContext<TContext> dbContext,
-			IMapper<T, TDto> mapper,
+			GetByIdQuery<T, TDto, TContext> getByIdQuery,
 			BlobServiceClient blobServiceClient,
-			long documentId)
+			Microsoft.AspNetCore.Authorization.IAuthorizationService authorizationService,
+			Guid documentGuid,
+			ClaimsPrincipal user)
 		{
 			try
 			{
-				// Retrieve the document entity from the database using the generic query handler
-				var document = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(documentId);
+				// Retrieve the document entity from the database using the injected query handler
+				var document = await getByIdQuery.Handle(documentGuid, user);
 				if (document == null)
 					return Results.NotFound("Document not found.");
-				//TODO Check the current user's claims against ownerId on the entity
+				//TODO: Use authorizationService to check access if needed
 
 				var containerClient = blobServiceClient.GetBlobContainerClient(document.BlobContainerName);
-				// Use the stored BlobName directly instead of extracting from FilePath
 				var blobClient = containerClient.GetBlobClient(document.BlobName);
 				var sasToken = blobClient.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
 
@@ -121,35 +122,6 @@ namespace ComposedHealthBase.Server.Endpoints
 			{
 				Console.Error.WriteLine($"An error occurred: {ex.Message}");
 				return Results.Problem("An error occurred while generating document access link.");
-			}
-		}
-		protected async Task<IResult> GetDocumentContent(
-			IDbContext<TContext> dbContext,
-			IMapper<T, TDto> mapper,
-			BlobServiceClient blobServiceClient,
-			long documentId)
-		{
-			try
-			{
-				// Retrieve the document entity from the database using the generic query handler
-				var document = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(documentId);
-				if (document == null)
-					return Results.NotFound("Document not found.");
-				//TODO Check the current user's claims against ownerId on the entity
-
-				var containerClient = blobServiceClient.GetBlobContainerClient(document.BlobContainerName);
-				// Use the stored BlobName directly instead of extracting from FilePath
-				var blobClient = containerClient.GetBlobClient(document.BlobName);
-
-				var response = await blobClient.DownloadContentAsync();
-				return Results.File(response.Value.Content.ToArray(),
-								   response.Value.Details.ContentType,
-								   document.Name);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem("An error occurred while retrieving the document.");
 			}
 		}
 	}

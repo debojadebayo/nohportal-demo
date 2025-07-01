@@ -3,14 +3,14 @@
 
 namespace Server.Modules.CRM.Entities
 {
-	public class Contract : BaseEntity<Contract>, IEntity
+	public class Contract : BaseEntity<Contract>, IEntity, IAuditEntity
 	{
 		public required string Reference { get; set; }
 		public string? Notes { get; set; }
-		public long RepresentativeId { get; set; }
+		public Guid RepresentativeId { get; set; }
 		public DateTime? StartTime { get; set; }
 		public DateTime? EndTime { get; set; }
-		public long CustomerId
+		public Guid CustomerId
 		{
 			get
 			{

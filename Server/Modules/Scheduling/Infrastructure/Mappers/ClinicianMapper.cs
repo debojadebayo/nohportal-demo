@@ -16,14 +16,15 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             Id = entity.Id,
             FirstName = entity.FirstName,
             LastName = entity.LastName,
+            Username = entity.Username,
             Telephone = entity.Telephone,
             Email = entity.Email,
             ClinicianType = entity.ClinicianType,
             RegulatorType = entity.RegulatorType,
             LicenceNumber = entity.LicenceNumber,
-            AvatarImage = entity.AvatarImage,
-            AvatarTitle = entity.AvatarTitle,
-            AvatarDescription = entity.AvatarDescription,
+            AvatarImage = entity.AvatarImage ?? string.Empty,
+            AvatarTitle = entity.AvatarTitle ?? string.Empty,
+            AvatarDescription = entity.AvatarDescription ?? string.Empty,
             CreatedBy = entity.CreatedBy,
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
@@ -32,12 +33,14 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         };
     }
 
-    public Clinician Map(ClinicianDto dto)
+    public Clinician MapWithKeycloakId(ClinicianDto dto, Guid keycloakId)
     {
         return new Clinician
         {
+            Id = dto.Id,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
+            Username = dto.Username ?? $"{dto.FirstName}.{dto.LastName}".ToLower(),
             Telephone = dto.Telephone,
             Email = dto.Email,
             ClinicianType = dto.ClinicianType,
@@ -45,8 +48,19 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             LicenceNumber = dto.LicenceNumber,
             AvatarImage = dto.AvatarImage,
             AvatarTitle = dto.AvatarTitle,
-            AvatarDescription = dto.AvatarDescription
+            AvatarDescription = dto.AvatarDescription,
+            CreatedBy = dto.CreatedBy,
+            LastModifiedBy = dto.LastModifiedBy,
+            CreatedDate = dto.CreatedDate,
+            ModifiedDate = dto.ModifiedDate,
+            KeycloakId = keycloakId,
+            SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email} {dto.LicenceNumber}".ToLower(),
         };
+    }
+
+    public Clinician Map(ClinicianDto dto)
+    {
+        throw new NotImplementedException("Map method without KeycloakId is not implemented. Use MapWithKeycloakId instead.");
     }
 
     public IEnumerable<ClinicianDto> Map(IEnumerable<Clinician> entities)
@@ -61,6 +75,8 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
 
     public void Map(ClinicianDto dto, Clinician entity)
     {
+        entity.Id = dto.Id;
+        entity.Username = dto.Username ?? $"{dto.FirstName}.{dto.LastName}".ToLower();
         entity.FirstName = dto.FirstName;
         entity.LastName = dto.LastName;
         entity.Telephone = dto.Telephone;
@@ -71,6 +87,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         entity.AvatarImage = dto.AvatarImage;
         entity.AvatarTitle = dto.AvatarTitle;
         entity.AvatarDescription = dto.AvatarDescription;
+        entity.SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email} {dto.LicenceNumber}".ToLower();
     }
 
     public void Map(Clinician entity, ClinicianDto dto)
@@ -78,14 +95,15 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         dto.Id = entity.Id;
         dto.FirstName = entity.FirstName;
         dto.LastName = entity.LastName;
+        dto.Username = entity.Username; // Ensure non-null
         dto.Telephone = entity.Telephone;
         dto.Email = entity.Email;
         dto.ClinicianType = entity.ClinicianType;
         dto.RegulatorType = entity.RegulatorType;
         dto.LicenceNumber = entity.LicenceNumber;
-        dto.AvatarImage = entity.AvatarImage;
-        dto.AvatarTitle = entity.AvatarTitle;
-        dto.AvatarDescription = entity.AvatarDescription;
+        dto.AvatarImage = entity.AvatarImage ?? string.Empty; // Ensure non-null
+        dto.AvatarTitle = entity.AvatarTitle ?? string.Empty; // Ensure non-null
+        dto.AvatarDescription = entity.AvatarDescription ?? string.Empty; // Ensure non-null
         // Schedules mapping can be handled with a ScheduleMapper if needed
         dto.CreatedBy = entity.CreatedBy;
         dto.LastModifiedBy = entity.LastModifiedBy;

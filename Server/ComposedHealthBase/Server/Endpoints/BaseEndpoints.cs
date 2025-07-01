@@ -1,19 +1,26 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Commands;
 using ComposedHealthBase.Server.Queries;
 using ComposedHealthBase.Server.Entities;
 using ComposedHealthBase.Server.Mappers;
 using ComposedHealthBase.Shared.DTOs;
+using ComposedHealthBase.Server.Auth.Constants;
+using ComposedHealthBase.Server.Auth.Requirements;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class BaseEndpoints<T, TDto, TContext>
-	where T : BaseEntity<T>
+	where T : class, IEntity, IAuditEntity
 	where TDto : IDto
 	where TContext : IDbContext<TContext>
 	{
@@ -22,50 +29,98 @@ namespace ComposedHealthBase.Server.Endpoints
 			var endpointName = typeof(T).Name;
 			var group = endpoints.MapGroup($"/api/{endpointName}");
 
-			group.MapGet("/debugclaims", (ClaimsPrincipal user) =>
-            {
-                if (user?.Identity?.IsAuthenticated == true)
-                {
-                    var claimsInfo = user.Claims.Select(c => new { c.Type, c.Value }).ToList();
-                    var identityRoleClaimType = "Unknown";
-                    if (user.Identity is ClaimsIdentity claimsIdentity)
-                    {
-                        identityRoleClaimType = claimsIdentity.RoleClaimType;
-                    }
-                    return Results.Ok(new 
-                    { 
-                        IsAuthenticated = user.Identity.IsAuthenticated,
-                        AuthenticationType = user.Identity.AuthenticationType,
-                        NameClaimType = (user.Identity as ClaimsIdentity)?.NameClaimType,
-                        RoleClaimType = identityRoleClaimType,
-                        Claims = claimsInfo,
-                        IsInAdministratorRole = user.IsInRole("administrator")
-                    });
-                }
-                return Results.Unauthorized();
-            }).RequireAuthorization();
+			// View permissions for GET operations (GetAll, GetById, GetByIds, Search)
+			var viewPermission = PermissionHelper.GeneratePermission<T>(PermissionOperations.View);
+			
+			group.MapGet("/GetAll", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] GetAllQuery<T, TDto, TContext> getAllQuery,
+				ClaimsPrincipal user,
+				[FromQuery] Guid? tenantId = null,
+				[FromQuery] Guid? subjectId = null
+			) => GetAll(getAllQuery, user, tenantId, subjectId))
+			.RequireAuthorization($"Permission:{viewPermission}");
 
-			group.MapGet("/GetAll", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper) => GetAll(dbContext, mapper));
-			group.MapGet("/GetById/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long id) => GetById(dbContext, mapper, id));
-			group.MapPost("/GetByIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, List<long> ids) => GetByIds(dbContext, mapper, ids));
-			group.MapPost("/Create", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto) => Create(dbContext, mapper, user, dto));
-			group.MapPut("/Update", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto) => Update(dbContext, mapper, user, dto));
-			group.MapPost("/Delete/{id}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, ClaimsPrincipal user, long id) => Delete(dbContext, mapper, user, id));
+			group.MapGet("/GetById/{id}", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] GetByIdQuery<T, TDto, TContext> getByIdQuery,
+				ClaimsPrincipal user,
+				Guid id,
+				[FromQuery] Guid? tenantId = null,
+				[FromQuery] Guid? subjectId = null
+			) => GetById(getByIdQuery, user, id, tenantId, subjectId))
+			.RequireAuthorization($"Permission:{viewPermission}");
 
-			// New endpoints
-			group.MapGet("/GetAllByTenantId/{tenantId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long tenantId) => GetAllByTenantId(dbContext, mapper, tenantId)).RequireAuthorization("administrator");
-			group.MapPost("/GetAllByTenantIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, List<long> tenantIds) => GetAllByTenantIds(dbContext, mapper, tenantIds));
-			group.MapGet("/GetAllBySubjectId/{subjectId}", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, long subjectId) => GetAllBySubjectId(dbContext, mapper, subjectId));
-			group.MapPost("/GetAllBySubjectIds", ([FromServices] IDbContext<TContext> dbContext, [FromServices] IMapper<T, TDto> mapper, List<long> subjectIds) => GetAllBySubjectIds(dbContext, mapper, subjectIds));
+			group.MapPost("/GetByIds", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] GetByIdsQuery<T, TDto, TContext> getByIdsQuery,
+				ClaimsPrincipal user,
+				List<Guid> ids,
+				[FromQuery] Guid? tenantId = null,
+				[FromQuery] Guid? subjectId = null
+			) => GetByIds(getByIdsQuery, user, ids, tenantId, subjectId))
+			.RequireAuthorization($"Permission:{viewPermission}");
+
+			group.MapGet("/Search", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] SearchQuery<T, TDto, TContext> searchQuery,
+				ClaimsPrincipal user,
+				[FromQuery] string term,
+				[FromQuery] Guid? tenantId = null,
+				[FromQuery] Guid? subjectId = null
+			) => Search(searchQuery, user, term, tenantId, subjectId))
+			.RequireAuthorization($"Permission:{viewPermission}");
+
+			// Create permission for POST operations
+			var createPermission = PermissionHelper.GeneratePermission<T>(PermissionOperations.Create);
+			
+			group.MapPost("/Create", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] CreateCommand<T, TDto, TContext> createCommand,
+				ClaimsPrincipal user,
+				TDto dto
+			) => Create(createCommand, user, dto))
+			.RequireAuthorization($"Permission:{createPermission}");
+
+			// Update permission for PUT operations
+			var updatePermission = PermissionHelper.GeneratePermission<T>(PermissionOperations.Update);
+			
+			group.MapPut("/Update", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] UpdateCommand<T, TDto, TContext> updateCommand,
+				ClaimsPrincipal user,
+				TDto dto
+			) => Update(updateCommand, user, dto))
+			.RequireAuthorization($"Permission:{updatePermission}");
+
+			// Delete permission for DELETE operations  
+			var deletePermission = PermissionHelper.GeneratePermission<T>(PermissionOperations.Delete);
+			
+			group.MapPost("/Delete/{id}", (
+				[FromServices] IDbContext<TContext> dbContext,
+				[FromServices] IMapper<T, TDto> mapper,
+				[FromServices] DeleteCommand<T, TContext> deleteCommand,
+				ClaimsPrincipal user,
+				Guid id
+			) => Delete(deleteCommand, user, id))
+			.RequireAuthorization($"Permission:{deletePermission}");
 
 			return endpoints;
 		}
 
-		protected async Task<IResult> GetAll(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper)
+		protected async Task<IResult> GetAll(GetAllQuery<T, TDto, TContext> getAllQuery, ClaimsPrincipal user, Guid? tenantId, Guid? subjectId)
 		{
 			try
 			{
-				var allEntities = await new GetAllQuery<T, TDto, TContext>(dbContext, mapper).Handle();
+				var allEntities = await getAllQuery.Handle(user, tenantId, subjectId);
+				if (allEntities == null || !allEntities.Any())
+					return Results.NoContent();
 				return Results.Ok(allEntities);
 			}
 			catch (Exception ex)
@@ -75,11 +130,13 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetById(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, long id)
+		protected async Task<IResult> GetById(GetByIdQuery<T, TDto, TContext> getByIdQuery, ClaimsPrincipal user, Guid id, Guid? tenantId, Guid? subjectId)
 		{
 			try
 			{
-				var entity = await new GetByIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(id);
+				var entity = await getByIdQuery.Handle(id, user, tenantId, subjectId);
+				if (entity == null)
+					return Results.NoContent();
 				return Results.Ok(entity);
 			}
 			catch (Exception ex)
@@ -89,11 +146,13 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> GetByIds(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, List<long> ids)
+		protected async Task<IResult> GetByIds(GetByIdsQuery<T, TDto, TContext> getByIdsQuery, ClaimsPrincipal user, List<Guid> ids, Guid? tenantId, Guid? subjectId)
 		{
 			try
 			{
-				var entities = await new GetByIdsQuery<T, TDto, TContext>(dbContext, mapper).Handle(ids);
+				var entities = await getByIdsQuery.Handle(ids, user, tenantId, subjectId);
+				if (entities == null || !entities.Any())
+					return Results.NoContent();
 				return Results.Ok(entities);
 			}
 			catch (Exception ex)
@@ -103,11 +162,27 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Create(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto)
+		protected async Task<IResult> Search(SearchQuery<T, TDto, TContext> searchQuery, ClaimsPrincipal user, string term, Guid? tenantId, Guid? subjectId)
 		{
 			try
 			{
-				var result = await new CreateCommand<T, TDto, TContext>(dbContext, mapper).Handle(dto);
+				var results = await searchQuery.Handle(user, term, tenantId, subjectId);
+				if (results == null || !results.Any())
+					return Results.NoContent();
+				return Results.Ok(results);
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"An error occurred: {ex.Message}");
+				return Results.Problem($"An error occurred while searching for {typeof(T).Name} entities.");
+			}
+		}
+
+		protected async Task<IResult> Create(CreateCommand<T, TDto, TContext> createCommand, ClaimsPrincipal user, TDto dto)
+		{
+			try
+			{
+				var result = await createCommand.Handle(dto, user);
 				return Results.Ok(result);
 			}
 			catch (Exception ex)
@@ -117,11 +192,11 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Update(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, TDto dto)
+		protected async Task<IResult> Update(UpdateCommand<T, TDto, TContext> updateCommand, ClaimsPrincipal user, TDto dto)
 		{
 			try
 			{
-				var result = await new UpdateCommand<T, TDto, TContext>(dbContext, mapper).Handle(dto);
+				var result = await updateCommand.Handle(dto, user);
 				return Results.Ok(result);
 			}
 			catch (Exception ex)
@@ -131,80 +206,17 @@ namespace ComposedHealthBase.Server.Endpoints
 			}
 		}
 
-		protected async Task<IResult> Delete(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, ClaimsPrincipal user, long id)
+		protected async Task<IResult> Delete(DeleteCommand<T, TContext> deleteCommand, ClaimsPrincipal user, Guid id)
 		{
 			try
 			{
-				var result = await new DeleteCommand<T, TContext>(dbContext).Handle(id);
-
+				var result = await deleteCommand.Handle(id, user);
 				return Results.Ok(result);
 			}
 			catch (Exception ex)
 			{
 				Console.Error.WriteLine($"An error occurred: {ex.Message}");
 				return Results.Problem($"An error occurred while deleting the {typeof(T).Name}.");
-			}
-		}
-
-		// New methods for tenant and subject filtering
-
-		protected async Task<IResult> GetAllByTenantId(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, long tenantId)
-		{
-			try
-			{
-				// Assumes a query exists: GetAllByTenantIdQuery<T, TDto, TContext>
-				var entities = await new GetAllByTenantIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(tenantId);
-				return Results.Ok(entities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by tenantId.");
-			}
-		}
-
-		protected async Task<IResult> GetAllByTenantIds(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, List<long> tenantIds)
-		{
-			try
-			{
-				// Assumes a query exists: GetAllByTenantIdsQuery<T, TDto, TContext>
-				var entities = await new GetAllByTenantIdsQuery<T, TDto, TContext>(dbContext, mapper).Handle(tenantIds);
-				return Results.Ok(entities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by tenantIds.");
-			}
-		}
-
-		protected async Task<IResult> GetAllBySubjectId(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, long subjectId)
-		{
-			try
-			{
-				// Assumes a query exists: GetAllBySubjectIdQuery<T, TDto, TContext>
-				var entities = await new GetAllBySubjectIdQuery<T, TDto, TContext>(dbContext, mapper).Handle(subjectId);
-				return Results.Ok(entities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by subjectId.");
-			}
-		}
-
-		protected async Task<IResult> GetAllBySubjectIds(IDbContext<TContext> dbContext, IMapper<T, TDto> mapper, List<long> subjectIds)
-		{
-			try
-			{
-				// Assumes a query exists: GetAllBySubjectIdsQuery<T, TDto, TContext>
-				var entities = await new GetAllBySubjectIdsQuery<T, TDto, TContext>(dbContext, mapper).Handle(subjectIds);
-				return Results.Ok(entities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving {typeof(T).Name} entities by subjectIds.");
 			}
 		}
 	}

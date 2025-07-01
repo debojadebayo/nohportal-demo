@@ -1,22 +1,15 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using System.Linq;
 using System.Text.Json;
-using System.Collections.Generic;
 
 namespace ComposedHealthBase.Server.Services
 {
-    public interface IUserContextService
-    {
-        string GetSubjectId();
-        string GetOrganizationId();
-        string GetFullName();
-        List<string> GetRoles();
-    }
-
+    /// <summary>
+    /// Service for accessing user context information from HTTP context
+    /// </summary>
     public class UserContextService : IUserContextService
     {
-        public readonly IHttpContextAccessor _context;
+        private readonly IHttpContextAccessor _context;
 
         public UserContextService(IHttpContextAccessor context)
         {
@@ -55,6 +48,12 @@ namespace ComposedHealthBase.Server.Services
                             return idProp.GetString() ?? string.Empty;
                         }
                     }
+                    
+                    // Fallback: try to get id property directly from first object
+                    if (firstObj.TryGetProperty("id", out var directIdProp))
+                    {
+                        return directIdProp.GetString() ?? string.Empty;
+                    }
                 }
             }
             catch
@@ -81,29 +80,40 @@ namespace ComposedHealthBase.Server.Services
         {
             var roles = new List<string>();
             var user = _context.HttpContext?.User;
-            if (user == null)
-                return roles;
+            
+            if (user == null) return roles;
 
-            // Try to get roles from realm_access
+            // Get roles from standard role claims
+            var roleClaims = user.FindAll("role").Select(c => c.Value);
+            roles.AddRange(roleClaims);
+
+            // Get roles from realm_access
             var realmAccessClaim = user.FindFirst("realm_access")?.Value;
             if (!string.IsNullOrEmpty(realmAccessClaim))
             {
                 try
                 {
                     using var doc = JsonDocument.Parse(realmAccessClaim);
-                    if (doc.RootElement.TryGetProperty("roles", out var rolesArray) && rolesArray.ValueKind == JsonValueKind.Array)
+                    if (doc.RootElement.TryGetProperty("roles", out var realmRoles) && 
+                        realmRoles.ValueKind == JsonValueKind.Array)
                     {
-                        foreach (var role in rolesArray.EnumerateArray())
+                        foreach (var role in realmRoles.EnumerateArray())
                         {
-                            if (role.ValueKind == JsonValueKind.String && !string.IsNullOrEmpty(role.GetString()))
-                                roles.Add(role.GetString()!);
+                            var roleValue = role.GetString();
+                            if (!string.IsNullOrEmpty(roleValue) && !roles.Contains(roleValue))
+                            {
+                                roles.Add(roleValue);
+                            }
                         }
                     }
                 }
-                catch { }
+                catch
+                {
+                    // Ignore parse errors
+                }
             }
 
-            // Try to get roles from resource_access
+            // Get roles from resource_access
             var resourceAccessClaim = user.FindFirst("resource_access")?.Value;
             if (!string.IsNullOrEmpty(resourceAccessClaim))
             {
@@ -112,25 +122,35 @@ namespace ComposedHealthBase.Server.Services
                     using var doc = JsonDocument.Parse(resourceAccessClaim);
                     foreach (var resource in doc.RootElement.EnumerateObject())
                     {
-                        if (resource.Value.TryGetProperty("roles", out var rolesArray) && rolesArray.ValueKind == JsonValueKind.Array)
+                        if (resource.Value.TryGetProperty("roles", out var resourceRoles) && 
+                            resourceRoles.ValueKind == JsonValueKind.Array)
                         {
-                            foreach (var role in rolesArray.EnumerateArray())
+                            foreach (var role in resourceRoles.EnumerateArray())
                             {
-                                if (role.ValueKind == JsonValueKind.String && !string.IsNullOrEmpty(role.GetString()))
-                                    roles.Add(role.GetString()!);
+                                var roleValue = role.GetString();
+                                if (!string.IsNullOrEmpty(roleValue) && !roles.Contains(roleValue))
+                                {
+                                    roles.Add(roleValue);
+                                }
                             }
                         }
                     }
                 }
-                catch { }
+                catch
+                {
+                    // Ignore parse errors
+                }
             }
 
-            // Optionally, add standard role claims if present
-            roles.AddRange(user.FindAll(ClaimTypes.Role).Select(c => c.Value));
-            roles.AddRange(user.FindAll("role").Select(c => c.Value));
+            return roles.Distinct().ToList();
+        }
 
-            // Remove duplicates and nulls
-            return roles.Where(r => !string.IsNullOrEmpty(r)).Distinct().ToList();
+        /// <summary>
+        /// Gets the current user's ClaimsPrincipal
+        /// </summary>
+        public ClaimsPrincipal? GetUser()
+        {
+            return _context.HttpContext?.User;
         }
     }
 }

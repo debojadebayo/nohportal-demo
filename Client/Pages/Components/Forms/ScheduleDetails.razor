@@ -1,15 +1,18 @@
 @namespace Client.Pages.Forms
 @using Client.Pages.Components.TabComponents
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Enums
 @using MudBlazor
+@using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @inject IHttpClientFactory HttpClientFactory
 
-<MudDialog>
+<MudDialog Options="_dialogOptions">
     <DialogContent>
         <MudPaper Class="overflow-scroll" Style="max-height: 400px;">
-            <MudGrid>
+            <MudGrid Justify="Justify.Center">
                 <MudItem>
-                    <ReferralsTab Referrals="Referrals" />
+                    <ReferralsTab Referrals="Referrals" AppointmentMode="true" OnSelectForAppointment="PopulateAppointmentFromReferral" />
                 </MudItem>
             </MudGrid>
         </MudPaper>
@@ -17,22 +20,18 @@
         <MudForm Model="@model" @ref="@form" ValidationDelay="0">
             <MudGrid>
                 <MudItem xs="12" sm="6">
-                    <MudSelect T="long" Label="Referral" Value="model.ReferralId" ValueChanged="OnReferralSelected">
-                        @foreach (var referral in Referrals)
-                        {
-                            <MudSelectItem T="long" Value="@referral.Id">@referral.ReferralDetails</MudSelectItem>
-                        }
-                    </MudSelect>
-                    <MudTextField T="string" Label="Referral Title" Value="@model.Title" />
-                    <MudTextField T="string" Label="Referral Description" Value="@model.Description" />
-                    <MudSelect T="long" Label="Clinician" @bind-Value="model.ClinicianId">
-                        @foreach (var clinician in Clinicians)
-                        {
-                            <MudSelectItem T="long" Value="@clinician.Id">@clinician.FirstName @clinician.LastName</MudSelectItem>
-                        }
-                    </MudSelect>
+                    <MudTextField T="string" Label="Appointment Title" Value="@model.Title" />
+                    <MudTextField T="string" Label="Appointment Description" Value="@model.Description" />
+                    <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search"
+                            @bind-ItemId="model.EmployeeId" Label="Employee" />
+                    <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search"
+                            @bind-ItemId="model.CustomerId" Label="Customer" />
                 </MudItem>
                 <MudItem xs="12" sm="6">
+                    <LazyLookup TDto="ClinicianDto" FieldType="LazyLookupEnum.Search"
+                        @bind-ItemId="model.ClinicianId" Label="Clinician" />
+                    <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Select"
+                        @bind-ItemId="model.ProductId" Label="Product" TenantConstraint="model.CustomerId" />
                     <MudDatePicker @bind-Date="@SelectedDate" DateFormat="dd/MM/yyyy" Label="Appointment Date" Variant="Variant.Outlined" />
                     <div class="d-flex gap-4">
                         <MudTimePicker Label="Start Time" @bind-Time="StartTime" Variant="Variant.Outlined" />
@@ -51,7 +50,7 @@
 @code {
     [Inject]
     private IDialogService DialogService { get; set; } = default!;
-
+    private DialogOptions _dialogOptions = new() { FullScreen = true };
     private MudForm? form;
     [Parameter]
     public ScheduleDto model { get; set; } = new ScheduleDto
@@ -69,6 +68,8 @@
     private DateTime? SelectedDate { get; set; }
     private TimeSpan? StartTime { get; set; }
     private TimeSpan? EndTime { get; set; }
+
+    public ReferralDto? SelectedReferral { get; set; }
 
     protected override void OnInitialized()
     {
@@ -103,15 +104,12 @@
         }
     }
     private void Cancel() => MudDialog?.Cancel();
-
-    private void OnReferralSelected(long referralId)
+    private void PopulateAppointmentFromReferral(ReferralDto referral)
     {
-        model.ReferralId = referralId;
-        var selectedReferral = Referrals.FirstOrDefault(r => r.Id == referralId);
-        if (selectedReferral != null)
-        {
-            model.Title = selectedReferral.Title;
-            model.Description = selectedReferral.ReferralDetails;
-        }
+        model.ReferralId = referral.Id;
+        model.Title = referral.Title;
+        model.Description = referral.ReferralDetails;
+        model.EmployeeId = referral.EmployeeId;
+        model.CustomerId = referral.CustomerId;
     }
 }

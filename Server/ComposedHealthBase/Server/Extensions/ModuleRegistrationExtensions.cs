@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.DTOs.CRM;
-using System.Net.NetworkInformation;
 using System.Reflection;
+using ComposedHealthBase.Server.Interfaces;
+using ComposedHealthBase.Server.Database;
+using ComposedHealthBase.Server.Queries;
+using ComposedHealthBase.Server.Commands;
 
 namespace ComposedHealthBase.Server.Extensions
 {
@@ -15,36 +18,53 @@ namespace ComposedHealthBase.Server.Extensions
 	{
 		public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration, ref List<Type> moduleTypes, out List<IModule> registeredModules)
 		{
+			var mapperInterfaceType = typeof(IMapper<,>);
+
 			registeredModules = new List<IModule>();
 
-			foreach (var module in moduleTypes.Where(x => x.IsAssignableTo(typeof(IModule)) && x.IsClass)
-											.Select(Activator.CreateInstance)
-											.Cast<IModule>())
+			// Register open generic query/command handlers for all modules
+			services.AddTransient(typeof(GetAllQuery<,,>), typeof(GetAllQuery<,,>));
+			services.AddTransient(typeof(GetByIdQuery<,,>), typeof(GetByIdQuery<,,>));
+			services.AddTransient(typeof(GetByIdsQuery<,,>), typeof(GetByIdsQuery<,,>));
+			services.AddTransient(typeof(SearchQuery<,,>), typeof(SearchQuery<,,>));
+			services.AddTransient(typeof(CreateCommand<,,>), typeof(CreateCommand<,,>));
+			services.AddTransient(typeof(UpdateCommand<,,>), typeof(UpdateCommand<,,>));
+			services.AddTransient(typeof(DeleteCommand<,>), typeof(DeleteCommand<,>));
+			services.AddTransient(typeof(CreateSubjectCommand<,,>), typeof(CreateSubjectCommand<,,>));
+			services.AddTransient(typeof(CreateTenantCommand<,,>), typeof(CreateTenantCommand<,,>));
+
+			var baseModule = new BaseModule();
+			baseModule.RegisterModuleServices(services, configuration);
+			registeredModules.Add(baseModule);
+
+			foreach (var moduleType in moduleTypes)
 			{
+				//Create the module and register the module services
+				var module = Activator.CreateInstance(moduleType) as IModule;
+				if (module == null)
+				{
+					throw new InvalidOperationException($"Module type {moduleType.Name} does not implement IModule interface.");
+				}
 				module.RegisterModuleServices(services, configuration);
 				registeredModules.Add(module);
-			}
 
-			var mapperInterfaceType = typeof(IMapper<,>);
-			var moduleAssemblies = moduleTypes.Select(t => t.Assembly).Distinct();
-
-			foreach (var assembly in moduleAssemblies)
-			{
-				var mapperTypes = assembly.GetTypes()
-										  .Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces()
-											  .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType));
+				//Register mappers for each module
+				var mapperTypes = moduleType.Assembly.GetTypes()
+					.Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces()
+						.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType))
+					.ToList();
 
 				foreach (var mapperType in mapperTypes)
 				{
 					var interfaceType = mapperType.GetInterfaces()
-												  .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType);
+						.First(i => i.IsGenericType && i.GetGenericTypeDefinition() == mapperInterfaceType);
 					services.AddTransient(interfaceType, mapperType);
 				}
 			}
 
 			return services;
 		}
-		public static WebApplication ConfigureServicesAndMapEndpoints(this WebApplication app, bool isDevelopment, ref List<Type> moduleTypes, List<IModule> registeredModules)
+		public static WebApplication ConfigureServicesAndMapEndpoints(this WebApplication app, bool isDevelopment, List<IModule> registeredModules)
 		{
 			foreach (var module in registeredModules)
 			{

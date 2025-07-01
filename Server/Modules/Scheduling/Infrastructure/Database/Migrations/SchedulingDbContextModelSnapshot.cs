@@ -25,22 +25,18 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Server.Modules.Scheduling.Entities.Clinician", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("AvatarDescription")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("AvatarImage")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("AvatarTitle")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("ClinicianType")
@@ -49,6 +45,9 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid>("CreatedByKeycloakId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -64,6 +63,9 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid>("KeycloakId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("LastModifiedBy")
                         .IsRequired()
                         .HasColumnType("text");
@@ -76,21 +78,41 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("ModifiedByKeycloakId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("RegulatorType")
                         .HasColumnType("integer");
 
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("SearchTags")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SubjectKeycloakId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Telephone")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantKeycloakId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -99,240 +121,308 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1L,
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
                             AvatarDescription = "Senior Doctor, GMC",
                             AvatarImage = "https://randomuser.me/api/portraits/women/1.jpg",
                             AvatarTitle = "Dr. Alice Smith",
                             ClinicianType = 1,
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "alice.smith@example.com",
                             FirstName = "Alice",
                             IsActive = false,
+                            KeycloakId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
                             LastModifiedBy = "System",
                             LastName = "Smith",
                             LicenceNumber = "GMC1001",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegulatorType = 1,
-                            SubjectId = 0L,
+                            SearchTags = "1 Alice Smith, Senior Doctor, GMC, GMC1001",
+                            SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "555-1001",
-                            TenantId = 0L
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Username = "AliceSmith"
                         },
                         new
                         {
-                            Id = 2L,
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
                             AvatarDescription = "Junior Doctor, GMC",
                             AvatarImage = "https://randomuser.me/api/portraits/men/2.jpg",
                             AvatarTitle = "Dr. Bob Johnson",
                             ClinicianType = 2,
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "bob.johnson@example.com",
                             FirstName = "Bob",
                             IsActive = false,
+                            KeycloakId = new Guid("9c8b7a6d-5e4f-3c2b-1a09-876543210fed"),
                             LastModifiedBy = "System",
                             LastName = "Johnson",
                             LicenceNumber = "GMC1002",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegulatorType = 1,
-                            SubjectId = 0L,
+                            SearchTags = "2 Bob Johnson, Junior Doctor, GMC, GMC1002",
+                            SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "555-1002",
-                            TenantId = 0L
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Username = "BobJohnson"
                         },
                         new
                         {
-                            Id = 3L,
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
                             AvatarDescription = "Nurse, NMC",
                             AvatarImage = "https://randomuser.me/api/portraits/women/3.jpg",
                             AvatarTitle = "Nurse Carol Williams",
                             ClinicianType = 3,
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "carol.williams@example.com",
                             FirstName = "Carol",
                             IsActive = false,
+                            KeycloakId = new Guid("123e4567-e89b-12d3-a456-426614174000"),
                             LastModifiedBy = "System",
                             LastName = "Williams",
                             LicenceNumber = "NMC1003",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegulatorType = 2,
-                            SubjectId = 0L,
+                            SearchTags = "3 Carol Williams, Nurse, NMC, NMC1003",
+                            SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "555-1003",
-                            TenantId = 0L
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Username = "CarolWilliams"
                         },
                         new
                         {
-                            Id = 4L,
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
                             AvatarDescription = "Senior Doctor, GMC",
                             AvatarImage = "https://randomuser.me/api/portraits/men/4.jpg",
                             AvatarTitle = "Dr. David Brown",
                             ClinicianType = 1,
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "david.brown@example.com",
                             FirstName = "David",
                             IsActive = false,
+                            KeycloakId = new Guid("ba012345-6789-abcd-0123-456789abcdef"),
                             LastModifiedBy = "System",
                             LastName = "Brown",
                             LicenceNumber = "GMC1004",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegulatorType = 1,
-                            SubjectId = 0L,
+                            SearchTags = "4 David Brown, Senior Doctor, GMC, GMC1004",
+                            SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "555-1004",
-                            TenantId = 0L
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Username = "DavidBrown"
                         },
                         new
                         {
-                            Id = 5L,
+                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
                             AvatarDescription = "Nurse, NMC",
                             AvatarImage = "https://randomuser.me/api/portraits/women/5.jpg",
                             AvatarTitle = "Nurse Eva Jones",
                             ClinicianType = 3,
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "eva.jones@example.com",
                             FirstName = "Eva",
                             IsActive = false,
+                            KeycloakId = new Guid("00112233-4455-6677-8899-aabbccddeeff"),
                             LastModifiedBy = "System",
                             LastName = "Jones",
                             LicenceNumber = "NMC1005",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegulatorType = 2,
-                            SubjectId = 0L,
+                            SearchTags = "5 Eva Jones, Nurse, NMC, NMC1005",
+                            SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "555-1005",
-                            TenantId = 0L
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Username = "EvaJones"
                         },
                         new
                         {
-                            Id = 6L,
+                            Id = new Guid("66666666-6666-6666-6666-666666666666"),
                             AvatarDescription = "Junior Doctor, GMC",
                             AvatarImage = "https://randomuser.me/api/portraits/men/6.jpg",
                             AvatarTitle = "Dr. Frank Garcia",
                             ClinicianType = 2,
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "frank.garcia@example.com",
                             FirstName = "Frank",
                             IsActive = false,
+                            KeycloakId = new Guid("ffeeddcc-bbaa-9988-7766-554433221100"),
                             LastModifiedBy = "System",
                             LastName = "Garcia",
                             LicenceNumber = "GMC1006",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegulatorType = 1,
-                            SubjectId = 0L,
+                            SearchTags = "6 Frank Garcia, Junior Doctor, GMC, GMC1006",
+                            SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "555-1006",
-                            TenantId = 0L
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Username = "FrankGarcia"
                         },
                         new
                         {
-                            Id = 7L,
+                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
                             AvatarDescription = "Nurse, NMC",
                             AvatarImage = "https://randomuser.me/api/portraits/women/7.jpg",
                             AvatarTitle = "Nurse Grace Martinez",
                             ClinicianType = 3,
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "grace.martinez@example.com",
                             FirstName = "Grace",
                             IsActive = false,
+                            KeycloakId = new Guid("abcdef01-2345-6789-abcd-ef0123456789"),
                             LastModifiedBy = "System",
                             LastName = "Martinez",
                             LicenceNumber = "NMC1007",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegulatorType = 2,
-                            SubjectId = 0L,
+                            SearchTags = "7 Grace Martinez, Nurse, NMC, NMC1007",
+                            SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "555-1007",
-                            TenantId = 0L
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Username = "GraceMartinez"
                         },
                         new
                         {
-                            Id = 8L,
+                            Id = new Guid("88888888-8888-8888-8888-888888888888"),
                             AvatarDescription = "Senior Doctor, GMC",
                             AvatarImage = "https://randomuser.me/api/portraits/men/8.jpg",
                             AvatarTitle = "Dr. Henry Lee",
                             ClinicianType = 1,
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "henry.lee@example.com",
                             FirstName = "Henry",
                             IsActive = false,
+                            KeycloakId = new Guid("fedcba98-7654-3210-fedc-ba9876543210"),
                             LastModifiedBy = "System",
                             LastName = "Lee",
                             LicenceNumber = "GMC1008",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegulatorType = 1,
-                            SubjectId = 0L,
+                            SearchTags = "8 Henry Lee, Senior Doctor, GMC, GMC1008",
+                            SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "555-1008",
-                            TenantId = 0L
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Username = "HenryLee"
                         },
                         new
                         {
-                            Id = 9L,
+                            Id = new Guid("99999999-9999-9999-9999-999999999999"),
                             AvatarDescription = "Nurse, NMC",
                             AvatarImage = "https://randomuser.me/api/portraits/women/9.jpg",
                             AvatarTitle = "Nurse Ivy Walker",
                             ClinicianType = 3,
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ivy.walker@example.com",
                             FirstName = "Ivy",
                             IsActive = false,
+                            KeycloakId = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
                             LastModifiedBy = "System",
                             LastName = "Walker",
                             LicenceNumber = "NMC1009",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegulatorType = 2,
-                            SubjectId = 0L,
+                            SearchTags = "9 Ivy Walker, Nurse, NMC, NMC1009",
+                            SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "555-1009",
-                            TenantId = 0L
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Username = "IvyWalker"
                         },
                         new
                         {
-                            Id = 10L,
+                            Id = new Guid("10101010-1010-1010-1010-101010101010"),
                             AvatarDescription = "Junior Doctor, GMC",
                             AvatarImage = "https://randomuser.me/api/portraits/men/10.jpg",
                             AvatarTitle = "Dr. Jack Hall",
                             ClinicianType = 2,
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "jack.hall@example.com",
                             FirstName = "Jack",
                             IsActive = false,
+                            KeycloakId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
                             LastModifiedBy = "System",
                             LastName = "Hall",
                             LicenceNumber = "GMC1010",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RegulatorType = 1,
-                            SubjectId = 0L,
+                            SearchTags = "10 Jack Hall, Junior Doctor, GMC, GMC1010",
+                            SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "555-1010",
-                            TenantId = 0L
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            Username = "JackHall"
                         });
                 });
 
             modelBuilder.Entity("Server.Modules.Scheduling.Entities.Referral", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("CreatedByKeycloakId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("CustomerId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("DocumentId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("EmployeeId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -341,6 +431,9 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("ModifiedByKeycloakId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -348,11 +441,24 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
+                    b.Property<int>("ReferralStatus")
+                        .HasColumnType("integer");
 
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
+                    b.PrimitiveCollection<Guid[]>("RelatedDocumentIds")
+                        .IsRequired()
+                        .HasColumnType("uuid[]");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SubjectKeycloakId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantKeycloakId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -365,193 +471,248 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1L,
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 1L,
-                            DocumentId = "DOC-1001",
-                            EmployeeId = 1L,
+                            CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            EmployeeId = new Guid("11111111-aaaa-aaaa-aaaa-111111111111"),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Routine checkup for hypertension.",
-                            SubjectId = 1L,
-                            TenantId = 1L,
+                            ReferralStatus = 0,
+                            RelatedDocumentIds = new Guid[0],
+                            SubjectId = new Guid("11111111-aaaa-aaaa-aaaa-111111111111"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Hypertension Checkup"
                         },
                         new
                         {
-                            Id = 2L,
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 1L,
-                            DocumentId = "DOC-1002",
-                            EmployeeId = 2L,
+                            CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            EmployeeId = new Guid("22222222-bbbb-bbbb-bbbb-222222222222"),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Follow-up for diabetes management.",
-                            SubjectId = 2L,
-                            TenantId = 1L,
+                            ReferralStatus = 0,
+                            RelatedDocumentIds = new Guid[0],
+                            SubjectId = new Guid("22222222-bbbb-bbbb-bbbb-222222222222"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Diabetes Follow-up"
                         },
                         new
                         {
-                            Id = 3L,
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 1L,
-                            DocumentId = "DOC-1003",
-                            EmployeeId = 3L,
+                            CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            EmployeeId = new Guid("33333333-cccc-cccc-cccc-333333333333"),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Initial consultation for back pain.",
-                            SubjectId = 3L,
-                            TenantId = 1L,
+                            ReferralStatus = 0,
+                            RelatedDocumentIds = new Guid[0],
+                            SubjectId = new Guid("33333333-cccc-cccc-cccc-333333333333"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Back Pain Consultation"
                         },
                         new
                         {
-                            Id = 4L,
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 2L,
-                            DocumentId = "DOC-1004",
-                            EmployeeId = 4L,
+                            CustomerId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            EmployeeId = new Guid("44444444-dddd-dddd-dddd-444444444444"),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Annual physical examination.",
-                            SubjectId = 4L,
-                            TenantId = 2L,
+                            ReferralStatus = 0,
+                            RelatedDocumentIds = new Guid[0],
+                            SubjectId = new Guid("44444444-dddd-dddd-dddd-444444444444"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Annual Physical Exam"
                         },
                         new
                         {
-                            Id = 5L,
+                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 2L,
-                            DocumentId = "DOC-1005",
-                            EmployeeId = 5L,
+                            CustomerId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            EmployeeId = new Guid("55555555-eeee-eeee-eeee-555555555555"),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Referral for allergy testing.",
-                            SubjectId = 5L,
-                            TenantId = 2L,
+                            ReferralStatus = 0,
+                            RelatedDocumentIds = new Guid[0],
+                            SubjectId = new Guid("55555555-eeee-eeee-eeee-555555555555"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Allergy Testing"
                         },
                         new
                         {
-                            Id = 6L,
+                            Id = new Guid("66666666-6666-6666-6666-666666666666"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 2L,
-                            DocumentId = "DOC-1006",
-                            EmployeeId = 6L,
+                            CustomerId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            EmployeeId = new Guid("66666666-ffff-ffff-ffff-666666666666"),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Consultation for asthma symptoms.",
-                            SubjectId = 6L,
-                            TenantId = 2L,
+                            ReferralStatus = 0,
+                            RelatedDocumentIds = new Guid[0],
+                            SubjectId = new Guid("66666666-ffff-ffff-ffff-666666666666"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Asthma Consultation"
                         },
                         new
                         {
-                            Id = 7L,
+                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 3L,
-                            DocumentId = "DOC-1007",
-                            EmployeeId = 7L,
+                            CustomerId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            EmployeeId = new Guid("77777777-aaaa-aaaa-aaaa-777777777777"),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Pre-surgery evaluation.",
-                            SubjectId = 7L,
-                            TenantId = 3L,
+                            ReferralStatus = 0,
+                            RelatedDocumentIds = new Guid[0],
+                            SubjectId = new Guid("77777777-aaaa-aaaa-aaaa-777777777777"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Pre-Surgery Evaluation"
                         },
                         new
                         {
-                            Id = 8L,
+                            Id = new Guid("88888888-8888-8888-8888-888888888888"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 3L,
-                            DocumentId = "DOC-1008",
-                            EmployeeId = 8L,
+                            CustomerId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            EmployeeId = new Guid("88888888-bbbb-bbbb-bbbb-888888888888"),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Post-operative follow-up.",
-                            SubjectId = 8L,
-                            TenantId = 3L,
+                            ReferralStatus = 0,
+                            RelatedDocumentIds = new Guid[0],
+                            SubjectId = new Guid("88888888-bbbb-bbbb-bbbb-888888888888"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Post-Op Follow-up"
                         },
                         new
                         {
-                            Id = 9L,
+                            Id = new Guid("99999999-9999-9999-9999-999999999999"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 3L,
-                            DocumentId = "DOC-1009",
-                            EmployeeId = 9L,
+                            CustomerId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            EmployeeId = new Guid("99999999-cccc-cccc-cccc-999999999999"),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Referral for physical therapy.",
-                            SubjectId = 9L,
-                            TenantId = 3L,
+                            ReferralStatus = 0,
+                            RelatedDocumentIds = new Guid[0],
+                            SubjectId = new Guid("99999999-cccc-cccc-cccc-999999999999"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Physical Therapy Referral"
                         },
                         new
                         {
-                            Id = 10L,
+                            Id = new Guid("10101010-1010-1010-1010-101010101010"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 3L,
-                            DocumentId = "DOC-1010",
-                            EmployeeId = 10L,
+                            CustomerId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            EmployeeId = new Guid("10101010-dddd-dddd-dddd-101010101010"),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferralDetails = "Consultation for migraine headaches.",
-                            SubjectId = 10L,
-                            TenantId = 3L,
+                            ReferralStatus = 0,
+                            RelatedDocumentIds = new Guid[0],
+                            SubjectId = new Guid("10101010-dddd-dddd-dddd-101010101010"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("33333333-3333-3333-3333-333333333333"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Migraine Consultation"
                         });
                 });
 
             modelBuilder.Entity("Server.Modules.Scheduling.Entities.Schedule", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    b.Property<int>("AppointmentStatus")
+                        .HasColumnType("integer");
 
-                    b.Property<long>("ClinicianId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("ClinicianId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("CreatedByKeycloakId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("CustomerId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("EmployeeId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("End")
                         .HasColumnType("timestamp with time zone");
@@ -563,14 +724,17 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("ModifiedByKeycloakId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
 
-                    b.Property<long>("ReferralId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("ReferralId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("Start")
                         .HasColumnType("timestamp with time zone");
@@ -578,11 +742,17 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<long>("SubjectId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
 
-                    b.Property<long>("TenantId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("SubjectKeycloakId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantKeycloakId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -599,65 +769,80 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1L,
-                            ClinicianId = 1L,
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            AppointmentStatus = 0,
+                            ClinicianId = new Guid("11111111-1111-1111-1111-111111111111"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 1L,
+                            CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Regular blood pressure monitoring and medication review",
-                            EmployeeId = 1L,
+                            EmployeeId = new Guid("11111111-aaaa-aaaa-aaaa-111111111111"),
                             End = new DateTime(2025, 4, 22, 10, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ProductId = 0L,
-                            ReferralId = 1L,
+                            ProductId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ReferralId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Start = new DateTime(2025, 4, 22, 9, 0, 0, 0, DateTimeKind.Utc),
                             Status = 0,
-                            SubjectId = 1L,
-                            TenantId = 1L,
+                            SubjectId = new Guid("11111111-aaaa-aaaa-aaaa-111111111111"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Blood Pressure Check-up"
                         },
                         new
                         {
-                            Id = 2L,
-                            ClinicianId = 2L,
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            AppointmentStatus = 0,
+                            ClinicianId = new Guid("22222222-2222-2222-2222-222222222222"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 1L,
+                            CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Review of blood sugar levels and medication adjustment",
-                            EmployeeId = 2L,
+                            EmployeeId = new Guid("22222222-bbbb-bbbb-bbbb-222222222222"),
                             End = new DateTime(2025, 4, 22, 11, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ProductId = 0L,
-                            ReferralId = 2L,
+                            ProductId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ReferralId = new Guid("22222222-2222-2222-2222-222222222222"),
                             Start = new DateTime(2025, 4, 22, 10, 0, 0, 0, DateTimeKind.Utc),
                             Status = 0,
-                            SubjectId = 2L,
-                            TenantId = 1L,
+                            SubjectId = new Guid("22222222-bbbb-bbbb-bbbb-222222222222"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Diabetes Follow-up"
                         },
                         new
                         {
-                            Id = 3L,
-                            ClinicianId = 3L,
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            AppointmentStatus = 0,
+                            ClinicianId = new Guid("33333333-3333-3333-3333-333333333333"),
                             CreatedBy = "System",
+                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CustomerId = 1L,
+                            CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Description = "Initial evaluation of chronic lower back pain",
-                            EmployeeId = 3L,
+                            EmployeeId = new Guid("33333333-cccc-cccc-cccc-333333333333"),
                             End = new DateTime(2025, 4, 22, 12, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
+                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ProductId = 0L,
-                            ReferralId = 3L,
+                            ProductId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ReferralId = new Guid("33333333-3333-3333-3333-333333333333"),
                             Start = new DateTime(2025, 4, 22, 11, 0, 0, 0, DateTimeKind.Utc),
                             Status = 0,
-                            SubjectId = 3L,
-                            TenantId = 1L,
+                            SubjectId = new Guid("33333333-cccc-cccc-cccc-333333333333"),
+                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Title = "Back Pain Assessment"
                         });
                 });

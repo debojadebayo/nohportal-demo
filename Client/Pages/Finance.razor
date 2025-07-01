@@ -1,0 +1,312 @@
+@page "/finance"
+@using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.BaseClient.Components
+@using Shared.DTOs.CRM
+@using Shared.DTOs.Billing
+@using MudBlazor
+@using System.Net.Http.Json
+@inject ILazyLookupService<CustomerDto> CustomerLookupService
+@inject ILazyLookupService<ProductDto> ProductLookupService
+@inject ILazyLookupService<InvoiceDto> InvoiceLookupService
+@inject HttpClient HttpClient
+@inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
+@attribute [Authorize]
+
+<PageTitle>Finance</PageTitle>
+
+<MudText Typo="Typo.h1">Finance</MudText>
+
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @ref="tabs">
+    <MudTabPanel Text="Generate Invoice">
+        <MudForm Model="@invoiceFilter" @ref="invoiceForm">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h4">Invoice Generation</MudText>
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search"
+                        @bind-ItemId="invoiceFilter.CustomerId" Label="Customer" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Search"
+                            @bind-ItemId="SelectedProductId" Label="Product (Optional)" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudDatePicker @bind-Date="fromDate" Label="From Date" Variant="Variant.Outlined" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudDatePicker @bind-Date="toDate" Label="To Date" Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+
+            <MudCardActions Class="mt-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GenerateInvoice"
+                    Disabled="@isGenerating">
+                    @if (isGenerating)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Generating...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Generate Invoice</MudText>
+                    }
+                </MudButton>
+
+                @if (showContinueButton)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="ShowPreview" Class="ml-2">
+                        Continue
+                    </MudButton>
+                }
+            </MudCardActions>
+        </MudForm>
+    </MudTabPanel>
+
+    @if (showPreviewTab)
+    {
+        <MudTabPanel Text="Invoice Preview">
+            @if (generatedInvoice != null)
+            {
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h4">Invoice Preview</MudText>
+                            <MudText Typo="Typo.subtitle1">Invoice Number: @generatedInvoice.InvoiceNumber</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+
+                    <MudCardContent>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudText Typo="Typo.subtitle2">Invoice Details</MudText>
+                                <MudText>Invoice Date: @generatedInvoice.InvoiceDate.ToString("dd/MM/yyyy")</MudText>
+                                <MudText>From: @generatedInvoice.FromDate.ToString("dd/MM/yyyy")</MudText>
+                                <MudText>To: @generatedInvoice.ToDate.ToString("dd/MM/yyyy")</MudText>
+                                <MudText>Status: @generatedInvoice.Status</MudText>
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6">
+                                <MudText Typo="Typo.subtitle2">Financial Summary</MudText>
+                                <MudText>Net Amount: @generatedInvoice.NetAmount.ToString("C")</MudText>
+                                <MudText>Tax (@(generatedInvoice.TaxRate)%): @generatedInvoice.TaxAmount.ToString("C")</MudText>
+                                <MudText Typo="Typo.h6">Total: @generatedInvoice.TotalAmount.ToString("C")</MudText>
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="dueDate" Label="Due Date" Variant="Variant.Outlined" />
+                            </MudItem>
+
+                            <MudItem xs="12">
+                                <MudTextField @bind-Value="generatedInvoice.Notes" Label="Invoice Notes"
+                                    Variant="Variant.Outlined" Lines="3" />
+                            </MudItem>
+                        </MudGrid>
+
+                        <MudDivider Class="my-4" />
+
+                        <MudText Typo="Typo.h5" Class="mb-3">Line Items</MudText>
+                        <MudTable Items="@generatedInvoice.LineItems" Hover="true" Breakpoint="Breakpoint.Sm">
+                            <HeaderContent>
+                                <MudTh>Product</MudTh>
+                                <MudTh>Charge Code</MudTh>
+                                <MudTh>Service Date</MudTh>
+                                <MudTh>Quantity</MudTh>
+                                <MudTh>Unit Price</MudTh>
+                                <MudTh>Total</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Product">@context.ProductName</MudTd>
+                                <MudTd DataLabel="Charge Code">@context.ProductChargeCode</MudTd>
+                                <MudTd DataLabel="Service Date">@context.ServiceDate.ToString("dd/MM/yyyy")</MudTd>
+                                <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
+                                <MudTd DataLabel="Unit Price">@context.UnitPrice.ToString("C")</MudTd>
+                                <MudTd DataLabel="Total">@context.LineTotal.ToString("C")</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudCardContent>
+
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="FinalizeInvoice"
+                            Disabled="@isFinalizing">
+                            @if (isFinalizing)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Finalizing...</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Finalize & Export CSV</MudText>
+                            }
+                        </MudButton>
+
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="UpdateInvoice" Class="ml-2">
+                            Update Invoice
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            }
+        </MudTabPanel>
+    }
+</MudTabs>
+
+@code {
+    private Guid SelectedProductId = Guid.Empty;
+    private MudTabs tabs = default!;
+    private MudForm invoiceForm = default!;
+
+    private InvoiceFilterDto invoiceFilter = new();
+    private InvoiceDto? generatedInvoice;
+
+    private DateTime? fromDate = DateTime.Today.AddDays(-30);
+    private DateTime? toDate = DateTime.Today;
+    private DateTime? dueDate = DateTime.Today.AddDays(30);
+
+    private bool isGenerating = false;
+    private bool isFinalizing = false;
+    private bool showContinueButton = false;
+    private bool showPreviewTab = false;
+
+    protected override void OnInitialized()
+    {
+        invoiceFilter.FromDate = fromDate ?? DateTime.Today.AddDays(-30);
+        invoiceFilter.ToDate = toDate ?? DateTime.Today;
+    }
+
+    private async Task GenerateInvoice()
+    {
+        await invoiceForm.Validate();
+        if (!invoiceForm.IsValid) return;
+
+        if (invoiceFilter.CustomerId == Guid.Empty)
+        {
+            Snackbar.Add("Please select a customer", Severity.Warning);
+            return;
+        }
+
+        isGenerating = true;
+        showContinueButton = false;
+        StateHasChanged();
+
+        try
+        {
+            invoiceFilter.FromDate = fromDate ?? DateTime.Today.AddDays(-30);
+            invoiceFilter.ToDate = toDate ?? DateTime.Today;
+            invoiceFilter.ProductId = SelectedProductId;
+
+            var response = await HttpClient.PostAsJsonAsync("api/billing/invoice/generate", invoiceFilter);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<dynamic>();
+                var invoiceId = Guid.Parse(result.GetProperty("invoiceId").GetString());
+
+                // Fetch the generated invoice details
+                generatedInvoice = await InvoiceLookupService.GetItemById(invoiceId, CancellationToken.None);
+
+                if (generatedInvoice != null)
+                {
+                    generatedInvoice.DueDate = dueDate;
+                    showContinueButton = true;
+                    Snackbar.Add("Invoice generated successfully!", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Invoice generated but could not retrieve details", Severity.Warning);
+                }
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to generate invoice: {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error generating invoice: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isGenerating = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ShowPreview()
+    {
+        showPreviewTab = true;
+        StateHasChanged();
+
+        // Activate the preview tab
+        await Task.Delay(100); // Small delay to ensure tab is rendered
+        if (tabs != null)
+        {
+            tabs.ActivatePanel(1); // Activate the second tab (Preview)
+        }
+    }
+
+    private async Task UpdateInvoice()
+    {
+        if (generatedInvoice == null) return;
+
+        try
+        {
+            generatedInvoice.DueDate = dueDate;
+            await InvoiceLookupService.UpdateItem(generatedInvoice, CancellationToken.None);
+            Snackbar.Add("Invoice updated successfully!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error updating invoice: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task FinalizeInvoice()
+    {
+        if (generatedInvoice == null) return;
+
+        isFinalizing = true;
+        StateHasChanged();
+
+        try
+        {
+            // Update invoice with due date and status
+            generatedInvoice.DueDate = dueDate;
+            generatedInvoice.Status = "Finalized";
+            await InvoiceLookupService.UpdateItem(generatedInvoice, CancellationToken.None);
+
+            // Export to CSV
+            var response = await HttpClient.GetAsync($"api/billing/invoice/export-csv/{generatedInvoice.Id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsByteArrayAsync();
+                var fileName = $"Invoice_{generatedInvoice.InvoiceNumber}_{DateTime.Now:yyyyMMdd}.csv";
+
+                // Download the file
+                await JSRuntime.InvokeVoidAsync("downloadFile", fileName, Convert.ToBase64String(content));
+
+                Snackbar.Add("Invoice finalized and CSV exported successfully!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Invoice finalized but CSV export failed", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error finalizing invoice: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isFinalizing = false;
+            StateHasChanged();
+        }
+    }
+}
