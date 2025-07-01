@@ -21,6 +21,8 @@ builder.Services.RegisterServices(builder.Configuration, ref moduleTypes, out va
 
 var app = builder.Build();
 
+
 app.ConfigureServicesAndMapEndpoints(builder.Environment.IsDevelopment(), registeredModules);
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 app.Run();
