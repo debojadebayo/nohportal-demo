@@ -1,8 +1,8 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+﻿@* @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication *@
 @using MudBlazor
 
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@* @inject AuthenticationStateProvider AuthenticationStateProvider *@
 @inject NavigationManager NavigationManager
 @inherits LayoutComponentBase
 
@@ -13,35 +13,37 @@
 
 <MudLayout>
 	<MudAppBar Elevation="1">
-		<AuthorizeView>
+		<!-- <AuthorizeView>
 			<Authorized>
-				<MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" Variant="Variant.Text"
+				<MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start"
 					OnClick="@((e) => DrawerToggle())" />
 			</Authorized>
-		</AuthorizeView>
+		</AuthorizeView> -->
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start"
+			OnClick="@((e) => DrawerToggle())" />
 		<img src="images/logo500.png" asp-append-version="true" width="150px" />
 		<MudSpacer />
-		<AuthorizeView>
+		<!-- <AuthorizeView>
 			<Authorized>
 				<MudAvatar>
 					<MudImage Src="https://mudblazor.com/images/mony.jpg"></MudImage>
 				</MudAvatar>
-				<MudButton @onclick="Logout" EndIcon="@Icons.Material.Filled.Logout" Variant="Variant.Text">Log out</MudButton>
+				<MudButton @onclick="Logout" EndIcon="@Icons.Material.Filled.Logout">Log out</MudButton>
 			</Authorized>
 			<NotAuthorized>
-				<MudButton Href="authentication/login" StartIcon="@Icons.Material.Filled.Login" Variant="Variant.Text">Log in</MudButton>
+				<MudButton Href="authentication/login" StartIcon="@Icons.Material.Filled.Login">Log in</MudButton>
 			</NotAuthorized>
-		</AuthorizeView>
+		</AuthorizeView> -->
 	</MudAppBar>
-	<AuthorizeView>
-		<Authorized>
+	<!-- <AuthorizeView>
+		<Authorized> -->
 			<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
 				<MudNavMenu Class="ma-2">
 					<NavMenu />
 				</MudNavMenu>
 			</MudDrawer>
-		</Authorized>
-	</AuthorizeView>
+		<!-- </Authorized>
+	</AuthorizeView> -->
 	<MudMainContent>
 		<MudContainer Class="mt-6 px-8" MaxWidth="MaxWidth.False">
 			<MudPaper Class="pa-8 ma-2">
@@ -118,30 +120,26 @@
 
 	bool _drawerOpen = true;
 
-	bool authenticated;
-	string? userName;
+	// bool authenticated;
+	// string? userName;
 
-	[CascadingParameter]
-	private Task<AuthenticationState> authenticationStateTask { get; set; } = default!;
+	// [CascadingParameter]
+	// private Task<AuthenticationState> authenticationStateTask { get; set; } = default!;
 
-	protected override async Task OnInitializedAsync()
-	{
-		var authState = await authenticationStateTask;
-		var user = authState.User;
-		authenticated = user.Identity?.IsAuthenticated ?? false;
-		if (authenticated)
-		{
-			userName = user.Identity?.Name;
-		}
-	}
-	protected override void OnInitialized()
-	{
-		base.OnInitialized();
-	}
-	private void Logout(MouseEventArgs args)
-	{
-		NavigationManager.NavigateToLogout("authentication/logout");
-	}
+	// protected override async Task OnInitializedAsync()
+	// {
+	//	var authState = await authenticationStateTask;
+	//	var user = authState.User;
+	//	authenticated = user.Identity?.IsAuthenticated ?? false;
+	//	if (authenticated)
+	//	{
+	//		userName = user.Identity?.Name;
+	//	}
+	// }
+	// private void Logout(MouseEventArgs args)
+	// {
+	//	NavigationManager.NavigateToLogout("authentication/logout");
+	// }
 	void DrawerToggle()
 	{
 		_drawerOpen = !_drawerOpen;

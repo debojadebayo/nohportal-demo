@@ -1,7 +1,13 @@
 @page "/referrals"
 @page "/referrals/{SelectedReferralId:guid}"
 @using Client.Pages.Components.TabComponents
+<<<<<<< HEAD
 @using MudBlazor
+=======
+@using ComposedHealthBase.BaseClient.Services
+@inject ILazyLookupService<ReferralDto> ReferralLookupService
+@* @attribute [Authorize] *@
+>>>>>>> 35d20be (feat: prepare infra-update branch for deployment)
 
 <PageTitle>Referrals</PageTitle>
 

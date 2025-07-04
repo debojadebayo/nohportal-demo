@@ -18,13 +18,13 @@
 @inject ILazyLookupService<ProductTypeDto> ProductTypeLookupService
 @inject IAuthHelperService AuthHelperService
 
-@attribute [Authorize]
+@* @attribute [Authorize] *@
 
-<AuthorizeView Roles="tenantadministrator">
+@* <AuthorizeView Roles="tenantadministrator">
     <MudText Typo="Typo.h1">Welcome, @selectedCustomer?.Name</MudText>
-</AuthorizeView>
+</AuthorizeView> *@
 
-<AuthorizeView Roles="administrator">
+@* <AuthorizeView Roles="administrator"> *@
     <MudText Typo="Typo.h1">Customers</MudText>
 
     <MudText Typo="Typo.body1">Select a customer to view details</MudText>
@@ -34,7 +34,7 @@
     {
         <MudButton OnClick="CreateCustomer">Add New Customer</MudButton>
     }
-</AuthorizeView>
+@* </AuthorizeView> *@
 
 @if (selectedCustomer != null)
 {

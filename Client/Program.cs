@@ -24,6 +24,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+<<<<<<< HEAD
 // Configure options from appsettings.json
 builder.Services.Configure<ApiOptions>(builder.Configuration.GetSection(ApiOptions.SectionName));
 builder.Services.Configure<OidcOptions>(builder.Configuration.GetSection(OidcOptions.SectionName));
@@ -70,6 +71,31 @@ builder.Services.AddOidcAuthentication(options =>
     }
     options.UserOptions.RoleClaim = oidcOptions.RoleClaim;
 }).AddAccountClaimsPrincipalFactory<ParseRoleClaimsPrincipalFactory>();
+=======
+// Determine API base URL based on environment
+var apiBaseUrl = builder.HostEnvironment.IsDevelopment() 
+    ? "http://localhost:5003/" 
+    : "https://nohportaldemoappserver.livelydune-ce7e1d16.uksouth.azurecontainerapps.io/";
+
+builder.Services.AddHttpClient("api", client => client.BaseAddress = new Uri(apiBaseUrl));
+   // .AddHttpMessageHandler(sp =>
+   // {
+   //     var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
+   //         .ConfigureHandler(authorizedUrls: new[] { "http://localhost:5003" });
+   //     return handler;
+   // });
+
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("api"));
+
+// builder.Services.AddOidcAuthentication(options =>
+// {
+// 	options.ProviderOptions.Authority = "http://localhost:8180/realms/NationOH";
+// 	options.ProviderOptions.ClientId = "nationoh_client";
+// 	options.ProviderOptions.ResponseType = "code";
+// 	options.ProviderOptions.DefaultScopes.Add("nationoh_webapi-scope");
+// 	options.UserOptions.RoleClaim = "role";
+// }).AddAccountClaimsPrincipalFactory<ParseRoleClaimsPrincipalFactory>();
+>>>>>>> 35d20be (feat: prepare infra-update branch for deployment)
 
 builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
