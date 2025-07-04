@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - delete-infra
+      - infra-update
   workflow_dispatch:
 
 jobs:
@@ -50,7 +50,7 @@ jobs:
         tf_actions_working_dir: "./terraform_base"
  
     - name: 'Terraform Apply Base'
-      if: github.ref == 'refs/heads/delete-infra'
+      if: github.ref == 'refs/heads/infra-update'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: ${{ env.TF_VERSION }}
@@ -104,7 +104,7 @@ jobs:
         args: '-var="GITHUB_SHA=${{ github.sha }}"'
  
     - name: 'Terraform Apply ACA'
-      if: github.ref == 'refs/heads/delete-infra'
+      if: github.ref == 'refs/heads/infra-update'
       uses: hashicorp/terraform-github-actions@master
       with:
         tf_actions_version: ${{ env.TF_VERSION }}
