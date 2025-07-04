@@ -1,122 +1,150 @@
-name: Terraform Infrastructure
+# name: Terraform Infrastructure
 
-on:
-  push: 
-    branches: [master, production, devops-setup]
-    paths-ignore:
-      - '.github/workflows/**'
-  pull_request:
-    branches: [master]
-  workflow_dispatch:
-    inputs:
-      action:
-        description: 'Terraform Action'
-        required: true
-        default: 'apply'
-        type: choice
-        options:
-          - apply
-          - destroy
-      environment:
-        description: 'Environment'
-        required: true
-        default: 'dev'
-        type: choice
-        options:
-          - dev
-          - prod
+# on:
+#   push: 
+#     branches: [master, production, devops-setup]
+#     paths-ignore:
+#       - '.github/workflows/**'
+#       - '*.md'
+#       - '.gitignore'
+#   pull_request:
+#     branches: [master]
+#   workflow_dispatch:
+#     inputs:
+#       action:
+#         description: 'Terraform Action'
+#         required: true
+#         default: 'apply'
+#         type: choice
+#         options:
+#           - apply
+#           - destroy
+#       environment:
+#         description: 'Environment'
+#         required: true
+#         default: 'dev'
+#         type: choice
+#         options:
+#           - dev
+#           - prod
       
 
-jobs:
-  terraform:
-    name: infrastructure
-    runs-on: ubuntu-latest
+# jobs:
+#   terraform:
+#     name: infrastructure
+#     runs-on: ubuntu-latest
     
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v4
+#       with:
+#         fetch-depth: 0
 
-    - name: Check for Infrastructure Changes
-      id: changes
-      run: |
-        if git diff --name-only HEAD~1..HEAD | grep -E '^infra/|^\.github/workflows/infrastructure\.yml'; then
-          echo "HAS_INFRA_CHANGES=true" >> $GITHUB_OUTPUT
-        else
-          echo "HAS_INFRA_CHANGES=false" >> $GITHUB_OUTPUT
-        fi
+#     - name: Check for Infrastructure Changes
+#       id: changes
+#       run: |
+#         if git diff --name-only HEAD~1..HEAD | grep -E '^infra/|^\.github/workflows/infrastructure\.yml'; then
+#           echo "HAS_INFRA_CHANGES=true" >> $GITHUB_OUTPUT
+#         else
+#           echo "HAS_INFRA_CHANGES=false" >> $GITHUB_OUTPUT
+#         fi
 
-    - name: Setup Terraform
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
-      uses: hashicorp/setup-terraform@v2
+#     - name: Setup Terraform
+#       if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
+#       uses: hashicorp/setup-terraform@v2
 
-    - name: Azure Login
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+#     - name: Azure Login
+#       if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
+#       uses: azure/login@v1
+#       with:
+#         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-# will need to remove the devops-setup branch when we move to client portal
-    - name: Set Environment Variables 
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
-      id: vars
-      run: |
-        # Handle manual workflow dispatch
-        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-          if [[ "${{ github.event.inputs.environment }}" == "prod" ]]; then
-            echo "ENV_NAME=prod" >> $GITHUB_OUTPUT
-            echo "TF_VAR_FILE=prod.tfvars" >> $GITHUB_OUTPUT
-            echo "TF_STATE_KEY=nationoh/prod.tfstate.latest" >> $GITHUB_OUTPUT
-          else
-            echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
-            echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
-            echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
-          fi
-          echo "TF_ACTION=${{ github.event.inputs.action }}" >> $GITHUB_OUTPUT
-        else
-          # Handle branch-based triggers
-          if [[ ${{ github.ref }} == "refs/heads/production" ]]; then
-             echo "ENV_NAME=prod" >> $GITHUB_OUTPUT
-             echo "TF_VAR_FILE=prod.tfvars" >> $GITHUB_OUTPUT
-             echo "TF_STATE_KEY=nationoh/prod.tfstate.latest" >> $GITHUB_OUTPUT
-          elif [[ ${{ github.ref }} == "refs/heads/master" ]]; then
-            echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
-            echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
-            echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
-          elif [[ ${{ github.ref }} == "refs/heads/devops-setup" ]]; then
-            echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
-            echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
-            echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
-          fi
-          echo "TF_ACTION=apply" >> $GITHUB_OUTPUT
-        fi
+# # will need to remove the devops-setup branch when we move to client portal
+#     - name: Set Environment Variables 
+#       if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
+#       id: vars
+#       run: |
+#         # Handle manual workflow dispatch
+#         if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+#           if [[ "${{ github.event.inputs.environment }}" == "prod" ]]; then
+#             echo "ENV_NAME=prod" >> $GITHUB_OUTPUT
+#             echo "TF_VAR_FILE=prod.tfvars" >> $GITHUB_OUTPUT
+#             echo "TF_STATE_KEY=nationoh/prod.tfstate.latest" >> $GITHUB_OUTPUT
+#           else
+#             echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
+#             echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
+#             echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
+#           fi
+#           echo "TF_ACTION=${{ github.event.inputs.action }}" >> $GITHUB_OUTPUT
+#         else
+#           # Handle branch-based triggers
+#           if [[ ${{ github.ref }} == "refs/heads/production" ]]; then
+#              echo "ENV_NAME=prod" >> $GITHUB_OUTPUT
+#              echo "TF_VAR_FILE=prod.tfvars" >> $GITHUB_OUTPUT
+#              echo "TF_STATE_KEY=nationoh/prod.tfstate.latest" >> $GITHUB_OUTPUT
+#           elif [[ ${{ github.ref }} == "refs/heads/master" ]]; then
+#             echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
+#             echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
+#             echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
+#           elif [[ ${{ github.ref }} == "refs/heads/devops-setup" ]]; then
+#             echo "ENV_NAME=dev" >> $GITHUB_OUTPUT
+#             echo "TF_VAR_FILE=dev.tfvars" >> $GITHUB_OUTPUT
+#             echo "TF_STATE_KEY=nationoh/dev.tfstate.latest" >> $GITHUB_OUTPUT
+#           fi
+#           echo "TF_ACTION=apply" >> $GITHUB_OUTPUT
+#         fi
 
-    - name: Terraform Init
-      if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
-      working-directory: ./infra
-      run: |
-        terraform init \
-          -backend-config="key=${{ steps.vars.outputs.TF_STATE_KEY }}"
+#     # - name: Clear Terraform Cache
+#     #   working-directory: ./infra
+#     #   run: |
+#     #     rm -rf .terraform
+#     #     rm -f .terraform.lock.hcl
+#     #     rm -f terraform.tfstate*
 
     
-    - name: Terraform Format
-      if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
-      working-directory: ./infra
-      run: terraform fmt -check
+#     # - name: Clean Existing Container Resources
+#     #   run: |
+#     #     echo "Deleting Container Apps..."
+#     #     az containerapp delete --name "nohdevjun2025frontend" \
+#     #     --resource-group "nohdevjun2025" --yes || echo "Frontend not found"
+#     #     az containerapp delete --name "nohdevjun2025server" --resource-group \
+#     #     "nohdevjun2025" --yes || echo "Server not found"
+#     #     az containerapp delete --name "nohdevjun2025keycloak" \
+#     #     --resource-group "nohdevjun2025" --yes || echo "Keycloak not found"
 
-    - name: Terraform Plan
-      if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
-      working-directory: ./infra
-      run: terraform plan -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}" -out=tfplan
+#     #     echo "Waiting for Container Apps to be deleted..."
+#     #     sleep 30
 
-    - name: Terraform Apply
-      if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
-      working-directory: ./infra
-      run: terraform apply -auto-approve tfplan
+#     #     echo "Deleting Container App Environment..."
+#     #     az containerapp env delete --name "nohdevjun2025containerenv" \
+#     #     --resource-group "nohdevjun2025" --yes || echo "Environment not found"
+    
+#     - name: Terraform Init
+#       if: steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch'
+#       working-directory: ./infra
+#       run: |
+#         terraform init \
+#           -backend-config="key=${{ steps.vars.outputs.TF_STATE_KEY }}"
 
-    - name: Terraform Destroy
-      if: github.event_name == 'workflow_dispatch' && steps.vars.outputs.TF_ACTION == 'destroy'
-      working-directory: ./infra
-      run: terraform destroy -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}" -auto-approve
+    
+#     - name: Terraform Format
+#       if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
+#       working-directory: ./infra
+#       run: terraform fmt -check
+
+#     - name: Terraform Plan
+#       if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
+#       working-directory: ./infra
+#       run: |
+#         terraform plan -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}" -out=tfplan
+
+#     - name: Terraform Apply
+#       if: (steps.changes.outputs.HAS_INFRA_CHANGES == 'true' || github.event_name == 'workflow_dispatch') && steps.vars.outputs.TF_ACTION == 'apply'
+#       working-directory: ./infra
+#       run: terraform apply -auto-approve tfplan
+
+#     - name: Terraform Destroy
+#       if: github.event_name == 'workflow_dispatch' && steps.vars.outputs.TF_ACTION == 'destroy'
+#       working-directory: ./infra
+#       run: terraform destroy -var-file="${{ steps.vars.outputs.TF_VAR_FILE }}" -auto-approve
