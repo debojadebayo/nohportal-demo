@@ -119,6 +119,14 @@ resource "azapi_resource" "containerapp_server" {
                 name  = "ASPNETCORE_URLS"
                 value = "http://0.0.0.0:8080"
               },
+              {
+                name  = "Cors__AllowedClientOrigin"
+                value = "https://*azurecontainerapps.io"
+              },
+              {
+                name  = "Cors__AllowedServerOrigin"
+                value = "https://*azurecontainerapps.io"
+              },
             ],
             "probes" : [
               {
