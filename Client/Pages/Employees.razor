@@ -78,7 +78,10 @@
             newEmployee = false;
             return;
         }
-        await EmployeeLookupService.UpdateItem(employee, CancellationToken.None);
+        if (employee != null)
+        {
+            await EmployeeLookupService.UpdateItem(employee, CancellationToken.None);
+        }
     }
     async Task DeleteEmployee()
     {
@@ -111,7 +114,7 @@
     }
     private async Task OnDocumentSave()
     {
-        if (selectedEmployeeId == null) return;
+        if (selectedEmployeeId == Guid.Empty) return;
         documents = (await DocumentLookupService.GetAllBySubjectId(selectedEmployeeId, CancellationToken.None)).ToList();
         newDocument = new EmployeeDocumentDto
         {

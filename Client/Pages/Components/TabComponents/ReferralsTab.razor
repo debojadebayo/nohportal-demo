@@ -4,6 +4,7 @@
 @using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.Shared.DTOs
 @using Shared.DTOs.CRM
+@using Shared.Validators
 @using MudBlazor
 @using Shared.DTOs.Scheduling
 @inject IAuthHelperService AuthHelper
@@ -58,11 +59,11 @@
         <MudText Typo="Typo.h6">Referral</MudText>
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="form" Model="_newReferral">
-            <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.CustomerId" TenantConstraint="CustomerId" Label="Customer" />
-            <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.EmployeeId" TenantConstraint="CustomerId" Label="Employee" />
-            <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" />
-            <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" />
+        <MudForm @ref="form" Model="_newReferral" Validation="@(referralValidator.ValidateValue)" ValidationDelay="0">
+            <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.CustomerId" TenantConstraint="CustomerId" Label="Customer" For="@(() => _newReferral.CustomerId)" />
+            <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.EmployeeId" TenantConstraint="CustomerId" Label="Employee" For="@(() => _newReferral.EmployeeId)" />
+            <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" For="@(() => _newReferral.Title)" />
+            <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" For="@(() => _newReferral.ReferralDetails)" />
             <DocumentBrowser CompactMode="true" TDto="EmployeeDocumentDto" @bind-DocumentIds="_newReferral.RelatedDocumentIds" />
         </MudForm>
     </DialogContent>
@@ -83,9 +84,12 @@
 
     private bool _addReferralDialogOpen = false;
     private ReferralDto _newReferral = new ReferralDto();
-    private EmployeeDocumentDto _newDocument = default!;
+    // private EmployeeDocumentDto _newDocument = default!; // Commented out as not used
     private MudForm form = default!;
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+    
+    // Validator instance
+    private ReferralValidator referralValidator = new ReferralValidator();
 
     private void ShowAddReferralDialog()
     {

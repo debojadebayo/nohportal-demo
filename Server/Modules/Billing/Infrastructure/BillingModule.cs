@@ -30,6 +30,7 @@ namespace Server.Modules.Billing.Infrastructure
 
 			// Register commands
 			services.AddScoped<IGenerateInvoiceCommand, GenerateInvoiceCommand>();
+			services.AddScoped<IPostToXeroCommand, PostToXeroCommand>();
 			services.AddScoped<CreateCommand<Invoice, InvoiceDto, BillingDbContext>>();
 			services.AddScoped<UpdateCommand<Invoice, InvoiceDto, BillingDbContext>>();
 			services.AddScoped<DeleteCommand<Invoice, BillingDbContext>>();

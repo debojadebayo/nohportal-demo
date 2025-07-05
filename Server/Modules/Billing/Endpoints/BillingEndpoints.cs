@@ -44,6 +44,13 @@ namespace Server.Modules.Billing.Endpoints
                 Guid invoiceId
             ) => ExportInvoiceToCSV(dbContext, mapper, invoiceId));
 
+            // Post to Xero endpoint
+            group.MapPost("/post-to-xero", (
+                [FromServices] IPostToXeroCommand postToXeroCommand,
+                ClaimsPrincipal user,
+                PostToXeroRequestDto requestDto
+            ) => PostToXero(postToXeroCommand, user, requestDto));
+
             return endpoints;
         }
 
@@ -89,6 +96,20 @@ namespace Server.Modules.Billing.Endpoints
             {
                 Console.Error.WriteLine($"An error occurred while exporting invoice to CSV: {ex.Message}");
                 return Results.Problem($"An error occurred while exporting the invoice: {ex.Message}");
+            }
+        }
+
+        private async Task<IResult> PostToXero(IPostToXeroCommand postToXeroCommand, ClaimsPrincipal user, PostToXeroRequestDto requestDto)
+        {
+            try
+            {
+                var result = await postToXeroCommand.Handle(requestDto, user);
+                return Results.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"An error occurred while posting to Xero: {ex.Message}");
+                return Results.Problem($"An error occurred while posting to Xero: {ex.Message}");
             }
         }
     }

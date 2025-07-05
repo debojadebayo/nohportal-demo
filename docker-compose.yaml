@@ -1,14 +1,14 @@
 services:
-  app.client:
-    container_name: Client
-    image: app.client
-    build:
-      context: .
-      dockerfile: Client.Dockerfile
-    ports:
-      - "5002:8080"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
+  # app.client:
+  #   container_name: Client
+  #   image: app.client
+  #   build:
+  #     context: .
+  #     dockerfile: Client.Dockerfile
+  #   ports:
+  #     - "5002:8080"
+  #   environment:
+  #     ASPNETCORE_ENVIRONMENT: Development
 
   app.server:
     container_name: Server
@@ -22,8 +22,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     depends_on:
       - app.database
-    volumes:
-      - ./:/app
+    # volumes:
+    #   - ./:/app  # This was overriding the published app files
 
   app.database:
     container_name: app.database

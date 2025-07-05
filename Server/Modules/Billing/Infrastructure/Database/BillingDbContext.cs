@@ -26,6 +26,7 @@ public sealed class BillingDbContext(DbContextOptions<BillingDbContext> options)
             entity.Property(e => e.TaxAmount).HasPrecision(18, 2);
             entity.Property(e => e.TaxRate).HasPrecision(5, 4);
             entity.Property(e => e.Status).HasMaxLength(20);
+            entity.Property(e => e.XeroInvoiceId).HasMaxLength(100);
             entity.HasIndex(e => e.InvoiceNumber).IsUnique();
             entity.HasIndex(e => e.CustomerId);
             entity.Navigation(e => e.LineItems).AutoInclude();

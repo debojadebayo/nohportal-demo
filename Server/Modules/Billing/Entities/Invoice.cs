@@ -14,6 +14,11 @@ namespace Server.Modules.Billing.Entities
         public string Status { get; set; } = "Draft"; // Draft, Sent, Paid, Overdue
         public string? Notes { get; set; }
         
+        // Xero integration properties
+        public string? XeroInvoiceId { get; set; }
+        public bool PostedToXero { get; set; } = false;
+        public DateTime? PostedToXeroAt { get; set; }
+        
         // Filter criteria used to generate this invoice
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }

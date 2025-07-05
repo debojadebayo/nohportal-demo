@@ -79,6 +79,12 @@ namespace Server.Modules.Billing.Infrastructure.Database.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
+                    b.Property<bool>("PostedToXero")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("PostedToXeroAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid?>("ProductId")
                         .HasColumnType("uuid");
 
@@ -113,6 +119,10 @@ namespace Server.Modules.Billing.Infrastructure.Database.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("XeroInvoiceId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 

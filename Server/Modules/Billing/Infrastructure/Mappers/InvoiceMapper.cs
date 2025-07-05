@@ -32,6 +32,9 @@ namespace Server.Modules.Billing.Infrastructure.Mappers
                 TaxRate = entity.TaxRate,
                 Status = entity.Status,
                 Notes = entity.Notes,
+                XeroInvoiceId = entity.XeroInvoiceId,
+                PostedToXero = entity.PostedToXero,
+                PostedToXeroAt = entity.PostedToXeroAt,
                 FromDate = entity.FromDate,
                 ToDate = entity.ToDate,
                 CustomerId = entity.CustomerId,
@@ -59,6 +62,9 @@ namespace Server.Modules.Billing.Infrastructure.Mappers
                 TaxRate = dto.TaxRate,
                 Status = dto.Status,
                 Notes = dto.Notes,
+                XeroInvoiceId = dto.XeroInvoiceId,
+                PostedToXero = dto.PostedToXero,
+                PostedToXeroAt = dto.PostedToXeroAt,
                 FromDate = dto.FromDate,
                 ToDate = dto.ToDate,
                 CustomerId = dto.CustomerId,
@@ -88,6 +94,9 @@ namespace Server.Modules.Billing.Infrastructure.Mappers
             entity.TaxRate = dto.TaxRate;
             entity.Status = dto.Status;
             entity.Notes = dto.Notes;
+            entity.XeroInvoiceId = dto.XeroInvoiceId;
+            entity.PostedToXero = dto.PostedToXero;
+            entity.PostedToXeroAt = dto.PostedToXeroAt;
             entity.FromDate = dto.FromDate;
             entity.ToDate = dto.ToDate;
             entity.CustomerId = dto.CustomerId;
@@ -111,6 +120,9 @@ namespace Server.Modules.Billing.Infrastructure.Mappers
             dto.TaxRate = entity.TaxRate;
             dto.Status = entity.Status;
             dto.Notes = entity.Notes;
+            dto.XeroInvoiceId = entity.XeroInvoiceId;
+            dto.PostedToXero = entity.PostedToXero;
+            dto.PostedToXeroAt = entity.PostedToXeroAt;
             dto.FromDate = entity.FromDate;
             dto.ToDate = entity.ToDate;
             dto.CustomerId = entity.CustomerId;

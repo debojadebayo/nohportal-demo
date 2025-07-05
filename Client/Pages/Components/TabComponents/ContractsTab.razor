@@ -4,6 +4,7 @@
 @using Shared.DTOs
 @using MudBlazor
 @using Shared.DTOs.CRM
+@using Shared.Validators
 
 <MudPaper Class="pa-4">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
@@ -39,12 +40,12 @@
         <MudText Typo="Typo.h6">Add New Contract</MudText>
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="contractForm" Model="NewContract">
-            <MudTextField @bind-Value="NewContract.Reference" Label="Reference" Variant="Variant.Outlined" />
-            <MudTextField @bind-Value="NewContract.Notes" Label="Notes" Variant="Variant.Outlined" />
-            <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="NewContract.RepresentativeId" TenantConstraint="CustomerId" Label="Customer Representative" />
-            <MudDatePicker @bind-Date="NewContract.StartTime" DateFormat="dd/MM/yyyy" Label="Start Date" />
-            <MudDatePicker @bind-Date="NewContract.EndTime" DateFormat="dd/MM/yyyy" Label="End Date" />
+        <MudForm @ref="contractForm" Model="NewContract" Validation="@(contractValidator.ValidateValue)" ValidationDelay="0">
+            <MudTextField @bind-Value="NewContract.Reference" Label="Reference" Variant="Variant.Outlined" For="@(() => NewContract.Reference)" />
+            <MudTextField @bind-Value="NewContract.Notes" Label="Notes" Variant="Variant.Outlined" For="@(() => NewContract.Notes)" />
+            <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="NewContract.RepresentativeId" TenantConstraint="CustomerId" Label="Customer Representative" ItemIdValueExpression="@(() => NewContract.RepresentativeId)" />
+            <MudDatePicker @bind-Date="NewContract.StartTime" DateFormat="dd/MM/yyyy" Label="Start Date" For="@(() => NewContract.StartTime)" />
+            <MudDatePicker @bind-Date="NewContract.EndTime" DateFormat="dd/MM/yyyy" Label="End Date" For="@(() => NewContract.EndTime)" />
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -59,9 +60,13 @@
     [Parameter] public EventCallback OnContractCancel { get; set; }
     [Parameter] public ContractDto NewContract { get; set; } = default!;
     [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
+    
     private bool _addContractDialogOpen = false;
     private MudForm contractForm = default!;
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+    
+    // Validator instance
+    private ContractValidator contractValidator = new ContractValidator();
 
     private void ShowAddContractDialog()
     {

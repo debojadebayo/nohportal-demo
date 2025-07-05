@@ -1,0 +1,23 @@
+@namespace ComposedHealthBase.BaseClient.Components.Calendar
+@using ComposedHealthBase.Shared.Models
+@using Heron.MudCalendar;
+@using ComposedHealthBase.BaseClient.Components.Calendar.CustomWeekView;
+@using ComposedHealthBase.BaseClient.Components.Calendar.CustomWorkWeekView;
+@using ComposedHealthBase.BaseClient.Components.Calendar.CustomMonthView;
+@using ComposedHealthBase.BaseClient.Components.Calendar.CustomDayView;
+
+@inherits MudCalendar<TCalendarItem>
+@typeparam TCalendarItem where TCalendarItem : BaseCalendarItem
+
+@Render
+
+@code {
+    protected override RenderFragment RenderWeekView =>
+    @<CustomWeekView TCalendarItem="TCalendarItem" />;
+    protected override RenderFragment RenderWorkWeekView =>
+    @<CustomWorkWeekView TCalendarItem="TCalendarItem" />;
+    protected override RenderFragment RenderMonthView =>
+    @<CustomMonthView TCalendarItem="TCalendarItem" />;
+    protected override RenderFragment RenderDayView =>
+    @<CustomDayView TCalendarItem="TCalendarItem" />;
+}
