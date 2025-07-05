@@ -12,6 +12,11 @@ data "azurerm_container_registry" "acr" {
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
+data "azurerm_storage_account" "storage" {
+  name                = "${replace(var.app_name, "-", "")}storage"
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
 resource "azurerm_postgresql_flexible_server" "postgres" {
   name                   = "${var.app_name}-postgres"
   resource_group_name    = data.azurerm_resource_group.rg.name
@@ -110,6 +115,10 @@ resource "azapi_resource" "containerapp_server" {
               {
                 name  = "ConnectionStrings__DefaultConnection"
                 value = "Host=${azurerm_postgresql_flexible_server.postgres.fqdn};Port=5432;User ID=${var.postgres_user};Password=${var.postgres_password};Database=${var.postgres_db};"
+              },
+              {
+                name  = "ConnectionStrings__AzureBlobStorage"
+                value = "DefaultEndpointsProtocol=https;AccountName=${data.azurerm_storage_account.storage.name};AccountKey=${data.azurerm_storage_account.storage.primary_access_key};EndpointSuffix=core.windows.net"
               },
               {
                 name  = "ASPNETCORE_ENVIRONMENT"
