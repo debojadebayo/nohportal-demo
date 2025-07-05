@@ -332,7 +332,7 @@ resource "azapi_resource" "containerapp_keycloak" {
               },
               {
                 name  = "KC_SPI_CSP_CSP_FRAME_SRC"
-                value = "'self' https://nohportaldemoappclient.livelydune-ce7e1d16.uksouth.azurecontainerapps.io"
+                value = "*"
               }
             ],
             command = ["/opt/keycloak/bin/kc.sh", "start-dev"],
