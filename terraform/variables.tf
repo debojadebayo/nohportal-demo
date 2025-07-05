@@ -46,16 +46,3 @@ variable "postgres_db" {
   description = "PostgreSQL database name"
   default     = "postgres"
 }
-
-variable "keycloakdb_user" {
-  type        = string
-  description = "Keycloak database username"
-  default     = "keycloak"
-}
-
-variable "keycloakdb_password" {
-  type        = string
-  description = "Keycloak database password"
-  sensitive   = true
-  default     = "123"
-}
