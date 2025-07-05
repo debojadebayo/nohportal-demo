@@ -111,3 +111,57 @@ jobs:
         tf_actions_subcommand: 'apply'
         tf_actions_working_dir: "./terraform"
         args: '-var="GITHUB_SHA=${{ github.sha }}"'
+
+  migrate:
+    name: 'Database Migration'
+    runs-on: ubuntu-latest
+    needs: terraform
+    if: github.ref == 'refs/heads/infra-update'
+    environment: production
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Install EF Tools
+      run: dotnet tool install --global dotnet-ef
+      
+    - name: Apply Auth Module Migrations
+      run: |
+        dotnet ef database update --context AuthDbContext \
+          --project ./Server/Modules/Auth/Infrastructure/Server.Modules.Auth.Infrastructure.csproj \
+          --startup-project ./Server/WebApi/WebApi.csproj \
+          --connection "Host=${{ secrets.POSTGRES_HOST }};Port=5432;User ID=${{ secrets.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }};Database=${{ secrets.POSTGRES_DB }};"
+          
+    - name: Apply Scheduling Module Migrations
+      run: |
+        dotnet ef database update --context SchedulingDbContext \
+          --project ./Server/Modules/Scheduling/Infrastructure/Server.Modules.Scheduling.Infrastructure.csproj \
+          --startup-project ./Server/WebApi/WebApi.csproj \
+          --connection "Host=${{ secrets.POSTGRES_HOST }};Port=5432;User ID=${{ secrets.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }};Database=${{ secrets.POSTGRES_DB }};"
+          
+    - name: Apply CRM Module Migrations
+      run: |
+        dotnet ef database update --context CRMDbContext \
+          --project ./Server/Modules/CRM/Infrastructure/Server.Modules.CRM.Infrastructure.csproj \
+          --startup-project ./Server/WebApi/WebApi.csproj \
+          --connection "Host=${{ secrets.POSTGRES_HOST }};Port=5432;User ID=${{ secrets.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }};Database=${{ secrets.POSTGRES_DB }};"
+          
+    - name: Apply Clinical Module Migrations
+      run: |
+        dotnet ef database update --context ClinicalDbContext \
+          --project ./Server/Modules/Clinical/Infrastructure/Server.Modules.Clinical.Infrastructure.csproj \
+          --startup-project ./Server/WebApi/WebApi.csproj \
+          --connection "Host=${{ secrets.POSTGRES_HOST }};Port=5432;User ID=${{ secrets.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }};Database=${{ secrets.POSTGRES_DB }};"
+          
+    - name: Apply Billing Module Migrations
+      run: |
+        dotnet ef database update --context BillingDbContext \
+          --project ./Server/Modules/Billing/Infrastructure/Server.Modules.Billing.Infrastructure.csproj \
+          --startup-project ./Server/WebApi/WebApi.csproj \
+          --connection "Host=${{ secrets.POSTGRES_HOST }};Port=5432;User ID=${{ secrets.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }};Database=${{ secrets.POSTGRES_DB }};"
