@@ -340,39 +340,6 @@ resource "azapi_resource" "containerapp_keycloak" {
               }
             ],
             command = ["/opt/keycloak/bin/kc.sh", "start-dev"],
-            "probes" : [
-              {
-                "type" : "Liveness",
-                "httpGet" : {
-                  "path" : "/health/live",
-                  "port" : 8080,
-                  "scheme" : "HTTP"
-                },
-                "periodSeconds" : 30,
-                "timeoutSeconds" : 10
-              },
-              {
-                "type" : "Readiness",
-                "httpGet" : {
-                  "path" : "/health/ready",
-                  "port" : 8080,
-                  "scheme" : "HTTP"
-                },
-                "periodSeconds" : 10,
-                "timeoutSeconds" : 5
-              },
-              {
-                "type" : "Startup",
-                "httpGet" : {
-                  "path" : "/health/ready",
-                  "port" : 8080,
-                  "scheme" : "HTTP"
-                },
-                "periodSeconds" : 10,
-                "timeoutSeconds" : 5,
-                "failureThreshold" : 30
-              }
-            ]
           }
         ]
         scale = {
