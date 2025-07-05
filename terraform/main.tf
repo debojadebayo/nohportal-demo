@@ -306,8 +306,8 @@ resource "azapi_resource" "containerapp_keycloak" {
             image = "keycloak/keycloak:26.1"
             name  = "keycloak"
             resources = {
-              cpu    = 0.5
-              memory = "1Gi"
+              cpu    = 1
+              memory = "2Gi"
             },
             env = [
               {
