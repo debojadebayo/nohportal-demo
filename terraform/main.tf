@@ -331,15 +331,11 @@ resource "azapi_resource" "containerapp_keycloak" {
                 value = "edge"
               },
               {
-                name  = "KC_HOSTNAME"
-                value = "${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io"
+                name  = "KC_HOSTNAME_URL"
+                value = "https://${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io"
               },
               {
                 name  = "KC_HOSTNAME_STRICT"
-                value = "false"
-              },
-              {
-                name  = "KC_HOSTNAME_STRICT_HTTPS"
                 value = "false"
               },
               {
