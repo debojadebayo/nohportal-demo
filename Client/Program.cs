@@ -24,24 +24,29 @@ var apiBaseUrl = builder.HostEnvironment.IsDevelopment()
     ? "http://localhost:5003/" 
     : "https://nohportaldemoappserver.livelydune-ce7e1d16.uksouth.azurecontainerapps.io/";
 
-builder.Services.AddHttpClient("api", client => client.BaseAddress = new Uri(apiBaseUrl));
-   // .AddHttpMessageHandler(sp =>
-   // {
-   //     var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
-   //         .ConfigureHandler(authorizedUrls: new[] { "http://localhost:5003" });
-   //     return handler;
-   // });
+builder.Services.AddHttpClient("api", client => client.BaseAddress = new Uri(apiBaseUrl))
+   .AddHttpMessageHandler(sp =>
+   {
+       var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
+           .ConfigureHandler(authorizedUrls: new[] { apiBaseUrl });
+       return handler;
+   });
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("api"));
 
-// builder.Services.AddOidcAuthentication(options =>
-// {
-// 	options.ProviderOptions.Authority = "http://localhost:8180/realms/NationOH";
-// 	options.ProviderOptions.ClientId = "nationoh_client";
-// 	options.ProviderOptions.ResponseType = "code";
-// 	options.ProviderOptions.DefaultScopes.Add("nationoh_webapi-scope");
-// 	options.UserOptions.RoleClaim = "role";
-// }).AddAccountClaimsPrincipalFactory<ParseRoleClaimsPrincipalFactory>();
+// Determine Keycloak URL based on environment
+var keycloakBaseUrl = builder.HostEnvironment.IsDevelopment() 
+    ? "http://localhost:8180" 
+    : "https://nohportaldemoappkeycloak.livelydune-ce7e1d16.uksouth.azurecontainerapps.io";
+
+builder.Services.AddOidcAuthentication(options =>
+{
+	options.ProviderOptions.Authority = $"{keycloakBaseUrl}/realms/NationOH";
+	options.ProviderOptions.ClientId = "nationoh_client";
+	options.ProviderOptions.ResponseType = "code";
+	options.ProviderOptions.DefaultScopes.Add("nationoh_webapi-scope");
+	options.UserOptions.RoleClaim = "role";
+}).AddAccountClaimsPrincipalFactory<ParseRoleClaimsPrincipalFactory>();
 
 builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
