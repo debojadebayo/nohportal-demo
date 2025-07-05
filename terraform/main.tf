@@ -328,11 +328,11 @@ resource "azapi_resource" "containerapp_keycloak" {
               },
               {
                 name  = "KC_DB_USERNAME"
-                value = var.postgres_user
+                value = "keycloak"
               },
               {
                 name  = "KC_DB_PASSWORD"
-                value = var.postgres_password
+                value = "123"
               },
               {
                 name  = "KC_FEATURES"
