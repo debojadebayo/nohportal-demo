@@ -135,18 +135,6 @@ resource "azapi_resource" "containerapp_server" {
               {
                 name  = "ASPNETCORE_URLS"
                 value = "http://0.0.0.0:8080"
-              },
-              {
-                name  = "Jwt__MetadataAddress"
-                value = "https://${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io/realms/NationOH/.well-known/openid-configuration"
-              },
-              {
-                name  = "Jwt__Issuer"
-                value = "https://${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io/realms/NationOH"
-              },
-              {
-                name  = "keycloakAdminClient__KeycloakUrl"
-                value = "https://${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io"
               }
             ],
             "probes" : [
@@ -328,11 +316,11 @@ resource "azapi_resource" "containerapp_keycloak" {
               },
               {
                 name  = "KC_DB_USERNAME"
-                value = "keycloak"
+                value = var.postgres_user
               },
               {
                 name  = "KC_DB_PASSWORD"
-                value = "123"
+                value = var.postgres_password
               },
               {
                 name  = "KC_FEATURES"
