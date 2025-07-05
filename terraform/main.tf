@@ -297,7 +297,7 @@ resource "azapi_resource" "containerapp_keycloak" {
       configuration = {
         ingress = {
           external : true,
-          targetPort : 5432
+          targetPort : 8080
         }
       }
       template = {
