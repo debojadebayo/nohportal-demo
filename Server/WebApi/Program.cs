@@ -21,6 +21,11 @@ builder.Services.RegisterServices(builder.Configuration, ref moduleTypes, out va
 
 var app = builder.Build();
 
+Console.WriteLine("=== PROGRAM.CS DIAGNOSTICS ===");
+Console.WriteLine($"Environment Name: {builder.Environment.EnvironmentName}");
+Console.WriteLine($"IsDevelopment: {builder.Environment.IsDevelopment()}");
+Console.WriteLine($"Registered Modules Count: {registeredModules.Count}");
+Console.WriteLine("=== STARTING MODULE CONFIGURATION ===");
 
 app.ConfigureServicesAndMapEndpoints(builder.Environment.IsDevelopment(), registeredModules);
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
