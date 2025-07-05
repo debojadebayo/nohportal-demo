@@ -316,7 +316,7 @@ resource "azapi_resource" "containerapp_keycloak" {
               },
               {
                 name  = "KC_BOOTSTRAP_ADMIN_PASSWORD"
-                value = "admin123"
+                value = "123"
               },
               {
                 name  = "KC_DB"
@@ -328,18 +328,51 @@ resource "azapi_resource" "containerapp_keycloak" {
               },
               {
                 name  = "KC_DB_USERNAME"
-                value = var.postgres_user
+                value = var.keycloakdb_user
               },
               {
                 name  = "KC_DB_PASSWORD"
-                value = var.postgres_password
+                value = var.keycloakdb_password
               },
               {
                 name  = "KC_FEATURES"
                 value = "organization,admin-fine-grained-authz"
               }
             ],
-            command = ["start-dev"]
+            command = ["start-dev"],
+            "probes" : [
+              {
+                "type" : "Liveness",
+                "httpGet" : {
+                  "path" : "/health/live",
+                  "port" : 8080,
+                  "scheme" : "HTTP"
+                },
+                "periodSeconds" : 30,
+                "timeoutSeconds" : 10
+              },
+              {
+                "type" : "Readiness",
+                "httpGet" : {
+                  "path" : "/health/ready",
+                  "port" : 8080,
+                  "scheme" : "HTTP"
+                },
+                "periodSeconds" : 10,
+                "timeoutSeconds" : 5
+              },
+              {
+                "type" : "Startup",
+                "httpGet" : {
+                  "path" : "/health/ready",
+                  "port" : 8080,
+                  "scheme" : "HTTP"
+                },
+                "periodSeconds" : 10,
+                "timeoutSeconds" : 5,
+                "failureThreshold" : 30
+              }
+            ]
           }
         ]
         scale = {
