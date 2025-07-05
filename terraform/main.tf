@@ -42,6 +42,14 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "azure_services" {
   end_ip_address   = "0.0.0.0"
 }
 
+# Keycloak PostgreSQL Database
+resource "azurerm_postgresql_flexible_server_database" "keycloak" {
+  name      = "keycloak"
+  server_id = azurerm_postgresql_flexible_server.postgres.id
+  collation = "en_US.utf8"
+  charset   = "utf8"
+}
+
 resource "azapi_resource" "containerapp_environment" {
   type      = "Microsoft.App/managedEnvironments@2022-03-01"
   name      = "${var.app_name}acaenv"
@@ -127,6 +135,18 @@ resource "azapi_resource" "containerapp_server" {
               {
                 name  = "ASPNETCORE_URLS"
                 value = "http://0.0.0.0:8080"
+              },
+              {
+                name  = "Jwt__MetadataAddress"
+                value = "https://${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io/realms/NationOH/.well-known/openid-configuration"
+              },
+              {
+                name  = "Jwt__Issuer"
+                value = "https://${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io/realms/NationOH"
+              },
+              {
+                name  = "keycloakAdminClient__KeycloakUrl"
+                value = "https://${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io"
               }
             ],
             "probes" : [
@@ -257,5 +277,94 @@ resource "azapi_resource" "containerapp_client" {
   ignore_missing_property = true
   depends_on = [
     azapi_resource.containerapp_environment
+  ]
+}
+
+# Keycloak Container App
+resource "azapi_resource" "containerapp_keycloak" {
+  type      = "Microsoft.App/containerapps@2022-03-01"
+  name      = "${var.app_name}keycloak"
+  parent_id = data.azurerm_resource_group.rg.id
+  location  = data.azurerm_resource_group.rg.location
+
+  identity {
+    type         = "SystemAssigned, UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.containerapp.id]
+  }
+  body = {
+    properties = {
+      managedEnvironmentId = azapi_resource.containerapp_environment.id
+      configuration = {
+        ingress = {
+          external : true,
+          targetPort : 8080
+        }
+      }
+      template = {
+        containers = [
+          {
+            image = "quay.io/keycloak/keycloak:25.0.6"
+            name  = "keycloak"
+            resources = {
+              cpu    = 0.5
+              memory = "1Gi"
+            },
+            env = [
+              {
+                name  = "KEYCLOAK_ADMIN"
+                value = "admin"
+              },
+              {
+                name  = "KEYCLOAK_ADMIN_PASSWORD"
+                value = "admin123"
+              },
+              {
+                name  = "KC_DB"
+                value = "postgres"
+              },
+              {
+                name  = "KC_DB_URL"
+                value = "jdbc:postgresql://${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/keycloak"
+              },
+              {
+                name  = "KC_DB_USERNAME"
+                value = var.postgres_user
+              },
+              {
+                name  = "KC_DB_PASSWORD"
+                value = var.postgres_password
+              },
+              {
+                name  = "KC_HOSTNAME_STRICT"
+                value = "false"
+              },
+              {
+                name  = "KC_HOSTNAME_STRICT_HTTPS"
+                value = "false"
+              },
+              {
+                name  = "KC_HTTP_ENABLED"
+                value = "true"
+              },
+              {
+                name  = "KC_PROXY"
+                value = "edge"
+              }
+            ],
+            command = ["/opt/keycloak/bin/kc.sh", "start", "--optimized"]
+          }
+        ]
+        scale = {
+          minReplicas = 1,
+          maxReplicas = 1
+        }
+      }
+    }
+  }
+  ignore_missing_property = true
+  depends_on = [
+    azapi_resource.containerapp_environment,
+    azurerm_postgresql_flexible_server.postgres,
+    azurerm_postgresql_flexible_server_database.keycloak
   ]
 }
