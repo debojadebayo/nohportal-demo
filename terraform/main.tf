@@ -327,12 +327,20 @@ resource "azapi_resource" "containerapp_keycloak" {
                 value = "organization,admin-fine-grained-authz"
               },
               {
-                name  = "KC_SPI_X_FRAME_OPTIONS_FRAME_OPTIONS"
-                value = "DENY"
+                name  = "KC_PROXY"
+                value = "edge"
               },
               {
-                name  = "KC_SPI_CSP_CSP_FRAME_SRC"
-                value = "*"
+                name  = "KC_HOSTNAME_STRICT"
+                value = "false"
+              },
+              {
+                name  = "KC_HOSTNAME_STRICT_HTTPS"
+                value = "false"
+              },
+              {
+                name  = "KC_HTTP_ENABLED"
+                value = "true"
               }
             ],
             command = ["/opt/keycloak/bin/kc.sh", "start-dev"],
