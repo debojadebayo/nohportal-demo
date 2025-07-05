@@ -343,7 +343,7 @@ resource "azapi_resource" "containerapp_keycloak" {
                 value = "true"
               }
             ],
-            command = ["/opt/keycloak/bin/kc.sh", "start"],
+            command = ["/opt/keycloak/bin/kc.sh", "start-dev"],
           }
         ]
         scale = {
