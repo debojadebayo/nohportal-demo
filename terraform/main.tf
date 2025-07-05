@@ -297,13 +297,13 @@ resource "azapi_resource" "containerapp_keycloak" {
       configuration = {
         ingress = {
           external : true,
-          targetPort : 8080
+          targetPort : 5432
         }
       }
       template = {
         containers = [
           {
-            image = "quay.io/keycloak/keycloak:25.0.6"
+            image = "keycloak/keycloak:26.1"
             name  = "keycloak"
             resources = {
               cpu    = 0.5
@@ -311,11 +311,11 @@ resource "azapi_resource" "containerapp_keycloak" {
             },
             env = [
               {
-                name  = "KEYCLOAK_ADMIN"
+                name  = "KC_BOOTSTRAP_ADMIN_USERNAME"
                 value = "admin"
               },
               {
-                name  = "KEYCLOAK_ADMIN_PASSWORD"
+                name  = "KC_BOOTSTRAP_ADMIN_PASSWORD"
                 value = "admin123"
               },
               {
@@ -335,23 +335,11 @@ resource "azapi_resource" "containerapp_keycloak" {
                 value = var.postgres_password
               },
               {
-                name  = "KC_HOSTNAME_STRICT"
-                value = "false"
-              },
-              {
-                name  = "KC_HOSTNAME_STRICT_HTTPS"
-                value = "false"
-              },
-              {
-                name  = "KC_HTTP_ENABLED"
-                value = "true"
-              },
-              {
-                name  = "KC_PROXY"
-                value = "edge"
+                name  = "KC_FEATURES"
+                value = "organization,admin-fine-grained-authz"
               }
             ],
-            command = ["/opt/keycloak/bin/kc.sh", "start", "--optimized"]
+            command = ["start-dev"]
           }
         ]
         scale = {
