@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Build Commands
-- Run Dockerized: `docker-compose up`
+- Run Dockerized: `docker compose up`
 - Build Client: `dotnet build Client/Client.csproj`
 - Build Server: `dotnet build Server/WebApi/WebApi.csproj`
 - Run Migrations: `cd Server && ./run-migrations.sh`

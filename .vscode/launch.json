@@ -32,6 +32,50 @@
                 "quoteArgs": false,
                 "debuggerPath": "/vsdbg/vsdbg"
             }
+        },
+        {
+            "name": "Debug Playwright Tests",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "args": [
+                "test",
+                "${workspaceFolder}/Client.Tests/Client.Tests.csproj",
+                "--settings",
+                "${workspaceFolder}/Client.Tests/playwright.runsettings",
+                "--",
+                "Playwright.LaunchOptions.Headless=false"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Debug Single Playwright Test",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "args": [
+                "test",
+                "${workspaceFolder}/Client.Tests/Client.Tests.csproj",
+                "--filter",
+                "${input:testFilter}",
+                "--settings",
+                "${workspaceFolder}/Client.Tests/playwright.runsettings",
+                "--",
+                "Playwright.LaunchOptions.Headless=false"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ],
+    "inputs": [
+        {
+            "id": "testFilter",
+            "description": "Test filter (e.g., TestMethodName or FullyQualifiedName~TestMethodName)",
+            "default": "",
+            "type": "promptString"
         }
     ]
 }

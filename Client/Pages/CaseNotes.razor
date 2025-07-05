@@ -1,12 +1,10 @@
 @page "/case-notes/{scheduleId:guid}"
 @using Blazor.SubtleCrypto
-@using ComposedHealthBase.BaseClient.Components
-@using ComposedHealthBase.BaseClient.Enums
-@using ComposedHealthBase.BaseClient.Services
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Clinical
 @using Shared.DTOs.Scheduling
 @using Shared.Enums
+@using Shared.Validators
 @using MudBlazor
 @using MudExRichTextEditor
 @using Blazored.LocalStorage
@@ -95,23 +93,23 @@
     [Parameter] public Guid ScheduleId { get; set; } = Guid.Empty;
     private CaseNoteDto? CaseNote { get; set; }
     private MudForm form = default!;
-    private MudForm scheduleForm = default!;
+    // private MudForm scheduleForm = default!; // Commented out as not used
     private List<ClinicianDto> Clinicians = new(); // Populate this list as needed
     
     private string _tempKey {get; set;} = string.Empty;
 
     bool _readOnly = false;
-    MudExRichTextEdit Editor;
+    MudExRichTextEdit Editor = default!;
 
     private ScheduleDto? _schedule;
     private string _lastSavedStatus = "";
     private DateTime? _lastSavedTime = null;
-    private string? _lastSavedMode = null; // "offline" or "online"
+    // private string? _lastSavedMode = null; // "offline" or "online" - Commented out as not used
     private string? _lastCaseNoteJson = null;
     private Timer? _autoSaveTimer;
     private bool _isSaving = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         // Start autosave timer
         _autoSaveTimer = new Timer(async _ => await AutoSaveIfChanged(), null, 30000, 30000);
@@ -166,13 +164,13 @@
     private async Task Save()
     {
         await form.Validate();
-        if (form.IsValid)
+        if (form.IsValid && CaseNote != null)
         {
             try
             {
                 await CaseNoteLookupService.UpdateItem(CaseNote, CancellationToken.None);
                 _lastSavedTime = DateTime.Now;
-                _lastSavedMode = "online";
+                // _lastSavedMode = "online"; // Commented out as field not used
                 _lastSavedStatus = $"Last saved (online) {_lastSavedTime:dd-MM-yyyy HH:mm:ss}";
                 _lastCaseNoteJson = System.Text.Json.JsonSerializer.Serialize(CaseNote);
             }
@@ -185,10 +183,11 @@
         }
     }
 
-    private async Task GenerateReport()
+    private Task GenerateReport()
     {
         // Logic to generate report
         // This could involve calling a service to create a PDF or other document format
+        return Task.CompletedTask;
     }
 
     private async Task SaveOfflineCopy()
@@ -199,7 +198,7 @@
         await localStorage.SetItemAsync($"offline-case-note-{ScheduleId}", encrypted.Value);
         _tempKey = encrypted.Secret.Key;
         _lastSavedTime = DateTime.Now;
-        _lastSavedMode = "offline";
+        // _lastSavedMode = "offline"; // Commented out as field not used
         _lastSavedStatus = $"Last saved (offline copy) {_lastSavedTime:yyyy-MM-dd HH:mm:ss}";
         Snackbar.Add("Offline copy saved. It will be available when you're back online.", Severity.Success);
         StateHasChanged();

@@ -1,0 +1,16 @@
+{
+    "dotnet.unitTests.runSettingsPath": "./Client.Tests/playwright.runsettings",
+    "dotnet.testWindow.useTestingPlatformProtocol": true,
+    "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+    "dotnet.defaultSolution": "./Client/Client.sln",
+    "dotnet.projects.enableAutomaticRestore": true,
+    "dotnet.server.waitForDebugger": false,
+    "omnisharp.enableEditorConfigSupport": true,
+    "testing.automaticallyOpenPeekView": "never",
+    "testing.openTesting": "openOnTestStart",
+    "files.exclude": {
+        "**/bin": true,
+        "**/obj": true
+    },
+    "testing.automaticallyOpenTestResults": "openOnTestStart"
+}

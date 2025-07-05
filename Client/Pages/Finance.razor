@@ -1,10 +1,7 @@
 @page "/finance"
-@using ComposedHealthBase.BaseClient.Enums
-@using ComposedHealthBase.BaseClient.Services
-@using ComposedHealthBase.BaseClient.Components
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Billing
-@using MudBlazor
+@using Shared.Validators
 @using System.Net.Http.Json
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
 @inject ILazyLookupService<ProductDto> ProductLookupService
@@ -20,7 +17,7 @@
 
 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @ref="tabs">
     <MudTabPanel Text="Generate Invoice">
-        <MudForm Model="@invoiceFilter" @ref="invoiceForm">
+        <MudForm Model="@invoiceFilter" @ref="invoiceForm" Validation="@(invoiceFilterValidator.ValidateValue)" ValidationDelay="0">
             <MudGrid>
                 <MudItem xs="12">
                     <MudText Typo="Typo.h4">Invoice Generation</MudText>
@@ -28,12 +25,14 @@
 
                 <MudItem xs="12" sm="6">
                     <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search"
-                        @bind-ItemId="invoiceFilter.CustomerId" Label="Customer" />
+                        @bind-ItemId="invoiceFilter.CustomerId" Label="Customer" 
+                        ItemIdValueExpression="@(() => invoiceFilter.CustomerId)" />
                 </MudItem>
 
                 <MudItem xs="12" sm="6">
-                        <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Search"
-                            @bind-ItemId="SelectedProductId" Label="Product (Optional)" />
+                    <LazyLookup TDto="ProductDto" FieldType="LazyLookupEnum.Search"
+                        @bind-ItemId="SelectedProductId" Label="Product (Optional)" 
+                        ItemIdValueExpression="@(() => SelectedProductId)" />
                 </MudItem>
 
                 <MudItem xs="12" sm="6">
@@ -73,8 +72,7 @@
     {
         <MudTabPanel Text="Invoice Preview">
             @if (generatedInvoice != null)
-            {
-                <MudCard>
+            {                        <MudCard>
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h4">Invoice Preview</MudText>
@@ -83,31 +81,33 @@
                     </MudCardHeader>
 
                     <MudCardContent>
-                        <MudGrid>
-                            <MudItem xs="12" sm="6">
-                                <MudText Typo="Typo.subtitle2">Invoice Details</MudText>
-                                <MudText>Invoice Date: @generatedInvoice.InvoiceDate.ToString("dd/MM/yyyy")</MudText>
-                                <MudText>From: @generatedInvoice.FromDate.ToString("dd/MM/yyyy")</MudText>
-                                <MudText>To: @generatedInvoice.ToDate.ToString("dd/MM/yyyy")</MudText>
-                                <MudText>Status: @generatedInvoice.Status</MudText>
-                            </MudItem>
+                        <MudForm Model="@generatedInvoice" @ref="invoicePreviewForm" Validation="@(invoiceValidator.ValidateValue)" ValidationDelay="0">
+                            <MudGrid>
+                                <MudItem xs="12" sm="6">
+                                    <MudText Typo="Typo.subtitle2">Invoice Details</MudText>
+                                    <MudText>Invoice Date: @generatedInvoice.InvoiceDate.ToString("dd/MM/yyyy")</MudText>
+                                    <MudText>From: @generatedInvoice.FromDate.ToString("dd/MM/yyyy")</MudText>
+                                    <MudText>To: @generatedInvoice.ToDate.ToString("dd/MM/yyyy")</MudText>
+                                    <MudText>Status: @generatedInvoice.Status</MudText>
+                                </MudItem>
 
-                            <MudItem xs="12" sm="6">
-                                <MudText Typo="Typo.subtitle2">Financial Summary</MudText>
-                                <MudText>Net Amount: @generatedInvoice.NetAmount.ToString("C")</MudText>
-                                <MudText>Tax (@(generatedInvoice.TaxRate)%): @generatedInvoice.TaxAmount.ToString("C")</MudText>
-                                <MudText Typo="Typo.h6">Total: @generatedInvoice.TotalAmount.ToString("C")</MudText>
-                            </MudItem>
+                                <MudItem xs="12" sm="6">
+                                    <MudText Typo="Typo.subtitle2">Financial Summary</MudText>
+                                    <MudText>Net Amount: @generatedInvoice.NetAmount.ToString("C")</MudText>
+                                    <MudText>Tax (@(generatedInvoice.TaxRate)%): @generatedInvoice.TaxAmount.ToString("C")</MudText>
+                                    <MudText Typo="Typo.h6">Total: @generatedInvoice.TotalAmount.ToString("C")</MudText>
+                                </MudItem>
 
-                            <MudItem xs="12" sm="6">
-                                <MudDatePicker @bind-Date="dueDate" Label="Due Date" Variant="Variant.Outlined" />
-                            </MudItem>
+                                <MudItem xs="12" sm="6">
+                                    <MudDatePicker @bind-Date="dueDate" Label="Due Date" Variant="Variant.Outlined" For="@(() => generatedInvoice.DueDate)" />
+                                </MudItem>
 
-                            <MudItem xs="12">
-                                <MudTextField @bind-Value="generatedInvoice.Notes" Label="Invoice Notes"
-                                    Variant="Variant.Outlined" Lines="3" />
-                            </MudItem>
-                        </MudGrid>
+                                <MudItem xs="12">
+                                    <MudTextField @bind-Value="generatedInvoice.Notes" Label="Invoice Notes"
+                                        Variant="Variant.Outlined" Lines="3" For="@(() => generatedInvoice.Notes)" />
+                                </MudItem>
+                            </MudGrid>
+                        </MudForm>
 
                         <MudDivider Class="my-4" />
 
@@ -146,8 +146,17 @@
                             }
                         </MudButton>
 
-                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="UpdateInvoice" Class="ml-2">
-                            Update Invoice
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="UpdateInvoice" Class="ml-2"
+                            Disabled="@isUpdating">
+                            @if (isUpdating)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Updating...</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Update Invoice</MudText>
+                            }
                         </MudButton>
                     </MudCardActions>
                 </MudCard>
@@ -160,6 +169,7 @@
     private Guid SelectedProductId = Guid.Empty;
     private MudTabs tabs = default!;
     private MudForm invoiceForm = default!;
+    private MudForm invoicePreviewForm = default!;
 
     private InvoiceFilterDto invoiceFilter = new();
     private InvoiceDto? generatedInvoice;
@@ -170,8 +180,12 @@
 
     private bool isGenerating = false;
     private bool isFinalizing = false;
+    private bool isUpdating = false;
     private bool showContinueButton = false;
     private bool showPreviewTab = false;
+
+    private InvoiceFilterValidator invoiceFilterValidator = new InvoiceFilterValidator();
+    private InvoiceValidator invoiceValidator = new InvoiceValidator();
 
     protected override void OnInitialized()
     {
@@ -205,20 +219,28 @@
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<dynamic>();
-                var invoiceId = Guid.Parse(result.GetProperty("invoiceId").GetString());
-
-                // Fetch the generated invoice details
-                generatedInvoice = await InvoiceLookupService.GetItemById(invoiceId, CancellationToken.None);
-
-                if (generatedInvoice != null)
+                var invoiceIdString = result?.GetProperty("invoiceId").GetString();
+                
+                if (!string.IsNullOrEmpty(invoiceIdString))
                 {
-                    generatedInvoice.DueDate = dueDate;
-                    showContinueButton = true;
-                    Snackbar.Add("Invoice generated successfully!", Severity.Success);
+                    var parsedInvoiceId = Guid.Parse(invoiceIdString);
+                    // Fetch the generated invoice details
+                    generatedInvoice = await InvoiceLookupService.GetItemById(parsedInvoiceId, CancellationToken.None);
+
+                    if (generatedInvoice != null)
+                    {
+                        generatedInvoice.DueDate = dueDate;
+                        showContinueButton = true;
+                        Snackbar.Add("Invoice generated successfully!", Severity.Success);
+                    }
+                    else
+                    {
+                        Snackbar.Add("Invoice generated but could not retrieve details", Severity.Warning);
+                    }
                 }
                 else
                 {
-                    Snackbar.Add("Invoice generated but could not retrieve details", Severity.Warning);
+                    Snackbar.Add("Invalid invoice ID returned from server", Severity.Error);
                 }
             }
             else
@@ -255,6 +277,12 @@
     {
         if (generatedInvoice == null) return;
 
+        await invoicePreviewForm.Validate();
+        if (!invoicePreviewForm.IsValid) return;
+
+        isUpdating = true;
+        StateHasChanged();
+
         try
         {
             generatedInvoice.DueDate = dueDate;
@@ -264,6 +292,11 @@
         catch (Exception ex)
         {
             Snackbar.Add($"Error updating invoice: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isUpdating = false;
+            StateHasChanged();
         }
     }
 

@@ -1,0 +1,82 @@
+@namespace Client.Pages.Forms
+@using MudBlazor
+@using Shared.DTOs.Scheduling
+@using Shared.Enums
+@using Shared.Validators
+@using ComposedHealthBase.BaseClient.Services
+@inject ILazyLookupService<ClinicianDto> ClinicianLookupService
+@inject IAuthHelperService AuthHelperService
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="@Clinician" @ref="@form" Validation="@(clinicianValidator.ValidateValue)" ValidationDelay="0">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Clinician.FirstName" For="@(() => Clinician.FirstName)" Immediate="true" Label="First Name" Variant="Variant.Outlined" />
+                    <MudTextField @bind-Value="Clinician.LastName" For="@(() => Clinician.LastName)" Immediate="true" Label="Last Name" Variant="Variant.Outlined" />
+                    <MudTextField @bind-Value="Clinician.Telephone" For="@(() => Clinician.Telephone)" Immediate="true" Label="Phone Number" Variant="Variant.Outlined" />
+                    <MudTextField @bind-Value="Clinician.Email" For="@(() => Clinician.Email)" Immediate="true" Label="Email" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="ClinicianTypeEnum" @bind-Value="Clinician.ClinicianType" Label="Clinician Type" Variant="Variant.Outlined" For="@(() => Clinician.ClinicianType)">
+                        @foreach (ClinicianTypeEnum value in Enum.GetValues<ClinicianTypeEnum>())
+                        {
+                            <MudSelectItem Value="@value">@value</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudSelect T="RegulatorTypeEnum" @bind-Value="Clinician.RegulatorType" Label="Regulator Type" Variant="Variant.Outlined" For="@(() => Clinician.RegulatorType)">
+                        @foreach (RegulatorTypeEnum value in Enum.GetValues<RegulatorTypeEnum>())
+                        {
+                            <MudSelectItem Value="@value">@value</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudTextField @bind-Value="Clinician.LicenceNumber" For="@(() => Clinician.LicenceNumber)" Immediate="true" Label="Licence Number" Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">@(IsNewClinician ? "Create" : "Update")</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public ClinicianDto Clinician { get; set; } = default!;
+    [Parameter] public bool IsNewClinician { get; set; }
+
+    MudForm form = default!;
+    private ClinicianValidator clinicianValidator = new ClinicianValidator();
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            try
+            {
+                if (IsNewClinician)
+                {
+                    var createdClinician = await AuthHelperService.CreateSubject<ClinicianDto>(Clinician, CancellationToken.None);
+                    if (createdClinician != null)
+                    {
+                        MudDialog.Close(DialogResult.Ok(createdClinician));
+                    }
+                }
+                else
+                {
+                    await ClinicianLookupService.UpdateItem(Clinician, CancellationToken.None);
+                    MudDialog.Close(DialogResult.Ok(Clinician));
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle error - could add a snackbar here
+                Console.Error.WriteLine($"Error saving clinician: {ex.Message}");
+            }
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

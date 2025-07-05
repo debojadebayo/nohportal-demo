@@ -1,0 +1,109 @@
+@page "/clinicians"
+@using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.Shared.DTOs
+@using Shared.DTOs.Scheduling
+@using Shared.Enums
+@using MudBlazor
+@using Shared.Validators
+@using Client.Pages.Forms
+@inject ILazyLookupService<ClinicianDto> ClinicianLookupService
+@inject IAuthHelperService AuthHelperService
+@inject IDialogService DialogService
+
+@attribute [Authorize]
+
+<MudGrid Justify="Justify.SpaceBetween">
+    <MudItem>
+        <MudText Typo="Typo.h1">Clinicians</MudText>
+    </MudItem>
+    <MudItem>
+        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddClinicianDialog">
+            Add Clinician
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudDataGrid T="ClinicianDto" Items="@clinicians" Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true" SortMode="SortMode.Multiple">
+        <Columns>
+            <PropertyColumn Property="x => x.FirstName" Title="First Name" />
+            <PropertyColumn Property="x => x.LastName" Title="Last Name" />
+            <PropertyColumn Property="x => x.Email" Title="Email" />
+            <PropertyColumn Property="x => x.Telephone" Title="Phone" />
+            <PropertyColumn Property="x => x.ClinicianType" Title="Type" />
+            <PropertyColumn Property="x => x.RegulatorType" Title="Regulator" />
+            <PropertyColumn Property="x => x.LicenceNumber" Title="Licence Number" />
+            <TemplateColumn CellClass="d-flex justify-end" Sortable="false" Filterable="false">
+                <HeaderTemplate>
+                    <MudText Typo="Typo.subtitle2">Actions</MudText>
+                </HeaderTemplate>
+                <CellTemplate>
+                    <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => OpenEditClinicianDialog(context.Item))">
+                        Edit
+                    </MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+
+@code {
+    private List<ClinicianDto> clinicians = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadClinicians();
+    }
+
+    private async Task LoadClinicians()
+    {
+        clinicians = (await ClinicianLookupService.GetAllItems(CancellationToken.None)).ToList();
+        StateHasChanged();
+    }
+
+    private async Task OpenAddClinicianDialog()
+    {
+        var newClinician = new ClinicianDto
+        {
+            FirstName = "",
+            LastName = "",
+            Telephone = "",
+            Email = "",
+            LicenceNumber = "",
+            AvatarImage = "",
+            AvatarTitle = "",
+            AvatarDescription = ""
+        };
+
+        var parameters = new DialogParameters<ClinicianDialog>
+        {
+            { x => x.Clinician, newClinician },
+            { x => x.IsNewClinician, true }
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<ClinicianDialog>("Add Clinician", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            await LoadClinicians();
+        }
+    }
+
+    private async Task OpenEditClinicianDialog(ClinicianDto clinician)
+    {
+        var parameters = new DialogParameters<ClinicianDialog>
+        {
+            { x => x.Clinician, clinician },
+            { x => x.IsNewClinician, false }
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<ClinicianDialog>("Edit Clinician", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            await LoadClinicians();
+        }
+    }
+}
