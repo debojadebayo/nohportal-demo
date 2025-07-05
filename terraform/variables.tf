@@ -13,7 +13,7 @@ variable "location" {
 variable "environment" {
   type        = string
   description = "Environment"
-  default     = "Production"
+  default     = "Development"
 }
 
 variable "GITHUB_SHA" {
