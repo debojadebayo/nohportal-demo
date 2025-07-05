@@ -38,25 +38,25 @@ namespace ComposedHealthBase.Server.Modules
 						.AllowCredentials());
 			});
 
-			// bool.TryParse(configuration["Jwt:RequireHttpsMetadata"], out bool requireHttpsMetadata);
+			bool.TryParse(configuration["Jwt:RequireHttpsMetadata"], out bool requireHttpsMetadata);
 
-			// services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-			// 	.AddJwtBearer(options =>
-			// 	{
-			// 		options.MetadataAddress = configuration["Jwt:MetadataAddress"] ?? "";
-			// 		options.RequireHttpsMetadata = requireHttpsMetadata;
-			// 		options.Audience = configuration["Jwt:Audience"];
-			// 		options.MapInboundClaims = false;
-			// 		options.TokenValidationParameters = new TokenValidationParameters
-			// 		{
-			// 			ValidateIssuer = true,
-			// 			ValidIssuer = configuration["Jwt:Issuer"],
-			// 			ValidateAudience = true,
-			// 			ValidateLifetime = true,
-			// 			ValidateIssuerSigningKey = true,
-			// 			RoleClaimType = "role"
-			// 		};
-			// 	});
+			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+				.AddJwtBearer(options =>
+				{
+					options.MetadataAddress = configuration["Jwt:MetadataAddress"] ?? "";
+					options.RequireHttpsMetadata = requireHttpsMetadata;
+					options.Audience = configuration["Jwt:Audience"];
+					options.MapInboundClaims = false;
+					options.TokenValidationParameters = new TokenValidationParameters
+					{
+						ValidateIssuer = true,
+						ValidIssuer = configuration["Jwt:Issuer"],
+						ValidateAudience = true,
+						ValidateLifetime = true,
+						ValidateIssuerSigningKey = true,
+						RoleClaimType = "role"
+					};
+				});
 
 			// services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
 			// services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
@@ -104,8 +104,8 @@ namespace ComposedHealthBase.Server.Modules
 		public WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment)
 		{
 			app.UseCors("Client");
-			// app.UseAuthentication();
-			// app.UseAuthorization();
+			app.UseAuthentication();
+			app.UseAuthorization();
 
 			InitializeRolePermissionCache(app).GetAwaiter().GetResult();
 
