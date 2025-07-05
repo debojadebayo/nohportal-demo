@@ -325,6 +325,14 @@ resource "azapi_resource" "containerapp_keycloak" {
               {
                 name  = "KC_FEATURES"
                 value = "organization,admin-fine-grained-authz"
+              },
+              {
+                name  = "KC_SPI_X_FRAME_OPTIONS_FRAME_OPTIONS"
+                value = "DENY"
+              },
+              {
+                name  = "KC_SPI_CSP_CSP_FRAME_SRC"
+                value = "*"
               }
             ],
             command = ["/opt/keycloak/bin/kc.sh", "start-dev"],
