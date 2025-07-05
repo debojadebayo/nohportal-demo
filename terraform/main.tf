@@ -13,7 +13,7 @@ data "azurerm_container_registry" "acr" {
 }
 
 data "azurerm_storage_account" "storage" {
-  name                = "${replace(var.app_name, "-", "")}storage"
+  name                = "${var.app_name}storage"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
@@ -133,7 +133,7 @@ resource "azapi_resource" "containerapp_server" {
               {
                 "type" : "Liveness",
                 "httpGet" : {
-                  "path" : "/api-health",
+                  "path" : "/health",
                   "port" : 8080,
                   "scheme" : "HTTP"
                 },
@@ -142,7 +142,7 @@ resource "azapi_resource" "containerapp_server" {
               {
                 "type" : "Readiness",
                 "httpGet" : {
-                  "path" : "/api-health",
+                  "path" : "/health",
                   "port" : 8080,
                   "scheme" : "HTTP"
                 },
@@ -151,7 +151,7 @@ resource "azapi_resource" "containerapp_server" {
               {
                 "type" : "Startup",
                 "httpGet" : {
-                  "path" : "/api-health",
+                  "path" : "/health",
                   "port" : 8080,
                   "scheme" : "HTTP"
                 },
