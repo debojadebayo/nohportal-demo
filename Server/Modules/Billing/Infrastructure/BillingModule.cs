@@ -56,13 +56,31 @@ namespace Server.Modules.Billing.Infrastructure
 		
 		public WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment)
 		{
+			Console.WriteLine($"BillingModule: ConfigureModuleServices called, isDevelopment={isDevelopment}");
 			if (isDevelopment)
 			{
-				using (var scope = app.Services.CreateScope())
+				try
 				{
-					var dbContext = scope.ServiceProvider.GetRequiredService<BillingDbContext>();
-					dbContext.Database.Migrate();
+					Console.WriteLine("BillingModule: Starting database migration...");
+					using (var scope = app.Services.CreateScope())
+					{
+						Console.WriteLine("BillingModule: Creating service scope...");
+						var dbContext = scope.ServiceProvider.GetRequiredService<BillingDbContext>();
+						Console.WriteLine("BillingModule: Got BillingDbContext, applying migrations...");
+						dbContext.Database.Migrate();
+						Console.WriteLine("BillingModule: Database migration completed successfully!");
+					}
 				}
+				catch (Exception ex)
+				{
+					Console.WriteLine($"BillingModule: Migration failed with error: {ex.Message}");
+					Console.WriteLine($"BillingModule: Full exception: {ex}");
+					throw; // Re-throw to see if this causes the app to fail
+				}
+			}
+			else
+			{
+				Console.WriteLine("BillingModule: Skipping migration (not in development mode)");
 			}
 			return app;
 		}
