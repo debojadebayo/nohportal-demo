@@ -339,7 +339,7 @@ resource "azapi_resource" "containerapp_keycloak" {
                 value = "organization,admin-fine-grained-authz"
               }
             ],
-            command = ["start-dev"],
+            command = ["/opt/keycloak/bin/kc.sh", "start-dev"],
             "probes" : [
               {
                 "type" : "Liveness",
