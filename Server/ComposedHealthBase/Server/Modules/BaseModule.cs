@@ -60,18 +60,18 @@ namespace ComposedHealthBase.Server.Modules
 
 			// services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
 			// services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
-			// services.AddAuthorization(options =>
-			// {
-			// 	options.AddPolicy("resource-access",
-			// 	policy =>
-			// 	{
-			// 		policy.Requirements.Add(new SubjectOwnedRequirement());
-			// 		policy.Requirements.Add(new TenantOwnedRequirement());
-			// 	});
+			services.AddAuthorization(options =>
+			{
+				// options.AddPolicy("resource-access",
+				// policy =>
+				// {
+				// 	policy.Requirements.Add(new SubjectOwnedRequirement());
+				// 	policy.Requirements.Add(new TenantOwnedRequirement());
+				// });
 
-			// 	// Add permission-based policies for common entities
-			// 	options.AddPermissionPoliciesForEntities();
-			// });
+				// // Add permission-based policies for common entities
+				// options.AddPermissionPoliciesForEntities();
+			});
 
 			services.AddOpenApi();
 			var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");
