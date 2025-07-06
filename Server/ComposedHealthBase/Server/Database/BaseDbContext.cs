@@ -16,8 +16,8 @@ namespace ComposedHealthBase.Server.Database
 				throw new UnauthorizedAccessException("User must be authenticated to save changes.");
 			}
 			var userFullName = user.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown User";
-			var userKeycloakId = user.FindFirst("keycloak_id")?.Value;
-			Guid.TryParse(userKeycloakId, out Guid userKeycloakGuid);
+			var userId = user.FindFirst("keycloak_id")?.Value;
+			Guid.TryParse(userId, out Guid userKeycloakGuid);
 
 
 			var timeNow = DateTime.UtcNow;
@@ -34,14 +34,14 @@ namespace ComposedHealthBase.Server.Database
 						entity.CreatedBy = userFullName;
 						entity.CreatedDate = timeNow;
 						entity.ModifiedDate = timeNow;
-						entity.CreatedByKeycloakId = userKeycloakGuid;
-						entity.ModifiedByKeycloakId = userKeycloakGuid;
+						entity.CreatedById = userKeycloakGuid;
+						entity.ModifiedById = userKeycloakGuid;
 					}
 					else if (entry.State == EntityState.Modified)
 					{
 						entity.LastModifiedBy = userFullName;
 						entity.ModifiedDate = timeNow;
-						entity.ModifiedByKeycloakId = userKeycloakGuid;
+						entity.ModifiedById = userKeycloakGuid;
 					}
 				}
 

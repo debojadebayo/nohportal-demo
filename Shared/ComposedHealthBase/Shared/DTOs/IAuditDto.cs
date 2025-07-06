@@ -7,5 +7,6 @@ namespace ComposedHealthBase.Shared.DTOs
         string LastModifiedBy { get; set; }
         DateTime CreatedDate { get; set; }
         DateTime ModifiedDate { get; set; }
+        Guid TenantId { get; set; }
     }
 }

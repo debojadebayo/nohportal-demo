@@ -9,9 +9,7 @@ namespace ComposedHealthBase.Server.Entities
 		DateTime ModifiedDate { get; set; }
 		Guid SubjectId { get; set; }
 		Guid TenantId { get; set; }
-		Guid TenantKeycloakId { get; set; }
-		Guid SubjectKeycloakId { get; set; }
-		Guid CreatedByKeycloakId { get; set; }
-		Guid ModifiedByKeycloakId { get; set; }
+		Guid CreatedById { get; set; }
+		Guid ModifiedById { get; set; }
 	}
 }

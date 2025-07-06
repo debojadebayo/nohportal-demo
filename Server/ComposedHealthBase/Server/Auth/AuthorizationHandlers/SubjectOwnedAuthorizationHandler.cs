@@ -21,7 +21,7 @@ namespace ComposedHealthBase.Server.Auth.AuthorizationHandlers
             }
 
             var userSubjectId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!string.IsNullOrEmpty(userSubjectId) && resource.SubjectKeycloakId == Guid.Parse(userSubjectId))
+            if (!string.IsNullOrEmpty(userSubjectId) && resource.SubjectId == Guid.Parse(userSubjectId))
             {
                 context.Succeed(requirement);
             }

@@ -9,5 +9,6 @@ namespace ComposedHealthBase.Shared.DTOs
 		public string LastModifiedBy { get; set; } = string.Empty;
 		public DateTime CreatedDate { get; set; }
 		public DateTime ModifiedDate { get; set; }
+		public Guid TenantId { get; set; } = Guid.Empty;
 	}
 }

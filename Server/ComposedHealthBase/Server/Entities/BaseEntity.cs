@@ -11,9 +11,7 @@
 		public DateTime ModifiedDate { get; set; }
 		public Guid TenantId { get; set; }
 		public Guid SubjectId { get; set; }
-		public Guid TenantKeycloakId { get; set; }
-		public Guid SubjectKeycloakId { get; set; }
-		public Guid CreatedByKeycloakId { get; set; }
-		public Guid ModifiedByKeycloakId { get; set; }
+		public Guid CreatedById { get; set; }
+		public Guid ModifiedById { get; set; }
 	}
 }

@@ -20,7 +20,7 @@ namespace ComposedHealthBase.Server.Endpoints
 {
 	public abstract class KeycloakSubjectEndpoints<T, TDto, TContext>
 	where T : class, IEntity, IAuditEntity, ISubject
-	where TDto : IDto, ISubject
+	where TDto : IDto, IAuditDto, ISubject
 	where TContext : IDbContext<TContext>
 	{
 		public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
