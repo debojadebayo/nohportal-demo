@@ -146,7 +146,7 @@ resource "azapi_resource" "containerapp_server" {
               },
               {
                 name  = "Jwt__Audience"
-                value = "blazor_api_audience"
+                value = "nationoh_webapi"
               },
               {
                 name  = "Jwt__RequireHttpsMetadata"
