@@ -328,7 +328,7 @@ resource "azapi_resource" "containerapp_keycloak" {
               },
               {
                 name  = "KC_HOSTNAME"
-                value = "https://${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io"
+                value = "https://nohportaldemoappkeycloak.livelydune-ce7e1d16.uksouth.azurecontainerapps.io"
               },
               {
                 name  = "KC_HOSTNAME_STRICT"
