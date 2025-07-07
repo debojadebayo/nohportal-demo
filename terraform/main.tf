@@ -135,6 +135,38 @@ resource "azapi_resource" "containerapp_server" {
               {
                 name  = "ASPNETCORE_URLS"
                 value = "http://0.0.0.0:8080"
+              },
+              {
+                name  = "Jwt__MetadataAddress"
+                value = "https://nohportaldemoappkeycloak.livelydune-ce7e1d16.uksouth.azurecontainerapps.io/realms/NationOH/.well-known/openid-configuration"
+              },
+              {
+                name  = "Jwt__Issuer"
+                value = "https://nohportaldemoappkeycloak.livelydune-ce7e1d16.uksouth.azurecontainerapps.io/realms/NationOH"
+              },
+              {
+                name  = "Jwt__Audience"
+                value = "nationoh_webapi"
+              },
+              {
+                name  = "Jwt__RequireHttpsMetadata"
+                value = "true"
+              },
+              {
+                name  = "keycloakAdminClient__KeycloakUrl"
+                value = "https://nohportaldemoappkeycloak.livelydune-ce7e1d16.uksouth.azurecontainerapps.io"
+              },
+              {
+                name  = "keycloakAdminClient__Realm"
+                value = "NationOH"
+              },
+              {
+                name  = "keycloakAdminClient__ClientId"
+                value = "admin-cli"
+              },
+              {
+                name  = "keycloakAdminClient__ClientSecret"
+                value = "<SECRET_FROM_KEY_VAULT>"
               }
             ],
             "probes" : [
