@@ -327,12 +327,8 @@ resource "azapi_resource" "containerapp_keycloak" {
                 value = "organization,admin-fine-grained-authz"
               },
               {
-                name  = "KC_PROXY"
-                value = "edge"
-              },
-              {
                 name  = "KC_HOSTNAME"
-                value = "${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io"
+                value = "https://${var.app_name}keycloak.${azapi_resource.containerapp_environment.location}.azurecontainerapps.io"
               },
               {
                 name  = "KC_HOSTNAME_STRICT"
