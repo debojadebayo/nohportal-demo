@@ -66,8 +66,6 @@ jobs:
 
     - name: Build the server image and push it to ACR
       uses: docker/build-push-action@v5
-      build-args:
-
       with:
         context: .
         push: true
