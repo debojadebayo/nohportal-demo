@@ -20,9 +20,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // Determine API base URL based on environment
-var apiBaseUrl = builder.HostEnvironment.IsDevelopment() 
-    ? "http://localhost:5003/" 
-    : "https://nohportaldemoappserver.livelydune-ce7e1d16.uksouth.azurecontainerapps.io/";
+var apiBaseUrl = "https://nohportaldemoappserver.livelydune-ce7e1d16.uksouth.azurecontainerapps.io/";
 
 builder.Services.AddHttpClient("api", client => client.BaseAddress = new Uri(apiBaseUrl))
    .AddHttpMessageHandler(sp =>
@@ -35,9 +33,7 @@ builder.Services.AddHttpClient("api", client => client.BaseAddress = new Uri(api
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("api"));
 
 // Determine Keycloak URL based on environment
-var keycloakBaseUrl = builder.HostEnvironment.IsDevelopment() 
-    ? "http://localhost:8180" 
-    : "https://nohportaldemoappkeycloak.livelydune-ce7e1d16.uksouth.azurecontainerapps.io";
+var keycloakBaseUrl = "https://nohportaldemoappkeycloak.livelydune-ce7e1d16.uksouth.azurecontainerapps.io";
 
 builder.Services.AddOidcAuthentication(options =>
 {
