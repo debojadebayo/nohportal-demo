@@ -38,6 +38,7 @@ builder.Services.RegisterServices(builder.Configuration, ref moduleTypes, out va
 var app = builder.Build();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("Application built successfully. Configuring services and endpoints...");
 =======
@@ -48,6 +49,8 @@ Console.WriteLine($"Registered Modules Count: {registeredModules.Count}");
 Console.WriteLine("=== STARTING MODULE CONFIGURATION ===");
 >>>>>>> 4582737 (explicit logging in program.cs)
 
+=======
+>>>>>>> 2d57836 (fix: updated base url for frontend)
 app.ConfigureServicesAndMapEndpoints(builder.Environment.IsDevelopment(), registeredModules);
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
