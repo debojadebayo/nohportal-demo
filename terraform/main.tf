@@ -146,7 +146,7 @@ resource "azapi_resource" "containerapp_server" {
               },
               {
                 name  = "Jwt__Audience"
-                value = "nationoh_webapi"
+                value = "blazor_api_audience"
               },
               {
                 name  = "Jwt__RequireHttpsMetadata"
@@ -166,7 +166,7 @@ resource "azapi_resource" "containerapp_server" {
               },
               {
                 name  = "keycloakAdminClient__ClientSecret"
-                value = "<SECRET_FROM_KEY_VAULT>"
+                value = "YsohhfGUo5J6E89f4dkaaxH91U2Mhi6H"
               }
             ],
             "probes" : [
