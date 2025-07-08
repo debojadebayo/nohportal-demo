@@ -60,7 +60,6 @@ namespace ComposedHealthBase.Server.Modules
                         .AllowCredentials());
             });
 
-<<<<<<< HEAD
             bool.TryParse(configuration["Jwt:RequireHttpsMetadata"], out bool requireHttpsMetadata);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -80,22 +79,6 @@ namespace ComposedHealthBase.Server.Modules
                         RoleClaimType = "role"
                     };
                 });
-=======
-			services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
-			services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
-			services.AddAuthorization(options =>
-			{
-				options.AddPolicy("resource-access",
-				policy =>
-				{
-					policy.Requirements.Add(new SubjectOwnedRequirement());
-					policy.Requirements.Add(new TenantOwnedRequirement());
-				});
-
-				// Add permission-based policies for common entities
-				options.AddPermissionPoliciesForEntities();
-			});
->>>>>>> d356861 (fix: git rebase to master uncommented out further auths)
 
             services.AddOpenApi();
             var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");

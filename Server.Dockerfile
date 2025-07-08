@@ -35,7 +35,8 @@ COPY --from=build /app/publish ./
 
 # Set environment variables
 ENV ASPNETCORE_URLS="http://+:8080"
-ENV ASPNETCORE_ENVIRONMENT=Development
+# ENV ASPNETCORE_ENVIRONMENT="Development"
+# ASPNETCORE_ENVIRONMENT will be set by Azure Container Apps
 ENV DOTNET_USE_POLLING_FILE_WATCHER=1
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 

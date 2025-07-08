@@ -130,7 +130,7 @@ resource "azapi_resource" "containerapp_server" {
               },
               {
                 name  = "ASPNETCORE_ENVIRONMENT"
-                value = "Development"
+                value = "Staging"
               },
               {
                 name  = "ASPNETCORE_URLS"
@@ -253,7 +253,7 @@ resource "azapi_resource" "containerapp_client" {
             env = [
               {
                 name  = "ASPNETCORE_ENVIRONMENT"
-                value = "Development"
+                value = "Staging"
               },
             ],
             "probes" : [
