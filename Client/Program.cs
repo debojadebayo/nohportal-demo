@@ -54,7 +54,6 @@ builder.Services.AddOidcAuthentication(options =>
 
 builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
-builder.Services.AddBlazorPdfViewer();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSubtleCrypto();
 

@@ -3,12 +3,12 @@
 @using ComposedHealthBase.Shared.DTOs
 @using ComposedHealthBase.Shared.Interfaces
 @using MudBlazor
-@using Gotho.BlazorPdf
 @using System.Linq.Expressions
 @inject IAuthHelperService AuthHelper
 @inject IDialogService DialogService
 @inject ILazyLookupService<TDto> LookupService
 @inject IDocumentUploadService DocumentUploadService
+@inject IJSRuntime JSRuntime
 @typeparam TDto where TDto : IAuditDto, IDocumentDto, ILazyLookup
 
 <MudPaper Class="pa-4">
@@ -56,7 +56,14 @@
     <DialogContent>
         @if (!string.IsNullOrEmpty(documentUrl))
         {
-            <PdfViewer Url="@documentUrl" />
+            <div style="width: 100%; height: 80vh;">
+                <iframe src="@documentUrl" 
+                        width="100%" 
+                        height="100%" 
+                        style="border: none; border-radius: 4px;"
+                        title="Document Viewer">
+                </iframe>
+            </div>
         }
         else
         {
@@ -65,6 +72,9 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="() => _documentViewerOpen = false">Close</MudButton>
+        <MudButton OnClick="OpenInNewTab" Color="Color.Primary" Disabled="string.IsNullOrEmpty(documentUrl)">
+            Open in New Tab
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -137,33 +147,41 @@
         _fileToUpload = file;
     }
 
-private async Task UploadDocument()
-{
-    if (_fileToUpload == null || string.IsNullOrWhiteSpace(_fileToUpload.Name))
-        return;
+    private async Task UploadDocument()
+    {
+        if (_fileToUpload == null || string.IsNullOrWhiteSpace(_fileToUpload.Name))
+            return;
 
-    var newDto = Activator.CreateInstance<TDto>();
-    newDto.Name = _newDocument.Name;
-    newDto.Description = _newDocument.Description;
-    newDto.CreatedBy = await AuthHelper.GetFullNameAsync() ?? "Unknown User";
-    newDto.CreatedDate = DateTime.UtcNow;
+        var newDto = Activator.CreateInstance<TDto>();
+        newDto.Name = _newDocument.Name;
+        newDto.Description = _newDocument.Description;
+        newDto.CreatedBy = await AuthHelper.GetFullNameAsync() ?? "Unknown User";
+        newDto.CreatedDate = DateTime.UtcNow;
 
-    await DocumentUploadService.UploadDocument<TDto>(
-        new Tuple<IDocumentDto, IBrowserFile>(newDto, _fileToUpload),
-        CancellationToken.None);
+        await DocumentUploadService.UploadDocument<TDto>(
+            new Tuple<IDocumentDto, IBrowserFile>(newDto, _fileToUpload),
+            CancellationToken.None);
 
-    DocumentIds.Add(newDto.Id);
-    _documents = (await LookupService.GetItemsByIds(DocumentIds, CancellationToken.None)).ToList();
+        DocumentIds.Add(newDto.Id);
+        _documents = (await LookupService.GetItemsByIds(DocumentIds, CancellationToken.None)).ToList();
 
-    await OnDocumentUploaded.InvokeAsync(newDto);
+        await OnDocumentUploaded.InvokeAsync(newDto);
 
-    _uploadDocumentDialogOpen = false;
-}
+        _uploadDocumentDialogOpen = false;
+    }
 
     private async Task OnDocumentSelected(TDto document)
     {
         documentUrl = (await DocumentUploadService.GetSasLink<TDto>(((IDocumentDto)document).Id, CancellationToken.None)) ?? "";
         _documentViewerOpen = true;
         StateHasChanged();
+    }
+
+    private async Task OpenInNewTab()
+    {
+        if (!string.IsNullOrEmpty(documentUrl))
+        {
+            await JSRuntime.InvokeVoidAsync("open", documentUrl, "_blank");
+        }
     }
 }

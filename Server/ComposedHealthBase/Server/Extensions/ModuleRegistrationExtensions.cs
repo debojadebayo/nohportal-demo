@@ -11,6 +11,7 @@ using ComposedHealthBase.Server.Interfaces;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Queries;
 using ComposedHealthBase.Server.Commands;
+using ComposedHealthBase.Server.Auth.Providers;
 
 namespace ComposedHealthBase.Server.Extensions
 {
@@ -47,6 +48,8 @@ namespace ComposedHealthBase.Server.Extensions
 				}
 				module.RegisterModuleServices(services, configuration);
 				registeredModules.Add(module);
+
+				services.BuildResourceAccessPolicy();
 
 				//Register mappers for each module
 				var mapperTypes = moduleType.Assembly.GetTypes()

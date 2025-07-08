@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Server.Modules.Clinical.Infrastructure.Database;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Modules;
+using Microsoft.AspNetCore.Authorization;
+using Server.Modules.Clinical.Infrastructure.AuthorizationHandlers;
+using ComposedHealthBase.Server.Auth.Providers;
 
 namespace Server.Modules.Clinical.Infrastructure
 {
@@ -16,6 +19,10 @@ namespace Server.Modules.Clinical.Infrastructure
 			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 			services.AddDbContext<IDbContext<ClinicalDbContext>, ClinicalDbContext>(options =>
 							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+			services.AddScoped<IAuthorizationHandler, ClinicalResourceAccessAuthorizationHandler>();
+
+			ResourceAccessPolicyProvider.AddRequirement(new ClinicalResourceAccessRequirement());
 
 			return services;
 		}

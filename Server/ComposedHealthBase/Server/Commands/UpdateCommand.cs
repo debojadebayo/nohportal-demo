@@ -42,6 +42,13 @@ namespace ComposedHealthBase.Server.Commands
             }
             else
             {
+                // Check authorization before updating
+                var authResult = await _authorizationService.AuthorizeAsync(user, existingEntity, "resource-access");
+                if (!authResult.Succeeded)
+                {
+                    throw new UnauthorizedAccessException("Authorization failed for resource-access policy.");
+                }
+                
                 _mapper.Map(dto, existingEntity);
                 _dbContext.Set<T>().Update(existingEntity);
             }

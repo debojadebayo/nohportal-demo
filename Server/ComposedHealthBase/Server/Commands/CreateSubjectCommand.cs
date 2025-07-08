@@ -78,12 +78,12 @@ namespace ComposedHealthBase.Server.Commands
                 );
 
                 // Assign user to the subject role
-                using var roleMappingApi = _keycloakService.CreateRoleMappingApi();
-                roleMappingApi.SetRoleMappingsAsync(
-                    _keycloakService.GetRealmName(),
-                    newId.ToString(),
-                    new List<string> { "subject" }
-                );
+                // using var roleMappingApi = _keycloakService.CreateRoleMappingApi();
+                // roleMappingApi.SetRoleMappingsAsync(
+                //     _keycloakService.GetRealmName(),
+                //     newId.ToString(),
+                //     new List<string> { "subject" }
+                // );
             }
 
             var newEntity = _mapper.Map(dto);

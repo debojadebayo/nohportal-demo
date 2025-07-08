@@ -4,6 +4,7 @@ using ComposedHealthBase.Server.Auth.AuthorizationHandlers;
 using ComposedHealthBase.Server.Auth.Requirements;
 using ComposedHealthBase.Server.Auth.Constants;
 using ComposedHealthBase.Server.Auth.Extensions;
+using ComposedHealthBase.Server.Auth.Providers;
 using ComposedHealthBase.Server.Config;
 using ComposedHealthBase.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -59,17 +60,9 @@ namespace ComposedHealthBase.Server.Modules
 				});
 
 			services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
-			services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+			services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();				
 			services.AddAuthorization(options =>
 			{
-				options.AddPolicy("resource-access",
-				policy =>
-				{
-					policy.Requirements.Add(new SubjectOwnedRequirement());
-					policy.Requirements.Add(new TenantOwnedRequirement());
-				});
-
-				// Add permission-based policies for common entities
 				options.AddPermissionPoliciesForEntities();
 			});
 
