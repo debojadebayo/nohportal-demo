@@ -12,6 +12,8 @@ namespace ComposedHealthBase.Server.Services
         OrganizationsApi CreateOrganizationsApi();
         UsersApi CreateUsersApi();
         string GetRealmName();
+        RolesApi CreateRolesApi();
+        RoleMapperApi CreateRoleMapperApi();
     }
 
     public class KeycloakService : IKeycloakService
@@ -52,10 +54,39 @@ namespace ComposedHealthBase.Server.Services
             var httpClient = AuthenticationHttpClientFactory.Create(credentials);
             return ApiClientFactory.Create<UsersApi>(httpClient);
         }
+        public RoleMapperApi CreateRoleMapperApi()
+        {
+            var kc = _options.KeycloakAdminClient;
+            var credentials = new ClientCredentialsFlow
+            {
+                KeycloakUrl = kc.KeycloakUrl,
+                Realm = kc.Realm,
+                ClientId = kc.ClientId,
+                ClientSecret = kc.ClientSecret
+            };
+
+            var httpClient = AuthenticationHttpClientFactory.Create(credentials);
+            return ApiClientFactory.Create<RoleMapperApi>(httpClient);
+        }
 
         public string GetRealmName()
         {
             return _options.KeycloakAdminClient.Realm;
+        }
+
+        public RolesApi CreateRolesApi()
+        {
+                        var kc = _options.KeycloakAdminClient;
+            var credentials = new ClientCredentialsFlow
+            {
+                KeycloakUrl = kc.KeycloakUrl,
+                Realm = kc.Realm,
+                ClientId = kc.ClientId,
+                ClientSecret = kc.ClientSecret
+            };
+
+            var httpClient = AuthenticationHttpClientFactory.Create(credentials);
+            return ApiClientFactory.Create<RolesApi>(httpClient);
         }
     }
 }

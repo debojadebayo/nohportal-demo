@@ -27,7 +27,7 @@ namespace ComposedHealthBase.Server.Commands
             IDbContext<TContext> dbContext,
             IMapper<T, TDto> mapper,
             IAuthorizationService authorizationService
-            //AuthDbContext authDbContext // Add this parameter
+        //AuthDbContext authDbContext // Add this parameter
         )
         {
             _dbContext = dbContext;

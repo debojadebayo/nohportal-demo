@@ -48,7 +48,7 @@ namespace ComposedHealthBase.Server.Commands
                 {
                     throw new UnauthorizedAccessException("Authorization failed for resource-access policy.");
                 }
-                
+
                 _mapper.Map(dto, existingEntity);
                 _dbContext.Set<T>().Update(existingEntity);
             }

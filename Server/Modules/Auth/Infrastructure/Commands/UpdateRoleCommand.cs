@@ -58,7 +58,7 @@ namespace Server.Modules.Auth.Infrastructure.Commands
                 var missingIds = desiredPermissionIds.Except(foundDbPermissionIds);
                 throw new InvalidOperationException($"One or more permissions specified for the role could not be found in the database. Missing IDs: {string.Join(", ", missingIds)}");
             }
-            
+
             // Update the role's permissions collection
             // Clear existing and add desired ones.
             // EF Core will figure out the changes to the join table.

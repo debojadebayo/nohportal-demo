@@ -16,45 +16,45 @@ using ComposedHealthBase.Server.Queries.ModuleQueries;
 
 namespace Server.Modules.Auth.Infrastructure
 {
-	public class AuthModule : IModule
-	{
-		public IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration)
-		{
-			var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-			services.AddDbContext<IDbContext<AuthDbContext>, AuthDbContext>(options =>
-							options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+    public class AuthModule : IModule
+    {
+        public IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            services.AddDbContext<IDbContext<AuthDbContext>, AuthDbContext>(options =>
+                            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-			// Register mappers
-			services.AddScoped<IMapper<LocalStorageKey, LocalStorageKeyDto>, LocalStorageKeyMapper>();
-			services.AddScoped<IMapper<Role, RoleDto>, RoleMapper>();
-			services.AddScoped<IMapper<Permission, PermissionDto>, PermissionMapper>();
+            // Register mappers
+            services.AddScoped<IMapper<LocalStorageKey, LocalStorageKeyDto>, LocalStorageKeyMapper>();
+            services.AddScoped<IMapper<Role, RoleDto>, RoleMapper>();
+            services.AddScoped<IMapper<Permission, PermissionDto>, PermissionMapper>();
 
-			// Register commands and queries
-			services.AddScoped<IGenerateRSAKeyCommand, GenerateRSAKeyCommand>();
-			services.AddScoped<ICreateRoleCommand, CreateRoleCommand>();
-			services.AddScoped<IUpdateRoleCommand, UpdateRoleCommand>();
-			services.AddScoped<IDeleteRoleCommand, DeleteRoleCommand>();
-			services.AddScoped<IRevokeLocalStorageKeyCommand, RevokeLocalStorageKeyCommand>();
-			services.AddScoped<IGetLocalStorageKeyQuery, GetLocalStorageKeyQuery>();
-			services.AddScoped<IGetAllRolesQuery, GetAllRolesQuery>();
-			services.AddScoped<IGetRoleByIdQuery, GetRoleByIdQuery>();
-			services.AddScoped<IGetAllPermissionsQuery, GetAllPermissionsQuery>();
-			services.AddScoped<IGetAllRolesWithPermissionsQuery, GetAllRolesQuery>();
+            // Register commands and queries
+            services.AddScoped<IGenerateRSAKeyCommand, GenerateRSAKeyCommand>();
+            services.AddScoped<ICreateRoleCommand, CreateRoleCommand>();
+            services.AddScoped<IUpdateRoleCommand, UpdateRoleCommand>();
+            services.AddScoped<IDeleteRoleCommand, DeleteRoleCommand>();
+            services.AddScoped<IRevokeLocalStorageKeyCommand, RevokeLocalStorageKeyCommand>();
+            services.AddScoped<IGetLocalStorageKeyQuery, GetLocalStorageKeyQuery>();
+            services.AddScoped<IGetAllRolesQuery, GetAllRolesQuery>();
+            services.AddScoped<IGetRoleByIdQuery, GetRoleByIdQuery>();
+            services.AddScoped<IGetAllPermissionsQuery, GetAllPermissionsQuery>();
+            services.AddScoped<IGetAllRolesWithPermissionsQuery, GetAllRolesQuery>();
 
-			return services;
-		}
-		public WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment)
-		{
-			if (isDevelopment)
-			{
-				using (var scope = app.Services.CreateScope())
-				{
-					var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
-					dbContext.Database.Migrate();
-					RoleSeeder.SeedRolesAndPermissions(dbContext);
-				}
-			}
-			return app;
-		}
-	}
+            return services;
+        }
+        public WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment)
+        {
+            if (isDevelopment)
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+                    dbContext.Database.Migrate();
+                    RoleSeeder.SeedRolesAndPermissions(dbContext);
+                }
+            }
+            return app;
+        }
+    }
 }

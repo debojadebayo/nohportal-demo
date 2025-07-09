@@ -204,9 +204,9 @@ public class ConfigurationValidationHostedService : IHostedService
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting configuration validation...");
-        
+
         var isValid = _validationService.ValidateConfiguration();
-        
+
         if (!isValid)
         {
             _logger.LogCritical("Configuration validation failed. Application startup will be aborted.");

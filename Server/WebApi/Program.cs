@@ -12,9 +12,9 @@ var moduleTypes = new List<Type>
 {
     typeof(AuthModule),
     typeof(BillingModule),
-	typeof(ClinicalModule),
-	typeof(CRMModule),
-	typeof(SchedulingModule)
+    typeof(ClinicalModule),
+    typeof(CRMModule),
+    typeof(SchedulingModule)
 };
 
 builder.Services.RegisterServices(builder.Configuration, ref moduleTypes, out var registeredModules);

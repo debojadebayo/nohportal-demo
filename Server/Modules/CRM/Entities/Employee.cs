@@ -6,13 +6,13 @@ namespace Server.Modules.CRM.Entities
     public class Employee : BaseEntity<Employee>, IEntity, IAuditEntity, ISubjectEntity, ISearchTags, ISubject
     {
         public required string FirstName { get; set; }
-		public required string LastName { get; set; }
+        public required string LastName { get; set; }
         public required string Username { get; set; }
-		public required string Telephone { get; set; }
-		public required string Email { get; set; }
+        public required string Telephone { get; set; }
+        public required string Email { get; set; }
         public string? AvatarImage { get; set; }
-		public string? AvatarTitle { get; set; }
-		public string? AvatarDescription { get; set; }
+        public string? AvatarTitle { get; set; }
+        public string? AvatarDescription { get; set; }
         public Guid KeycloakId { get; set; } = Guid.Empty; // This is used to link the employee to a Keycloak user
         public DateTime? DOB { get; set; }
         public required string Address1 { get; set; }

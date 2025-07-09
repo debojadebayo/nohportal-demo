@@ -1,7 +1,7 @@
 ﻿namespace ComposedHealthBase.Server.Entities
 {
-	public interface IKeycloakEntity
-	{
-		Guid KeycloakId { get; set; }
-	}
+    public interface IKeycloakEntity
+    {
+        Guid KeycloakId { get; set; }
+    }
 }

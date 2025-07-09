@@ -33,7 +33,7 @@ namespace Server.Modules.Auth.Infrastructure.Commands
 
             _dbContext.Set<Role>().Remove(role);
             await _dbContext.SaveChangesAsync();
-            
+
             // Refresh the role permission cache after successful deletion
             await _rolePermissionCacheService.InitAsync();
         }

@@ -29,8 +29,8 @@ namespace Server.Modules.Auth.Infrastructure.Queries
         {
             var entity = await _dbContext.Set<LocalStorageKey>()
                 .AsNoTracking()
-                .FirstOrDefaultAsync(k => k.ObjectTypeName == objectTypeName && 
-                                         k.ObjectGuid == objectGuid && 
+                .FirstOrDefaultAsync(k => k.ObjectTypeName == objectTypeName &&
+                                         k.ObjectGuid == objectGuid &&
                                          k.IsActive);
 
             return entity != null ? _mapper.Map(entity) : null;

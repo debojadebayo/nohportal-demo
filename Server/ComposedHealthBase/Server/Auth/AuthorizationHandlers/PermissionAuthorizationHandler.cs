@@ -28,7 +28,7 @@ namespace ComposedHealthBase.Server.Auth.AuthorizationHandlers
         {
             // Get user roles from the context
             var userRoles = _userContextService.GetRoles();
-            
+
             if (userRoles == null || !userRoles.Any())
             {
                 // No roles found, deny access

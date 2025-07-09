@@ -29,7 +29,7 @@ namespace Server.Modules.Auth.Infrastructure.Queries
             var roles = await _dbContext.Set<Role>()
                 .Include(r => r.Permissions)
                 .ToListAsync();
-            
+
             return roles.Select(_mapper.Map);
         }
     }

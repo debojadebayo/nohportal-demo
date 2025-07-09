@@ -18,34 +18,34 @@ using System.Security.Claims;
 
 namespace ComposedHealthBase.Server.Endpoints
 {
-	public abstract class KeycloakTenantEndpoints<T, TDto, TContext>
-	where T : class, IEntity, IAuditEntity, ITenant
-	where TDto : IDto, ITenant
-	where TContext : IDbContext<TContext>
-	{
-		public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
-		{
-			var group = endpoints.MapGroup($"/api/security");
+    public abstract class KeycloakTenantEndpoints<T, TDto, TContext>
+    where T : class, IEntity, IAuditEntity, ITenant
+    where TDto : IDto, ITenant
+    where TContext : IDbContext<TContext>
+    {
+        public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+        {
+            var group = endpoints.MapGroup($"/api/security");
 
-			group.MapPost("/createtenant", async (
-				[FromServices] CreateTenantCommand<T, TDto, TContext> createTenantCommand,
-				ClaimsPrincipal user,
-				[FromBody] TDto dto
-			) => await CreateTenant(createTenantCommand, user, dto));
+            group.MapPost("/createtenant", async (
+                [FromServices] CreateTenantCommand<T, TDto, TContext> createTenantCommand,
+                ClaimsPrincipal user,
+                [FromBody] TDto dto
+            ) => await CreateTenant(createTenantCommand, user, dto));
 
-			return endpoints;
-		}
+            return endpoints;
+        }
 
-		// Method for creating a tenant (organization)
-		protected async Task<IResult> CreateTenant(
-			CreateTenantCommand<T, TDto, TContext> createTenantCommand,
-			ClaimsPrincipal user,
-			TDto dto)
-		{
-			var result = await createTenantCommand.Handle(dto, user);
-			return Results.Ok(result);
-		}
+        // Method for creating a tenant (organization)
+        protected async Task<IResult> CreateTenant(
+            CreateTenantCommand<T, TDto, TContext> createTenantCommand,
+            ClaimsPrincipal user,
+            TDto dto)
+        {
+            var result = await createTenantCommand.Handle(dto, user);
+            return Results.Ok(result);
+        }
 
-		
-	}
+
+    }
 }

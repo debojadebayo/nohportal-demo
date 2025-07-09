@@ -32,10 +32,10 @@ namespace Server.Modules.Auth.Infrastructure.Commands
             var entity = _mapper.Map(roleDto);
             _dbContext.Set<Role>().Add(entity);
             await _dbContext.SaveChangesAsync();
-            
+
             // Refresh the role permission cache after successful creation
             await _rolePermissionCacheService.InitAsync();
-            
+
             return _mapper.Map(entity);
         }
     }

@@ -18,14 +18,16 @@ namespace ComposedHealthBase.Server.Auth.AuthorizationHandlers
             {
                 context.Succeed(requirement);
                 return Task.CompletedTask;
-            }else if (context.User.IsInRole("tenantadministrator"))
+            }
+            else if (context.User.IsInRole("tenantadministrator"))
             {
                 var userTenantId = context.User.GetUserTenantId();
                 if (!string.IsNullOrEmpty(userTenantId) && resource.TenantId == Guid.Parse(userTenantId))
                 {
                     context.Succeed(requirement);
                 }
-            }else if (context.User.IsInRole("subject"))
+            }
+            else if (context.User.IsInRole("subject"))
             {
                 var userSubjectId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (!string.IsNullOrEmpty(userSubjectId) && resource.SubjectId == Guid.Parse(userSubjectId))
