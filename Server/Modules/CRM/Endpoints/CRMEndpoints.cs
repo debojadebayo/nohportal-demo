@@ -23,6 +23,7 @@ namespace Server.Modules.CRM.Endpoints
 {
     public class EmployeeEndpoints : BaseEndpoints<Employee, EmployeeDto, CRMDbContext>, IEndpoints { }
     public class EmployeeSecurityEndpoints : KeycloakSubjectEndpoints<Employee, EmployeeDto, CRMDbContext>, IEndpoints { }
+    public class ManagerSecurityEndpoints : KeycloakSubjectEndpoints<Manager, ManagerDto, CRMDbContext>, IEndpoints { }
     public class CustomerSecurityEndpoints : KeycloakTenantEndpoints<Customer, CustomerDto, CRMDbContext>, IEndpoints { }
     public class CustomerEndpoints : BaseEndpoints<Customer, CustomerDto, CRMDbContext>, IEndpoints { }
     public class ContractEndpoints : BaseEndpoints<Contract, ContractDto, CRMDbContext>, IEndpoints { }

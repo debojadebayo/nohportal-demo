@@ -4,6 +4,7 @@
 @using ComposedHealthBase.Shared.DTOs
 @using ComposedHealthBase.Shared.Interfaces
 @using System.Linq.Expressions
+@using MudBlazor
 @typeparam TDto where TDto : IDto, ILazyLookup
 @inject ILazyLookupService<TDto> LookupService
 
@@ -15,10 +16,11 @@
     case LazyLookupEnum.Search:
         <MudAutocomplete T="Guid" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
             ValueChanged="@OnItemChanged" SearchFunc="@((v, ct) => LookupService.ItemSearch(v, ct, TenantConstraint, SubjectConstraint))" ShowProgressIndicator="true"
-            ProgressIndicatorColor="Color.Default" />
+            ProgressIndicatorColor="Color.Default" AdornmentIcon="@Icons.Material.Filled.Search"/>
         break;
     case LazyLookupEnum.Select:
         <MudSelect T="Guid" Value="@ItemId" ValueChanged="@OnItemChanged" Label="@Label">
+            <MudSelectItem Value="@Guid.Empty">Not selected</MudSelectItem>
             @foreach (var item in _items)
             {
                 <MudSelectItem Value="@(((IDto)item).Id)">@item.DisplayName</MudSelectItem>

@@ -56,6 +56,7 @@ namespace Server.Modules.Scheduling.Endpoints
             }
         }
     }
+    public class ClinicianSecurityEndpoints : KeycloakSubjectEndpoints<Clinician, ClinicianDto, SchedulingDbContext>, IEndpoints { }
     public class ReferralEndpoints : BaseEndpoints<Referral, ReferralDto, SchedulingDbContext>, IEndpoints { }
     public class ScheduleEndpoints : BaseEndpoints<Schedule, ScheduleDto, SchedulingDbContext>, IEndpoints { }
 }
