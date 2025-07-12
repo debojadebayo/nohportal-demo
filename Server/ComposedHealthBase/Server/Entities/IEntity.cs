@@ -1,7 +1,7 @@
 ﻿namespace ComposedHealthBase.Server.Entities
 {
-	public interface IEntity
-	{
-		Guid Id { get; set; }
-	}
+    public interface IEntity
+    {
+        Guid Id { get; set; }
+    }
 }

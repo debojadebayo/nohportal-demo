@@ -30,6 +30,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Notes = entity.Notes,
             CustomerId = entity.CustomerId,
             RelatedDocumentIds = entity.RelatedDocumentIds.ToList(),
+            RoleName = entity.RoleName,
         };
     }
 
@@ -59,7 +60,8 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
             Notes = dto.Notes,
             CustomerId = dto.CustomerId,
             RelatedDocumentIds = dto.RelatedDocumentIds.ToArray(),
-            SearchTags = $"{dto.Id} {dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}"
+            SearchTags = $"{dto.Id} {dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}",
+            RoleName = dto.RoleName
         };
     }
 
@@ -93,6 +95,7 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         entity.CustomerId = dto.CustomerId;
         entity.RelatedDocumentIds = dto.RelatedDocumentIds.ToArray();
         entity.SearchTags = $"{entity.Id} {dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}";
+        entity.RoleName = dto.RoleName;
     }
 
     public void Map(Employee entity, EmployeeDto dto)
@@ -119,5 +122,6 @@ public class EmployeeMapper : IMapper<Employee, EmployeeDto>
         dto.Notes = entity.Notes;
         dto.CustomerId = entity.CustomerId;
         dto.RelatedDocumentIds = entity.RelatedDocumentIds.ToList();
+        dto.RoleName = entity.RoleName;
     }
 }

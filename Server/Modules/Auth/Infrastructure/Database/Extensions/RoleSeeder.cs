@@ -46,12 +46,12 @@ namespace Server.Modules.Auth.Infrastructure.Database.Extensions
             Console.WriteLine("Seeding Administrator role...");
 
             const string adminRoleName = "Administrator";
-            
+
             // Check if Administrator role already exists, create if it doesn't
             var adminRole = dbContext.Roles
                 .Include(r => r.Permissions)
                 .FirstOrDefault(r => r.Name == adminRoleName);
-                
+
             if (adminRole == null)
             {
                 adminRole = new Role

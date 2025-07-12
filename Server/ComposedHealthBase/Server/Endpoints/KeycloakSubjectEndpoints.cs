@@ -18,32 +18,32 @@ using System.Security.Claims;
 
 namespace ComposedHealthBase.Server.Endpoints
 {
-	public abstract class KeycloakSubjectEndpoints<T, TDto, TContext>
-	where T : class, IEntity, IAuditEntity, ISubject
-	where TDto : IDto, ISubject
-	where TContext : IDbContext<TContext>
-	{
-		public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
-		{
-			var group = endpoints.MapGroup($"/api/security");
+    public abstract class KeycloakSubjectEndpoints<T, TDto, TContext>
+    where T : class, IEntity, IAuditEntity, ISubject
+    where TDto : IDto, IAuditDto, ISubject
+    where TContext : IDbContext<TContext>
+    {
+        public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+        {
+            var group = endpoints.MapGroup($"/api/security");
 
-			group.MapPost("/createsubject", async (
-				[FromServices] CreateSubjectCommand<T, TDto, TContext> createSubjectCommand,
-				ClaimsPrincipal user,
-				[FromBody] TDto dto
-			) => await CreateSubject(createSubjectCommand, user, dto));
+            group.MapPost("/createsubject", async (
+                [FromServices] CreateSubjectCommand<T, TDto, TContext> createSubjectCommand,
+                ClaimsPrincipal user,
+                [FromBody] TDto dto
+            ) => await CreateSubject(createSubjectCommand, user, dto));
 
-			return endpoints;
-		}
+            return endpoints;
+        }
 
-		// Method for creating a subject (user)
-		protected async Task<IResult> CreateSubject(
-			CreateSubjectCommand<T, TDto, TContext> createSubjectCommand,
-			ClaimsPrincipal user,
-			TDto dto)
-		{
-			var result = await createSubjectCommand.Handle(dto, user);
-			return Results.Ok(result);
-		}
-	}
+        // Method for creating a subject (user)
+        protected async Task<IResult> CreateSubject(
+            CreateSubjectCommand<T, TDto, TContext> createSubjectCommand,
+            ClaimsPrincipal user,
+            TDto dto)
+        {
+            var result = await createSubjectCommand.Handle(dto, user);
+            return Results.Ok(result);
+        }
+    }
 }

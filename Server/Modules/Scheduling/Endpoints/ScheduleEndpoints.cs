@@ -17,45 +17,46 @@ using System.Security.Claims;
 
 namespace Server.Modules.Scheduling.Endpoints
 {
-	public class ClinicianEndpoints : BaseEndpoints<Clinician, ClinicianDto, SchedulingDbContext>, IEndpoints
-	{
-		public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
-		{
-			endpoints = base.MapEndpoints(endpoints);
-			var group = endpoints.MapGroup($"/api/clinician");
+    public class ClinicianEndpoints : BaseEndpoints<Clinician, ClinicianDto, SchedulingDbContext>, IEndpoints
+    {
+        public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+        {
+            endpoints = base.MapEndpoints(endpoints);
+            var group = endpoints.MapGroup($"/api/clinician");
 
-			group.MapGet("/GetAllCliniciansWithSchedules", (
-				[FromServices] SchedulingDbContext dbContext,
-				[FromServices] IMapper<Clinician, ClinicianDto> mapper,
-				[FromServices] GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext> getAllQuery,
-				ClaimsPrincipal user,
-				[FromQuery] Guid? tenantId = null,
-				[FromQuery] Guid? subjectId = null
-			) => GetAllCliniciansWithSchedules(getAllQuery, user, tenantId, subjectId));
+            group.MapGet("/GetAllCliniciansWithSchedules", (
+                [FromServices] SchedulingDbContext dbContext,
+                [FromServices] IMapper<Clinician, ClinicianDto> mapper,
+                [FromServices] GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext> getAllQuery,
+                ClaimsPrincipal user,
+                [FromQuery] Guid? tenantId = null,
+                [FromQuery] Guid? subjectId = null
+            ) => GetAllCliniciansWithSchedules(getAllQuery, user, tenantId, subjectId));
 
-			return endpoints;
-		}
+            return endpoints;
+        }
 
-		protected async Task<IResult> GetAllCliniciansWithSchedules(
-			GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext> getAllQuery,
-			ClaimsPrincipal user,
-			Guid? tenantId,
-			Guid? subjectId)
-		{
-			try
-			{
-				var allEntities = await getAllQuery.Handle(user, tenantId, subjectId, x => x.CalendarItems);
-				if (allEntities == null || !allEntities.Any())
-					return Results.NoContent();
-				return Results.Ok(allEntities);
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine($"An error occurred: {ex.Message}");
-				return Results.Problem($"An error occurred while retrieving clinician entities.");
-			}
-		}
-	}
-	public class ReferralEndpoints : BaseEndpoints<Referral, ReferralDto, SchedulingDbContext>, IEndpoints { }
-	public class ScheduleEndpoints : BaseEndpoints<Schedule, ScheduleDto, SchedulingDbContext>, IEndpoints { }
+        protected async Task<IResult> GetAllCliniciansWithSchedules(
+            GetAllQuery<Clinician, ClinicianDto, SchedulingDbContext> getAllQuery,
+            ClaimsPrincipal user,
+            Guid? tenantId,
+            Guid? subjectId)
+        {
+            try
+            {
+                var allEntities = await getAllQuery.Handle(user, tenantId, subjectId, x => x.CalendarItems);
+                if (allEntities == null || !allEntities.Any())
+                    return Results.NoContent();
+                return Results.Ok(allEntities);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"An error occurred: {ex.Message}");
+                return Results.Problem($"An error occurred while retrieving clinician entities.");
+            }
+        }
+    }
+    public class ClinicianSecurityEndpoints : KeycloakSubjectEndpoints<Clinician, ClinicianDto, SchedulingDbContext>, IEndpoints { }
+    public class ReferralEndpoints : BaseEndpoints<Referral, ReferralDto, SchedulingDbContext>, IEndpoints { }
+    public class ScheduleEndpoints : BaseEndpoints<Schedule, ScheduleDto, SchedulingDbContext>, IEndpoints { }
 }

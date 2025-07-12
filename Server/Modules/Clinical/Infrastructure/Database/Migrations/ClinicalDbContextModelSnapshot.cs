@@ -43,7 +43,7 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -71,7 +71,7 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                     b.Property<string>("LocalEncryptionKey")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -83,13 +83,7 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -117,7 +111,7 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -145,7 +139,7 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -160,13 +154,7 @@ namespace Server.Modules.Clinical.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");

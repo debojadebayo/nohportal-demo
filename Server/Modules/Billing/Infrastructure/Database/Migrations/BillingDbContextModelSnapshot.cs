@@ -33,7 +33,7 @@ namespace Server.Modules.Billing.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -66,7 +66,7 @@ namespace Server.Modules.Billing.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -96,9 +96,6 @@ namespace Server.Modules.Billing.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<decimal>("TaxAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
@@ -108,9 +105,6 @@ namespace Server.Modules.Billing.Infrastructure.Database.Migrations
                         .HasColumnType("numeric(5,4)");
 
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ToDate")
@@ -152,7 +146,7 @@ namespace Server.Modules.Billing.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -186,7 +180,7 @@ namespace Server.Modules.Billing.Infrastructure.Database.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -217,13 +211,7 @@ namespace Server.Modules.Billing.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("UnitPrice")

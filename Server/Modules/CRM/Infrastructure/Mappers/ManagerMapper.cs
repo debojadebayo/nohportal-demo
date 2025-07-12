@@ -20,7 +20,8 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 AvatarTitle = entity.AvatarTitle,
                 AvatarDescription = entity.AvatarDescription,
                 Department = entity.Department,
-                CustomerId = entity.CustomerId
+                CustomerId = entity.CustomerId,
+                RoleName = entity.RoleName
             };
         }
 
@@ -41,6 +42,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 Department = dto.Department,
                 CustomerId = dto.CustomerId,
                 SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}".ToLower(),
+                RoleName = dto.RoleName,
             };
         }
 
@@ -68,6 +70,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             entity.Department = dto.Department;
             entity.CustomerId = dto.CustomerId;
             entity.SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}".ToLower();
+            entity.RoleName = dto.RoleName;
         }
 
         public void Map(Manager entity, ManagerDto dto)
@@ -83,6 +86,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             dto.AvatarDescription = entity.AvatarDescription;
             dto.Department = entity.Department;
             dto.CustomerId = entity.CustomerId;
+            dto.RoleName = entity.RoleName;
         }
 
         public Manager Map(ManagerDto dto)

@@ -26,7 +26,7 @@ namespace ComposedHealthBase.Server.Auth.Constants
         {
             if (string.IsNullOrWhiteSpace(operation))
                 throw new ArgumentException("Operation cannot be null or empty", nameof(operation));
-            
+
             if (string.IsNullOrWhiteSpace(entityType))
                 throw new ArgumentException("Entity type cannot be null or empty", nameof(entityType));
 

@@ -48,7 +48,7 @@ namespace ComposedHealthBase.Server.Services
                             return idProp.GetString() ?? string.Empty;
                         }
                     }
-                    
+
                     // Fallback: try to get id property directly from first object
                     if (firstObj.TryGetProperty("id", out var directIdProp))
                     {
@@ -80,7 +80,7 @@ namespace ComposedHealthBase.Server.Services
         {
             var roles = new List<string>();
             var user = _context.HttpContext?.User;
-            
+
             if (user == null) return roles;
 
             // Get roles from standard role claims
@@ -94,7 +94,7 @@ namespace ComposedHealthBase.Server.Services
                 try
                 {
                     using var doc = JsonDocument.Parse(realmAccessClaim);
-                    if (doc.RootElement.TryGetProperty("roles", out var realmRoles) && 
+                    if (doc.RootElement.TryGetProperty("roles", out var realmRoles) &&
                         realmRoles.ValueKind == JsonValueKind.Array)
                     {
                         foreach (var role in realmRoles.EnumerateArray())
@@ -122,7 +122,7 @@ namespace ComposedHealthBase.Server.Services
                     using var doc = JsonDocument.Parse(resourceAccessClaim);
                     foreach (var resource in doc.RootElement.EnumerateObject())
                     {
-                        if (resource.Value.TryGetProperty("roles", out var resourceRoles) && 
+                        if (resource.Value.TryGetProperty("roles", out var resourceRoles) &&
                             resourceRoles.ValueKind == JsonValueKind.Array)
                         {
                             foreach (var role in resourceRoles.EnumerateArray())

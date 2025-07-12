@@ -42,7 +42,7 @@ public sealed class BillingDbContext(DbContextOptions<BillingDbContext> options)
             entity.Property(e => e.LineTotal).HasPrecision(18, 2);
             entity.Property(e => e.EmployeeName).HasMaxLength(200);
             entity.Property(e => e.ClinicianName).HasMaxLength(200);
-            
+
             // Configure relationship
             entity.HasOne(li => li.Invoice)
                   .WithMany(i => i.LineItems)

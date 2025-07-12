@@ -25,7 +25,7 @@ namespace ComposedHealthBase.Server.Auth.AuthorizationHandlers
             if (context.User.IsInRole("tenantadministrator"))
             {
                 var userTenantId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!string.IsNullOrEmpty(userTenantId) && resource.TenantKeycloakId == Guid.Parse(userTenantId))
+                if (!string.IsNullOrEmpty(userTenantId) && resource.TenantId == Guid.Parse(userTenantId))
                 {
                     context.Succeed(requirement);
                 }

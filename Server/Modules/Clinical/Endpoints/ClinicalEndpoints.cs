@@ -20,6 +20,6 @@ using Shared.DTOs.Clinical;
 
 namespace Server.Modules.Clinical.Endpoints
 {
-	public class ClinicalReportEndpoints : BaseEndpoints<ClinicalReport, ClinicalReportDto, ClinicalDbContext>, IEndpoints { }
-	public class CaseNoteEndpoints : BaseEndpoints<CaseNote, CaseNoteDto, ClinicalDbContext>, IEndpoints { }
+    public class ClinicalReportEndpoints : BaseEndpoints<ClinicalReport, ClinicalReportDto, ClinicalDbContext>, IEndpoints { }
+    public class CaseNoteEndpoints : BaseEndpoints<CaseNote, CaseNoteDto, ClinicalDbContext>, IEndpoints { }
 }

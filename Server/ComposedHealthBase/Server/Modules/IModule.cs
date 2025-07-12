@@ -8,9 +8,9 @@ using System.Reflection;
 
 namespace ComposedHealthBase.Server.Modules
 {
-	public interface IModule
-	{
-		IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration);
-		WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment);
-	}
+    public interface IModule
+    {
+        IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration);
+        WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment);
+    }
 }

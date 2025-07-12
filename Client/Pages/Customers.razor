@@ -63,7 +63,7 @@
                 NewProduct="newProduct" />
         </MudTabPanel>
         <MudTabPanel Text="Invoicing">
-            <InvoicingTab />
+            <InvoicingTab CustomerId="selectedCustomer?.Id ?? Guid.Empty" CustomerName="@selectedCustomer?.Name" />
         </MudTabPanel>
         <MudTabPanel Text="Documents" OnClick="GetAllDocumentsByCustomerId">
             <DocumentBrowser TDto="CustomerDocumentDto" @bind-DocumentIds="selectedCustomer.RelatedDocumentIds"

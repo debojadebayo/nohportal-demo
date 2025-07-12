@@ -3,7 +3,11 @@
 @using Shared.Validators
 @using ComposedHealthBase.BaseClient.Components
 @using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.BaseClient.Services
+@using Shared.DTOs.Auth
 @using MudBlazor
+@inject IAuthHelperService AuthHelperService
+@inject HttpClient Http
 
 <MudForm @ref="form" Model="Model" Validation="@(employeeValidator.ValidateValue)" ValidationDelay="0">
     <MudGrid>
@@ -39,6 +43,15 @@
                 Label="Department" Variant="Variant.Outlined" />
             <MudTextField @bind-Value="Model.LineManager" For="@(() => Model.LineManager)" Immediate="true"
                 Label="Line Manager" Variant="Variant.Outlined" />
+            @if (isAuthorizedForRoleManagement && roles.Any())
+            {
+                <MudSelect T="string" @bind-Value="Model.RoleName" Label="Role" Variant="Variant.Outlined" For="@(() => Model.RoleName)">
+                    @foreach (var role in roles)
+                    {
+                        <MudSelectItem Value="@role.Name">@role.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            }
         </MudItem>
     </MudGrid>
     <MudCardActions>
@@ -56,6 +69,31 @@
     private CustomerDto? selectedCustomer { get; set; }
     private MudForm form = default!;
     private EmployeeValidator employeeValidator = new EmployeeValidator();
+    private List<RoleDto> roles = new();
+    private bool isAuthorizedForRoleManagement = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAuthorizationAndLoadRoles();
+    }
+
+    private async Task CheckAuthorizationAndLoadRoles()
+    {
+        isAuthorizedForRoleManagement = await AuthHelperService.IsAuthorizedForRoleManagement();
+        
+        if (isAuthorizedForRoleManagement)
+        {
+            try
+            {
+                roles = await Http.GetFromJsonAsync<List<RoleDto>>("api/auth/roles/getall") ?? new();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error loading roles: {ex.Message}");
+                roles = new();
+            }
+        }
+    }
 
     private async Task Save()
     {

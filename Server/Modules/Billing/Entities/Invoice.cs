@@ -13,21 +13,21 @@ namespace Server.Modules.Billing.Entities
         public decimal TaxRate { get; set; } = 0.20m; // Default 20% VAT
         public string Status { get; set; } = "Draft"; // Draft, Sent, Paid, Overdue
         public string? Notes { get; set; }
-        
+
         // Xero integration properties
         public string? XeroInvoiceId { get; set; }
         public bool PostedToXero { get; set; } = false;
         public DateTime? PostedToXeroAt { get; set; }
-        
+
         // Filter criteria used to generate this invoice
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
         public Guid CustomerId { get; set; }
         public Guid? ProductId { get; set; }
-        
+
         // Line items for this invoice
         public HashSet<LineItem> LineItems { get; set; } = new();
-        
+
         // Override the Customer property for Invoice context
         public Guid InvoiceCustomerId
         {

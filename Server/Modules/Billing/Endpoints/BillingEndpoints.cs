@@ -83,7 +83,7 @@ namespace Server.Modules.Billing.Endpoints
 
                 var csv = new StringBuilder();
                 csv.AppendLine("Invoice Number,Invoice Date,Due Date,Customer ID,Product ID,Line Item,Product Name,Charge Code,Unit Price,Quantity,Line Total,Service Date,Description");
-                
+
                 foreach (var lineItem in invoice.LineItems)
                 {
                     csv.AppendLine($"\"{invoice.InvoiceNumber}\",\"{invoice.InvoiceDate:yyyy-MM-dd}\",\"{invoice.DueDate?.ToString("yyyy-MM-dd") ?? ""}\",\"{invoice.CustomerId}\",\"{invoice.ProductId ?? Guid.Empty}\",\"{lineItem.Id}\",\"{lineItem.ProductName}\",\"{lineItem.ProductTypeChargeCode}\",\"{lineItem.UnitPrice}\",\"{lineItem.Quantity}\",\"{lineItem.LineTotal}\",\"{lineItem.ServiceDate:yyyy-MM-dd}\",\"{lineItem.Description ?? ""}\"");

@@ -1,4 +1,5 @@
 using Client;
+using Client.Configuration;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
@@ -19,28 +20,40 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("api", client => client.BaseAddress = new Uri("http://localhost:5003/"))
+// Configure options from appsettings.json
+builder.Services.Configure<ApiOptions>(builder.Configuration.GetSection(ApiOptions.SectionName));
+builder.Services.Configure<OidcOptions>(builder.Configuration.GetSection(OidcOptions.SectionName));
+builder.Services.Configure<CultureOptions>(builder.Configuration.GetSection(CultureOptions.SectionName));
+
+// Get configuration values
+var apiOptions = builder.Configuration.GetSection(ApiOptions.SectionName).Get<ApiOptions>() ?? new ApiOptions();
+var oidcOptions = builder.Configuration.GetSection(OidcOptions.SectionName).Get<OidcOptions>() ?? new OidcOptions();
+var cultureOptions = builder.Configuration.GetSection(CultureOptions.SectionName).Get<CultureOptions>() ?? new CultureOptions();
+
+builder.Services.AddHttpClient("api", client => client.BaseAddress = new Uri(apiOptions.BaseUrl))
    .AddHttpMessageHandler(sp =>
    {
-	   var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
-		   .ConfigureHandler(authorizedUrls: new[] { "http://localhost:5003" });
-	   return handler;
+       var handler = sp.GetRequiredService<AuthorizationMessageHandler>()
+           .ConfigureHandler(authorizedUrls: apiOptions.AuthorizedUrls);
+       return handler;
    });
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("api"));
 
 builder.Services.AddOidcAuthentication(options =>
 {
-	options.ProviderOptions.Authority = "http://localhost:8180/realms/NationOH";
-	options.ProviderOptions.ClientId = "nationoh_client";
-	options.ProviderOptions.ResponseType = "code";
-	options.ProviderOptions.DefaultScopes.Add("nationoh_webapi-scope");
-	options.UserOptions.RoleClaim = "role";
+    options.ProviderOptions.Authority = oidcOptions.Authority;
+    options.ProviderOptions.ClientId = oidcOptions.ClientId;
+    options.ProviderOptions.ResponseType = oidcOptions.ResponseType;
+    foreach (var scope in oidcOptions.DefaultScopes)
+    {
+        options.ProviderOptions.DefaultScopes.Add(scope);
+    }
+    options.UserOptions.RoleClaim = oidcOptions.RoleClaim;
 }).AddAccountClaimsPrincipalFactory<ParseRoleClaimsPrincipalFactory>();
 
 builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
-builder.Services.AddBlazorPdfViewer();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSubtleCrypto();
 
@@ -63,8 +76,8 @@ builder.Services.AddScoped<ILazyLookupService<InvoiceDto>, LazyLookupService<Inv
 builder.Services.AddScoped<IDocumentUploadService, DocumentUploadService>();
 builder.Services.AddScoped<IAuthHelperService, AuthHelperService>();
 
-// Set the culture to UK for proper currency formatting
-var culture = new System.Globalization.CultureInfo("en-GB");
+// Set the culture from configuration for proper currency formatting
+var culture = new System.Globalization.CultureInfo(cultureOptions.DefaultCulture);
 System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
 System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
 

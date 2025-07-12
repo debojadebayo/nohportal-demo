@@ -23,6 +23,11 @@ namespace Shared.DTOs.CRM
         public string Notes { get; set; } = string.Empty;
         public List<Guid> RelatedDocumentIds { get; set; } = new List<Guid>();
         public string DisplayName => $"{FirstName} {LastName}";
-        public Guid CustomerId { get; set; }
+        public Guid CustomerId
+        {
+            get => base.TenantId;
+            set => base.TenantId = value;
+        }
+        public string? RoleName { get; set; }
     }
 }

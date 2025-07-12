@@ -1,33 +1,141 @@
 @namespace Client.Pages.Components.TabComponents
 @using Shared.DTOs.CRM
-@using MudBlazor
+@using Client.Pages.Components.Forms
+@inject ILazyLookupService<ManagerDto> ManagerLookupService
+@inject IAuthHelperService AuthHelperService
+@inject IDialogService DialogService
 
-<MudPaper Class="pa-4">
-    <MudTable Items="Managers ?? new List<ManagerDto>()" Dense="true" Hover="true">
-        <HeaderContent>
-            <MudTh>Name</MudTh>
-            <MudTh>Email</MudTh>
-            <MudTh>Phone</MudTh>
-            <MudTh>Department</MudTh>
-            <MudTh>Active</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd>@context.FirstName @context.LastName</MudTd>
-            <MudTd>@context.Email</MudTd>
-            <MudTd>@context.Telephone</MudTd>
-            <MudTd>@context.Department</MudTd>
-            <MudTd>
-                <MudChip T="string" Color="@(context.IsActive ? Color.Success : Color.Error)">
-                    @(context.IsActive ? "Yes" : "No")
+<MudGrid Justify="Justify.SpaceBetween">
+    <MudItem>
+        <MudText Typo="Typo.h3">Managers</MudText>
+    </MudItem>
+    <MudItem>
+        <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddManagerDialog">
+            Add Manager
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudDataGrid T="ManagerDto" Items="@managers" Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true" SortMode="SortMode.Multiple">
+    <Columns>
+        <PropertyColumn Property="x => x.FirstName" Title="First Name" />
+        <PropertyColumn Property="x => x.LastName" Title="Last Name" />
+        <PropertyColumn Property="x => x.Email" Title="Email" />
+        <PropertyColumn Property="x => x.Telephone" Title="Phone" />
+        <PropertyColumn Property="x => x.Department" Title="Department" />
+        <TemplateColumn Title="Active" Sortable="false">
+            <CellTemplate>
+                <MudChip T="string" Size="Size.Small" Color="@(context.Item.IsActive ? Color.Success : Color.Error)">
+                    @(context.Item.IsActive ? "Active" : "Inactive")
                 </MudChip>
-            </MudTd>
-        </RowTemplate>
-        <NoRecordsContent>
-            <MudText>No managers found.</MudText>
-        </NoRecordsContent>
-    </MudTable>
-</MudPaper>
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn CellClass="d-flex justify-end" Sortable="false" Filterable="false">
+            <HeaderTemplate>
+                <MudText Typo="Typo.subtitle2">Actions</MudText>
+            </HeaderTemplate>
+            <CellTemplate>
+                <MudButtonGroup Size="Size.Small" Variant="Variant.Filled">
+                    <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => OpenEditManagerDialog(context.Item))">
+                        Edit
+                    </MudButton>
+                </MudButtonGroup>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
 
 @code {
     [Parameter] public List<ManagerDto> Managers { get; set; } = new List<ManagerDto>();
+    [Parameter] public EventCallback OnManagerChanged { get; set; }
+
+    private List<ManagerDto> managers = new();
+
+    protected override void OnParametersSet()
+    {
+        managers = Managers ?? new List<ManagerDto>();
+        StateHasChanged();
+    }
+
+    private async Task LoadManagers()
+    {
+        // Trigger parent component to reload managers if needed
+        if (OnManagerChanged.HasDelegate)
+        {
+            await OnManagerChanged.InvokeAsync();
+        }
+        StateHasChanged();
+    }
+
+    private async Task OpenAddManagerDialog()
+    {
+        var newManager = new ManagerDto
+        {
+            FirstName = "",
+            LastName = "",
+            Telephone = "",
+            Email = "",
+            Department = "",
+            AvatarImage = "",
+            AvatarTitle = "",
+            AvatarDescription = "",
+            IsActive = true // Set new managers as active by default
+        };
+
+        var parameters = new DialogParameters
+        {
+            { "Manager", newManager },
+            { "IsNewManager", true }
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<ManagerDialog>("Add Manager", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            await LoadManagers();
+        }
+    }
+
+    private async Task OpenEditManagerDialog(ManagerDto manager)
+    {
+        var parameters = new DialogParameters
+        {
+            { "Manager", manager },
+            { "IsNewManager", false }
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<ManagerDialog>("Edit Manager", parameters, options);
+        var editResult = await dialog.Result;
+
+        if (editResult != null && !editResult.Canceled)
+        {
+            await LoadManagers();
+        }
+    }
+
+    private async Task ToggleManagerStatus(ManagerDto manager)
+    {
+        try
+        {
+            // Toggle the IsActive status
+            manager.IsActive = !manager.IsActive;
+            
+            // Update the manager
+            await ManagerLookupService.UpdateItem(manager, CancellationToken.None);
+            
+            // Refresh the data
+            await LoadManagers();
+        }
+        catch (Exception ex)
+        {
+            // Handle error - could add a snackbar here
+            Console.Error.WriteLine($"Error toggling manager status: {ex.Message}");
+            
+            // Revert the change on error
+            manager.IsActive = !manager.IsActive;
+        }
+    }
 }

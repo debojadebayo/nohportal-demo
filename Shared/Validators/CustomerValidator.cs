@@ -55,12 +55,12 @@ namespace Shared.Validators
                 .Length(2, 100).WithMessage("Site must be between 2 and 100 characters.");
 
             // Industry validation with predefined values
-            var validIndustries = new[] { 
-                "Healthcare", "Manufacturing", "Construction", "Education", 
-                "Finance", "Retail", "Technology", "Transportation", "Energy", 
-                "Agriculture", "Hospitality", "Other" 
+            var validIndustries = new[] {
+                "Healthcare", "Manufacturing", "Construction", "Education",
+                "Finance", "Retail", "Technology", "Transportation", "Energy",
+                "Agriculture", "Hospitality", "Other"
             };
-            
+
             RuleFor(x => x.Industry)
                 .NotEmpty().WithMessage("Industry is required.")
                 .Must(i => validIndustries.Contains(i))
@@ -80,7 +80,7 @@ namespace Shared.Validators
             RuleFor(x => x.Website)
                 .NotEmpty().WithMessage("Website URL is required.")
                 .MaximumLength(200).WithMessage("Website URL must be at most 200 characters.")
-                .Must(url => Uri.TryCreate(url, UriKind.Absolute, out var uri) && 
+                .Must(url => Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
                              (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
                 .WithMessage("Website must be a valid URL starting with http:// or https://");
         }

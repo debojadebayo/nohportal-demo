@@ -10,7 +10,7 @@ namespace ComposedHealthBase.Server.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ConcurrentDictionary<string, HashSet<string>> _rolePermissionCache = new(StringComparer.OrdinalIgnoreCase);
-        
+
         public RolePermissionCacheService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
@@ -23,11 +23,11 @@ namespace ComposedHealthBase.Server.Services
                 // Create a scope to resolve the scoped query service
                 using var scope = _serviceProvider.CreateScope();
                 var getAllRolesQuery = scope.ServiceProvider.GetRequiredService<IGetAllRolesWithPermissionsQuery>();
-                
+
                 var roles = await getAllRolesQuery.Handle();
-                
+
                 Console.WriteLine($"Loaded {roles.Count()} roles from Auth service");
-                
+
                 _rolePermissionCache.Clear();
 
                 foreach (var role in roles)
@@ -45,7 +45,7 @@ namespace ComposedHealthBase.Server.Services
 
         public bool HasPermission(string permissionName, string roleName)
         {
-            return _rolePermissionCache.TryGetValue(roleName, out var permissions) && 
+            return _rolePermissionCache.TryGetValue(roleName, out var permissions) &&
                    permissions.Contains(permissionName);
         }
     }

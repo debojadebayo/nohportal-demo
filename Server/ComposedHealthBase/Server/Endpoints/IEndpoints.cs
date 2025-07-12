@@ -6,8 +6,8 @@ using System.Reflection;
 
 namespace ComposedHealthBase.Server.Endpoints
 {
-	public interface IEndpoints
-	{
-		IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints);
-	}
+    public interface IEndpoints
+    {
+        IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints);
+    }
 }

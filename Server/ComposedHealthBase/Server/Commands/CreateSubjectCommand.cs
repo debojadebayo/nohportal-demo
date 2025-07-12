@@ -28,7 +28,7 @@ namespace ComposedHealthBase.Server.Commands
 
     public class CreateSubjectCommand<T, TDto, TContext> : ICreateSubjectCommand<T, TDto, TContext>, ICommand
         where T : class, IEntity, IAuditEntity, ISubject
-        where TDto : IDto, ISubject
+        where TDto : IDto, IAuditDto, ISubject
         where TContext : IDbContext<TContext>
     {
         private IDbContext<TContext> _dbContext { get; }
@@ -56,7 +56,9 @@ namespace ComposedHealthBase.Server.Commands
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Username = dto.FirstName + dto.LastName,
-                Email = dto.Email
+                Email = dto.Email,
+                RealmRoles = new List<string> { "subject" },
+                Enabled = true,
             };
 
             using var usersApi = _keycloakService.CreateUsersApi();
@@ -64,6 +66,27 @@ namespace ComposedHealthBase.Server.Commands
 
             var newId = (await usersApi.GetUsersAsync(_keycloakService.GetRealmName(), true, dto.Email, null, null, true, null, dto.FirstName, null, null, dto.LastName, 1)).FirstOrDefault()?.Id;
 
+            // Add user to organization if TenantId is provided
+            if (!string.IsNullOrEmpty(newId))
+            {
+                using var organizationsApi = _keycloakService.CreateOrganizationsApi();
+
+                await organizationsApi.PostOrganizationsMembersByOrgIdAsync(
+                    _keycloakService.GetRealmName(),
+                    dto.TenantId.ToString(),
+                    newId.ToString()
+                );
+
+                using var rolesApi = _keycloakService.CreateRolesApi();
+                var subjectRole = await rolesApi.GetRolesByRoleNameAsync(_keycloakService.GetRealmName(), "subject");
+
+                using var roleMappingApi = _keycloakService.CreateRoleMapperApi();
+                await roleMappingApi.PostUsersRoleMappingsRealmByUserIdAsync(
+                    _keycloakService.GetRealmName(),
+                    newId.ToString(),
+                    new List<RoleRepresentation> { subjectRole }
+                );
+            }
             var newEntity = _mapper.Map(dto);
 
             newEntity.Id = newId != null ? Guid.Parse(newId) : Guid.NewGuid();

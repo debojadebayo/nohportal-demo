@@ -4,6 +4,7 @@ using ComposedHealthBase.Server.Auth.AuthorizationHandlers;
 using ComposedHealthBase.Server.Auth.Requirements;
 using ComposedHealthBase.Server.Auth.Constants;
 using ComposedHealthBase.Server.Auth.Extensions;
+using ComposedHealthBase.Server.Auth.Providers;
 using ComposedHealthBase.Server.Config;
 using ComposedHealthBase.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,128 +20,113 @@ using System.Reflection;
 
 namespace ComposedHealthBase.Server.Modules
 {
-	public class BaseModule : IModule
-	{
-		public IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration)
-		{
-			services.Configure<AppOptions>(configuration);
-			services.AddSingleton<IKeycloakService, KeycloakService>();
+    public class BaseModule : IModule
+    {
+        public IServiceCollection RegisterModuleServices(IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<AppOptions>(configuration);
+            services.AddSingleton<IKeycloakService, KeycloakService>();
 
-			services.AddDatabaseDeveloperPageExceptionFilter();
-			services.AddCors(options =>
-			{
-				options.AddPolicy("Client",
-					policy => policy
-						.WithOrigins(configuration["Cors:AllowedClientOrigin"] ?? throw new InvalidOperationException("AllowedClientOrigin not configured."),
-							configuration["Cors:AllowedServerOrigin"] ?? throw new InvalidOperationException("AllowedServerOrigin not configured."))
-						.AllowAnyHeader()
-						.AllowAnyMethod()
-						.AllowCredentials());
-			});
+            services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("Client",
+                    policy => policy
+                        .WithOrigins(configuration["Cors:AllowedClientOrigin"] ?? throw new InvalidOperationException("AllowedClientOrigin not configured."),
+                            configuration["Cors:AllowedServerOrigin"] ?? throw new InvalidOperationException("AllowedServerOrigin not configured."))
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials());
+            });
 
-			bool.TryParse(configuration["Jwt:RequireHttpsMetadata"], out bool requireHttpsMetadata);
+            bool.TryParse(configuration["Jwt:RequireHttpsMetadata"], out bool requireHttpsMetadata);
 
-			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-				.AddJwtBearer(options =>
-				{
-					options.MetadataAddress = configuration["Jwt:MetadataAddress"] ?? "";
-					options.RequireHttpsMetadata = requireHttpsMetadata;
-					options.Audience = configuration["Jwt:Audience"];
-					options.MapInboundClaims = false;
-					options.TokenValidationParameters = new TokenValidationParameters
-					{
-						ValidateIssuer = true,
-						ValidIssuer = configuration["Jwt:Issuer"],
-						ValidateAudience = true,
-						ValidateLifetime = true,
-						ValidateIssuerSigningKey = true,
-						RoleClaimType = "role"
-					};
-				});
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.MetadataAddress = configuration["Jwt:MetadataAddress"] ?? "";
+                    options.RequireHttpsMetadata = requireHttpsMetadata;
+                    options.Audience = configuration["Jwt:Audience"];
+                    options.MapInboundClaims = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = configuration["Jwt:Issuer"],
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        RoleClaimType = "role"
+                    };
+                });
 
-			services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
-			services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
-			services.AddAuthorization(options =>
-			{
-				options.AddPolicy("resource-access",
-				policy =>
-				{
-					policy.Requirements.Add(new SubjectOwnedRequirement());
-					policy.Requirements.Add(new TenantOwnedRequirement());
-				});
+            services.AddOpenApi();
+            var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");
+            var blobServiceClient = new BlobServiceClient(azureStorageConnectionString);
+            var properties = blobServiceClient.GetProperties();
+            properties.Value.Cors =
+                new[]
+                {
+                    new BlobCorsRule
+                    {
+                        MaxAgeInSeconds = 1000,
+                        AllowedHeaders = configuration["Cors:AllowedHeaders"],
+                        AllowedOrigins = $"{configuration["Cors:AllowedClientOrigin"]}, {configuration["Cors:AllowedServerOrigin"]}",
+                        ExposedHeaders = configuration["Cors:ExposedHeaders"],
+                        AllowedMethods = configuration["Cors:AllowedMethods"],
+                    }
+                };
+            blobServiceClient.SetProperties(properties);
+            services.AddSingleton(x => blobServiceClient);
 
-				// Add permission-based policies for common entities
-				options.AddPermissionPoliciesForEntities();
-			});
+            services.AddHttpContextAccessor();
+            services.AddHttpClient();
 
-			services.AddOpenApi();
-			var azureStorageConnectionString = configuration.GetConnectionString("AzureBlobStorage") ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' not found.");
-			var blobServiceClient = new BlobServiceClient(azureStorageConnectionString);
-			var properties = blobServiceClient.GetProperties();
-			properties.Value.Cors =
-				new[]
-				{
-					new BlobCorsRule
-					{
-						MaxAgeInSeconds = 1000,
-						AllowedHeaders = configuration["Cors:AllowedHeaders"],
-						AllowedOrigins = $"{configuration["Cors:AllowedClientOrigin"]}, {configuration["Cors:AllowedServerOrigin"]}",
-						ExposedHeaders = configuration["Cors:ExposedHeaders"],
-						AllowedMethods = configuration["Cors:AllowedMethods"],
-					}
-				};
-			blobServiceClient.SetProperties(properties);
-			services.AddSingleton(x => blobServiceClient);
+            services.AddSingleton<IRolePermissionCacheService, RolePermissionCacheService>();
+            services.AddScoped<IUserContextService, UserContextService>();
 
-			services.AddHttpContextAccessor();
-			services.AddHttpClient();
+            return services;
+        }
 
-			services.AddSingleton<IRolePermissionCacheService, RolePermissionCacheService>();
-			services.AddScoped<IUserContextService, UserContextService>();
+        public WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment)
+        {
+            app.UseCors("Client");
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-			return services;
-		}
+            InitializeRolePermissionCache(app).GetAwaiter().GetResult();
 
-		public WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment)
-		{
-			app.UseCors("Client");
-			app.UseAuthentication();
-			app.UseAuthorization();
+            if (isDevelopment)
+            {
+                app.MapOpenApi();
+                app.MapScalarApiReference();
+            }
+            else
+            {
+                app.UseHttpsRedirection();
+            }
+            return app;
+        }
 
-			InitializeRolePermissionCache(app).GetAwaiter().GetResult();
+        private async Task InitializeRolePermissionCache(WebApplication app)
+        {
+            try
+            {
+                Console.WriteLine("Starting role permission cache initialization...");
 
-			if (isDevelopment)
-			{
-				app.MapOpenApi();
-				app.MapScalarApiReference();
-			}
-			else
-			{
-				app.UseHttpsRedirection();
-			}
-			return app;
-		}
+                using var scope = app.Services.CreateScope();
+                var cacheService = scope.ServiceProvider.GetRequiredService<IRolePermissionCacheService>();
 
-		private async Task InitializeRolePermissionCache(WebApplication app)
-		{
-			try
-			{
-				Console.WriteLine("Starting role permission cache initialization...");
+                Console.WriteLine("Cache service obtained, calling InitAsync...");
+                await cacheService.InitAsync();
 
-				using var scope = app.Services.CreateScope();
-				var cacheService = scope.ServiceProvider.GetRequiredService<IRolePermissionCacheService>();
+                Console.WriteLine("Role permission cache initialized successfully with!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to initialize role permission cache: {ex.Message}");
+                Console.WriteLine($"Exception details: {ex}");
+            }
+        }
 
-				Console.WriteLine("Cache service obtained, calling InitAsync...");
-				await cacheService.InitAsync();
-
-				Console.WriteLine("Role permission cache initialized successfully with!");
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"Failed to initialize role permission cache: {ex.Message}");
-				Console.WriteLine($"Exception details: {ex}");
-			}
-		}
-
-	}
+    }
 }

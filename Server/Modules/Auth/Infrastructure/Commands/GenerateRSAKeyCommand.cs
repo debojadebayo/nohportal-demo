@@ -25,7 +25,7 @@ namespace Server.Modules.Auth.Infrastructure.Commands
         {
             // Generate RSA-OAEP 256 keypair
             using var rsa = RSA.Create(2048); // 2048-bit key size for RSA-OAEP-256
-            
+
             var privateKeyPem = rsa.ExportRSAPrivateKeyPem();
             var publicKeyPem = rsa.ExportRSAPublicKeyPem();
 

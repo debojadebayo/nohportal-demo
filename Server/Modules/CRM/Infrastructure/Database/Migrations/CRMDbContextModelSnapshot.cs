@@ -34,7 +34,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -53,7 +53,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -75,13 +75,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -106,7 +100,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -141,7 +135,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -181,17 +175,11 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Telephone")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Website")
@@ -208,7 +196,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
                             Address = "1 Acme Street, London",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Domain = "acme.example.com",
@@ -218,7 +206,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             IsActive = true,
                             KeycloakId = new Guid("11111111-1111-1111-1111-111111111111"),
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Acme Corp",
                             Notes = "Key client.",
@@ -229,10 +217,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             SearchTags = "1 Acme Corp 1 Acme Street London AC1 2ME 01234 567890",
                             Site = "London",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "01234 567890",
                             TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Website = "https://acme.example.com"
                         },
                         new
@@ -240,7 +226,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
                             Address = "2 Beta Road, Manchester",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Domain = "beta.example.com",
@@ -250,7 +236,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             IsActive = true,
                             KeycloakId = new Guid("22222222-2222-2222-2222-222222222222"),
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Beta Ltd",
                             Notes = "Annual contract.",
@@ -261,10 +247,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             SearchTags = "2 Beta Ltd 2 Beta Road Manchester BT2 3LT 02345 678901",
                             Site = "Manchester",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "02345 678901",
                             TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Website = "https://beta.example.com"
                         },
                         new
@@ -272,7 +256,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
                             Address = "3 Gamma Avenue, Birmingham",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Domain = "gamma.example.com",
@@ -282,7 +266,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             IsActive = true,
                             KeycloakId = new Guid("33333333-3333-3333-3333-333333333333"),
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Gamma Inc",
                             Notes = "Occasional work.",
@@ -293,10 +277,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             SearchTags = "",
                             Site = "Birmingham",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "03456 789012",
                             TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Website = "https://gamma.example.com"
                         },
                         new
@@ -304,7 +286,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Id = new Guid("20202020-2020-2020-2020-202020202020"),
                             Address = "First Floor, Swan Buildings, 20 Swan Street, Manchester",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Domain = "nationoh.co.uk",
@@ -314,7 +296,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             IsActive = true,
                             KeycloakId = new Guid("44444444-4444-4444-4444-444444444444"),
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Nation Occupational Health",
                             Notes = "",
@@ -325,10 +307,8 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             SearchTags = "20 Nation Occupational Health First Floor Swan Buildings 20 Swan Street Manchester M4 5JW 01147 004 362",
                             Site = "Birmingham",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "01147 004 362",
                             TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Website = "https://www.nationoh.co.uk"
                         });
                 });
@@ -352,7 +332,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -371,7 +351,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -388,13 +368,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -432,7 +406,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -481,7 +455,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<Guid?>("ManagerId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -499,6 +473,9 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("uuid[]");
 
+                    b.Property<string>("RoleName")
+                        .HasColumnType("text");
+
                     b.Property<string>("SearchTags")
                         .IsRequired()
                         .HasColumnType("text");
@@ -506,17 +483,11 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Telephone")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Username")
@@ -539,7 +510,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address2 = "Apt 1",
                             Address3 = "",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
                             DOB = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -552,17 +523,15 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             LastModifiedBy = "System",
                             LastName = "Smith",
                             LineManager = "Bob Jones",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP1 1AA",
                             RelatedDocumentIds = new Guid[0],
                             SearchTags = "1 Alice Smith 1 Main St Apt 1 EMP1 1AA 07111 111111",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07111 111111",
                             TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "AliceSmith"
                         },
                         new
@@ -572,7 +541,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address2 = "Apt 2",
                             Address3 = "",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("22222222-2222-2222-2222-222222222222"),
                             DOB = new DateTime(1985, 2, 2, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -585,17 +554,15 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             LastModifiedBy = "System",
                             LastName = "Jones",
                             LineManager = "Carol White",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP2 2BB",
                             RelatedDocumentIds = new Guid[0],
                             SearchTags = "2 Bob Jones 2 Main St Apt 2 EMP2 2BB 07222 222222",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07222 222222",
                             TenantId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "BobJones"
                         },
                         new
@@ -605,7 +572,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address2 = "Apt 3",
                             Address3 = "",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("33333333-3333-3333-3333-333333333333"),
                             DOB = new DateTime(1992, 3, 3, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -618,17 +585,15 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             LastModifiedBy = "System",
                             LastName = "White",
                             LineManager = "David Black",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP3 3CC",
                             RelatedDocumentIds = new Guid[0],
                             SearchTags = "3 Carol White 3 Main St Apt 3 EMP3 3CC 07333 333333",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07333 333333",
                             TenantId = new Guid("33333333-3333-3333-3333-333333333333"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "CarolWhite"
                         },
                         new
@@ -638,7 +603,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address2 = "Apt 4",
                             Address3 = "",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
                             DOB = new DateTime(1988, 4, 4, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -651,17 +616,15 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             LastModifiedBy = "System",
                             LastName = "Black",
                             LineManager = "Alice Smith",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP4 4DD",
                             RelatedDocumentIds = new Guid[0],
                             SearchTags = "4 David Black 4 Main St Apt 4 EMP4 4DD 07444 444444",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07444 444444",
                             TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "DavidBlack"
                         },
                         new
@@ -671,7 +634,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address2 = "Apt 5",
                             Address3 = "",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("22222222-2222-2222-2222-222222222222"),
                             DOB = new DateTime(1995, 5, 5, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -684,17 +647,15 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             LastModifiedBy = "System",
                             LastName = "Green",
                             LineManager = "Bob Jones",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP5 5EE",
                             RelatedDocumentIds = new Guid[0],
                             SearchTags = "5 Eve Green 5 Main St Apt 5 EMP5 5EE 07555 555555",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07555 555555",
                             TenantId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "EveGreen"
                         },
                         new
@@ -704,7 +665,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address2 = "Apt 6",
                             Address3 = "",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("33333333-3333-3333-3333-333333333333"),
                             DOB = new DateTime(1983, 6, 6, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -717,17 +678,15 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             LastModifiedBy = "System",
                             LastName = "Blue",
                             LineManager = "Carol White",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP6 6FF",
                             RelatedDocumentIds = new Guid[0],
                             SearchTags = "6 Frank Blue 6 Main St Apt 6 EMP6 6FF 07666 666666",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07666 666666",
                             TenantId = new Guid("33333333-3333-3333-3333-333333333333"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "FrankBlue"
                         },
                         new
@@ -737,7 +696,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address2 = "Apt 7",
                             Address3 = "",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
                             DOB = new DateTime(1991, 7, 7, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -750,17 +709,15 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             LastModifiedBy = "System",
                             LastName = "Brown",
                             LineManager = "David Black",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP7 7GG",
                             RelatedDocumentIds = new Guid[0],
                             SearchTags = "7 Grace Brown 7 Main St Apt 7 EMP7 7GG 07777 777777",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07777 777777",
                             TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "GraceBrown"
                         },
                         new
@@ -770,7 +727,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address2 = "Apt 8",
                             Address3 = "",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("22222222-2222-2222-2222-222222222222"),
                             DOB = new DateTime(1987, 8, 8, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -783,17 +740,15 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             LastModifiedBy = "System",
                             LastName = "Gray",
                             LineManager = "Eve Green",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP8 8HH",
                             RelatedDocumentIds = new Guid[0],
                             SearchTags = "8 Henry Gray 8 Main St Apt 8 EMP8 8HH 07888 888888",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07888 888888",
                             TenantId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "HenryGray"
                         },
                         new
@@ -803,7 +758,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address2 = "Apt 9",
                             Address3 = "",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("33333333-3333-3333-3333-333333333333"),
                             DOB = new DateTime(1993, 9, 9, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -816,17 +771,15 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             LastModifiedBy = "System",
                             LastName = "Violet",
                             LineManager = "Frank Blue",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP9 9II",
                             RelatedDocumentIds = new Guid[0],
                             SearchTags = "9 Ivy Violet 9 Main St Apt 9 EMP9 9II 07999 999999",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07999 999999",
                             TenantId = new Guid("33333333-3333-3333-3333-333333333333"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "IvyViolet"
                         },
                         new
@@ -836,7 +789,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Address2 = "Apt 10",
                             Address3 = "",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
                             DOB = new DateTime(1989, 10, 10, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -849,17 +802,15 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             LastModifiedBy = "System",
                             LastName = "White",
                             LineManager = "Grace Brown",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             Notes = "",
                             Postcode = "EMP10 0JJ",
                             RelatedDocumentIds = new Guid[0],
                             SearchTags = "10 Jack White 10 Main St Apt 10 EMP10 0JJ 07000 000000",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07000 000000",
                             TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "JackWhite"
                         });
                 });
@@ -883,7 +834,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -902,7 +853,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -919,13 +870,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -953,7 +898,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -988,11 +933,14 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RoleName")
+                        .HasColumnType("text");
 
                     b.Property<string>("SearchTags")
                         .IsRequired()
@@ -1001,17 +949,11 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Telephone")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("UserName")
@@ -1032,7 +974,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         {
                             Id = new Guid("11111111-5555-5555-5555-111111111111"),
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = new Guid("11111111-1111-1111-1111-111111111111"),
                             Department = "HR",
@@ -1042,21 +984,19 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             KeycloakId = new Guid("55555555-5555-5555-5555-555555555555"),
                             LastModifiedBy = "System",
                             LastName = "Smith",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SearchTags = "1 Thompson Smith 1 Acme Street London AC1 2ME 07111 111111",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07111 111111",
                             TenantId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "ThompsonSmith"
                         },
                         new
                         {
                             Id = new Guid("22222222-6666-6666-6666-222222222222"),
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = new Guid("22222222-2222-2222-2222-222222222222"),
                             Department = "Finance",
@@ -1066,21 +1006,19 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             KeycloakId = new Guid("66666666-6666-6666-6666-666666666666"),
                             LastModifiedBy = "System",
                             LastName = "Johnson",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SearchTags = "2 Emily Johnson 2 Beta Road Manchester BT2 3LT 07222 222222",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07222 222222",
                             TenantId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "EmilyJohnson"
                         },
                         new
                         {
                             Id = new Guid("33333333-7777-7777-7777-333333333333"),
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CustomerId = new Guid("33333333-3333-3333-3333-333333333333"),
                             Department = "IT",
@@ -1090,14 +1028,12 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             KeycloakId = new Guid("77777777-7777-7777-7777-777777777777"),
                             LastModifiedBy = "System",
                             LastName = "Brown",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             SearchTags = "3 Michael Brown 3 Gamma Avenue Birmingham GM3 4IN 07333 333333",
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Telephone = "07333 333333",
                             TenantId = new Guid("33333333-3333-3333-3333-333333333333"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
                             Username = "MichaelBrown"
                         });
                 });
@@ -1113,7 +1049,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -1132,7 +1068,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -1150,13 +1086,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -1183,7 +1113,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CreatedByKeycloakId")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedDate")
@@ -1206,7 +1136,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ModifiedByKeycloakId")
+                    b.Property<Guid>("ModifiedById")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -1222,13 +1152,7 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SubjectKeycloakId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantKeycloakId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -1241,588 +1165,532 @@ namespace Server.Modules.CRM.Infrastructure.Database.Migrations
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
                             ChargeCode = "OHPFULL",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHP Full Day",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHP Full Day",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
                             ChargeCode = "OHPHALF",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 1000m,
                             Description = "OHP Half Day",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHP Half Day",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
                             ChargeCode = "OHAFULL",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHA Full Day",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHA Full Day",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
                             ChargeCode = "OHAHALF",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHA Half Day",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHA Half Day",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("55555555-5555-5555-5555-555555555555"),
                             ChargeCode = "OHTFULLDAY",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHT Full Day",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHT Full Day",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("66666666-6666-6666-6666-666666666666"),
                             ChargeCode = "OHPAPP",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHP Appointment",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHP Appointment",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("77777777-7777-7777-7777-777777777777"),
                             ChargeCode = "OHPPENS",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Pensions Case",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Pensions Case",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("88888888-8888-8888-8888-888888888888"),
                             ChargeCode = "OHPAUDIO",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Audiometry Reviews (per 15 mins)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Audiometry Reviews (per 15 mins)",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("99999999-9999-9999-9999-999999999999"),
                             ChargeCode = "RETAIN",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Monthly Retainer Fee",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Monthly Retainer Fee",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("10101010-1010-1010-1010-101010101010"),
                             ChargeCode = "OHPTIME",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHP Consultancy Time (per 15 mins)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHP Consultancy Time (per 15 mins)",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111112"),
                             ChargeCode = "PPHA",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Pre Placement Health Assessment",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Pre Placement Health Assessment",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111113"),
                             ChargeCode = "PPHA15",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Pre Placement Health Assessment (per 15 mins)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Pre Placement Health Assessment (per 15 mins)",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111114"),
                             ChargeCode = "MTRC",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Mileage and Travel Re-Charged to Customer (per mile)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Mileage and Travel Re-Charged to Customer (per mile)",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111115"),
                             ChargeCode = "ARC",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Accommodation Recharged to Customer",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Accommodation Recharged to Customer",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111116"),
                             ChargeCode = "CRC",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Consumables Recharged to Customer",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Consumables Recharged to Customer",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111117"),
                             ChargeCode = "PSRC",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Physiotherapy Services Recharged to Customer",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Physiotherapy Services Recharged to Customer",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111118"),
                             ChargeCode = "GPSR",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "GP / Specialist Report Recharged",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "GP / Specialist Report Recharged",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111119"),
                             ChargeCode = "ADMIN",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Administration Time",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Administration Time",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111120"),
                             ChargeCode = "HAVS1",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "HAVS Tier 1",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "HAVS Tier 1",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111121"),
                             ChargeCode = "HAVS2",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "HAVS Tier 2",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "HAVS Tier 2",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111122"),
                             ChargeCode = "HAVS3",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "HAVS Tier 3",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "HAVS Tier 3",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111123"),
                             ChargeCode = "HAVS4",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "HAVS Tier 4",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "HAVS Tier 4",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111124"),
                             ChargeCode = "OHPFULLCOMPLEX",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "OHP Full Complex",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "OHP Full Complex",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111125"),
                             ChargeCode = "PTSMINI",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "PTS / Rail Work mini audit",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "PTS / Rail Work mini audit",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111126"),
                             ChargeCode = "PTSPAPER",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "PTS / Rail Work paper based review",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "PTS / Rail Work paper based review",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111127"),
                             ChargeCode = "PTSAUDIT",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "PTS / Rail Work audit of cases",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "PTS / Rail Work audit of cases",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111128"),
                             ChargeCode = "PTSRETAIN",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "PTS / Rail Work Retainer (per month)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "PTS / Rail Work Retainer (per month)",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111129"),
                             ChargeCode = "PTSADD",
                             CreatedBy = "System",
-                            CreatedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            CreatedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DefaultPrice = 85m,
                             Description = "Additional PTS or MRO work or reporting (per 15 mins)",
                             EndTime = new DateTime(2026, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = false,
                             LastModifiedBy = "System",
-                            ModifiedByKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
+                            ModifiedById = new Guid("00000000-0000-0000-0000-000000000000"),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Additional PTS or MRO work or reporting (per 15 mins)",
                             StartTime = new DateTime(2025, 4, 16, 17, 0, 0, 0, DateTimeKind.Utc),
                             SubjectId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            SubjectKeycloakId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            TenantKeycloakId = new Guid("00000000-0000-0000-0000-000000000000")
+                            TenantId = new Guid("00000000-0000-0000-0000-000000000000")
                         });
                 });
 

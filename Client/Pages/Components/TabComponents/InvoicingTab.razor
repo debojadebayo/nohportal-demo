@@ -1,6 +1,10 @@
 @using MudBlazor
 @namespace Client.Pages.Components.TabComponents
 
-<MudPaper Class="pa-4">
-    <MudText Typo="Typo.h6">Invoicing features coming soon.</MudText>
-</MudPaper>
+@* Customer-scoped invoicing tab that uses the shared InvoicingComponent *@
+<InvoicingComponent SelectedCustomerId="@CustomerId" SelectedCustomerName="@CustomerName" />
+
+@code {
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
+    [Parameter] public string? CustomerName { get; set; }
+}

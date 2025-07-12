@@ -4,8 +4,10 @@
 @using Shared.Enums
 @using Shared.Validators
 @using ComposedHealthBase.BaseClient.Services
+@using Shared.DTOs.Auth
 @inject ILazyLookupService<ClinicianDto> ClinicianLookupService
 @inject IAuthHelperService AuthHelperService
+@inject HttpClient Http
 
 <MudDialog>
     <DialogContent>
@@ -31,6 +33,15 @@
                         }
                     </MudSelect>
                     <MudTextField @bind-Value="Clinician.LicenceNumber" For="@(() => Clinician.LicenceNumber)" Immediate="true" Label="Licence Number" Variant="Variant.Outlined" />
+                    @if (isAuthorizedForRoleManagement && roles.Any())
+                    {
+                        <MudSelect T="string" @bind-Value="Clinician.RoleName" Label="Role" Variant="Variant.Outlined" For="@(() => Clinician.RoleName)">
+                            @foreach (var role in roles)
+                            {
+                                <MudSelectItem Value="@role.Name">@role.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -48,6 +59,31 @@
 
     MudForm form = default!;
     private ClinicianValidator clinicianValidator = new ClinicianValidator();
+    private List<RoleDto> roles = new();
+    private bool isAuthorizedForRoleManagement = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAuthorizationAndLoadRoles();
+    }
+
+    private async Task CheckAuthorizationAndLoadRoles()
+    {
+        isAuthorizedForRoleManagement = await AuthHelperService.IsAuthorizedForRoleManagement();
+        
+        if (isAuthorizedForRoleManagement)
+        {
+            try
+            {
+                roles = await Http.GetFromJsonAsync<List<RoleDto>>("api/auth/roles/getall") ?? new();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error loading roles: {ex.Message}");
+                roles = new();
+            }
+        }
+    }
 
     private async Task Submit()
     {

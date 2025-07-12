@@ -122,7 +122,7 @@ namespace Server.Modules.Billing.Infrastructure.Commands
         {
             var year = DateTime.UtcNow.Year;
             var prefix = $"INV-{year}-";
-            
+
             // Find the last invoice number for this year
             var lastInvoice = await _billingDbContext.Set<Invoice>()
                 .Where(i => i.InvoiceNumber.StartsWith(prefix))

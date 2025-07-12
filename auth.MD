@@ -3,11 +3,11 @@
 
 ## TenantAdmin 
 - Restricted to their assigned tenant.
-- Access control via TenantKeycloakId on all resources. (CHBase item DONE)
+- Access control via TenantId on all resources. (CHBase item DONE)
 
 ## TenantLimitedAdmin 
 - Restricted to cases they referred and associated downstream data.
-- Access control via TenantKeycloakId on resources.
+- Access control via TenantId on resources.
 - Can create referrals (own KeycloakId marked on referral).
 - Can fetch referral graph (includes schedule, employee details, clinician).
 - Cannot create or update case notes or reports.

@@ -69,7 +69,7 @@ public class PostToXeroCommand : IPostToXeroCommand, ICommand
         {
             // Step 4: Map invoice to Xero format
             var xeroInvoice = MapToXeroInvoice(invoice);
-            
+
             // Step 5: Post to Xero API
             var xeroResponse = await PostToXeroApi(xeroInvoice);
 
@@ -79,7 +79,7 @@ public class PostToXeroCommand : IPostToXeroCommand, ICommand
                 invoice.XeroInvoiceId = xeroResponse.XeroInvoiceId;
                 invoice.PostedToXero = true;
                 invoice.PostedToXeroAt = DateTime.UtcNow;
-                
+
                 await _billingDbContext.SaveChangesWithAuditAsync(user);
             }
 
@@ -138,7 +138,7 @@ public class PostToXeroCommand : IPostToXeroCommand, ICommand
         var response = await _httpClient.PostAsync($"{xeroApiUrl}/Invoices", content);
         var responseContent = await response.Content.ReadAsStringAsync();
 
-                if (response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             var responseObj = JsonSerializer.Deserialize<JsonElement>(responseContent);
             var invoiceId = responseObj.GetProperty("Invoices")[0].GetProperty("InvoiceID").GetString();

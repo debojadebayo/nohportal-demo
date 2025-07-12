@@ -3,6 +3,7 @@ using MudBlazor;
 using ComposedHealthBase.Shared.Interfaces;
 using ComposedHealthBase.Shared.DTOs;
 using System.Text;
+using System.Collections.Concurrent;
 
 namespace ComposedHealthBase.BaseClient.Services
 {
@@ -27,6 +28,7 @@ where TDto : IDto, ILazyLookup
     {
         private static string EndpointType => typeof(TDto).Name.Replace("Dto", string.Empty).ToLowerInvariant();
         private Dictionary<Guid, Tuple<TDto, DateTime>> _itemList { get; set; } = new();
+        private readonly ConcurrentDictionary<string, Task> _ongoingRequests = new();
         private readonly HttpClient _httpClient;
         private readonly ISnackbar _snackbar;
         public LazyLookupService(HttpClient httpClient, ISnackbar snackbar)
@@ -42,6 +44,29 @@ where TDto : IDto, ILazyLookup
             {
                 return default!;
             }
+
+            var key = $"search_{value}_{tenantConstraint}_{subjectConstraint}";
+            
+            if (_ongoingRequests.TryGetValue(key, out var existingTask) && existingTask is Task<IEnumerable<Guid>> existingSearchTask)
+            {
+                return await existingSearchTask;
+            }
+
+            var task = PerformItemSearch(value, token, tenantConstraint, subjectConstraint);
+            _ongoingRequests[key] = task;
+
+            try
+            {
+                return await task;
+            }
+            finally
+            {
+                _ongoingRequests.TryRemove(key, out _);
+            }
+        }
+
+        private async Task<IEnumerable<Guid>> PerformItemSearch(string value, CancellationToken token, Guid? tenantConstraint, Guid? subjectConstraint)
+        {
             try
             {
                 StringBuilder sb = new StringBuilder();
@@ -55,16 +80,26 @@ where TDto : IDto, ILazyLookup
                     sb.Append($"&subjectId={subjectConstraint.Value}");
                 }
 
-                var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>(sb.ToString(), token);
+                var response = await _httpClient.GetAsync(sb.ToString(), token);
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return Enumerable.Empty<Guid>();
+                
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadFromJsonAsync<IEnumerable<TDto>>(cancellationToken: token);
                 if (result == null || _itemList == null)
                 {
-                    return default!;
+                    return Enumerable.Empty<Guid>();
                 }
                 foreach (var item in result)
                 {
                     _itemList.TryAdd(item.Id, new Tuple<TDto, DateTime>(item, DateTime.UtcNow));
                 }
                 return result?.Select(x => x.Id) ?? Enumerable.Empty<Guid>();
+            }
+            catch (OperationCanceledException)
+            {
+                // Request was cancelled (likely due to new search request), don't show error
+                return Enumerable.Empty<Guid>();
             }
             catch (Exception ex)
             {
@@ -83,6 +118,28 @@ where TDto : IDto, ILazyLookup
                 }
             }
 
+            var key = $"getbyid_{id}_{tenantConstraint}_{subjectConstraint}_{forceUpdate}";
+            
+            if (_ongoingRequests.TryGetValue(key, out var existingTask) && existingTask is Task<TDto?> existingGetTask)
+            {
+                return await existingGetTask;
+            }
+
+            var task = PerformGetItemById(id, token, tenantConstraint, subjectConstraint);
+            _ongoingRequests[key] = task;
+
+            try
+            {
+                return await task;
+            }
+            finally
+            {
+                _ongoingRequests.TryRemove(key, out _);
+            }
+        }
+
+        private async Task<TDto?> PerformGetItemById(Guid id, CancellationToken token, Guid? tenantConstraint, Guid? subjectConstraint)
+        {
             try
             {
                 StringBuilder sb = new StringBuilder();
@@ -120,6 +177,29 @@ where TDto : IDto, ILazyLookup
                 return Enumerable.Empty<TDto>();
             }
 
+            var idsArray = ids.ToArray();
+            var key = $"getbyids_{string.Join(",", idsArray.OrderBy(x => x))}_{tenantConstraint}_{subjectConstraint}_{forceUpdate}";
+            
+            if (_ongoingRequests.TryGetValue(key, out var existingTask) && existingTask is Task<IEnumerable<TDto>> existingGetTask)
+            {
+                return await existingGetTask;
+            }
+
+            var task = PerformGetItemsByIds(idsArray, token, tenantConstraint, subjectConstraint, forceUpdate);
+            _ongoingRequests[key] = task;
+
+            try
+            {
+                return await task;
+            }
+            finally
+            {
+                _ongoingRequests.TryRemove(key, out _);
+            }
+        }
+
+        private async Task<IEnumerable<TDto>> PerformGetItemsByIds(IEnumerable<Guid> ids, CancellationToken token, Guid? tenantConstraint, Guid? subjectConstraint, bool forceUpdate)
+        {
             var itemsToFetch = ids.Where(id => forceUpdate || !_itemList.ContainsKey(id)).ToList();
             if (!itemsToFetch.Any())
             {
@@ -163,6 +243,28 @@ where TDto : IDto, ILazyLookup
         }
 
         public async Task<IEnumerable<TDto>> GetAllItems(CancellationToken token, Guid? tenantConstraint, Guid? subjectConstraint)
+        {
+            var key = $"getall_{tenantConstraint}_{subjectConstraint}";
+            
+            if (_ongoingRequests.TryGetValue(key, out var existingTask) && existingTask is Task<IEnumerable<TDto>> existingGetAllTask)
+            {
+                return await existingGetAllTask;
+            }
+
+            var task = PerformGetAllItems(token, tenantConstraint, subjectConstraint);
+            _ongoingRequests[key] = task;
+
+            try
+            {
+                return await task;
+            }
+            finally
+            {
+                _ongoingRequests.TryRemove(key, out _);
+            }
+        }
+
+        private async Task<IEnumerable<TDto>> PerformGetAllItems(CancellationToken token, Guid? tenantConstraint, Guid? subjectConstraint)
         {
             try
             {
@@ -260,9 +362,36 @@ where TDto : IDto, ILazyLookup
 
         public async Task<IEnumerable<TDto>> GetAllByTenantId(Guid tenantId, CancellationToken token)
         {
+            var key = $"getallbytenant_{tenantId}";
+            
+            if (_ongoingRequests.TryGetValue(key, out var existingTask) && existingTask is Task<IEnumerable<TDto>> existingTenantTask)
+            {
+                return await existingTenantTask;
+            }
+
+            var task = PerformGetAllByTenantId(tenantId, token);
+            _ongoingRequests[key] = task;
+
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>($"api/{EndpointType}/getall?tenantid={tenantId}", token);
+                return await task;
+            }
+            finally
+            {
+                _ongoingRequests.TryRemove(key, out _);
+            }
+        }
+
+        private async Task<IEnumerable<TDto>> PerformGetAllByTenantId(Guid tenantId, CancellationToken token)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/{EndpointType}/getall?tenantid={tenantId}", token);
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return Enumerable.Empty<TDto>();
+                
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadFromJsonAsync<IEnumerable<TDto>>(cancellationToken: token);
                 if (result != null)
                 {
                     foreach (var item in result)
@@ -282,9 +411,36 @@ where TDto : IDto, ILazyLookup
 
         public async Task<IEnumerable<TDto>> GetAllBySubjectId(Guid subjectId, CancellationToken token)
         {
+            var key = $"getallbysubject_{subjectId}";
+            
+            if (_ongoingRequests.TryGetValue(key, out var existingTask) && existingTask is Task<IEnumerable<TDto>> existingSubjectTask)
+            {
+                return await existingSubjectTask;
+            }
+
+            var task = PerformGetAllBySubjectId(subjectId, token);
+            _ongoingRequests[key] = task;
+
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>($"api/{EndpointType}/getall?subjectid={subjectId}", token);
+                return await task;
+            }
+            finally
+            {
+                _ongoingRequests.TryRemove(key, out _);
+            }
+        }
+
+        private async Task<IEnumerable<TDto>> PerformGetAllBySubjectId(Guid subjectId, CancellationToken token)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/{EndpointType}/getall?subjectid={subjectId}", token);
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return Enumerable.Empty<TDto>();
+                
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadFromJsonAsync<IEnumerable<TDto>>(cancellationToken: token);
                 if (result != null)
                 {
                     foreach (var item in result)
@@ -304,9 +460,36 @@ where TDto : IDto, ILazyLookup
 
         public async Task<IEnumerable<TDto>> GetAllByCustom(string customRoute, CancellationToken token)
         {
+            var key = $"getallbycustom_{customRoute}";
+            
+            if (_ongoingRequests.TryGetValue(key, out var existingTask) && existingTask is Task<IEnumerable<TDto>> existingCustomTask)
+            {
+                return await existingCustomTask;
+            }
+
+            var task = PerformGetAllByCustom(customRoute, token);
+            _ongoingRequests[key] = task;
+
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<IEnumerable<TDto>>(customRoute, token);
+                return await task;
+            }
+            finally
+            {
+                _ongoingRequests.TryRemove(key, out _);
+            }
+        }
+
+        private async Task<IEnumerable<TDto>> PerformGetAllByCustom(string customRoute, CancellationToken token)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(customRoute, token);
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return Enumerable.Empty<TDto>();
+                
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadFromJsonAsync<IEnumerable<TDto>>(cancellationToken: token);
                 if (result != null)
                 {
                     foreach (var item in result)
