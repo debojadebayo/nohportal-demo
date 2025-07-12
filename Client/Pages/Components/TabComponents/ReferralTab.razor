@@ -1,0 +1,54 @@
+@namespace Client.Pages.Components.TabComponents
+@using Shared.DTOs.Scheduling
+@using Shared.DTOs.Referral
+@using MudBlazor
+@using Client.Pages
+@using Client.Pages.Components.Forms
+
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Referral Form">
+        <ReferralForm @ref="referralForm" 
+                     Model="Model" 
+                     OnSaveComplete="HandleSaveComplete"
+                     OnSubmitComplete="HandleSubmitComplete" />
+    </MudTabPanel>
+    
+    <MudTabPanel Text="Search Referrals">
+        <ReferralSearchForm OnReferralSelected="HandleReferralSelected" />
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    [Parameter] public ReferralDto Model { get; set; } = new();
+    [Parameter] public EventCallback<ReferralDto> OnSave { get; set; }
+    [Parameter] public EventCallback<ReferralDto> OnSubmit { get; set; }
+    [Parameter] public EventCallback<ReferralDto> OnDelete { get; set; }
+
+    private ReferralForm referralForm = default!;
+
+    private async Task HandleSaveComplete(ReferralDto referral)
+    {
+        if (OnSave.HasDelegate)
+        {
+            await OnSave.InvokeAsync(referral);
+        }
+    }
+
+    private async Task HandleSubmitComplete(ReferralDto referral)
+    {
+        if (OnSubmit.HasDelegate)
+        {
+            await OnSubmit.InvokeAsync(referral);
+        }
+    }
+
+    private async Task HandleReferralSelected(ReferralDto selectedReferral)
+    {
+        Model = selectedReferral;
+        // Notify parent component about the selection
+        if (OnSave.HasDelegate)
+        {
+            await OnSave.InvokeAsync(selectedReferral);
+        }
+    }
+}

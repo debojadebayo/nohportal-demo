@@ -1,34 +1,174 @@
 ﻿@page "/referrals"
+@page "/referrals/{SelectedReferralId:guid}"
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
+@using Shared.DTOs.Referral
+@using Shared.Enums
 @using Client.Pages.Components.TabComponents
 @using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.BaseClient.Components
+@using MudBlazor
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
-@attribute [Authorize]
+@inject ISnackbar Snackbar
+@* @attribute [Authorize] *@
 
 <PageTitle>Referrals</PageTitle>
 
 <MudText Typo="Typo.h1">Referrals</MudText>
 
-<MudPaper Class="pa-4" Elevation="2">
-    <ReferralsTab Referrals="referrals" OnSave="SaveReferral" />
-</MudPaper>
+<MudText Typo="Typo.body1">Search for an existing referral or create a new one</MudText>
+
+<LazyLookup TDto="ReferralDto" 
+           FieldType="LazyLookupEnum.Search" 
+           ItemId="@(SelectedReferralId ?? Guid.Empty)"
+           Label="Search Referrals" 
+           SelectedItemChanged="OnReferralSelected" />
+
+@if (selectedReferral == null)
+{
+    <MudButton OnClick="CreateReferral" 
+               Variant="Variant.Filled" 
+               Color="Color.Primary" 
+               StartIcon="Icons.Material.Filled.Add"
+               Class="mt-4">
+        Create New Referral
+    </MudButton>
+}
+
+@if (selectedReferral != null)
+{
+    <ReferralTab Model="selectedReferral" 
+                OnSave="HandleReferralSave"
+                OnSubmit="HandleReferralSubmit"
+                OnDelete="DeleteReferral" 
+                Class="mt-4" />
+}
 
 @code {
-    private List<ReferralDto> referrals = new();
+    [Parameter] public Guid? SelectedReferralId { get; set; }
+    
+    private ReferralDto? selectedReferral;
+    private bool newReferral = false;
+
     protected override async Task OnInitializedAsync()
     {
-        await LoadReferrals();
+        if (SelectedReferralId.HasValue)
+        {
+            await LoadReferral(SelectedReferralId.Value);
+        }
     }
 
-    private async Task LoadReferrals()
+    private async Task LoadReferral(Guid referralId)
     {
-        referrals = (await ReferralLookupService.GetAllItems(CancellationToken.None)).ToList();
+        try
+        {
+            selectedReferral = await ReferralLookupService.GetItemById(referralId, CancellationToken.None);
+            newReferral = false;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load referral: {ex.Message}", Severity.Error);
+        }
     }
 
-    private async Task SaveReferral(ReferralDto referral)
+    private void CreateReferral()
+    {
+        selectedReferral = new ReferralDto 
+        { 
+            FormData = new ReferralFormData(),
+            ReferralStatus = ReferralStatusEnum.Pending
+        };
+        newReferral = true;
+        SelectedReferralId = null;
+    }
+
+    private async Task OnReferralSelected(ReferralDto? referral)
+    {
+        selectedReferral = referral;
+        newReferral = false;
+        
+        if (referral != null)
+        {
+            SelectedReferralId = referral.Id;
+        }
+    }
+
+    private async Task HandleReferralSave(ReferralDto referral)
     {
         if (referral == null) return;
-        await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
+
+        try
+        {
+            // Save as draft
+            referral.ReferralStatus = ReferralStatusEnum.Pending;
+
+            if (newReferral)
+            {
+                selectedReferral = await ReferralLookupService.AddItem(referral, CancellationToken.None);
+                if (selectedReferral != null)
+                {
+                    SelectedReferralId = selectedReferral.Id;
+                    newReferral = false;
+                    Snackbar.Add("Referral saved as draft successfully!", Severity.Success);
+                }
+            }
+            else
+            {
+                await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
+                Snackbar.Add("Referral draft updated successfully!", Severity.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to save referral: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task HandleReferralSubmit(ReferralDto referral)
+    {
+        if (referral == null) return;
+
+        try
+        {
+            // Final submission
+            referral.ReferralStatus = ReferralStatusEnum.InProgress;
+
+            if (newReferral)
+            {
+                selectedReferral = await ReferralLookupService.AddItem(referral, CancellationToken.None);
+                if (selectedReferral != null)
+                {
+                    SelectedReferralId = selectedReferral.Id;
+                    newReferral = false;
+                    Snackbar.Add("Referral submitted successfully!", Severity.Success);
+                }
+            }
+            else
+            {
+                await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
+                Snackbar.Add("Referral submitted successfully!", Severity.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to submit referral: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task DeleteReferral(ReferralDto referral)
+    {
+        if (referral?.Id == null) return;
+
+        try
+        {
+            await ReferralLookupService.DeleteItem(referral.Id, CancellationToken.None);
+            selectedReferral = null;
+            SelectedReferralId = null;
+            Snackbar.Add("Referral deleted successfully!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to delete referral: {ex.Message}", Severity.Error);
+        }
     }
 }

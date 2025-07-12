@@ -1,0 +1,681 @@
+@page "/referral"
+@using Shared.DTOs.Scheduling
+@using Shared.DTOs.Referral
+@using Shared.Validators
+@using MudBlazor
+@using ComposedHealthBase.BaseClient.Services
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject ILazyLookupService<ReferralDto> ReferralLookupService
+
+<PageTitle>Referral Form</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.h4" Class="mb-4">Nation Occupational Health Ltd - Referral Form</MudText>
+        
+        <!-- Progress Bar -->
+        <MudPaper Class="pa-3 mb-4" Elevation="1">
+            <MudText Typo="Typo.subtitle1" Class="mb-2">Form Progress: @($"{OverallProgress:F0}%")</MudText>
+            <MudProgressLinear Color="Color.Primary" Value="@OverallProgress" Size="Size.Large" />
+            <MudText Typo="Typo.caption" Class="mt-1">@($"{CompletedSections} of {TotalSections} sections completed (Sections 1-10)")</MudText>
+        </MudPaper>
+
+        <MudForm @ref="form" Model="Model.FormData" Validation="@(formDataValidator.ValidateValue)" ValidationDelay="0">
+            
+            <!-- Referring Manager Section -->
+            <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+                <MudExpansionPanel IsExpanded="true">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <div style="display: flex; align-items: center">
+                                <MudIcon Icon="Icons.Material.Filled.Business" Class="mr-3" />
+                                <MudText>Section 1: Referring Manager</MudText>
+                            </div>
+                            @if (IsSection1Complete())
+                            {
+                                <MudIcon Icon="Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                            }
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="Model.FormData.ReferringPersonName" For="@(() => Model.FormData.ReferringPersonName)"
+                                    Immediate="true" Label="Referring Person's Name" Variant="Variant.Outlined" 
+                                    @onblur="UpdateProgress" />
+                                
+                                <MudDatePicker @bind-Date="Model.FormData.ReferralDate" For="@(() => Model.FormData.ReferralDate)"
+                                    Label="Referral Date" Variant="Variant.Outlined" />
+                                
+                                <MudTextField @bind-Value="Model.FormData.ReferringCompany" For="@(() => Model.FormData.ReferringCompany)"
+                                    Immediate="true" Label="Referring Company" Variant="Variant.Outlined" 
+                                    @onblur="UpdateProgress" />
+                                
+                                <MudTextField @bind-Value="Model.FormData.Department" For="@(() => Model.FormData.Department)"
+                                    Immediate="true" Label="Department" Variant="Variant.Outlined" 
+                                    @onblur="UpdateProgress" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="Model.FormData.ReferrerContactNumber" For="@(() => Model.FormData.ReferrerContactNumber)"
+                                    Immediate="true" Label="Referrer's Contact Number" Variant="Variant.Outlined" 
+                                    @onblur="UpdateProgress" />
+                                
+                                <MudTextField @bind-Value="Model.FormData.ReferrerEmail" For="@(() => Model.FormData.ReferrerEmail)"
+                                    Immediate="true" Label="Referrer's Email" Variant="Variant.Outlined" />
+                                
+                                <MudTextField @bind-Value="Model.FormData.AdditionalManagerName" For="@(() => Model.FormData.AdditionalManagerName)"
+                                    Immediate="true" Label="Additional Manager Name" Variant="Variant.Outlined" />
+                                
+                                <MudTextField @bind-Value="Model.FormData.AdditionalManagerEmail" For="@(() => Model.FormData.AdditionalManagerEmail)"
+                                    Immediate="true" Label="Additional Manager Email" Variant="Variant.Outlined" />
+                            </MudItem>
+                        </MudGrid>
+                        <MudText Typo="Typo.caption" Class="mt-2">
+                            A copy of the report will be sent to the above manager(s), a copy may also be sent to HR.
+                        </MudText>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <!-- HR Contact Section -->
+                <MudExpansionPanel IsExpanded="false">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center">
+                            <MudIcon Icon="Icons.Material.Filled.People" Class="mr-3" />
+                            <MudText>Section 2: HR Contact</MudText>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudGrid>
+                            <MudItem xs="12" sm="4">
+                                <MudTextField @bind-Value="Model.FormData.HrContactName" For="@(() => Model.FormData.HrContactName)"
+                                    Immediate="true" Label="HR Contact Name" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4">
+                                <MudTextField @bind-Value="Model.FormData.HrContactNumber" For="@(() => Model.FormData.HrContactNumber)"
+                                    Immediate="true" Label="Contact Number" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4">
+                                <MudTextField @bind-Value="Model.FormData.HrContactEmail" For="@(() => Model.FormData.HrContactEmail)"
+                                    Immediate="true" Label="Contact Email" Variant="Variant.Outlined" />
+                            </MudItem>
+                        </MudGrid>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <!-- Employee Details Section -->
+                <MudExpansionPanel IsExpanded="true">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <div style="display: flex; align-items: center">
+                                <MudIcon Icon="Icons.Material.Filled.Person" Class="mr-3" />
+                                <MudText>Section 3: Employee Details</MudText>
+                            </div>
+                            @if (IsSection3Complete())
+                            {
+                                <MudIcon Icon="Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                            }
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="Model.FormData.EmployeeName" For="@(() => Model.FormData.EmployeeName)"
+                                    Immediate="true" Label="Employee Name" Variant="Variant.Outlined" />
+                                
+                                <MudTextField @bind-Value="Model.FormData.EmployeeAddress" For="@(() => Model.FormData.EmployeeAddress)"
+                                    Immediate="true" Label="Address" Variant="Variant.Outlined" Lines="3" />
+                                
+                                <MudTextField @bind-Value="Model.FormData.EmployeePostcode" For="@(() => Model.FormData.EmployeePostcode)"
+                                    Immediate="true" Label="Postcode" Variant="Variant.Outlined" />
+                                
+                                <MudDatePicker @bind-Date="Model.FormData.EmployeeDateOfBirth" For="@(() => Model.FormData.EmployeeDateOfBirth)"
+                                    Label="Date of Birth" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="Model.FormData.EmployeeHomeNumber" For="@(() => Model.FormData.EmployeeHomeNumber)"
+                                    Immediate="true" Label="Contact Number (home)" Variant="Variant.Outlined" />
+                                
+                                <MudTextField @bind-Value="Model.FormData.EmployeeMobileNumber" For="@(() => Model.FormData.EmployeeMobileNumber)"
+                                    Immediate="true" Label="Contact Number (mobile)" Variant="Variant.Outlined" />
+                                
+                                <MudTextField @bind-Value="Model.FormData.EmployeeEmail" For="@(() => Model.FormData.EmployeeEmail)"
+                                    Immediate="true" Label="Contact Email" Variant="Variant.Outlined" />
+                                
+                                <MudTextField @bind-Value="Model.FormData.EmployeeJobTitle" For="@(() => Model.FormData.EmployeeJobTitle)"
+                                    Immediate="true" Label="Employee Job Title" Variant="Variant.Outlined" />
+                            </MudItem>
+                        </MudGrid>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <!-- Finance Section -->
+                <MudExpansionPanel IsExpanded="false">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center">
+                            <MudIcon Icon="Icons.Material.Filled.AttachMoney" Class="mr-3" />
+                            <MudText>Section 4: Finance</MudText>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudGrid>
+                            <MudItem xs="12" sm="4">
+                                <MudTextField @bind-Value="Model.FormData.PurchaseOrderNumber" For="@(() => Model.FormData.PurchaseOrderNumber)"
+                                    Immediate="true" Label="Purchase Order No (If Required)" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4">
+                                <MudTextField @bind-Value="Model.FormData.FinanceContactName" For="@(() => Model.FormData.FinanceContactName)"
+                                    Immediate="true" Label="Finance/Accounts Contact Name" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4">
+                                <MudTextField @bind-Value="Model.FormData.FinanceContactNumber" For="@(() => Model.FormData.FinanceContactNumber)"
+                                    Immediate="true" Label="Finance/Accounts Contact Number" Variant="Variant.Outlined" />
+                            </MudItem>
+                        </MudGrid>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <!-- Employee Informed Section -->
+                <MudExpansionPanel IsExpanded="false">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center">
+                            <MudIcon Icon="Icons.Material.Filled.Info" Class="mr-3" />
+                            <MudText>Section 5: Employee Informed</MudText>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle2" Class="mb-2">
+                                    Can the referrer confirm that the employee has been informed of the referral and the purpose of this?
+                                </MudText>
+                                <MudRadioGroup T="bool" @bind-SelectedOption="Model.FormData.EmployeeInformed" For="@(() => Model.FormData.EmployeeInformed)">
+                                    <MudRadio T="bool" Option="true" Color="Color.Primary">Yes</MudRadio>
+                                    <MudRadio T="bool" Option="false" Color="Color.Primary">No</MudRadio>
+                                </MudRadioGroup>
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="Model.FormData.DateEmployeeInformed" For="@(() => Model.FormData.DateEmployeeInformed)"
+                                    Label="Date Employee was Informed" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField @bind-Value="Model.FormData.AccessibilityNeeds" For="@(() => Model.FormData.AccessibilityNeeds)"
+                                    Immediate="true" Label="Accessibility needs (e.g. wheelchair access needed)" 
+                                    Variant="Variant.Outlined" Lines="3" />
+                            </MudItem>
+                        </MudGrid>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <!-- Work Pattern Section -->
+                <MudExpansionPanel IsExpanded="false">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center">
+                            <MudIcon Icon="Icons.Material.Filled.Schedule" Class="mr-3" />
+                            <MudText>Section 6: Employee Work Pattern</MudText>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.IsTemporary" For="@(() => Model.FormData.IsTemporary)" Label="Temporary" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.IsPermanent" For="@(() => Model.FormData.IsPermanent)" Label="Permanent" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.IsCasual" For="@(() => Model.FormData.IsCasual)" Label="Casual" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.IsFullTime" For="@(() => Model.FormData.IsFullTime)" Label="Full Time" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.IsPartTime" For="@(() => Model.FormData.IsPartTime)" Label="Part Time" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.IsNightWorking" For="@(() => Model.FormData.IsNightWorking)" Label="Night Working" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.IsRotationalShift" For="@(() => Model.FormData.IsRotationalShift)" Label="Rotational Shift" />
+                            </MudItem>
+                        </MudGrid>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <!-- Employee's Role Hazards -->
+                <MudExpansionPanel IsExpanded="false">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center">
+                            <MudIcon Icon="Icons.Material.Filled.Warning" Class="mr-3" />
+                            <MudText>Section 7: Employee's Role & Hazards</MudText>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.ManualHandlingHeavyLoads" Label="Manual Handling - Heavy Loads" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.ManualHandlingOther" Label="Manual Handling - Other" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.VibratingEquipment" Label="Vibrating plant/tools/equipment" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.Noise" Label="Noise" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.RepetitiveWork" Label="Repetitive work activity/operations" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.ProlongedStanding" Label="Prolonged standing" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.ProlongedSitting" Label="Prolonged sitting" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.ExtremesOfTemperature" Label="Extremes of temperature e.g. very hot/cold" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.ConfinedSpaces" Label="Confined spaces" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.AdverseWeatherConditions" Label="Adverse weather conditions e.g. frost, rain" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.WorkingAtHeights" Label="Working at heights" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.DrivingLgcPcvMinibus" Label="Driving LGC/PCV/minibus" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.FumesDustGases" Label="Fumes, dust, gases, toners, etc." />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.SolventsOilsPaints" Label="Solvents, oils, paints, (de)-greasers, etc." />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.PesticidesHerbicidesInsecticides" Label="Pesticides, herbicides, insecticides" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.DetergentCleaningChemicals" Label="Detergent or other cleaning chemicals" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.ExposureProneProcedures" Label="Exposure prone procedures" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.BiologicalHazards" Label="Biological hazards, e.g. urine, blood, etc." />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField @bind-Value="Model.FormData.EmployeeDutiesDescription" For="@(() => Model.FormData.EmployeeDutiesDescription)"
+                                    Immediate="true" Label="Brief description of the employee's duties" 
+                                    Variant="Variant.Outlined" Lines="4" />
+                            </MudItem>
+                        </MudGrid>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <!-- Section 8: Purpose of Referral -->
+                <MudExpansionPanel IsExpanded="true">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <div style="display: flex; align-items: center">
+                                <MudIcon Icon="Icons.Material.Filled.Assignment" Class="mr-3" />
+                                <MudText>Section 8: Purpose of Referral</MudText>
+                            </div>
+                            @if (IsSection8Complete())
+                            {
+                                <MudIcon Icon="Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                            }
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.ProlongedSicknessAbsence" Label="Prolonged sickness and absence" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.RecurrentShortTermSickness" Label="Recurrent short term sickness or absences" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.ConcernsAboutWorkPerformance" Label="Concerns about work performance and/or fitness for work" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.AdviceOnWorkAdaptations" Label="Advice on potential work adaptations" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.HealthSurveillanceProcesses" Label="Health surveillance processes, e.g. regular screening related to workplace hazards" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.OccupationalExposureHazardConcerns" Label="Occupational exposure hazard concerns" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.AdviceFollowingWorkplaceIllnessInjury" Label="Advice following workplace illness/injury" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.FitnessToAttendDisciplinary" Label="Fitness to attend disciplinary investigations or hearing" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.AdviceRelatedToSubstanceMisuse" Label="Advice related to substance misuse" />
+                            </MudItem>
+                        </MudGrid>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <!-- Attendance Section -->
+                <MudExpansionPanel IsExpanded="false">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <div style="display: flex; align-items: center">
+                                <MudIcon Icon="Icons.Material.Filled.EventAvailable" Class="mr-3" />
+                                <MudText>Section 9: Attendance</MudText>
+                            </div>
+                            @if (IsSection9Complete())
+                            {
+                                <MudIcon Icon="Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                            }
+                        </div>
+                    </TitleContent>
+                    <ChildContent>      
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudTextField @bind-Value="Model.FormData.AttendanceRecord12Months" For="@(() => Model.FormData.AttendanceRecord12Months)"
+                                    Immediate="true" Label="Employee's attendance record over the past 12 months" 
+                                    Variant="Variant.Outlined" Lines="4" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="Model.FormData.FirstDateOfAbsence" For="@(() => Model.FormData.FirstDateOfAbsence)"
+                                    Label="First date of absence (if currently absent)" Variant="Variant.Outlined" />
+                            </MudItem>
+                        </MudGrid>
+
+                        <MudText Typo="Typo.subtitle2" Class="mt-4 mb-2">
+                            What category best describes the reason for the employee's absence?
+                        </MudText>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.BackAndNeckProblems" Label="Back and Neck Problems" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.OtherMusculoskeletal" Label="Other musculoskeletal" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.EyeEarNoseMouthDental" Label="Eye/ear/nose/mouth/dental" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.GenitourinaryGynecological" Label="Genitourinary/gynecological" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.HeartBpCirculation" Label="Heart/BP/circulation" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.Infections" Label="Infections" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.Neurological" Label="Neurological" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.Hospitalisation" Label="Hospitalisation" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.Skin" Label="Skin" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.ChestRespiratory" Label="Chest/respiratory" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.PregnancyRelated" Label="Pregnancy related" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.StomachLiverKidneyDigestion" Label="Stomach/liver/kidney/digestion" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.StressDepressionAnxiety" Label="Stress/depression/anxiety" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.OtherMentalHealth" Label="Other mental health" />
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.Cancer" Label="Cancer" />
+                            </MudItem>
+                        </MudGrid>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <!-- Standard Questions -->
+                <MudExpansionPanel IsExpanded="false">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <div style="display: flex; align-items: center">
+                                <MudIcon Icon="Icons.Material.Filled.HelpOutline" Class="mr-3" />
+                                <MudText>Section 10: Standard Questions</MudText>
+                            </div>
+                            @if (IsSection10Complete())
+                            {
+                                <MudIcon Icon="Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                            }
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">
+                            Please read and tick the appropriate boxes below for which you would like an occupational health opinion/response on:
+                        </MudText>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.IsEmployeeFitForWork" 
+                                    Label="Is the employee fit for work? If not, when in your judgement are they likely to be fit for work?" />
+                                
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.WorkBasedFactorsImplication" 
+                                    Label="Are there likely to be any work based factors that have an implication in the current medical condition?" />
+                                
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.SuggestedActionsForReturn" 
+                                    Label="Are there suggested actions that management could consider taking to facilitate a more effective return to work? (e.g. temporarily amended duties, temporary move to an alternative role or a phased return plan)" />
+                                
+                                <MudCheckBox T="bool" @bind-Checked="Model.FormData.EqualityAct2010Related" 
+                                    Label="Is the employee's absence likely to be related to a condition they have that is likely to be covered by the Equality Act 2010? If so, are there any specific adjustments that should be considered by management? (E.g. changes to duties, hours, working environment or consideration of an alternative role.)" />
+                            </MudItem>
+                        </MudGrid>
+                    </ChildContent>
+                </MudExpansionPanel>
+
+                <!-- Additional Questions -->
+                <MudExpansionPanel IsExpanded="false">
+                    <TitleContent>
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <div style="display: flex; align-items: center">
+                                <MudIcon Icon="Icons.Material.Filled.Comment" Class="mr-3" />
+                                <MudText>Section 11: Additional Questions or Comments</MudText>
+                            </div>
+                            @if (IsSection11Complete())
+                            {
+                                <MudIcon Icon="Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                            }
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <MudTextField @bind-Value="Model.FormData.AdditionalQuestionsComments" For="@(() => Model.FormData.AdditionalQuestionsComments)"
+                            Immediate="true" Label="If you have any other specific questions you would like answered or comments to add please submit these below" 
+                            Variant="Variant.Outlined" Lines="6" />
+                    </ChildContent>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+
+            <!-- Action Buttons -->
+            <MudCardActions Class="mt-4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                    OnClick="@(async () => await Save())" 
+                    Disabled="@_saving"
+                    Class="ml-auto">
+                    @if (_saving)
+                    {
+                        <MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ml-2">@(IsNewReferral ? "Submitting..." : "Updating...")</MudText>
+                    }
+                    else
+                    {
+                        <MudIcon Icon="Icons.Material.Filled.Save" Class="mr-2" />
+                        <MudText>@(IsNewReferral ? "Submit Referral" : "Update Referral")</MudText>
+                    }
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" 
+                    OnClick="@(async () => await Clear())" 
+                    StartIcon="Icons.Material.Filled.Clear"
+                    Disabled="@_saving"
+                    Class="ml-2">
+                    Clear Form
+                </MudButton>
+            </MudCardActions>
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [Parameter] public ReferralDto Model { get; set; } = new();
+    [Parameter] public EventCallback<ReferralDto> OnSaveComplete { get; set; }
+    [Parameter] public EventCallback<ReferralDto> OnSubmitComplete { get; set; }
+
+    private MudForm form = new();
+    private ReferralFormDataValidator formDataValidator = new();
+    
+    private const int TotalSections = 10;
+    private bool _saving = false;
+    
+    private bool IsNewReferral => Model.Id == Guid.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Initialize FormData if it doesn't exist
+        if (Model.FormData == null)
+        {
+            Model.FormData = new ReferralFormData();
+        }
+    }
+
+    private double OverallProgress => (double)CompletedSections / TotalSections * 100;
+
+    private int CompletedSections =>
+        (IsSection1Complete() ? 1 : 0) +
+        (IsSection2Complete() ? 1 : 0) +
+        (IsSection3Complete() ? 1 : 0) +
+        (IsSection4Complete() ? 1 : 0) +
+        (IsSection5Complete() ? 1 : 0) +
+        (IsSection6Complete() ? 1 : 0) +
+        (IsSection7Complete() ? 1 : 0) +
+        (IsSection8Complete() ? 1 : 0) +
+        (IsSection9Complete() ? 1 : 0) +
+        (IsSection10Complete() ? 1 : 0);
+
+    // Section 1: Referring Manager
+    private bool IsSection1Complete()
+    {
+        return AreFieldsComplete(
+            Model.FormData.ReferringPersonName,
+            Model.FormData.ReferringCompany,
+            Model.FormData.ReferrerContactNumber) &&
+            Model.FormData.ReferralDate.HasValue;
+    }
+
+    // Section 2: HR Contact
+    private bool IsSection2Complete()
+    {
+        return AreFieldsComplete(
+            Model.FormData.HrContactName,
+            Model.FormData.HrContactNumber,
+            Model.FormData.HrContactEmail);
+    }
+
+    // Section 3: Employee Details
+    private bool IsSection3Complete()
+    {
+        return AreFieldsComplete(
+            Model.FormData.EmployeeName,
+            Model.FormData.EmployeeAddress,
+            Model.FormData.EmployeePostcode,
+            Model.FormData.EmployeeJobTitle) &&
+            Model.FormData.EmployeeDateOfBirth.HasValue &&
+            (!string.IsNullOrWhiteSpace(Model.FormData.EmployeeHomeNumber) || 
+             !string.IsNullOrWhiteSpace(Model.FormData.EmployeeMobileNumber));
+    }
+
+    // Section 4: Finance
+    private bool IsSection4Complete()
+    {
+        return AreFieldsComplete(Model.FormData.FinanceContactName);
+    }
+
+    // Section 5: Employee Informed     
+    private bool IsSection5Complete()
+    {
+        return Model.FormData.EmployeeInformed &&
+               Model.FormData.DateEmployeeInformed.HasValue;
+    }
+
+    // Section 6: Employee Work Pattern     
+    private bool IsSection6Complete()
+    {
+        var hasEmploymentType = AnyCheckboxSelected(
+            Model.FormData.IsTemporary, 
+            Model.FormData.IsPermanent, 
+            Model.FormData.IsCasual);
+        
+        var hasTimePattern = AnyCheckboxSelected(
+            Model.FormData.IsFullTime, 
+            Model.FormData.IsPartTime,
+            Model.FormData.IsNightWorking, 
+            Model.FormData.IsRotationalShift);
+        
+        return hasEmploymentType && hasTimePattern;
+    }
+
+    // Section 7: Employee's Role & Hazards
+    private bool IsSection7Complete()
+    {
+        var hasHazard = AnyCheckboxSelected(
+            Model.FormData.ManualHandlingHeavyLoads, Model.FormData.ManualHandlingOther,
+            Model.FormData.VibratingEquipment, Model.FormData.Noise, Model.FormData.RepetitiveWork,
+            Model.FormData.ProlongedStanding, Model.FormData.ProlongedSitting, 
+            Model.FormData.ExtremesOfTemperature, Model.FormData.ConfinedSpaces,
+            Model.FormData.AdverseWeatherConditions, Model.FormData.WorkingAtHeights,
+            Model.FormData.DrivingLgcPcvMinibus, Model.FormData.FumesDustGases,
+            Model.FormData.SolventsOilsPaints, Model.FormData.PesticidesHerbicidesInsecticides,
+            Model.FormData.DetergentCleaningChemicals, Model.FormData.ExposureProneProcedures,
+            Model.FormData.BiologicalHazards);
+        
+        return hasHazard;
+    }
+
+    // Section 8: Purpose of Referral
+    private bool IsSection8Complete()
+    {
+        return AnyCheckboxSelected(
+            Model.FormData.ProlongedSicknessAbsence, Model.FormData.RecurrentShortTermSickness,
+            Model.FormData.ConcernsAboutWorkPerformance, Model.FormData.AdviceOnWorkAdaptations,
+            Model.FormData.HealthSurveillanceProcesses, Model.FormData.OccupationalExposureHazardConcerns,
+            Model.FormData.AdviceFollowingWorkplaceIllnessInjury, Model.FormData.FitnessToAttendDisciplinary,
+            Model.FormData.AdviceRelatedToSubstanceMisuse);
+    }
+
+    // Section 9: Attendance
+    private bool IsSection9Complete()
+    {
+        return AreFieldsComplete(Model.FormData.AttendanceRecord12Months);
+    }
+
+    // Section 10: Standard Questions 
+    private bool IsSection10Complete()
+    {
+        return AnyCheckboxSelected(
+            Model.FormData.IsEmployeeFitForWork, Model.FormData.WorkBasedFactorsImplication,
+            Model.FormData.SuggestedActionsForReturn, Model.FormData.EqualityAct2010Related);
+    }
+
+    // Section 11: Additional Questions or Comments
+    private bool IsSection11Complete()
+    {
+        return AreFieldsComplete(Model.FormData.AdditionalQuestionsComments);
+    }
+
+    // Helper method for cleaner field validation
+    private bool AreFieldsComplete(params string[] fields)
+    {
+        return fields.All(field => !string.IsNullOrWhiteSpace(field));
+    }
+
+    // Helper method for checkbox validation
+    private bool AnyCheckboxSelected(params bool[] checkboxes)
+    {
+        return checkboxes.Any(checkbox => checkbox);
+    }
+
+    private void UpdateProgress()
+    {
+        StateHasChanged();
+    }
+
+    private async Task Save()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            _saving = true;
+            StateHasChanged();
+            
+            try
+            {
+                if (IsNewReferral)
+                {
+                    Model = await ReferralLookupService.AddItem(Model, CancellationToken.None);
+                    if (Model != null) 
+                    {
+                        Snackbar.Add("Referral submitted successfully!", Severity.Success);
+                        
+                        // Notify parent component
+                        if (OnSubmitComplete.HasDelegate)
+                        {
+                            await OnSubmitComplete.InvokeAsync(Model);
+                        }
+                    }
+                }
+                else
+                {
+                    await ReferralLookupService.UpdateItem(Model, CancellationToken.None);
+                    Snackbar.Add("Referral updated successfully!", Severity.Success);
+                    
+                    // Notify parent component
+                    if (OnSaveComplete.HasDelegate)
+                    {
+                        await OnSaveComplete.InvokeAsync(Model);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Failed to save referral: {ex.Message}", Severity.Error);
+                Console.Error.WriteLine($"Error saving referral: {ex}");
+            }
+            finally
+            {
+                _saving = false;
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            Snackbar.Add("Please correct the validation errors before submitting.", Severity.Error);
+        }
+    }
+
+    private async Task Clear()
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Clear Form",
+            "Are you sure you want to clear all form data? This action cannot be undone.",
+            yesText: "Clear", cancelText: "Cancel");
+        
+        if (result == true)
+        {
+            Model = new ReferralDto();
+            Model.FormData = new ReferralFormData();
+            form.ResetValidation();
+            Snackbar.Add("Form cleared.", Severity.Info);
+        }
+    }
+}

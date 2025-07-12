@@ -1,0 +1,163 @@
+@using Shared.DTOs.Scheduling
+@using Shared.DTOs.CRM
+@using Shared.Enums
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.BaseClient.Enums
+@using MudBlazor
+@inject ILazyLookupService<ReferralDto> ReferralLookupService
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-4" Elevation="2">
+    <MudText Typo="Typo.h6" Class="mb-4">Search Existing Referrals</MudText>
+    
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <LazyLookup TDto="ReferralDto" 
+                       FieldType="LazyLookupEnum.Search" 
+                       ItemId="@(selectedReferralId ?? Guid.Empty)"
+                       Label="Search Referrals" 
+                       SelectedItemChanged="HandleReferralSelected" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <LazyLookup TDto="CustomerDto" 
+                       FieldType="LazyLookupEnum.Search" 
+                       ItemId="@(selectedCustomerId ?? Guid.Empty)"
+                       Label="Filter by Customer" 
+                       SelectedItemChanged="OnCustomerFilterChanged" />
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-4" />
+
+    <MudGrid>
+        <MudItem xs="12" sm="4">
+            <MudSelect T="ReferralStatusEnum?" @bind-Value="statusFilter" Label="Filter by Status" Variant="Variant.Outlined">
+                <MudSelectItem Value="@((ReferralStatusEnum?)null)">All Statuses</MudSelectItem>
+                <MudSelectItem Value="@(ReferralStatusEnum.Pending)">Pending</MudSelectItem>
+                <MudSelectItem Value="@(ReferralStatusEnum.InProgress)">In Progress</MudSelectItem>
+                <MudSelectItem Value="@(ReferralStatusEnum.Completed)">Completed</MudSelectItem>
+                <MudSelectItem Value="@(ReferralStatusEnum.Cancelled)">Cancelled</MudSelectItem>
+                <MudSelectItem Value="@(ReferralStatusEnum.Rejected)">Rejected</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudDatePicker @bind-Date="dateFromFilter" 
+                          Label="Created From" 
+                          Variant="Variant.Outlined" />
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudDatePicker @bind-Date="dateToFilter" 
+                          Label="Created To" 
+                          Variant="Variant.Outlined" />
+        </MudItem>
+    </MudGrid>
+
+    <MudButton Variant="Variant.Filled" 
+               Color="Color.Primary" 
+               OnClick="SearchReferrals"
+               Class="mt-3"
+               StartIcon="Icons.Material.Filled.Search">
+        Search
+    </MudButton>
+
+    @if (searchResults.Any())
+    {
+        <MudDataGrid T="ReferralDto" 
+                     Items="searchResults" 
+                     Dense="true" 
+                     Hover="true" 
+                     Striped="true" 
+                     Bordered="true" 
+                     Class="mt-4">
+            <Columns>
+                <PropertyColumn Property="x => x.CreatedDate" Title="Created" Format="dd/MM/yyyy" />
+                <PropertyColumn Property="x => x.ReferralStatus" Title="Status" />
+                <PropertyColumn Property="x => x.FormData.ReferringPersonName" Title="Referring Person" />
+                <PropertyColumn Property="x => x.FormData.EmployeeName" Title="Employee" />
+                <PropertyColumn Property="x => x.FormData.ReferringCompany" Title="Company" />
+                <TemplateColumn>
+                    <CellTemplate>
+                        <MudButton Size="Size.Small" 
+                                   OnClick="() => SelectReferral(context.Item)"
+                                   Variant="Variant.Filled" 
+                                   Color="Color.Primary">
+                            Select
+                        </MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <NoRecordsContent>
+                <MudText>No referrals found matching your search criteria.</MudText>
+            </NoRecordsContent>
+        </MudDataGrid>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public EventCallback<ReferralDto> OnReferralSelected { get; set; }
+
+    private Guid? selectedReferralId;
+    private Guid? selectedCustomerId;
+    private ReferralStatusEnum? statusFilter;
+    private DateTime? dateFromFilter;
+    private DateTime? dateToFilter;
+    private List<ReferralDto> searchResults = new();
+
+    private async Task HandleReferralSelected(ReferralDto? referral)
+    {
+        if (referral != null && OnReferralSelected.HasDelegate)
+        {
+            await OnReferralSelected.InvokeAsync(referral);
+        }
+    }
+
+    private async Task OnCustomerFilterChanged(CustomerDto? customer)
+    {
+        if (customer != null)
+        {
+            selectedCustomerId = customer.Id;
+            await SearchReferrals();
+        }
+        else
+        {
+            selectedCustomerId = null;
+            searchResults.Clear();
+        }
+    }
+
+    private async Task SearchReferrals()
+    {
+        try
+        {
+            var allReferrals = await ReferralLookupService.GetAllItems(CancellationToken.None);
+            
+            searchResults = allReferrals.Where(r => 
+                (!statusFilter.HasValue || r.ReferralStatus == statusFilter) &&
+                (!selectedCustomerId.HasValue || r.CustomerId == selectedCustomerId) &&
+                (!dateFromFilter.HasValue || r.CreatedDate >= dateFromFilter) &&
+                (!dateToFilter.HasValue || r.CreatedDate <= dateToFilter)
+            ).ToList();
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error searching referrals: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task SelectReferral(ReferralDto referral)
+    {
+        if (OnReferralSelected.HasDelegate)
+        {
+            await OnReferralSelected.InvokeAsync(referral);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load recent referrals by default
+        await SearchReferrals();
+    }
+}
