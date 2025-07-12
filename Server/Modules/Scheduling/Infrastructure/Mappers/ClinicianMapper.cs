@@ -29,7 +29,8 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             LastModifiedBy = entity.LastModifiedBy,
             CreatedDate = entity.CreatedDate,
             ModifiedDate = entity.ModifiedDate,
-            CalendarItems = _mapper.Map(entity.CalendarItems).ToList()
+            CalendarItems = _mapper.Map(entity.CalendarItems).ToList(),
+            RoleName = entity.RoleName
         };
     }
 
@@ -55,6 +56,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             ModifiedDate = dto.ModifiedDate,
             KeycloakId = keycloakId,
             SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email} {dto.LicenceNumber}".ToLower(),
+            RoleName = dto.RoleName,
         };
     }
 
@@ -88,6 +90,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         entity.AvatarTitle = dto.AvatarTitle;
         entity.AvatarDescription = dto.AvatarDescription;
         entity.SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email} {dto.LicenceNumber}".ToLower();
+        entity.RoleName = dto.RoleName;
     }
 
     public void Map(Clinician entity, ClinicianDto dto)
@@ -109,6 +112,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         dto.LastModifiedBy = entity.LastModifiedBy;
         dto.CreatedDate = entity.CreatedDate;
         dto.ModifiedDate = entity.ModifiedDate;
+        dto.RoleName = entity.RoleName;
     }
 
     public void Map(IEnumerable<ClinicianDto> dtos, IEnumerable<Clinician> entities)

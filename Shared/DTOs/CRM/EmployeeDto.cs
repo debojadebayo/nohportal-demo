@@ -28,5 +28,6 @@ namespace Shared.DTOs.CRM
             get => base.TenantId;
             set => base.TenantId = value;
         }
+        public string? RoleName { get; set; }
     }
 }

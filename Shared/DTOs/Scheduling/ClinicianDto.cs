@@ -21,5 +21,6 @@ namespace Shared.DTOs.Scheduling
         public required string AvatarTitle { get; set; }
         public required string AvatarDescription { get; set; }
         public string DisplayName => $"{FirstName} {LastName}";
+        public string? RoleName { get; set; }
     }
 }

@@ -22,5 +22,6 @@ namespace Server.Modules.Scheduling.Entities
         public required string LicenceNumber { get; set; }
         public HashSet<Schedule> CalendarItems { get; set; } = new HashSet<Schedule>();
         public string SearchTags { get; set; } = string.Empty;
+        public string? RoleName { get; set; }
     }
 }

@@ -16,6 +16,7 @@ namespace ComposedHealthBase.BaseClient.Services
         Task<ClaimsPrincipal?> GetUserAsync();
         Task<TTenantDto?> CreateTenant<TTenantDto>(TTenantDto item, CancellationToken token) where TTenantDto : class, ITenant;
         Task<TSubjectDto?> CreateSubject<TSubjectDto>(TSubjectDto item, CancellationToken token) where TSubjectDto : class, ISubject;
+        Task<bool> IsAuthorizedForRoleManagement();
     }
 
     public class AuthHelperService : IAuthHelperService
@@ -89,6 +90,14 @@ namespace ComposedHealthBase.BaseClient.Services
                 _snackbar.Add($"Failed to add item: {ex.Message}", Severity.Error);
             }
             return null;
+        }
+
+        public async Task<bool> IsAuthorizedForRoleManagement()
+        {
+            var user = await GetUserAsync();
+            if (user == null) return false;
+            
+            return user.IsInRole("administrator") || user.IsInRole("tenantadministrator");
         }
     }
 }

@@ -36,5 +36,6 @@ namespace Server.Modules.CRM.Entities
             }
         }
         public string SearchTags { get; set; } = string.Empty;
+        public string? RoleName { get; set; }
     }
 }

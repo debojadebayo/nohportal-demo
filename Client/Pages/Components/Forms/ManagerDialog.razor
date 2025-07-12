@@ -1,8 +1,11 @@
 @namespace Client.Pages.Components.Forms
 @using Shared.DTOs.CRM
 @using Shared.Validators
+@using Shared.DTOs.Auth
+@using ComposedHealthBase.BaseClient.Services
 @inject ILazyLookupService<ManagerDto> ManagerLookupService
 @inject IAuthHelperService AuthHelperService
+@inject HttpClient Http
 
 <MudDialog>
     <DialogContent>
@@ -17,6 +20,15 @@
                     <MudTextField @bind-Value="Manager.Email" For="@(() => Manager.Email)" Immediate="true" Label="Email" Variant="Variant.Outlined" />
                     <MudTextField @bind-Value="Manager.Department" For="@(() => Manager.Department)" Immediate="true" Label="Department" Variant="Variant.Outlined" />
                     <MudSwitch @bind-Value="Manager.IsActive" Label="Active" Color="Color.Primary" />
+                    @if (isAuthorizedForRoleManagement && roles.Any())
+                    {
+                        <MudSelect T="string" @bind-Value="Manager.RoleName" Label="Role" Variant="Variant.Outlined" For="@(() => Manager.RoleName)">
+                            @foreach (var role in roles)
+                            {
+                                <MudSelectItem Value="@role.Name">@role.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -34,6 +46,31 @@
 
     MudForm form = default!;
     private ManagerValidator managerValidator = new ManagerValidator();
+    private List<RoleDto> roles = new();
+    private bool isAuthorizedForRoleManagement = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAuthorizationAndLoadRoles();
+    }
+
+    private async Task CheckAuthorizationAndLoadRoles()
+    {
+        isAuthorizedForRoleManagement = await AuthHelperService.IsAuthorizedForRoleManagement();
+        
+        if (isAuthorizedForRoleManagement)
+        {
+            try
+            {
+                roles = await Http.GetFromJsonAsync<List<RoleDto>>("api/auth/roles/getall") ?? new();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error loading roles: {ex.Message}");
+                roles = new();
+            }
+        }
+    }
 
     private async Task Submit()
     {
