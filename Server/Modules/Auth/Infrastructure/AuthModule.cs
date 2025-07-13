@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Server.Modules.Auth.Infrastructure.Database;
 using ComposedHealthBase.Server.Database;
 using ComposedHealthBase.Server.Modules;
@@ -45,15 +46,24 @@ namespace Server.Modules.Auth.Infrastructure
         }
         public WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment)
         {
+            var logger = app.Services.GetRequiredService<ILogger<AuthModule>>();
+            logger.LogInformation("Configuring Auth module services...");
+            
             if (isDevelopment)
             {
                 using (var scope = app.Services.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+                    logger.LogInformation("Running Auth module database migrations...");
                     dbContext.Database.Migrate();
+                    
+                    logger.LogInformation("Seeding roles and permissions...");
                     RoleSeeder.SeedRolesAndPermissions(dbContext);
+                    logger.LogInformation("Auth module database setup completed");
                 }
             }
+            
+            logger.LogInformation("Auth module configuration completed");
             return app;
         }
     }
