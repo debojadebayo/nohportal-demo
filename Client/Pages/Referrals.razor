@@ -2,7 +2,6 @@
 @page "/referrals/{SelectedReferralId:guid}"
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
-@using Shared.DTOs.Referral
 @using Shared.Enums
 @using Client.Pages.Components.TabComponents
 @using ComposedHealthBase.BaseClient.Services
@@ -75,7 +74,7 @@
     {
         selectedReferral = new ReferralDto 
         { 
-            FormData = new ReferralFormData(),
+            Details = new ReferralDetailsDto(),
             ReferralStatus = ReferralStatusEnum.Pending
         };
         newReferral = true;
@@ -104,13 +103,11 @@
 
             if (newReferral)
             {
-                selectedReferral = await ReferralLookupService.AddItem(referral, CancellationToken.None);
-                if (selectedReferral != null)
-                {
-                    SelectedReferralId = selectedReferral.Id;
-                    newReferral = false;
-                    Snackbar.Add("Referral saved as draft successfully!", Severity.Success);
-                }
+                await ReferralLookupService.AddItem(referral, CancellationToken.None);
+                selectedReferral = referral;
+                SelectedReferralId = selectedReferral.Id;
+                newReferral = false;
+                Snackbar.Add("Referral saved as draft successfully!", Severity.Success);
             }
             else
             {
@@ -135,13 +132,11 @@
 
             if (newReferral)
             {
-                selectedReferral = await ReferralLookupService.AddItem(referral, CancellationToken.None);
-                if (selectedReferral != null)
-                {
-                    SelectedReferralId = selectedReferral.Id;
-                    newReferral = false;
-                    Snackbar.Add("Referral submitted successfully!", Severity.Success);
-                }
+                await ReferralLookupService.AddItem(referral, CancellationToken.None);
+                selectedReferral = referral;
+                SelectedReferralId = selectedReferral.Id;
+                newReferral = false;
+                Snackbar.Add("Referral submitted successfully!", Severity.Success);
             }
             else
             {

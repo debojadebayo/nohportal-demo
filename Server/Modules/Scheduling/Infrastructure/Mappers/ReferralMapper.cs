@@ -18,7 +18,8 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
             ModifiedDate = entity.ModifiedDate,
             CustomerId = entity.CustomerId,
             EmployeeId = entity.EmployeeId,
-            RelatedDocumentIds = entity.RelatedDocumentIds.ToList()
+            RelatedDocumentIds = entity.RelatedDocumentIds.ToList(),
+            Details = entity.Details ?? new ReferralDetailsDto { ReferralId = entity.Id }
         };
     }
 
@@ -32,6 +33,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
             CustomerId = dto.CustomerId,
             EmployeeId = dto.EmployeeId,
             RelatedDocumentIds = dto.RelatedDocumentIds.ToArray(),
+            Details = dto.Details
         };
     }
 
@@ -53,6 +55,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
         entity.CustomerId = dto.CustomerId;
         entity.EmployeeId = dto.EmployeeId;
         entity.RelatedDocumentIds = dto.RelatedDocumentIds.ToArray();
+        entity.Details = dto.Details;
     }
 
     public void Map(Referral entity, ReferralDto dto)
@@ -68,6 +71,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
         dto.CustomerId = entity.CustomerId;
         dto.EmployeeId = entity.EmployeeId;
         dto.RelatedDocumentIds = entity.RelatedDocumentIds.ToList();
+        dto.Details = entity.Details ?? new ReferralDetailsDto { ReferralId = entity.Id };
     }
 
     public void Map(IEnumerable<ReferralDto> dtos, IEnumerable<Referral> entities)

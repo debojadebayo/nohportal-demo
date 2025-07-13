@@ -73,9 +73,8 @@
             <Columns>
                 <PropertyColumn Property="x => x.CreatedDate" Title="Created" Format="dd/MM/yyyy" />
                 <PropertyColumn Property="x => x.ReferralStatus" Title="Status" />
-                <PropertyColumn Property="x => x.FormData.ReferringPersonName" Title="Referring Person" />
-                <PropertyColumn Property="x => x.FormData.EmployeeName" Title="Employee" />
-                <PropertyColumn Property="x => x.FormData.ReferringCompany" Title="Company" />
+                <PropertyColumn Property="x => x.Title" Title="Title" />
+                <PropertyColumn Property="x => x.ReferralDetails" Title="Details" />
                 <TemplateColumn>
                     <CellTemplate>
                         <MudButton Size="Size.Small" 
