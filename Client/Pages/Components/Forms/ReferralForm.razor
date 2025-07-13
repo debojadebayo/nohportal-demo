@@ -6,6 +6,7 @@
 @using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.BaseClient.Components
 @using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.Shared.DTOs
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
@@ -13,43 +14,57 @@
 @inject ILazyLookupService<EmployeeDto> EmployeeLookupService
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
 
-<PageTitle>Referral Form</PageTitle>
-
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
-    <MudPaper Class="pa-4">
-        <MudText Typo="Typo.h4" Class="mb-4">Nation Occupational Health Ltd - Referral Form</MudText>
-        
-        <MudForm @ref="form" Model="Model.Details" Validation="@(formDataValidator.ValidateValue)" ValidationDelay="0">
-            
-            <!-- Referring Manager Section -->
-            <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+    <MudForm @ref="form" Model="Model" Validation="@(referralValidator.ValidateValue)" ValidationDelay="0">
+                <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+                    <MudExpansionPanel Expanded="true">
+                        <TitleContent>
+                            <div class="d-flex">
+                                <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3" />
+                                <MudText>Basic Information</MudText>
+                            </div>
+                        </TitleContent>
+                        <ChildContent>
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.ReadOnly" @bind-ItemId="CustomerId" Label="Customer" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6">
+                                    <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="Model.EmployeeId" TenantConstraint="CustomerId" Label="Employee" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6">
+                                    <MudDatePicker @bind-Date="Model.Details.ReferralDate" For="@(() => Model.Details.ReferralDate)"
+                                        Label="Referral Date" Variant="Variant.Outlined" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6">
+                                    <MudTextField @bind-Value="Model.Title" Label="Title" Variant="Variant.Outlined" For="@(() => Model.Title)" Immediate="false" DebounceInterval="300" />
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudTextField @bind-Value="Model.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Lines="3" For="@(() => Model.ReferralDetails)" Immediate="false" DebounceInterval="300" />
+                                </MudItem>
+                            </MudGrid>
+                        </ChildContent>
+                    </MudExpansionPanel>
+                
+                <!-- Referring Manager Section -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                        
-                            <MudIcon Icon="Icons.Material.Filled.Business" Class="mr-3" />
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.Business" Class="mr-3" />
                             <MudText>Section 1: Referring Manager</MudText>
-                        
+                        </div>
                     </TitleContent>
                     <ChildContent>
                         <MudGrid>
                             <MudItem xs="12" sm="6">
                                 <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search"
                                     ItemId="@(Model.ReferringManagerId ?? Guid.Empty)" Label="Referring Manager" 
-                                    SelectedItemChanged="@((ManagerDto item) => Model.ReferringManagerId = item?.Id)"
-                                    TenantConstraint="@(Model.CustomerId)" />
+                                    TenantConstraint="CustomerId" 
+                                    SelectedItemChanged="@((ManagerDto item) => Model.ReferringManagerId = item?.Id)" />
                                 
                                 <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search"
                                     ItemId="@(Model.ReferringManager2Id ?? Guid.Empty)" Label="Additional Referring Manager" 
-                                    SelectedItemChanged="@((ManagerDto item) => Model.ReferringManager2Id = item?.Id)"
-                                    TenantConstraint="@(Model.CustomerId)" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudDatePicker @bind-Date="Model.Details.ReferralDate" For="@(() => Model.Details.ReferralDate)"
-                                    Label="Referral Date" Variant="Variant.Outlined" />
-                                
-                                <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search"
-                                    ItemId="@Model.CustomerId" Label="Referring Company" 
-                                    SelectedItemChanged="@((CustomerDto item) => Model.CustomerId = item?.Id ?? Guid.Empty)" />
+                                    TenantConstraint="CustomerId" 
+                                    SelectedItemChanged="@((ManagerDto item) => Model.ReferringManager2Id = item?.Id)" />
                             </MudItem>
                         </MudGrid>
                         <MudText Typo="Typo.caption" Class="mt-2">
@@ -61,18 +76,18 @@
                 <!-- HR Contact Section -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                        
-                            <MudIcon Icon="Icons.Material.Filled.People" Class="mr-3" />
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.People" Class="mr-3" />
                             <MudText>Section 2: HR Contact</MudText>
-                        
+                        </div>
                     </TitleContent>
                     <ChildContent>
                         <MudGrid>
                             <MudItem xs="12" sm="6">
                                 <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search"
                                     ItemId="@(Model.HrContactId ?? Guid.Empty)" Label="HR Contact" 
-                                    SelectedItemChanged="@((ManagerDto item) => Model.HrContactId = item?.Id)"
-                                    TenantConstraint="@Model.CustomerId" />
+                                    TenantConstraint="CustomerId" 
+                                    SelectedItemChanged="@((ManagerDto item) => Model.HrContactId = item?.Id)" />
                             </MudItem>
                         </MudGrid>
                     </ChildContent>
@@ -81,42 +96,39 @@
                 <!-- Employee Details Section -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                                <MudIcon Icon="Icons.Material.Filled.Person" Class="mr-3" />
-                                <MudText>Section 3: Employee Details</MudText>
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-3" />
+                            <MudText>Section 3: Employee Details</MudText>
+                        </div>
                     </TitleContent>
                     <ChildContent>
-                        <MudGrid>
-                            <MudItem xs="12" sm="6">
-                                <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search"
-                                    ItemId="@Model.EmployeeId" Label="Employee" 
-                                    SelectedItemChanged="@((EmployeeDto item) => Model.EmployeeId = item?.Id ?? Guid.Empty)"
-                                    TenantConstraint="@Model.CustomerId" />
-                            </MudItem>
-                        </MudGrid>
+                        <MudText Typo="Typo.caption" Class="mb-2">
+                            Employee details are set in the Basic Information section above.
+                        </MudText>
                     </ChildContent>
                 </MudExpansionPanel>
 
                 <!-- Finance Section -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                        
-                            <MudIcon Icon="Icons.Material.Filled.AttachMoney" Class="mr-3" />
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Class="mr-3" />
                             <MudText>Section 4: Finance</MudText>
-                        
+                        </div>
                     </TitleContent>
                     <ChildContent>
                         <MudGrid>
                             <MudItem xs="12" sm="4">
                                 <MudTextField @bind-Value="Model.Details.PurchaseOrderNumber" For="@(() => Model.Details.PurchaseOrderNumber)"
-                                    Immediate="true" Label="Purchase Order No (If Required)" Variant="Variant.Outlined" />
+                                    Immediate="false" DebounceInterval="300" Label="Purchase Order No (If Required)" Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" sm="4">
                                 <MudTextField @bind-Value="Model.Details.FinanceContactName" For="@(() => Model.Details.FinanceContactName)"
-                                    Immediate="true" Label="Finance/Accounts Contact Name" Variant="Variant.Outlined" />
+                                    Immediate="false" DebounceInterval="300" Label="Finance/Accounts Contact Name" Variant="Variant.Outlined" />
                             </MudItem>
                             <MudItem xs="12" sm="4">
                                 <MudTextField @bind-Value="Model.Details.FinanceContactNumber" For="@(() => Model.Details.FinanceContactNumber)"
-                                    Immediate="true" Label="Finance/Accounts Contact Number" Variant="Variant.Outlined" />
+                                    Immediate="false" DebounceInterval="300" Label="Finance/Accounts Contact Number" Variant="Variant.Outlined" />
                             </MudItem>
                         </MudGrid>
                     </ChildContent>
@@ -125,10 +137,10 @@
                 <!-- Employee Informed Section -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                        
-                            <MudIcon Icon="Icons.Material.Filled.Info" Class="mr-3" />
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3" />
                             <MudText>Section 5: Employee Informed</MudText>
-                        
+                        </div>
                     </TitleContent>
                     <ChildContent>
                         <MudGrid>
@@ -147,7 +159,7 @@
                             </MudItem>
                             <MudItem xs="12">
                                 <MudTextField @bind-Value="Model.Details.AccessibilityNeeds" For="@(() => Model.Details.AccessibilityNeeds)"
-                                    Immediate="true" Label="Accessibility needs (e.g. wheelchair access needed)" 
+                                    Immediate="false" DebounceInterval="300" Label="Accessibility needs (e.g. wheelchair access needed)" 
                                     Variant="Variant.Outlined" Lines="3" />
                             </MudItem>
                         </MudGrid>
@@ -157,10 +169,10 @@
                 <!-- Work Pattern Section -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                        
-                            <MudIcon Icon="Icons.Material.Filled.Schedule" Class="mr-3" />
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.Schedule" Class="mr-3" />
                             <MudText>Section 6: Employee Work Pattern</MudText>
-                        
+                        </div>
                     </TitleContent>
                     <ChildContent>
                         <MudGrid>
@@ -182,10 +194,10 @@
                 <!-- Employee's Role Hazards -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                        
-                            <MudIcon Icon="Icons.Material.Filled.Warning" Class="mr-3" />
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.Warning" Class="mr-3" />
                             <MudText>Section 7: Employee's Role & Hazards</MudText>
-                        
+                        </div>
                     </TitleContent>
                     <ChildContent>
                         <MudGrid>
@@ -213,7 +225,7 @@
                             </MudItem>
                             <MudItem xs="12">
                                 <MudTextField @bind-Value="Model.Details.EmployeeDutiesDescription" For="@(() => Model.Details.EmployeeDutiesDescription)"
-                                    Immediate="true" Label="Brief description of the employee's duties" 
+                                    Immediate="false" DebounceInterval="300" Label="Brief description of the employee's duties" 
                                     Variant="Variant.Outlined" Lines="4" />
                             </MudItem>
                         </MudGrid>
@@ -223,12 +235,10 @@
                 <!-- Section 8: Purpose of Referral -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                        
-                            
-                                <MudIcon Icon="Icons.Material.Filled.Assignment" Class="mr-3" />
-                                <MudText>Section 8: Purpose of Referral</MudText>
-                            
-                        
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-3" />
+                            <MudText>Section 8: Purpose of Referral</MudText>
+                        </div>
                     </TitleContent>
                     <ChildContent>
                         <MudGrid>
@@ -252,18 +262,16 @@
                 <!-- Attendance Section -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                        
-                            
-                                <MudIcon Icon="Icons.Material.Filled.EventAvailable" Class="mr-3" />
-                                <MudText>Section 9: Attendance</MudText>
-                            
-                        
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.EventAvailable" Class="mr-3" />
+                            <MudText>Section 9: Attendance</MudText>
+                        </div>
                     </TitleContent>
                     <ChildContent>      
                         <MudGrid>
                             <MudItem xs="12">
                                 <MudTextField @bind-Value="Model.Details.AttendanceRecord12Months" For="@(() => Model.Details.AttendanceRecord12Months)"
-                                    Immediate="true" Label="Employee's attendance record over the past 12 months" 
+                                    Immediate="false" DebounceInterval="300" Label="Employee's attendance record over the past 12 months" 
                                     Variant="Variant.Outlined" Lines="4" />
                             </MudItem>
                             <MudItem xs="12" sm="6">
@@ -302,12 +310,10 @@
                 <!-- Standard Questions -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                        
-                            
-                                <MudIcon Icon="Icons.Material.Filled.HelpOutline" Class="mr-3" />
-                                <MudText>Section 10: Standard Questions</MudText>
-                            
-                        
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.HelpOutline" Class="mr-3" />
+                            <MudText>Section 10: Standard Questions</MudText>
+                        </div>
                     </TitleContent>
                     <ChildContent>
                         <MudText Typo="Typo.subtitle2" Class="mb-2">
@@ -334,17 +340,26 @@
                 <!-- Additional Questions -->
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
-                        
-                            
-                                <MudIcon Icon="Icons.Material.Filled.Comment" Class="mr-3" />
-                                <MudText>Section 11: Additional Questions or Comments</MudText>
-                            
-                        
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.Comment" Class="mr-3" />
+                            <MudText>Section 11: Additional Questions or Comments</MudText>
+                        </div>
                     </TitleContent>
                     <ChildContent>
                         <MudTextField @bind-Value="Model.Details.AdditionalQuestionsComments" For="@(() => Model.Details.AdditionalQuestionsComments)"
-                            Immediate="true" Label="If you have any other specific questions you would like answered or comments to add please submit these below" 
+                            Immediate="false" DebounceInterval="300" Label="If you have any other specific questions you would like answered or comments to add please submit these below" 
                             Variant="Variant.Outlined" Lines="6" />
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel Expanded="true">
+                    <TitleContent>
+                        <div class="d-flex">
+                            <MudIcon Icon="@Icons.Material.Filled.Attachment" Class="mr-3" />
+                            <MudText>Section 12: Attachments</MudText>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <DocumentBrowser CompactMode="false" TDto="EmployeeDocumentDto" @bind-DocumentIds="Model.RelatedDocumentIds" />
                     </ChildContent>
                 </MudExpansionPanel>
             </MudExpansionPanels>
@@ -362,22 +377,23 @@
                     }
                     else
                     {
-                        <MudIcon Icon="Icons.Material.Filled.Save" Class="mr-2" />
+                        <MudIcon Icon="@Icons.Material.Filled.Save" Class="mr-2" />
                         <MudText>@(IsNewReferral ? "Submit Referral" : "Update Referral")</MudText>
                     }
                 </MudButton>
             </MudCardActions>
         </MudForm>
-    </MudPaper>
-</MudContainer>
 
 @code {
     [Parameter] public ReferralDto Model { get; set; } = new();
     [Parameter] public EventCallback<ReferralDto> OnSaveComplete { get; set; }
     [Parameter] public EventCallback<ReferralDto> OnSubmitComplete { get; set; }
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
+    [Parameter] public bool ShowAsDialog { get; set; } = false;
 
     private MudForm form = new();
     private ReferralDetailsValidator formDataValidator = new();
+    private ReferralValidator referralValidator = new();
     
     private bool _saving = false;
     
@@ -385,6 +401,12 @@
 
     protected override void OnInitialized()
     {
+        // Set the CustomerId on the model if provided
+        if (CustomerId != Guid.Empty && Model.CustomerId == Guid.Empty)
+        {
+            Model.CustomerId = CustomerId;
+        }
+        
         // Initialize Details if it doesn't exist
         if (Model.Details == null)
         {

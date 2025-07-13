@@ -5,6 +5,7 @@ namespace ComposedHealthBase.BaseClient.Enums
         Text,
         Select,
         EnumSelect,
-        Search
+        Search,
+        ReadOnly
     }
 }

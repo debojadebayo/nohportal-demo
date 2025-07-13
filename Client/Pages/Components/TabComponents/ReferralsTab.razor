@@ -7,6 +7,7 @@
 @using Shared.Validators
 @using MudBlazor
 @using Shared.DTOs.Scheduling
+@using Client.Pages.Components.Forms
 @inject IAuthHelperService AuthHelper
 
 <MudPaper Class="pa-4">
@@ -56,20 +57,14 @@
 
 <MudDialog @bind-Visible="_addReferralDialogOpen" Options="_dialogOptions">
     <TitleContent>
-        <MudText Typo="Typo.h6">Referral</MudText>
+        <MudText Typo="Typo.h3">Referral</MudText>
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="form" Model="_newReferral" Validation="@(referralValidator.ValidateValue)" ValidationDelay="0">
-            <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.CustomerId" TenantConstraint="CustomerId" Label="Customer" For="@(() => _newReferral.CustomerId)" />
-            <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.EmployeeId" TenantConstraint="CustomerId" Label="Employee" For="@(() => _newReferral.EmployeeId)" />
-            <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" For="@(() => _newReferral.Title)" />
-            <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" For="@(() => _newReferral.ReferralDetails)" />
-            <DocumentBrowser CompactMode="true" TDto="EmployeeDocumentDto" @bind-DocumentIds="_newReferral.RelatedDocumentIds" />
-        </MudForm>
+        <ReferralForm Model="_newReferral" CustomerId="CustomerId" ShowAsDialog="true" 
+                      OnSaveComplete="@HandleReferralSaved" OnSubmitComplete="@HandleReferralSaved" />
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="AddReferral">Save</MudButton>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -84,12 +79,7 @@
 
     private bool _addReferralDialogOpen = false;
     private ReferralDto _newReferral = new ReferralDto();
-    // private EmployeeDocumentDto _newDocument = default!; // Commented out as not used
-    private MudForm form = default!;
-    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-    
-    // Validator instance
-    private ReferralValidator referralValidator = new ReferralValidator();
+    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Large, FullWidth = true };
 
     private void ShowAddReferralDialog()
     {
@@ -99,9 +89,16 @@
 
     private async Task AddReferral()
     {
-        await form.Validate();
-        if (!form.IsValid) return;
+        // The validation is now handled by the ReferralForm component
+        // This method will be called by the dialog buttons
         await OnSave.InvokeAsync(_newReferral);
+        _addReferralDialogOpen = false;
+    }
+
+    private async Task HandleReferralSaved(ReferralDto referral)
+    {
+        // Called when the ReferralForm component saves the referral
+        await OnSave.InvokeAsync(referral);
         _addReferralDialogOpen = false;
     }
 
