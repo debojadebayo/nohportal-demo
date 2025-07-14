@@ -34,7 +34,7 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
         };
     }
 
-    public Clinician MapWithKeycloakId(ClinicianDto dto, Guid keycloakId)
+    public Clinician Map(ClinicianDto dto)
     {
         return new Clinician
         {
@@ -54,15 +54,9 @@ public class ClinicianMapper : IMapper<Clinician, ClinicianDto>
             LastModifiedBy = dto.LastModifiedBy,
             CreatedDate = dto.CreatedDate,
             ModifiedDate = dto.ModifiedDate,
-            KeycloakId = keycloakId,
             SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email} {dto.LicenceNumber}".ToLower(),
             RoleName = dto.RoleName,
         };
-    }
-
-    public Clinician Map(ClinicianDto dto)
-    {
-        throw new NotImplementedException("Map method without KeycloakId is not implemented. Use MapWithKeycloakId instead.");
     }
 
     public IEnumerable<ClinicianDto> Map(IEnumerable<Clinician> entities)

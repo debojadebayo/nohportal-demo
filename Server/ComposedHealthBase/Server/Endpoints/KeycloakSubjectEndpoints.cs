@@ -25,13 +25,15 @@ namespace ComposedHealthBase.Server.Endpoints
     {
         public virtual IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
         {
-            var group = endpoints.MapGroup($"/api/security");
+            var group = endpoints.MapGroup($"/api/security/{typeof(T).Name.ToLowerInvariant()}s")
+                .RequireAuthorization();
 
             group.MapPost("/createsubject", async (
                 [FromServices] CreateSubjectCommand<T, TDto, TContext> createSubjectCommand,
                 ClaimsPrincipal user,
                 [FromBody] TDto dto
-            ) => await CreateSubject(createSubjectCommand, user, dto));
+            ) => await CreateSubject(createSubjectCommand, user, dto))
+                .RequireAuthorization($"Permission:Create{typeof(T).Name}");
 
             return endpoints;
         }

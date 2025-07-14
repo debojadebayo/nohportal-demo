@@ -48,6 +48,7 @@
 @code {
     [Parameter] public List<ManagerDto> Managers { get; set; } = new List<ManagerDto>();
     [Parameter] public EventCallback OnManagerChanged { get; set; }
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
 
     private List<ManagerDto> managers = new();
 
@@ -79,7 +80,9 @@
             AvatarImage = "",
             AvatarTitle = "",
             AvatarDescription = "",
-            IsActive = true // Set new managers as active by default
+            IsActive = true,
+            TenantId = CustomerId,
+            CustomerId = CustomerId
         };
 
         var parameters = new DialogParameters

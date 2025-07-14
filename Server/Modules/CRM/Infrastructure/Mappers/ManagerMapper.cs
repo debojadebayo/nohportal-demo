@@ -25,7 +25,7 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             };
         }
 
-        public Manager MapWithKeycloakId(ManagerDto dto, Guid keycloakId)
+        public Manager Map(ManagerDto dto)
         {
             return new Manager
             {
@@ -38,7 +38,6 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
                 AvatarImage = dto.AvatarImage,
                 AvatarTitle = dto.AvatarTitle,
                 AvatarDescription = dto.AvatarDescription,
-                KeycloakId = keycloakId,
                 Department = dto.Department,
                 CustomerId = dto.CustomerId,
                 SearchTags = $"{dto.FirstName} {dto.LastName} {dto.Telephone} {dto.Email}".ToLower(),
@@ -87,11 +86,6 @@ namespace Server.Modules.CRM.Infrastructure.Mappers
             dto.Department = entity.Department;
             dto.CustomerId = entity.CustomerId;
             dto.RoleName = entity.RoleName;
-        }
-
-        public Manager Map(ManagerDto dto)
-        {
-            throw new NotImplementedException("Mapping from DTO to Entity without KeycloakId is not supported.");
         }
     }
 }

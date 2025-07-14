@@ -9,6 +9,7 @@ using ComposedHealthBase.Server.Interfaces;
 using ComposedHealthBase.Shared.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
+using ComposedHealthBase.Server.Helpers;
 
 using FS.Keycloak.RestApiClient.Api;
 using FS.Keycloak.RestApiClient.Authentication.ClientFactory;
@@ -51,13 +52,16 @@ namespace ComposedHealthBase.Server.Commands
 
         public async Task<TDto> Handle(TDto dto, ClaimsPrincipal user)
         {
+            ValidationHelper.ValidateDto<T, TDto>(dto);
+            
+
             var userRep = new UserRepresentation
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Username = dto.FirstName + dto.LastName,
                 Email = dto.Email,
-                RealmRoles = new List<string> { "subject" },
+                RealmRoles = new List<string> { dto.RoleName },
                 Enabled = true,
             };
 
@@ -78,7 +82,7 @@ namespace ComposedHealthBase.Server.Commands
                 );
 
                 using var rolesApi = _keycloakService.CreateRolesApi();
-                var subjectRole = await rolesApi.GetRolesByRoleNameAsync(_keycloakService.GetRealmName(), "subject");
+                var subjectRole = await rolesApi.GetRolesByRoleNameAsync(_keycloakService.GetRealmName(), dto.RoleName.ToLowerInvariant() );
 
                 using var roleMappingApi = _keycloakService.CreateRoleMapperApi();
                 await roleMappingApi.PostUsersRoleMappingsRealmByUserIdAsync(
