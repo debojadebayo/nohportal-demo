@@ -60,7 +60,7 @@ namespace ComposedHealthBase.BaseClient.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync($"api/security/createtenant", item, token);
+                var response = await _httpClient.PostAsJsonAsync($"api/security/{typeof(TTenantDto).Name.ToLowerInvariant().Replace("dto", "s")}/createtenant", item, token);
                 if (response.IsSuccessStatusCode)
                 {
                     _snackbar.Add($"Successfully added new tenant", Severity.Success);
@@ -78,7 +78,7 @@ namespace ComposedHealthBase.BaseClient.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync($"api/security/createsubject", item, token);
+                var response = await _httpClient.PostAsJsonAsync($"api/security/{typeof(TSubjectDto).Name.ToLowerInvariant().Replace("dto", "s")}/createsubject", item, token);
                 if (response.IsSuccessStatusCode)
                 {
                     _snackbar.Add($"Successfully added new subject", Severity.Success);

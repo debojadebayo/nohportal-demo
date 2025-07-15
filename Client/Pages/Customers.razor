@@ -52,7 +52,7 @@
                 OnSave="HandleReferralSave" />
         </MudTabPanel>
         <MudTabPanel Text="Managers" OnClick="GetAllManagersByCustomerId">
-            <ManagersTab Managers="managers" />
+            <ManagersTab Managers="managers" CustomerId="selectedCustomer?.Id ?? Guid.Empty" />
         </MudTabPanel>
         <MudTabPanel Text="Contracts" OnClick="GetAllContractsByCustomerId">
             <ContractsTab Contracts="contracts" CustomerId="selectedCustomer?.Id ?? Guid.Empty"

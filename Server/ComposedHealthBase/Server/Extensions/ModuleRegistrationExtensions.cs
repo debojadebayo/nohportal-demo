@@ -5,6 +5,7 @@ using ComposedHealthBase.Server.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Shared.DTOs.CRM;
 using System.Reflection;
@@ -78,8 +79,15 @@ namespace ComposedHealthBase.Server.Extensions
         }
         public static WebApplication ConfigureServicesAndMapEndpoints(this WebApplication app, bool isDevelopment, List<IModule> registeredModules)
         {
+            var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("ModuleRegistration");
+            logger.LogInformation("Configuring {ModuleCount} modules and mapping endpoints...", registeredModules.Count);
+            
             foreach (var module in registeredModules)
             {
+                var moduleName = module.GetType().Name;
+                logger.LogDebug("Configuring module: {ModuleName}", moduleName);
+                
                 module.ConfigureModuleServices(app, isDevelopment);
 
                 if (module.GetType().Name == "BaseModule")
@@ -87,18 +95,32 @@ namespace ComposedHealthBase.Server.Extensions
                     continue;
                 }
 
-                var endpointAssemblyName = $"Server.Modules.{module.GetType().Name.Replace("Module", "")}.Endpoints";
-                var endpointAssembly = Assembly.Load(endpointAssemblyName);
-
-                var endpointTypes = endpointAssembly.GetTypes()
-                                                .Where(x => x.IsAssignableTo(typeof(IEndpoints)) && x.IsClass)
-                                                .Select(Activator.CreateInstance)
-                                                .Cast<IEndpoints>();
-                foreach (var endpointType in endpointTypes)
+                try
                 {
-                    endpointType.MapEndpoints(app);
+                    var endpointAssemblyName = $"Server.Modules.{module.GetType().Name.Replace("Module", "")}.Endpoints";
+                    var endpointAssembly = Assembly.Load(endpointAssemblyName);
+
+                    var endpointTypes = endpointAssembly.GetTypes()
+                                                    .Where(x => x.IsAssignableTo(typeof(IEndpoints)) && x.IsClass)
+                                                    .Select(Activator.CreateInstance)
+                                                    .Cast<IEndpoints>();
+                    
+                    var endpointCount = 0;
+                    foreach (var endpointType in endpointTypes)
+                    {
+                        endpointType.MapEndpoints(app);
+                        endpointCount++;
+                    }
+                    
+                    logger.LogInformation("Module {ModuleName}: Mapped {EndpointCount} endpoint groups", moduleName, endpointCount);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Failed to load endpoints for module {ModuleName}", moduleName);
                 }
             }
+            
+            logger.LogInformation("Module configuration and endpoint mapping completed");
             return app;
         }
     }

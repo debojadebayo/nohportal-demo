@@ -6,6 +6,7 @@ using ComposedHealthBase.Shared.DTOs;
 using ComposedHealthBase.Server.Mappers;
 using System.Security.Claims;
 using ComposedHealthBase.Server.Interfaces;
+using ComposedHealthBase.Server.Helpers;
 namespace ComposedHealthBase.Server.Commands
 {
     public interface ICreateCommand<T, TDto, TContext>
@@ -38,6 +39,8 @@ namespace ComposedHealthBase.Server.Commands
 
         public async Task<Guid> Handle(TDto dto, ClaimsPrincipal user)
         {
+            ValidationHelper.ValidateDto<T, TDto>(dto);
+            
             var newEntity = _mapper.Map(dto);
 
             _dbContext.Set<T>().Add(newEntity);

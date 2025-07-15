@@ -14,7 +14,6 @@ namespace Server.Modules.CRM.Entities
         public string? AvatarImage { get; set; }
         public string? AvatarTitle { get; set; }
         public string? AvatarDescription { get; set; }
-        public required Guid KeycloakId { get; set; }
         public required string Department { get; set; }
         public HashSet<Employee> Employees { get; set; } = new();
         public Guid CustomerId

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Reflection;
@@ -89,21 +90,48 @@ namespace ComposedHealthBase.Server.Modules
 
         public WebApplication ConfigureModuleServices(WebApplication app, bool isDevelopment)
         {
+            var logger = app.Services.GetRequiredService<ILogger<BaseModule>>();
+            logger.LogInformation("Configuring base module services...");
+
+            // Add request logging middleware early in the pipeline
+            if (isDevelopment)
+            {
+                // For development, we want to see all requests
+                app.Use(async (context, next) =>
+                {
+                    var requestLogger = context.RequestServices.GetRequiredService<ILogger<BaseModule>>();
+                    requestLogger.LogDebug("Processing request: {Method} {Path}{QueryString}", 
+                        context.Request.Method, 
+                        context.Request.Path, 
+                        context.Request.QueryString);
+                    await next();
+                });
+            }
+
             app.UseCors("Client");
+            logger.LogDebug("CORS configured for Client origin");
+            
             app.UseAuthentication();
             app.UseAuthorization();
+            logger.LogDebug("Authentication and authorization configured");
 
+            logger.LogInformation("Initializing role permission cache...");
             InitializeRolePermissionCache(app).GetAwaiter().GetResult();
+            logger.LogInformation("Role permission cache initialized successfully");
 
             if (isDevelopment)
             {
                 app.MapOpenApi();
                 app.MapScalarApiReference();
+                logger.LogInformation("Development environment: OpenAPI and Scalar API reference enabled");
             }
             else
             {
                 app.UseHttpsRedirection();
+                logger.LogInformation("Production environment: HTTPS redirection enabled");
             }
+            
+            logger.LogInformation("Base module configuration completed");
             return app;
         }
 
