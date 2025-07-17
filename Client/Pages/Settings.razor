@@ -143,12 +143,12 @@
     {
         if (string.IsNullOrWhiteSpace(newRoleName))
         {
-            Snackbar.Add("Role name cannot be empty.", Severity.Warning);
+            Snackbar.Add("Role name cannot be empty.", MudBlazor.Severity.Warning);
             return;
         }
         if (roles.Any(r => r.Name.Equals(newRoleName, StringComparison.OrdinalIgnoreCase)))
         {
-            Snackbar.Add("Role with this name already exists.", Severity.Warning);
+            Snackbar.Add("Role with this name already exists.", MudBlazor.Severity.Warning);
             return;
         }
 
@@ -159,19 +159,19 @@
             if (response.IsSuccessStatusCode)
             {
                 roles.Add(newRole);
-                Snackbar.Add($"Role '{newRole.Name}' added successfully.", Severity.Success);
+                Snackbar.Add($"Role '{newRole.Name}' added successfully.", MudBlazor.Severity.Success);
                 addRoleDialogOpen = false;
                 newRoleName = string.Empty;
                 StateHasChanged();
             }
             else
             {
-                Snackbar.Add($"Failed to add role: {response.ReasonPhrase}", Severity.Error);
+                Snackbar.Add($"Failed to add role: {response.ReasonPhrase}", MudBlazor.Severity.Error);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
+            Snackbar.Add($"An error occurred: {ex.Message}", MudBlazor.Severity.Error);
         }
     }
 
@@ -193,7 +193,7 @@
     {
         if (currentRoleForPermissionDialog == null)
         {
-            Snackbar.Add("No role selected for managing permissions.", Severity.Error);
+            Snackbar.Add("No role selected for managing permissions.", MudBlazor.Severity.Error);
             return;
         }
 
@@ -204,7 +204,7 @@
             var response = await Http.PutAsJsonAsync($"api/auth/roles/update", currentRoleForPermissionDialog);
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add($"Permissions for role '{currentRoleForPermissionDialog.Name}' updated successfully.", Severity.Success);
+                Snackbar.Add($"Permissions for role '{currentRoleForPermissionDialog.Name}' updated successfully.", MudBlazor.Severity.Success);
                 // Refresh roles data from server
                 roles = await Http.GetFromJsonAsync<List<RoleDto>>("api/auth/roles/getall") ?? new();
                 foreach (var role in roles) // Re-ensure permissions list is not null after refresh
@@ -217,12 +217,12 @@
             }
             else
             {
-                Snackbar.Add($"Error updating permissions: {response.ReasonPhrase}", Severity.Error);
+                Snackbar.Add($"Error updating permissions: {response.ReasonPhrase}", MudBlazor.Severity.Error);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
+            Snackbar.Add($"An error occurred: {ex.Message}", MudBlazor.Severity.Error);
         }
         finally
         {

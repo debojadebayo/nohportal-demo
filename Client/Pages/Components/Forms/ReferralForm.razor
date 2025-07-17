@@ -2,6 +2,9 @@
 @using Shared.DTOs.Scheduling
 @using Shared.DTOs.CRM
 @using Shared.Validators
+@using Shared.Enums
+@using Shared.Factories.Scheduling
+@using FluentValidation
 @using MudBlazor
 @using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.BaseClient.Components
@@ -13,376 +16,167 @@
 @inject ILazyLookupService<ManagerDto> ManagerLookupService
 @inject ILazyLookupService<EmployeeDto> EmployeeLookupService
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
+@inject ReferralValidator referralValidator
 
-    <MudForm @ref="form" Model="Model" Validation="@(referralValidator.ValidateValue)" ValidationDelay="0">
-                <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
-                    <MudExpansionPanel Expanded="true">
-                        <TitleContent>
-                            <div class="d-flex">
-                                <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3" />
-                                <MudText>Basic Information</MudText>
-                            </div>
-                        </TitleContent>
-                        <ChildContent>
-                            <MudGrid>
-                                <MudItem xs="12">
-                                    <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.ReadOnly" @bind-ItemId="CustomerId" Label="Customer" />
-                                </MudItem>
-                                <MudItem xs="12" sm="6">
-                                    <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="Model.EmployeeId" TenantConstraint="CustomerId" Label="Employee" />
-                                </MudItem>
-                                <MudItem xs="12" sm="6">
-                                    <MudDatePicker @bind-Date="Model.Details.ReferralDate" For="@(() => Model.Details.ReferralDate)"
-                                        Label="Referral Date" Variant="Variant.Outlined" />
-                                </MudItem>
-                                <MudItem xs="12" sm="6">
-                                    <MudTextField @bind-Value="Model.Title" Label="Title" Variant="Variant.Outlined" For="@(() => Model.Title)" Immediate="false" DebounceInterval="300" />
-                                </MudItem>
-                                <MudItem xs="12">
-                                    <MudTextField @bind-Value="Model.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Lines="3" For="@(() => Model.ReferralDetails)" Immediate="false" DebounceInterval="300" />
-                                </MudItem>
-                            </MudGrid>
-                        </ChildContent>
-                    </MudExpansionPanel>
-                
-                <!-- Referring Manager Section -->
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.Business" Class="mr-3" />
-                            <MudText>Section 1: Referring Manager</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudGrid>
-                            <MudItem xs="12" sm="6">
-                                <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search"
-                                    ItemId="@(Model.ReferringManagerId ?? Guid.Empty)" Label="Referring Manager" 
-                                    TenantConstraint="CustomerId" 
-                                    SelectedItemChanged="@((ManagerDto item) => Model.ReferringManagerId = item?.Id)" />
-                                
-                                <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search"
-                                    ItemId="@(Model.ReferringManager2Id ?? Guid.Empty)" Label="Additional Referring Manager" 
-                                    TenantConstraint="CustomerId" 
-                                    SelectedItemChanged="@((ManagerDto item) => Model.ReferringManager2Id = item?.Id)" />
-                            </MudItem>
-                        </MudGrid>
-                        <MudText Typo="Typo.caption" Class="mt-2">
-                            A copy of the report will be sent to the above manager(s), a copy may also be sent to HR.
-                        </MudText>
-                    </ChildContent>
-                </MudExpansionPanel>
+<!-- Referral Type Selection -->
+<MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+    <MudExpansionPanel Expanded="true">
+        <TitleContent>
+            <div class="d-flex">
+                <MudIcon Icon="@Icons.Material.Filled.Category" Class="mr-3" />
+                <MudText>Referral Type</MudText>
+            </div>
+        </TitleContent>
+        <ChildContent>
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.Title" For="@(() => Model.Title)"
+                        Label="Title" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect Value="Model.ReferralType" For="@(() => Model.ReferralType)" 
+                        Label="Select Referral Type" Variant="Variant.Outlined" 
+                        ValueChanged="@OnReferralTypeChanged"
+                        T="ReferralTypeEnum">
+                        <MudSelectItem Value="ReferralTypeEnum.CaseReferral">Case Referral</MudSelectItem>
+                        <MudSelectItem Value="ReferralTypeEnum.PphaForm_Admin">PPHA Form - Administrative or Office Worker </MudSelectItem>
+                        <MudSelectItem Value="ReferralTypeEnum.PphaForm_Student">PPHA Form - Student</MudSelectItem>
+                        <MudSelectItem Value="ReferralTypeEnum.PphaForm_ClinStudent">PPHA Form - Clinical Student</MudSelectItem>
+                        <MudSelectItem Value="ReferralTypeEnum.PphaForm_ClinWorker">PPHA Form - Clinical Worker</MudSelectItem>
+                        <MudSelectItem Value="ReferralTypeEnum.PphaForm_ManWorker">PPHA Form - Manual or Safety Critical Worker</MudSelectItem>
+                        <MudSelectItem Value="ReferralTypeEnum.PphaFitnessCertificate">PPHA Fitness Certificate</MudSelectItem>
+                        <MudSelectItem Value="ReferralTypeEnum.PphaClinFitnessCertificate">PPHA Clinical Fitness Certificate</MudSelectItem>
+                        <MudSelectItem Value="ReferralTypeEnum.StudentClinFitnessCertificate">Student Clinical Fitness Certificate</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Model.ReferralDetails" For="@(() => Model.ReferralDetails)"
+                        Label="Referral Details" Variant="Variant.Outlined" Lines="3" />
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
+    </MudExpansionPanel>
+</MudExpansionPanels>
 
-                <!-- HR Contact Section -->
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.People" Class="mr-3" />
-                            <MudText>Section 2: HR Contact</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudGrid>
-                            <MudItem xs="12" sm="6">
-                                <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search"
-                                    ItemId="@(Model.HrContactId ?? Guid.Empty)" Label="HR Contact" 
-                                    TenantConstraint="CustomerId" 
-                                    SelectedItemChanged="@((ManagerDto item) => Model.HrContactId = item?.Id)" />
-                            </MudItem>
-                        </MudGrid>
-                    </ChildContent>
-                </MudExpansionPanel>
+<!-- Render appropriate form based on referral type -->
+@{
+    RenderFragment formContent;
+    switch (Model.ReferralType)
+    {
+        case ReferralTypeEnum.CaseReferral when Model.Details is CaseReferralDetailsDto caseDetails:
+            formContent = @<CaseReferralForm Model="caseDetails" 
+                OnSaveComplete="HandleDetailsUpdate" 
+                CustomerId="CustomerId" 
+                ShowAsDialog="ShowAsDialog" />;
+            break;
 
-                <!-- Employee Details Section -->
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-3" />
-                            <MudText>Section 3: Employee Details</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudText Typo="Typo.caption" Class="mb-2">
-                            Employee details are set in the Basic Information section above.
-                        </MudText>
-                    </ChildContent>
-                </MudExpansionPanel>
+        case ReferralTypeEnum.PphaForm_Admin when Model.Details is PphaFormAdminDto adminDetails:
+            formContent = @<PphaAdminForm Model="adminDetails" 
+                OnSaveComplete="HandleDetailsUpdate" 
+                CustomerId="CustomerId" 
+                ShowAsDialog="ShowAsDialog" />;
+            break;
 
-                <!-- Finance Section -->
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Class="mr-3" />
-                            <MudText>Section 4: Finance</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudGrid>
-                            <MudItem xs="12" sm="4">
-                                <MudTextField @bind-Value="Model.Details.PurchaseOrderNumber" For="@(() => Model.Details.PurchaseOrderNumber)"
-                                    Immediate="false" DebounceInterval="300" Label="Purchase Order No (If Required)" Variant="Variant.Outlined" />
-                            </MudItem>
-                            <MudItem xs="12" sm="4">
-                                <MudTextField @bind-Value="Model.Details.FinanceContactName" For="@(() => Model.Details.FinanceContactName)"
-                                    Immediate="false" DebounceInterval="300" Label="Finance/Accounts Contact Name" Variant="Variant.Outlined" />
-                            </MudItem>
-                            <MudItem xs="12" sm="4">
-                                <MudTextField @bind-Value="Model.Details.FinanceContactNumber" For="@(() => Model.Details.FinanceContactNumber)"
-                                    Immediate="false" DebounceInterval="300" Label="Finance/Accounts Contact Number" Variant="Variant.Outlined" />
-                            </MudItem>
-                        </MudGrid>
-                    </ChildContent>
-                </MudExpansionPanel>
+        case ReferralTypeEnum.PphaForm_Student when Model.Details is PphaFormStudentDto studentDetails:
+            formContent = @<PphaStudentForm Model="studentDetails" 
+                OnSaveComplete="HandleDetailsUpdate" 
+                CustomerId="CustomerId" 
+                ShowAsDialog="ShowAsDialog" />;
+            break;
 
-                <!-- Employee Informed Section -->
+        case ReferralTypeEnum.PphaForm_ClinStudent when Model.Details is PphaFormClinStudentDto clinStudentDetails:
+            formContent = @<PphaFormClinStudentForm Model="clinStudentDetails" 
+                OnSaveComplete="HandleDetailsUpdate" 
+                CustomerId="CustomerId" 
+                ShowAsDialog="ShowAsDialog" />;
+            break;
+
+        case ReferralTypeEnum.PphaForm_ClinWorker when Model.Details is PphaFormClinWorkerDto clinWorkerDetails:
+            formContent = @<PphaFormClinWorkerForm Model="clinWorkerDetails" 
+                OnSaveComplete="HandleDetailsUpdate" 
+                CustomerId="CustomerId" 
+                ShowAsDialog="ShowAsDialog" />;
+            break;
+
+        case ReferralTypeEnum.PphaForm_ManWorker when Model.Details is PphaFormManWorkerDto manWorkerDetails:
+            formContent = @<PphaFormManWorkerForm Model="manWorkerDetails" 
+                OnSaveComplete="HandleDetailsUpdate" 
+                CustomerId="CustomerId" 
+                ShowAsDialog="ShowAsDialog" />;
+            break;
+
+        case ReferralTypeEnum.PphaFitnessCertificate when Model.Details is PphaFitnessCertificateDto fitnessDetails:
+            formContent = @<PphaFitnessCertificateForm Model="fitnessDetails" 
+                OnSaveComplete="HandleDetailsUpdate" 
+                CustomerId="CustomerId" 
+                ShowAsDialog="ShowAsDialog" />;
+            break;
+
+        case ReferralTypeEnum.PphaClinFitnessCertificate when Model.Details is PphaClinFitnessCertificateDto clinFitnessDetails:
+            formContent = @<PphaClinFitnessCertificateForm Model="clinFitnessDetails" 
+                OnSaveComplete="HandleDetailsUpdate" 
+                CustomerId="CustomerId" 
+                ShowAsDialog="ShowAsDialog" />;
+            break;
+
+        case ReferralTypeEnum.StudentClinFitnessCertificate when Model.Details is StudentClinFitnessCertificateDto studentClinFitnessDetails:
+            formContent = @<StudentClinFitnessCertificateForm Model="studentClinFitnessDetails" 
+                OnSaveComplete="HandleDetailsUpdate" 
+                CustomerId="CustomerId" 
+                ShowAsDialog="ShowAsDialog" />;
+            break;
+
+        default:
+            formContent = @<MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
                 <MudExpansionPanel Expanded="true">
                     <TitleContent>
                         <div class="d-flex">
                             <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3" />
-                            <MudText>Section 5: Employee Informed</MudText>
+                            <MudText>Select Referral Type</MudText>
                         </div>
                     </TitleContent>
                     <ChildContent>
                         <MudGrid>
                             <MudItem xs="12">
-                                <MudText Typo="Typo.subtitle2" Class="mb-2">
-                                    Can the referrer confirm that the employee has been informed of the referral and the purpose of this?
+                                <MudText Typo="Typo.body1" Class="mb-3">
+                                    Please select a referral type from the dropdown above to continue.
                                 </MudText>
-                                <MudRadioGroup T="bool" @bind-Value="Model.Details.EmployeeInformed" For="@(() => Model.Details.EmployeeInformed)">
-                                    <MudRadio T="bool" Value="true" Color="Color.Primary">Yes</MudRadio>
-                                    <MudRadio T="bool" Value="false" Color="Color.Primary">No</MudRadio>
-                                </MudRadioGroup>
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudDatePicker @bind-Date="Model.Details.DateEmployeeInformed" For="@(() => Model.Details.DateEmployeeInformed)"
-                                    Label="Date Employee was Informed" Variant="Variant.Outlined" />
-                            </MudItem>
-                            <MudItem xs="12">
-                                <MudTextField @bind-Value="Model.Details.AccessibilityNeeds" For="@(() => Model.Details.AccessibilityNeeds)"
-                                    Immediate="false" DebounceInterval="300" Label="Accessibility needs (e.g. wheelchair access needed)" 
-                                    Variant="Variant.Outlined" Lines="3" />
+                                <MudButton Variant="Variant.Outlined" 
+                                           Color="Color.Primary" 
+                                           StartIcon="@Icons.Material.Filled.ArrowUpward">
+                                    Select Referral Type Above
+                                </MudButton>
                             </MudItem>
                         </MudGrid>
                     </ChildContent>
                 </MudExpansionPanel>
+            </MudExpansionPanels>;
+            break;
+    }
+}
 
-                <!-- Work Pattern Section -->
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.Schedule" Class="mr-3" />
-                            <MudText>Section 6: Employee Work Pattern</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudGrid>
-                            <MudItem xs="12" sm="6">
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.IsTemporary" For="@(() => Model.Details.IsTemporary)" Label="Temporary" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.IsPermanent" For="@(() => Model.Details.IsPermanent)" Label="Permanent" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.IsCasual" For="@(() => Model.Details.IsCasual)" Label="Casual" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.IsFullTime" For="@(() => Model.Details.IsFullTime)" Label="Full Time" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.IsPartTime" For="@(() => Model.Details.IsPartTime)" Label="Part Time" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.IsNightWorking" For="@(() => Model.Details.IsNightWorking)" Label="Night Working" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.IsRotationalShift" For="@(() => Model.Details.IsRotationalShift)" Label="Rotational Shift" />
-                            </MudItem>
-                        </MudGrid>
-                    </ChildContent>
-                </MudExpansionPanel>
+@formContent
 
-                <!-- Employee's Role Hazards -->
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.Warning" Class="mr-3" />
-                            <MudText>Section 7: Employee's Role & Hazards</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudGrid>
-                            <MudItem xs="12" sm="6">
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.ManualHandlingHeavyLoads" Label="Manual Handling - Heavy Loads" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.ManualHandlingOther" Label="Manual Handling - Other" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.VibratingEquipment" Label="Vibrating plant/tools/equipment" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.Noise" Label="Noise" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.RepetitiveWork" Label="Repetitive work activity/operations" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.ProlongedStanding" Label="Prolonged standing" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.ProlongedSitting" Label="Prolonged sitting" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.ExtremesOfTemperature" Label="Extremes of temperature e.g. very hot/cold" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.ConfinedSpaces" Label="Confined spaces" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.AdverseWeatherConditions" Label="Adverse weather conditions e.g. frost, rain" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.WorkingAtHeights" Label="Working at heights" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.DrivingLgcPcvMinibus" Label="Driving LGC/PCV/minibus" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.FumesDustGases" Label="Fumes, dust, gases, toners, etc." />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.SolventsOilsPaints" Label="Solvents, oils, paints, (de)-greasers, etc." />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.PesticidesHerbicidesInsecticides" Label="Pesticides, herbicides, insecticides" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.DetergentCleaningChemicals" Label="Detergent or other cleaning chemicals" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.ExposureProneProcedures" Label="Exposure prone procedures" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.BiologicalHazards" Label="Biological hazards, e.g. urine, blood, etc." />
-                            </MudItem>
-                            <MudItem xs="12">
-                                <MudTextField @bind-Value="Model.Details.EmployeeDutiesDescription" For="@(() => Model.Details.EmployeeDutiesDescription)"
-                                    Immediate="false" DebounceInterval="300" Label="Brief description of the employee's duties" 
-                                    Variant="Variant.Outlined" Lines="4" />
-                            </MudItem>
-                        </MudGrid>
-                    </ChildContent>
-                </MudExpansionPanel>
-
-                <!-- Section 8: Purpose of Referral -->
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-3" />
-                            <MudText>Section 8: Purpose of Referral</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudGrid>
-                            <MudItem xs="12" sm="6">
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.ProlongedSicknessAbsence" Label="Prolonged sickness and absence" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.RecurrentShortTermSickness" Label="Recurrent short term sickness or absences" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.ConcernsAboutWorkPerformance" Label="Concerns about work performance and/or fitness for work" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.AdviceOnWorkAdaptations" Label="Advice on potential work adaptations" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.HealthSurveillanceProcesses" Label="Health surveillance processes, e.g. regular screening related to workplace hazards" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.OccupationalExposureHazardConcerns" Label="Occupational exposure hazard concerns" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.AdviceFollowingWorkplaceIllnessInjury" Label="Advice following workplace illness/injury" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.FitnessToAttendDisciplinary" Label="Fitness to attend disciplinary investigations or hearing" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.AdviceRelatedToSubstanceMisuse" Label="Advice related to substance misuse" />
-                            </MudItem>
-                        </MudGrid>
-                    </ChildContent>
-                </MudExpansionPanel>
-
-                <!-- Attendance Section -->
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.EventAvailable" Class="mr-3" />
-                            <MudText>Section 9: Attendance</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>      
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <MudTextField @bind-Value="Model.Details.AttendanceRecord12Months" For="@(() => Model.Details.AttendanceRecord12Months)"
-                                    Immediate="false" DebounceInterval="300" Label="Employee's attendance record over the past 12 months" 
-                                    Variant="Variant.Outlined" Lines="4" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudDatePicker @bind-Date="Model.Details.FirstDateOfAbsence" For="@(() => Model.Details.FirstDateOfAbsence)"
-                                    Label="First date of absence (if currently absent)" Variant="Variant.Outlined" />
-                            </MudItem>
-                        </MudGrid>
-
-                        <MudText Typo="Typo.subtitle2" Class="mt-4 mb-2">
-                            What category best describes the reason for the employee's absence?
-                        </MudText>
-                        <MudGrid>
-                            <MudItem xs="12" sm="6">
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.BackAndNeckProblems" Label="Back and Neck Problems" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.OtherMusculoskeletal" Label="Other musculoskeletal" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.EyeEarNoseMouthDental" Label="Eye/ear/nose/mouth/dental" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.GenitourinaryGynecological" Label="Genitourinary/gynecological" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.HeartBpCirculation" Label="Heart/BP/circulation" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.Infections" Label="Infections" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.Neurological" Label="Neurological" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.Hospitalisation" Label="Hospitalisation" />
-                            </MudItem>
-                            <MudItem xs="12" sm="6">
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.Skin" Label="Skin" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.ChestRespiratory" Label="Chest/respiratory" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.PregnancyRelated" Label="Pregnancy related" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.StomachLiverKidneyDigestion" Label="Stomach/liver/kidney/digestion" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.StressDepressionAnxiety" Label="Stress/depression/anxiety" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.OtherMentalHealth" Label="Other mental health" />
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.Cancer" Label="Cancer" />
-                            </MudItem>
-                        </MudGrid>
-                    </ChildContent>
-                </MudExpansionPanel>
-
-                <!-- Standard Questions -->
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.HelpOutline" Class="mr-3" />
-                            <MudText>Section 10: Standard Questions</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudText Typo="Typo.subtitle2" Class="mb-2">
-                            Please read and tick the appropriate boxes below for which you would like an occupational health opinion/response on:
-                        </MudText>
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.IsEmployeeFitForWork" 
-                                    Label="Is the employee fit for work? If not, when in your judgement are they likely to be fit for work?" />
-                                
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.WorkBasedFactorsImplication" 
-                                    Label="Are there likely to be any work based factors that have an implication in the current medical condition?" />
-                                
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.SuggestedActionsForReturn" 
-                                    Label="Are there suggested actions that management could consider taking to facilitate a more effective return to work? (e.g. temporarily amended duties, temporary move to an alternative role or a phased return plan)" />
-                                
-                                <MudCheckBox T="bool" @bind-Value="Model.Details.EqualityAct2010Related" 
-                                    Label="Is the employee's absence likely to be related to a condition they have that is likely to be covered by the Equality Act 2010? If so, are there any specific adjustments that should be considered by management? (E.g. changes to duties, hours, working environment or consideration of an alternative role.)" />
-                            </MudItem>
-                        </MudGrid>
-                    </ChildContent>
-                </MudExpansionPanel>
-
-                <!-- Additional Questions -->
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.Comment" Class="mr-3" />
-                            <MudText>Section 11: Additional Questions or Comments</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudTextField @bind-Value="Model.Details.AdditionalQuestionsComments" For="@(() => Model.Details.AdditionalQuestionsComments)"
-                            Immediate="false" DebounceInterval="300" Label="If you have any other specific questions you would like answered or comments to add please submit these below" 
-                            Variant="Variant.Outlined" Lines="6" />
-                    </ChildContent>
-                </MudExpansionPanel>
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.Attachment" Class="mr-3" />
-                            <MudText>Section 12: Attachments</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <DocumentBrowser CompactMode="false" TDto="EmployeeDocumentDto" @bind-DocumentIds="Model.RelatedDocumentIds" />
-                    </ChildContent>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-
-            <!-- Action Buttons -->
-            <MudCardActions Class="mt-4">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" 
-                    OnClick="@(async () => await Save())" 
-                    Disabled="@_saving"
-                    Class="ml-auto">
-                    @if (_saving)
-                    {
-                        <MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" />
-                        <MudText Class="ml-2">@(IsNewReferral ? "Submitting..." : "Updating...")</MudText>
-                    }
-                    else
-                    {
-                        <MudIcon Icon="@Icons.Material.Filled.Save" Class="mr-2" />
-                        <MudText>@(IsNewReferral ? "Submit Referral" : "Update Referral")</MudText>
-                    }
-                </MudButton>
-            </MudCardActions>
-        </MudForm>
+<MudForm @ref="form" Model="Model" Validator="@referralValidator.ValidateValue" ValidationDelay="0">
+    <!-- Action Buttons -->
+    <MudCardActions Class="mt-4">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+            OnClick="@(async () => await Save())" 
+            Disabled="@_saving"
+            Class="ml-auto">
+            @if (_saving)
+            {
+                <MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ml-2">@(IsNewReferral ? "Submitting..." : "Updating...")</MudText>
+            }
+            else
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Save" Class="mr-2" />
+                <MudText>@(IsNewReferral ? "Submit Referral" : "Update Referral")</MudText>
+            }
+        </MudButton>
+    </MudCardActions>
+</MudForm>
 
 @code {
     [Parameter] public ReferralDto Model { get; set; } = new();
@@ -393,7 +187,6 @@
 
     private MudForm form = new();
     private ReferralDetailsValidator formDataValidator = new();
-    private ReferralValidator referralValidator = new();
     
     private bool _saving = false;
     
@@ -410,57 +203,95 @@
         // Initialize Details if it doesn't exist
         if (Model.Details == null)
         {
-            Model.Details = new ReferralDetailsDto();
+            Model.Details = ReferralDetailsFactory.Create(Model.ReferralType);
         }
+    }
+
+    private void OnReferralTypeChanged(ReferralTypeEnum newType)
+    {
+        Model.ReferralType = newType;
+        
+        // Create new details object for the selected type
+        Model.Details = ReferralDetailsFactory.Create(newType);
+        
+        // Set the ReferralId on the new details object
+        if (Model.Details != null && Model.Id != Guid.Empty)
+        {
+            Model.Details.ReferralId = Model.Id;
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task HandleDetailsUpdate<T>(T detailsModel) where T : class
+    {
+        // Update the main model's details with the updated details
+        Model.Details = detailsModel as IReferralDetailsDto;
+        
+        // Update the main model properties from the details if needed
+        if (Model.Details != null)
+        {
+            Model.Details.ReferralId = Model.Id;
+        }
+        
+        // Call the original save logic
+        await Save();
     }
 
     private async Task Save()
     {
-        await form.Validate();
-        if (form.IsValid)
+        // Only validate the main form if we're using the fallback form- why u
+        if (form != null && (Model.ReferralType == ReferralTypeEnum.PphaForm_ClinStudent || 
+                           Model.ReferralType == ReferralTypeEnum.PphaForm_ClinWorker ||
+                           Model.ReferralType == ReferralTypeEnum.PphaForm_ManWorker ||
+                           Model.ReferralType == ReferralTypeEnum.PphaClinFitnessCertificate ||
+                           Model.ReferralType == ReferralTypeEnum.StudentClinFitnessCertificate))
         {
-            _saving = true;
-            StateHasChanged();
-            
-            try
+            await form.Validate();
+            if (!form.IsValid)
             {
-                if (IsNewReferral)
-                {
-                    await ReferralLookupService.AddItem(Model, CancellationToken.None);
-                    Snackbar.Add("Referral submitted successfully!", Severity.Success);
-                    
-                    // Notify parent component
-                    if (OnSubmitComplete.HasDelegate)
-                    {
-                        await OnSubmitComplete.InvokeAsync(Model);
-                    }
-                }
-                else
-                {
-                    await ReferralLookupService.UpdateItem(Model, CancellationToken.None);
-                    Snackbar.Add("Referral updated successfully!", Severity.Success);
-                    
-                    // Notify parent component
-                    if (OnSaveComplete.HasDelegate)
-                    {
-                        await OnSaveComplete.InvokeAsync(Model);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Failed to save referral: {ex.Message}", Severity.Error);
-                Console.Error.WriteLine($"Error saving referral: {ex}");
-            }
-            finally
-            {
-                _saving = false;
-                StateHasChanged();
+                Snackbar.Add("Please correct the validation errors before submitting.", MudBlazor.Severity.Error);
+                return;
             }
         }
-        else
+        
+        _saving = true;
+        StateHasChanged();
+        
+        try
         {
-            Snackbar.Add("Please correct the validation errors before submitting.", Severity.Error);
+            if (IsNewReferral)
+            {
+                await ReferralLookupService.AddItem(Model, CancellationToken.None);
+                Snackbar.Add("Referral submitted successfully!", MudBlazor.Severity.Success);
+                
+                // Notify parent component
+                if (OnSubmitComplete.HasDelegate)
+                {
+                    await OnSubmitComplete.InvokeAsync(Model);
+                }
+            }
+            else
+            {
+                await ReferralLookupService.UpdateItem(Model, CancellationToken.None);
+                Snackbar.Add("Referral updated successfully!", MudBlazor.Severity.Success);
+                
+                // Notify parent component
+                if (OnSaveComplete.HasDelegate)
+                {
+                    await OnSaveComplete.InvokeAsync(Model);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to save referral: {ex.Message}", MudBlazor.Severity.Error);
+            Console.Error.WriteLine($"Error saving referral: {ex}");
+        }
+        finally
+        {
+            _saving = false;
+            StateHasChanged();
         }
     }
 
@@ -474,9 +305,9 @@
         if (result == true)
         {
             Model = new ReferralDto();
-            Model.Details = new ReferralDetailsDto();
+            Model.Details = ReferralDetailsFactory.Create(Model.ReferralType);
             form.ResetValidation();
-            Snackbar.Add("Form cleared.", Severity.Info);
+            Snackbar.Add("Form cleared.", MudBlazor.Severity.Info);
         }
     }
 }

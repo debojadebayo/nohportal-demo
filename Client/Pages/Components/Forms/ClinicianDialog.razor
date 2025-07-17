@@ -11,7 +11,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudForm Model="@Clinician" @ref="@form" Validation="@(clinicianValidator.ValidateValue)" ValidationDelay="0">
+        <MudForm Model="@Clinician" @ref="@form" Validator="@(clinicianValidator.ValidateValue)" ValidationDelay="0">
             <MudGrid>
                 <MudItem xs="12" sm="6">
                     <MudTextField @bind-Value="Clinician.FirstName" For="@(() => Clinician.FirstName)" Immediate="true" Label="First Name" Variant="Variant.Outlined" />

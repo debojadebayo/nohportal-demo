@@ -105,6 +105,7 @@
 
     private async Task HandleReferralSelected(ReferralDto? referral)
     {
+        selectedReferralId = referral?.Id;
         if (referral != null && OnReferralSelected.HasDelegate)
         {
             await OnReferralSelected.InvokeAsync(referral);
@@ -142,7 +143,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error searching referrals: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Error searching referrals: {ex.Message}", MudBlazor.Severity.Error);
         }
     }
 

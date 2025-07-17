@@ -1,50 +1,77 @@
 using ComposedHealthBase.Server.Mappers;
 using Server.Modules.Scheduling.Entities;
 using Shared.DTOs.Scheduling;
+using Shared.Enums;
+using Shared.Factories.Scheduling;
+using System.Text.Json;
 
 public class ReferralMapper : IMapper<Referral, ReferralDto>
 {
     public ReferralDto Map(Referral entity)
     {
-        return new ReferralDto
+        var dto = new ReferralDto
         {
             Id = entity.Id,
             ReferralDetails = entity.ReferralDetails,
             Title = entity.Title,
             ReferralStatus = entity.ReferralStatus,
-            CreatedBy = entity.CreatedBy,
-            LastModifiedBy = entity.LastModifiedBy,
-            CreatedDate = entity.CreatedDate,
-            ModifiedDate = entity.ModifiedDate,
+            ReferralType = entity.ReferralType,
             CustomerId = entity.CustomerId,
             EmployeeId = entity.EmployeeId,
             RelatedDocumentIds = entity.RelatedDocumentIds.ToList(),
-            Details = entity.Details ?? new ReferralDetailsDto { ReferralId = entity.Id }
+            CreatedBy = entity.CreatedBy,
+            LastModifiedBy = entity.LastModifiedBy,
+            CreatedDate = entity.CreatedDate,
+            ModifiedDate = entity.ModifiedDate
         };
+
+        dto.Details = DeserializeDetails(entity.Details, entity.ReferralType);
+        return dto;
     }
 
     public Referral Map(ReferralDto dto)
     {
-        return new Referral
+        var entity = new Referral
         {
             ReferralDetails = dto.ReferralDetails,
             Title = dto.Title,
             ReferralStatus = dto.ReferralStatus,
+            ReferralType = dto.ReferralType,
             CustomerId = dto.CustomerId,
             EmployeeId = dto.EmployeeId,
             RelatedDocumentIds = dto.RelatedDocumentIds.ToArray(),
-            Details = dto.Details
         };
+
+        if (dto.Details != null)
+        {
+            entity.Details = JsonSerializer.SerializeToDocument(dto.Details, dto.Details.GetType());
+        }
+
+        return entity;
     }
 
-    public IEnumerable<ReferralDto> Map(IEnumerable<Referral> entities)
+    private IReferralDetailsDto? DeserializeDetails(JsonDocument? details, ReferralTypeEnum type)
     {
-        return entities.Select(Map);
-    }
+        if (details == null)
+        {
+            return ReferralDetailsFactory.Create(type);
+        }
 
-    public IEnumerable<Referral> Map(IEnumerable<ReferralDto> dtos)
-    {
-        return dtos.Select(Map);
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+        return type switch
+        {
+            ReferralTypeEnum.CaseReferral => JsonSerializer.Deserialize<CaseReferralDetailsDto>(details, options),
+            ReferralTypeEnum.PphaClinFitnessCertificate => JsonSerializer.Deserialize<PphaClinFitnessCertificateDto>(details, options),
+            ReferralTypeEnum.PphaFitnessCertificate => JsonSerializer.Deserialize<PphaFitnessCertificateDto>(details, options),
+            ReferralTypeEnum.PphaForm_Admin => JsonSerializer.Deserialize<PphaFormAdminDto>(details, options),
+            ReferralTypeEnum.PphaForm_Student => JsonSerializer.Deserialize<PphaFormStudentDto>(details, options),
+            ReferralTypeEnum.PphaForm_ClinStudent => JsonSerializer.Deserialize<PphaFormClinStudentDto>(details, options),
+            ReferralTypeEnum.PphaForm_ClinWorker => JsonSerializer.Deserialize<PphaFormClinWorkerDto>(details, options),
+            ReferralTypeEnum.PphaForm_ManWorker => JsonSerializer.Deserialize<PphaFormManWorkerDto>(details, options),
+            ReferralTypeEnum.StudentClinFitnessCertificate => JsonSerializer.Deserialize<StudentClinFitnessCertificateDto>(details, options),
+            _ => throw new NotSupportedException($"Referral type '{type}' is not supported for deserialization.")
+        };
     }
 
     public void Map(ReferralDto dto, Referral entity)
@@ -52,27 +79,42 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
         entity.ReferralDetails = dto.ReferralDetails;
         entity.Title = dto.Title;
         entity.ReferralStatus = dto.ReferralStatus;
+        entity.ReferralType = dto.ReferralType;
         entity.CustomerId = dto.CustomerId;
         entity.EmployeeId = dto.EmployeeId;
         entity.RelatedDocumentIds = dto.RelatedDocumentIds.ToArray();
-        entity.Details = dto.Details;
+
+        if (dto.Details != null)
+        {
+            entity.Details = JsonSerializer.SerializeToDocument(dto.Details, dto.Details.GetType());
+        }
+        else
+        {
+            entity.Details = null;
+        }
     }
 
     public void Map(Referral entity, ReferralDto dto)
     {
-        dto.Id = entity.Id;
-        dto.ReferralDetails = entity.ReferralDetails;
-        dto.Title = entity.Title;
-        dto.ReferralStatus = entity.ReferralStatus;
-        dto.CreatedBy = entity.CreatedBy;
-        dto.LastModifiedBy = entity.LastModifiedBy;
-        dto.CreatedDate = entity.CreatedDate;
-        dto.ModifiedDate = entity.ModifiedDate;
-        dto.CustomerId = entity.CustomerId;
-        dto.EmployeeId = entity.EmployeeId;
-        dto.RelatedDocumentIds = entity.RelatedDocumentIds.ToList();
-        dto.Details = entity.Details ?? new ReferralDetailsDto { ReferralId = entity.Id };
+        var mappedDto = Map(entity);
+        dto.Id = mappedDto.Id;
+        dto.ReferralDetails = mappedDto.ReferralDetails;
+        dto.Title = mappedDto.Title;
+        dto.ReferralStatus = mappedDto.ReferralStatus;
+        dto.ReferralType = mappedDto.ReferralType;
+        dto.Details = mappedDto.Details;
+        dto.CustomerId = mappedDto.CustomerId;
+        dto.EmployeeId = mappedDto.EmployeeId;
+        dto.RelatedDocumentIds = mappedDto.RelatedDocumentIds;
+        dto.CreatedBy = mappedDto.CreatedBy;
+        dto.LastModifiedBy = mappedDto.LastModifiedBy;
+        dto.CreatedDate = mappedDto.CreatedDate;
+        dto.ModifiedDate = mappedDto.ModifiedDate;
     }
+
+    public IEnumerable<ReferralDto> Map(IEnumerable<Referral> entities) => entities.Select(Map);
+
+    public IEnumerable<Referral> Map(IEnumerable<ReferralDto> dtos) => dtos.Select(Map);
 
     public void Map(IEnumerable<ReferralDto> dtos, IEnumerable<Referral> entities)
     {

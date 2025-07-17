@@ -3,9 +3,9 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.Scheduling
 {
-    public class ReferralDetailsDto : BaseDto<ReferralDetailsDto>, IDto, IAuditDto
+    public class CaseReferralDetailsDto : BaseDto<CaseReferralDetailsDto>, IReferralDetailsDto
     {
-        public Guid ReferralId { get; set; }
+        public Guid? ReferralId { get; set; }
 
         // Section 1: Referring Manager
         public Guid? ReferringManagerId { get; set; }
@@ -23,6 +23,9 @@ namespace Shared.DTOs.Scheduling
         public string PurchaseOrderNumber { get; set; } = string.Empty;
         public string FinanceContactName { get; set; } = string.Empty;
         public string FinanceContactNumber { get; set; } = string.Empty;
+
+        // Reason for Referral
+        public string ReasonForReferral { get; set; } = string.Empty;
 
         // Section 5: Employee Informed
         public bool EmployeeInformed { get; set; }

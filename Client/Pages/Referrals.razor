@@ -1,8 +1,9 @@
-﻿@page "/referrals"
+@page "/referrals"
 @page "/referrals/{SelectedReferralId:guid}"
 @using Shared.DTOs.CRM
 @using Shared.DTOs.Scheduling
 @using Shared.Enums
+@using Shared.Factories.Scheduling
 @using Client.Pages.Components.TabComponents
 @using ComposedHealthBase.BaseClient.Services
 @using ComposedHealthBase.BaseClient.Components
@@ -36,7 +37,7 @@
 
 @if (selectedReferral != null)
 {
-    <ReferralTab Model="selectedReferral" 
+    <ReferralsTab Model="selectedReferral" 
                 OnSave="HandleReferralSave"
                 OnSubmit="HandleReferralSubmit"
                 OnDelete="DeleteReferral" 
@@ -66,7 +67,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to load referral: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Failed to load referral: {ex.Message}", MudBlazor.Severity.Error);
         }
     }
 
@@ -74,14 +75,15 @@
     {
         selectedReferral = new ReferralDto 
         { 
-            Details = new ReferralDetailsDto(),
-            ReferralStatus = ReferralStatusEnum.Pending
+            Details = ReferralDetailsFactory.Create(ReferralTypeEnum.CaseReferral),
+            ReferralStatus = ReferralStatusEnum.Pending,
+            ReferralType = ReferralTypeEnum.CaseReferral
         };
         newReferral = true;
         SelectedReferralId = null;
     }
 
-    private async Task OnReferralSelected(ReferralDto? referral)
+    private void OnReferralSelected(ReferralDto? referral)
     {
         selectedReferral = referral;
         newReferral = false;
@@ -107,17 +109,17 @@
                 selectedReferral = referral;
                 SelectedReferralId = selectedReferral.Id;
                 newReferral = false;
-                Snackbar.Add("Referral saved as draft successfully!", Severity.Success);
+                Snackbar.Add("Referral saved as draft successfully!", MudBlazor.Severity.Success);
             }
             else
             {
                 await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
-                Snackbar.Add("Referral draft updated successfully!", Severity.Success);
+                Snackbar.Add("Referral draft updated successfully!", MudBlazor.Severity.Success);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to save referral: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Failed to save referral: {ex.Message}", MudBlazor.Severity.Error);
         }
     }
 
@@ -136,17 +138,17 @@
                 selectedReferral = referral;
                 SelectedReferralId = selectedReferral.Id;
                 newReferral = false;
-                Snackbar.Add("Referral submitted successfully!", Severity.Success);
+                Snackbar.Add("Referral submitted successfully!", MudBlazor.Severity.Success);
             }
             else
             {
                 await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
-                Snackbar.Add("Referral submitted successfully!", Severity.Success);
+                Snackbar.Add("Referral submitted successfully!", MudBlazor.Severity.Success);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to submit referral: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Failed to submit referral: {ex.Message}", MudBlazor.Severity.Error);
         }
     }
 
@@ -159,11 +161,11 @@
             await ReferralLookupService.DeleteItem(referral.Id, CancellationToken.None);
             selectedReferral = null;
             SelectedReferralId = null;
-            Snackbar.Add("Referral deleted successfully!", Severity.Success);
+            Snackbar.Add("Referral deleted successfully!", MudBlazor.Severity.Success);
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to delete referral: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Failed to delete referral: {ex.Message}", MudBlazor.Severity.Error);
         }
     }
 }

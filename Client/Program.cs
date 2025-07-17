@@ -13,6 +13,8 @@ using Shared.DTOs.Scheduling;
 using Shared.DTOs.Clinical;
 using Blazored.LocalStorage;
 using Blazor.SubtleCrypto;
+using FluentValidation;
+using Shared.Validators;
 using Shared.DTOs.Billing;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -56,6 +58,9 @@ builder.Services.AddMudServices();
 MudGlobal.InputDefaults.Variant = Variant.Outlined;
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSubtleCrypto();
+
+// Register FluentValidation validators so they can be injected in Blazor components
+builder.Services.AddValidatorsFromAssemblyContaining<ReferralDetailsValidator>();
 
 // Register application services
 builder.Services.AddScoped<ILazyLookupService<CustomerDto>, LazyLookupService<CustomerDto>>();

@@ -382,3 +382,6 @@ tfplan.*
 .claude/
 SESSION_SUMMARY.md
 DEPLOYMENT_PLAN.md
+
+# templates 
+form_template/

@@ -200,7 +200,7 @@
         _lastSavedTime = DateTime.Now;
         // _lastSavedMode = "offline"; // Commented out as field not used
         _lastSavedStatus = $"Last saved (offline copy) {_lastSavedTime:yyyy-MM-dd HH:mm:ss}";
-        Snackbar.Add("Offline copy saved. It will be available when you're back online.", Severity.Success);
+        Snackbar.Add("Offline copy saved. It will be available when you're back online.", MudBlazor.Severity.Success);
         StateHasChanged();
     }
     private async Task RetrieveOfflineCopy()
@@ -209,7 +209,7 @@
         string decrypted = await Crypto.DecryptAsync(new CryptoInput { Value = encrypted, Key = _tempKey });
         CaseNote = System.Text.Json.JsonSerializer.Deserialize<CaseNoteDto>(decrypted);
         StateHasChanged();
-        Snackbar.Add("Offline copy restored.", Severity.Success);
+        Snackbar.Add("Offline copy restored.", MudBlazor.Severity.Success);
     }
 
     public void Dispose()

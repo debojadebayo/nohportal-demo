@@ -16,6 +16,8 @@ using ComposedHealthBase.Server.Commands;
 using ComposedHealthBase.Server.Auth.AuthorizationHandlers;
 using ComposedHealthBase.Server.Auth.Providers;
 using ComposedHealthBase.Server.Auth.Extensions;
+using FluentValidation;
+using Shared.Validators;
 
 namespace ComposedHealthBase.Server.Extensions
 {
@@ -69,6 +71,9 @@ namespace ComposedHealthBase.Server.Extensions
 
             services.AddScoped<IAuthorizationHandler, ResourceAccessAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
+            // Register FluentValidation validators from Shared project
+            services.AddValidatorsFromAssemblyContaining<ReferralDetailsValidator>();
             services.AddAuthorization(options =>
             {
                 options.AddPermissionPoliciesForEntities();

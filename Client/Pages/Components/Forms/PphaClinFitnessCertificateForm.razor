@@ -1,0 +1,255 @@
+@using Shared.DTOs.Scheduling
+@using Shared.DTOs.CRM
+@using Shared.Validators.Forms
+@using FluentValidation
+@using MudBlazor
+@using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.Shared.DTOs
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject ILazyLookupService<ReferralDto> ReferralLookupService
+@inject ILazyLookupService<CustomerDto> CustomerLookupService
+@inject PphaClinFitnessCertificateValidator PphaClinFitnessCertificateValidator
+
+<MudForm @ref="form" Model="Model" Validator="@PphaClinFitnessCertificateValidator.ValidateValue" ValidationDelay="0">
+    <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+        
+        <!-- Personal Information -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-3" />
+                    <MudText>Personal Information</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)"
+                            Label="Name" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="Model.DateOfBirth" For="@(() => Model.DateOfBirth)"
+                            Label="Date of Birth" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.Email" For="@(() => Model.Email)"
+                            Label="Email Address" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.ContactNumber" For="@(() => Model.ContactNumber)"
+                            Label="Contact Number" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.Company" For="@(() => Model.Company)"
+                            Label="Company" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.Department" For="@(() => Model.Department)"
+                            Label="Department" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.RoleAppliedFor" For="@(() => Model.RoleAppliedFor)"
+                            Label="Role Applied For" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="Model.DateOfAssessment" For="@(() => Model.DateOfAssessment)"
+                            Label="Date of Assessment" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Fitness Assessment -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.HealthAndSafety" Class="mr-3" />
+                    <MudText>Fitness Assessment</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Fitness for Role</MudText>
+                        <MudCheckBox @bind-Value="Model.FitForAllAspectsOfRole" For="@(() => Model.FitForAllAspectsOfRole)" 
+                            Label="Fit for all aspects of role" />
+                        <MudCheckBox @bind-Value="Model.FitForNonClinicalDutiesOnly" For="@(() => Model.FitForNonClinicalDutiesOnly)" 
+                            Label="Fit for non-clinical duties only" />
+                        <MudCheckBox @bind-Value="Model.TemporarilyUnfitForRole" For="@(() => Model.TemporarilyUnfitForRole)" 
+                            Label="Temporarily unfit for role" />
+                        <MudCheckBox @bind-Value="Model.UnfitForRole" For="@(() => Model.UnfitForRole)" 
+                            Label="Unfit for role" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudCheckBox @bind-Value="Model.AdjustmentsRequired" For="@(() => Model.AdjustmentsRequired)" 
+                            Label="Adjustments required" />
+                        @if (Model.AdjustmentsRequired)
+                        {
+                            <MudTextField @bind-Value="Model.AdjustmentsDetails" For="@(() => Model.AdjustmentsDetails)"
+                                Label="Adjustment details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
+                        }
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Clinical Work Clearance -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Class="mr-3" />
+                    <MudText>Clinical Work Clearance</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudCheckBox @bind-Value="Model.ClearedForExposureProneProcedures" For="@(() => Model.ClearedForExposureProneProcedures)" 
+                            Label="Cleared for exposure prone procedures" />
+                        <MudCheckBox @bind-Value="Model.ClearedForNonExposureProneClinicalWork" For="@(() => Model.ClearedForNonExposureProneClinicalWork)" 
+                            Label="Cleared for non-exposure prone clinical work" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Immunization Documentation -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Vaccines" Class="mr-3" />
+                    <MudText>Immunization Documentation</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Evidence of Immunity/Screening</MudText>
+                        <MudCheckBox @bind-Value="Model.TBImmunityEvidence" For="@(() => Model.TBImmunityEvidence)" 
+                            Label="TB Immunity Evidence" />
+                        <MudCheckBox @bind-Value="Model.RubellaImmunityEvidence" For="@(() => Model.RubellaImmunityEvidence)" 
+                            Label="Rubella Immunity Evidence" />
+                        <MudCheckBox @bind-Value="Model.MeaslesImmunityEvidence" For="@(() => Model.MeaslesImmunityEvidence)" 
+                            Label="Measles Immunity Evidence" />
+                        <MudCheckBox @bind-Value="Model.VaricellaImmunityEvidence" For="@(() => Model.VaricellaImmunityEvidence)" 
+                            Label="Varicella Immunity Evidence" />
+                        <MudCheckBox @bind-Value="Model.HepatitisBImmunityEvidence" For="@(() => Model.HepatitisBImmunityEvidence)" 
+                            Label="Hepatitis B Immunity Evidence" />
+                        <MudCheckBox @bind-Value="Model.HepatitisCScreeningEvidence" For="@(() => Model.HepatitisCScreeningEvidence)" 
+                            Label="Hepatitis C Screening Evidence" />
+                        <MudCheckBox @bind-Value="Model.HIVScreeningEvidence" For="@(() => Model.HIVScreeningEvidence)" 
+                            Label="HIV Screening Evidence" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Clinician Details -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Badge" Class="mr-3" />
+                    <MudText>Clinician Details</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.ClinicianName" For="@(() => Model.ClinicianName)"
+                            Label="Clinician Name" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.ClinicianJobTitle" For="@(() => Model.ClinicianJobTitle)"
+                            Label="Job Title" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.ClinicianSignature" For="@(() => Model.ClinicianSignature)"
+                            Label="Digital Signature" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="Model.SignatureDate" For="@(() => Model.SignatureDate)"
+                            Label="Signature Date" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+    </MudExpansionPanels>
+
+    <!-- Action Buttons -->
+    <MudCardActions Class="mt-4">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+            OnClick="@(async () => await Save())" 
+            Disabled="@_saving"
+            Class="ml-auto">
+            @if (_saving)
+            {
+                <MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ml-2">@(IsNewReferral ? "Submitting..." : "Updating...")</MudText>
+            }
+            else
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Save" Class="mr-2" />
+                <MudText>@(IsNewReferral ? "Submit Certificate" : "Update Certificate")</MudText>
+            }
+        </MudButton>
+    </MudCardActions>
+</MudForm>
+
+@code {
+    [Parameter] public PphaClinFitnessCertificateDto Model { get; set; } = new();
+    [Parameter] public EventCallback<PphaClinFitnessCertificateDto> OnSaveComplete { get; set; }
+    [Parameter] public EventCallback<PphaClinFitnessCertificateDto> OnSubmitComplete { get; set; }
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
+    [Parameter] public bool ShowAsDialog { get; set; } = false;
+
+    private MudForm form = new();
+    private bool _saving = false;
+    
+    private bool IsNewReferral => Model.Id == Guid.Empty;
+
+    protected override void OnInitialized()
+    {
+        if (CustomerId != Guid.Empty && Model.ReferralId == Guid.Empty)
+        {
+            Model.ReferralId = CustomerId;
+        }
+    }
+
+    private async Task Save()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            _saving = true;
+            StateHasChanged();
+            
+            try
+            {
+                if (OnSaveComplete.HasDelegate)
+                {
+                    await OnSaveComplete.InvokeAsync(Model);
+                }
+                
+                Snackbar.Add("PPHA Clinical Fitness Certificate saved successfully!", MudBlazor.Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Failed to save certificate: {ex.Message}", MudBlazor.Severity.Error);
+                Console.Error.WriteLine($"Error saving PPHA Clinical Fitness Certificate: {ex}");
+            }
+            finally
+            {
+                _saving = false;
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            Snackbar.Add("Please correct the validation errors before submitting.", MudBlazor.Severity.Error);
+        }
+    }
+}

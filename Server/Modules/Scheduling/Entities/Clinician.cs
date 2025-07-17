@@ -10,7 +10,6 @@ namespace Server.Modules.Scheduling.Entities
         public required string Username { get; set; }
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
-        public string? UserName { get; set; }
         public required string Telephone { get; set; }
         public required string Email { get; set; }
         public string? AvatarImage { get; set; }

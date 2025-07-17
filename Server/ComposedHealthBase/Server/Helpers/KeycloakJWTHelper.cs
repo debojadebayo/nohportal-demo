@@ -23,7 +23,7 @@ namespace ComposedHealthBase.Server.Helpers
                 {
                     if (property.Value.TryGetProperty("id", out var idProp))
                     {
-                        return idProp.GetString();
+                        return idProp.GetString() ?? string.Empty;
                     }
                 }
             }

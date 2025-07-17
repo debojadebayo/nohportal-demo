@@ -9,7 +9,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudForm Model="@Manager" @ref="@form" Validation="@(managerValidator.ValidateValue)" ValidationDelay="0">
+        <MudForm Model="@Manager" @ref="@form" Validator="@(managerValidator.ValidateValue)" ValidationDelay="0">
             <MudGrid>
                 <MudItem xs="12" sm="6">
                     <MudTextField @bind-Value="Manager.FirstName" For="@(() => Manager.FirstName)" Immediate="true" Label="First Name" Variant="Variant.Outlined" />
