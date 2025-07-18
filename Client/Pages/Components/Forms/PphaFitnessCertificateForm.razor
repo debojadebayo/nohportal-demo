@@ -11,7 +11,6 @@
 @inject ISnackbar Snackbar
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
-@inject PphaFitnessCertificateValidator PphaFitnessCertificateValidator
 
 <MudForm @ref="form" Model="Model" Validator="@PphaFitnessCertificateValidator.ValidateValue" ValidationDelay="0">
     <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
@@ -230,6 +229,7 @@
     [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
     [Parameter] public bool ShowAsDialog { get; set; } = false;
 
+    private PphaFitnessCertificateValidator PphaFitnessCertificateValidator { get; set; } = new();
     private MudForm form = new();
     private bool _saving = false;
     private int selectedFitnessStatus = 0;

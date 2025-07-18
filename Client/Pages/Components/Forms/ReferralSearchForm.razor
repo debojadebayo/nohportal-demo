@@ -15,16 +15,14 @@
         <MudItem xs="12" sm="6">
             <LazyLookup TDto="ReferralDto" 
                        FieldType="LazyLookupEnum.Search" 
-                       ItemId="@(selectedReferralId ?? Guid.Empty)"
-                       Label="Search Referrals" 
-                       SelectedItemChanged="HandleReferralSelected" />
+                       @bind-ItemId="selectedReferralId"
+                       Label="Search Referrals" />
         </MudItem>
         <MudItem xs="12" sm="6">
             <LazyLookup TDto="CustomerDto" 
                        FieldType="LazyLookupEnum.Search" 
-                       ItemId="@(selectedCustomerId ?? Guid.Empty)"
-                       Label="Filter by Customer" 
-                       SelectedItemChanged="OnCustomerFilterChanged" />
+                       @bind-ItemId="selectedCustomerId"
+                       Label="Filter by Customer" />
         </MudItem>
     </MudGrid>
 
@@ -96,8 +94,8 @@
 @code {
     [Parameter] public EventCallback<ReferralDto> OnReferralSelected { get; set; }
 
-    private Guid? selectedReferralId;
-    private Guid? selectedCustomerId;
+    private Guid selectedReferralId = Guid.Empty;
+    private Guid selectedCustomerId = Guid.Empty;
     private ReferralStatusEnum? statusFilter;
     private DateTime? dateFromFilter;
     private DateTime? dateToFilter;
@@ -105,7 +103,7 @@
 
     private async Task HandleReferralSelected(ReferralDto? referral)
     {
-        selectedReferralId = referral?.Id;
+        selectedReferralId = referral?.Id ?? Guid.Empty;
         if (referral != null && OnReferralSelected.HasDelegate)
         {
             await OnReferralSelected.InvokeAsync(referral);
@@ -121,7 +119,7 @@
         }
         else
         {
-            selectedCustomerId = null;
+            selectedCustomerId = Guid.Empty;
             searchResults.Clear();
         }
     }
@@ -134,7 +132,7 @@
             
             searchResults = allReferrals.Where(r => 
                 (!statusFilter.HasValue || r.ReferralStatus == statusFilter) &&
-                (!selectedCustomerId.HasValue || r.CustomerId == selectedCustomerId) &&
+                (selectedCustomerId == Guid.Empty || r.CustomerId == selectedCustomerId) &&
                 (!dateFromFilter.HasValue || r.CreatedDate >= dateFromFilter) &&
                 (!dateToFilter.HasValue || r.CreatedDate <= dateToFilter)
             ).ToList();

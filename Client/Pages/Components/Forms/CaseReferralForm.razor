@@ -13,7 +13,6 @@
 @inject ILazyLookupService<ManagerDto> ManagerLookupService
 @inject ILazyLookupService<EmployeeDto> EmployeeLookupService
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
-@inject CaseReferralDetailsValidator CaseReferralValidator
 
 <MudForm @ref="form" Model="Model" Validator="@(CaseReferralValidator.ValidateValue)" ValidationDelay="0">
     <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
@@ -29,14 +28,14 @@
             <ChildContent>
                 <MudGrid>
                     <MudItem xs="12">
-                        <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.ReadOnly" ItemId="CustomerId" Label="Customer" />
+                        <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="CustomerId" Label="Customer" />
                     </MudItem>
                     <MudItem xs="12" sm="6">
                         <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" 
-                            ItemId="@(Model.EmployeeId ?? Guid.Empty)" 
+                            @bind-ItemId="EmployeeId" 
                             TenantConstraint="CustomerId" 
                             Label="Employee" 
-                            SelectedItemChanged="@((EmployeeDto item) => Model.EmployeeId = item?.Id)" />
+                        />
                     </MudItem>
                     <MudItem xs="12" sm="6">
                         <MudDatePicker @bind-Date="Model.ReferralDate" For="@(() => Model.ReferralDate)"
@@ -60,16 +59,11 @@
             </TitleContent>
             <ChildContent>
                 <MudGrid>
+                    <MudItem xs="12" sm="6" Class="mb-2">
+                        <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="ReferringManagerId" />
+                    </MudItem>
                     <MudItem xs="12" sm="6">
-                        <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search"
-                            ItemId="@(Model.ReferringManagerId ?? Guid.Empty)" Label="Referring Manager" 
-                            TenantConstraint="CustomerId" 
-                            SelectedItemChanged="@((ManagerDto item) => Model.ReferringManagerId = item?.Id)" />
-                        
-                        <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search"
-                            ItemId="@(Model.ReferringManager2Id ?? Guid.Empty)" Label="Additional Referring Manager" 
-                            TenantConstraint="CustomerId" 
-                            SelectedItemChanged="@((ManagerDto item) => Model.ReferringManager2Id = item?.Id)" />
+                        <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="ReferringManager2Id" />
                     </MudItem>
                 </MudGrid>
                 <MudText Typo="Typo.caption" Class="mt-2">
@@ -89,27 +83,9 @@
             <ChildContent>
                 <MudGrid>
                     <MudItem xs="12" sm="6">
-                        <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search"
-                            ItemId="@(Model.HrContactId ?? Guid.Empty)" Label="HR Contact" 
-                            TenantConstraint="CustomerId" 
-                            SelectedItemChanged="@((ManagerDto item) => Model.HrContactId = item?.Id)" />
+                        <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="HrContactId" Label="HR Contact" />
                     </MudItem>
                 </MudGrid>
-            </ChildContent>
-        </MudExpansionPanel>
-
-        <!-- Employee Details Section -->
-        <MudExpansionPanel Expanded="true">
-            <TitleContent>
-                <div class="d-flex">
-                    <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-3" />
-                    <MudText>Section 3: Employee Details</MudText>
-                </div>
-            </TitleContent>
-            <ChildContent>
-                <MudText Typo="Typo.caption" Class="mb-2">
-                    Employee details are set in the Basic Information section above.
-                </MudText>
             </ChildContent>
         </MudExpansionPanel>
 
@@ -117,8 +93,7 @@
         <MudExpansionPanel Expanded="true">
             <TitleContent>
                 <div class="d-flex">
-                    <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Class="mr-3" />
-                    <MudText>Section 4: Finance</MudText>
+                    <MudText>Section 3: Finance</MudText>
                 </div>
             </TitleContent>
             <ChildContent>
@@ -144,7 +119,7 @@
             <TitleContent>
                 <div class="d-flex">
                     <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3" />
-                    <MudText>Section 5: Employee Informed</MudText>
+                    <MudText>Section 4: Employee Informed</MudText>
                 </div>
             </TitleContent>
             <ChildContent>
@@ -176,7 +151,7 @@
             <TitleContent>
                 <div class="d-flex">
                     <MudIcon Icon="@Icons.Material.Filled.Schedule" Class="mr-3" />
-                    <MudText>Section 6: Employee Work Pattern</MudText>
+                    <MudText>Section 5: Employee Work Pattern</MudText>
                 </div>
             </TitleContent>
             <ChildContent>
@@ -201,7 +176,7 @@
             <TitleContent>
                 <div class="d-flex">
                     <MudIcon Icon="@Icons.Material.Filled.Warning" Class="mr-3" />
-                    <MudText>Section 7: Employee's Role & Hazards</MudText>
+                    <MudText>Section 6: Employee's Role & Hazards</MudText>
                 </div>
             </TitleContent>
             <ChildContent>
@@ -237,12 +212,12 @@
             </ChildContent>
         </MudExpansionPanel>
 
-        <!-- Section 8: Purpose of Referral -->
+        <!-- Section 7: Purpose of Referral -->
         <MudExpansionPanel Expanded="true">
             <TitleContent>
                 <div class="d-flex">
                     <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-3" />
-                    <MudText>Section 8: Purpose of Referral</MudText>
+                    <MudText>Section 7: Purpose of Referral</MudText>
                 </div>
             </TitleContent>
             <ChildContent>
@@ -269,7 +244,7 @@
             <TitleContent>
                 <div class="d-flex">
                     <MudIcon Icon="@Icons.Material.Filled.EventAvailable" Class="mr-3" />
-                    <MudText>Section 9: Attendance</MudText>
+                    <MudText>Section 8: Attendance</MudText>
                 </div>
             </TitleContent>
             <ChildContent>      
@@ -317,7 +292,7 @@
             <TitleContent>
                 <div class="d-flex">
                     <MudIcon Icon="@Icons.Material.Filled.HelpOutline" Class="mr-3" />
-                    <MudText>Section 10: Standard Questions</MudText>
+                    <MudText>Section 9: Standard Questions</MudText>
                 </div>
             </TitleContent>
             <ChildContent>
@@ -347,7 +322,7 @@
             <TitleContent>
                 <div class="d-flex">
                     <MudIcon Icon="@Icons.Material.Filled.Comment" Class="mr-3" />
-                    <MudText>Section 11: Additional Questions or Comments</MudText>
+                    <MudText>Section 10: Additional Questions or Comments</MudText>
                 </div>
             </TitleContent>
             <ChildContent>
@@ -386,10 +361,35 @@
     [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
     [Parameter] public bool ShowAsDialog { get; set; } = false;
 
+    private CaseReferralDetailsValidator CaseReferralValidator { get; set; } = new();
     private MudForm form = new();
     private bool _saving = false;
     
     private bool IsNewReferral => Model.Id == Guid.Empty;
+
+    private Guid EmployeeId 
+    {
+        get => Model.EmployeeId ?? Guid.Empty;
+        set => Model.EmployeeId = value == Guid.Empty ? null : value;
+    }
+
+    private Guid ReferringManagerId 
+    {
+        get => Model.ReferringManagerId ?? Guid.Empty;
+        set => Model.ReferringManagerId = value == Guid.Empty ? null : value;
+    }
+
+    private Guid ReferringManager2Id 
+    {
+        get => Model.ReferringManager2Id ?? Guid.Empty;
+        set => Model.ReferringManager2Id = value == Guid.Empty ? null : value;
+    }
+
+    private Guid HrContactId 
+    {
+        get => Model.HrContactId ?? Guid.Empty;
+        set => Model.HrContactId = value == Guid.Empty ? null : value;
+    }
 
     protected override void OnInitialized()
     {

@@ -10,6 +10,7 @@
 @using MudBlazor
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
 @inject ISnackbar Snackbar
+@inject NavigationManager Nav
 @* @attribute [Authorize] *@
 
 <PageTitle>Referrals</PageTitle>
@@ -73,14 +74,7 @@
 
     private void CreateReferral()
     {
-        selectedReferral = new ReferralDto 
-        { 
-            Details = ReferralDetailsFactory.Create(ReferralTypeEnum.CaseReferral),
-            ReferralStatus = ReferralStatusEnum.Pending,
-            ReferralType = ReferralTypeEnum.CaseReferral
-        };
-        newReferral = true;
-        SelectedReferralId = null;
+        Nav.NavigateTo("/referrals/new");
     }
 
     private void OnReferralSelected(ReferralDto? referral)

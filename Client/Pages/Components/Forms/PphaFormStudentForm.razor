@@ -6,7 +6,6 @@
 @using Shared.DTOs.CRM
 
 @inject ISnackbar Snackbar
-@inject PphaFormStudentValidator PphaFormStudentValidator
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
 @inject ILazyLookupService<EmployeeDto> EmployeeLookupService
 
@@ -90,6 +89,7 @@
     [Parameter] public EventCallback<PphaFormStudentDto> OnSaveComplete { get; set; }
 
     private PphaFormStudentDto Model { get; set; } = new();
+    private PphaFormStudentValidator PphaFormStudentValidator { get; set; } = new();
     private MudForm? form;
     private bool _saving;
 
