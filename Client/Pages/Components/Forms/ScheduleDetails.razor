@@ -18,7 +18,7 @@
             </MudGrid>
         </MudPaper>
         
-        <MudForm Model="@model" @ref="@form" Validator="@(scheduleValidator.ValidateValue)" ValidationDelay="0">
+        <MudForm Model="@model" @ref="@form" Validation="@(scheduleValidator.ValidateValue)" ValidationDelay="0">
             <MudGrid>
                 <MudItem xs="12" sm="6">
                     <MudTextField T="string" Label="Appointment Title" @bind-Value="model.Title" For="@(() => model.Title)" />

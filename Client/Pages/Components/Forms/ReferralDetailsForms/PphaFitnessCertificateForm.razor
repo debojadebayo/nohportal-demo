@@ -1,3 +1,4 @@
+@namespace Client.Pages.Components.Forms.ReferralDetailsForms
 @using Shared.DTOs.Scheduling
 @using Shared.DTOs.CRM
 @using Shared.Validators.Forms
@@ -12,7 +13,7 @@
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
 
-<MudForm @ref="form" Model="Model" Validator="@PphaFitnessCertificateValidator.ValidateValue" ValidationDelay="0">
+<MudForm @ref="form" Model="Model" Validation="@PphaFitnessCertificateValidator.ValidateValue" ValidationDelay="0">
     <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
         
         <!-- Employee Information -->

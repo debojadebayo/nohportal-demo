@@ -1,3 +1,4 @@
+@namespace Client.Pages.Components.Forms.ReferralDetailsForms
 @using Shared.DTOs.Scheduling
 @using Shared.DTOs.CRM
 @using Shared.Validators.Forms
@@ -12,7 +13,7 @@
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
 
-<MudForm @ref="form" Model="Model" Validator="@PphaClinStudentValidator.ValidateValue" ValidationDelay="0">
+<MudForm @ref="form" Model="Model" Validation="@PphaFormClinWorkerValidator.ValidateValue" ValidationDelay="0">
     <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
         
         <!-- Personal Information -->
@@ -43,7 +44,7 @@
                     </MudItem>
                     <MudItem xs="12" sm="6">
                         <MudTextField @bind-Value="Model.ContactNumber" For="@(() => Model.ContactNumber)"
-                            Label="Contact Number" Variant="Variant.Outlined" Required="true" />
+                            Label="Contact Number" Variant="Variant.Outlined" />
                     </MudItem>
                     <MudItem xs="12" sm="6">
                         <MudTextField @bind-Value="Model.Email" For="@(() => Model.Email)"
@@ -65,46 +66,44 @@
             </ChildContent>
         </MudExpansionPanel>
 
-        <!-- University Course Details -->
+        <!-- Employment Details -->
         <MudExpansionPanel Expanded="true">
             <TitleContent>
                 <div class="d-flex">
-                    <MudIcon Icon="@Icons.Material.Filled.School" Class="mr-3" />
-                    <MudText>University Course Details</MudText>
+                    <MudIcon Icon="@Icons.Material.Filled.Business" Class="mr-3" />
+                    <MudText>Employment Details</MudText>
                 </div>
             </TitleContent>
             <ChildContent>
                 <MudGrid>
                     <MudItem xs="12" sm="6">
-                        <MudTextField @bind-Value="Model.CourseAppliedFor" For="@(() => Model.CourseAppliedFor)"
-                            Label="Course Applied For" Variant="Variant.Outlined" Required="true" />
+                        <MudTextField @bind-Value="Model.JobTitle" For="@(() => Model.JobTitle)"
+                            Label="Job Title" Variant="Variant.Outlined" Required="true" />
                     </MudItem>
                     <MudItem xs="12" sm="6">
-                        <MudTextField @bind-Value="Model.CourseDuration" For="@(() => Model.CourseDuration)"
-                            Label="Course Duration" Variant="Variant.Outlined" />
-                    </MudItem>
-                    <MudItem xs="12" sm="6">
-                        <MudTextField @bind-Value="Model.University" For="@(() => Model.University)"
-                            Label="University" Variant="Variant.Outlined" Required="true" />
+                        <MudTextField @bind-Value="Model.CompanyOrganisation" For="@(() => Model.CompanyOrganisation)"
+                            Label="Company/Organisation" Variant="Variant.Outlined" Required="true" />
                     </MudItem>
                     <MudItem xs="12" sm="6">
                         <MudTextField @bind-Value="Model.Department" For="@(() => Model.Department)"
                             Label="Department" Variant="Variant.Outlined" />
                     </MudItem>
                     <MudItem xs="12" sm="6">
-                        <MudDatePicker @bind-Date="Model.ProposedStartDate" For="@(() => Model.ProposedStartDate)"
-                            Label="Proposed Start Date" Variant="Variant.Outlined" Required="true" />
-                    </MudItem>
-                    <MudItem xs="12" sm="6">
-                        <MudTextField @bind-Value="Model.StudentId" For="@(() => Model.StudentId)"
-                            Label="Student ID" Variant="Variant.Outlined" />
+                        <MudDatePicker @bind-Date="Model.StartDate" For="@(() => Model.StartDate)"
+                            Label="Start Date" Variant="Variant.Outlined" />
                     </MudItem>
                     <MudItem xs="12">
-                        <MudText Typo="Typo.subtitle2" Class="mb-2">Course Requirements</MudText>
-                        <MudCheckBox @bind-Value="Model.ManualHandling" For="@(() => Model.ManualHandling)" Label="Manual Handling" />
-                        <MudCheckBox @bind-Value="Model.DisplayScreenEquipment" For="@(() => Model.DisplayScreenEquipment)" Label="Display Screen Equipment" />
-                        <MudCheckBox @bind-Value="Model.VulnerableAdultsChildren" For="@(() => Model.VulnerableAdultsChildren)" Label="Working with Vulnerable Adults/Children" />
-                        <MudCheckBox @bind-Value="Model.ClinicalDutiesBodyFluidExposure" For="@(() => Model.ClinicalDutiesBodyFluidExposure)" Label="Clinical Duties with Body Fluid Exposure" />
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Employment Type</MudText>
+                        <MudCheckBox @bind-Value="Model.IsPermanent" For="@(() => Model.IsPermanent)" Label="Permanent Position" />
+                        <MudCheckBox @bind-Value="Model.HasAppliedBefore" For="@(() => Model.HasAppliedBefore)" Label="Has Applied Before" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Role Requirements</MudText>
+                        <MudCheckBox @bind-Value="Model.RoleIncludesManualHandling" For="@(() => Model.RoleIncludesManualHandling)" Label="Manual Handling" />
+                        <MudCheckBox @bind-Value="Model.RoleIncludesDriving" For="@(() => Model.RoleIncludesDriving)" Label="Driving" />
+                        <MudCheckBox @bind-Value="Model.RoleIncludesDisplayScreenEquipment" For="@(() => Model.RoleIncludesDisplayScreenEquipment)" Label="Display Screen Equipment" />
+                        <MudCheckBox @bind-Value="Model.RoleIncludesWorkingWithVulnerableAdults" For="@(() => Model.RoleIncludesWorkingWithVulnerableAdults)" Label="Working with Vulnerable Adults" />
+                        <MudCheckBox @bind-Value="Model.RoleIncludesWorkingWithChildren" For="@(() => Model.RoleIncludesWorkingWithChildren)" Label="Working with Children" />
                     </MudItem>
                 </MudGrid>
             </ChildContent>
@@ -121,24 +120,24 @@
             <ChildContent>
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudText Typo="Typo.subtitle2" Class="mb-2">Do you have any physical illness or disability that might affect your ability to study?</MudText>
-                        <MudRadioGroup @bind-Value="Model.PhysicalIllnessAffectsStudy" For="@(() => Model.PhysicalIllnessAffectsStudy)">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Do you have any physical illness or disability that might affect your ability to work?</MudText>
+                        <MudRadioGroup @bind-Value="Model.PhysicalIllnessAffectsWork" For="@(() => Model.PhysicalIllnessAffectsWork)">
                             <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
                             <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
                         </MudRadioGroup>
-                        @if (Model.PhysicalIllnessAffectsStudy)
+                        @if (Model.PhysicalIllnessAffectsWork)
                         {
                             <MudTextField @bind-Value="Model.PhysicalIllnessDetails" For="@(() => Model.PhysicalIllnessDetails)"
                                 Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
                         }
                     </MudItem>
                     <MudItem xs="12">
-                        <MudText Typo="Typo.subtitle2" Class="mb-2">Do you have any psychological illness that might affect your ability to study?</MudText>
-                        <MudRadioGroup @bind-Value="Model.PsychologicalIllnessAffectsStudy" For="@(() => Model.PsychologicalIllnessAffectsStudy)">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Do you have any psychological illness that might affect your ability to work?</MudText>
+                        <MudRadioGroup @bind-Value="Model.PsychologicalIllnessAffectsWork" For="@(() => Model.PsychologicalIllnessAffectsWork)">
                             <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
                             <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
                         </MudRadioGroup>
-                        @if (Model.PsychologicalIllnessAffectsStudy)
+                        @if (Model.PsychologicalIllnessAffectsWork)
                         {
                             <MudTextField @bind-Value="Model.PsychologicalIllnessDetails" For="@(() => Model.PsychologicalIllnessDetails)"
                                 Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
@@ -153,6 +152,18 @@
                         @if (Model.CurrentTreatmentOrMedication)
                         {
                             <MudTextField @bind-Value="Model.CurrentTreatmentDetails" For="@(() => Model.CurrentTreatmentDetails)"
+                                Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Do you have any allergies?</MudText>
+                        <MudRadioGroup @bind-Value="Model.HasAllergies" For="@(() => Model.HasAllergies)">
+                            <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
+                            <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
+                        </MudRadioGroup>
+                        @if (Model.HasAllergies)
+                        {
+                            <MudTextField @bind-Value="Model.AllergiesDetails" For="@(() => Model.AllergiesDetails)"
                                 Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
                         }
                     </MudItem>
@@ -181,6 +192,57 @@
             </ChildContent>
         </MudExpansionPanel>
 
+        <!-- Vaccination History -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Vaccines" Class="mr-3" />
+                    <MudText>Vaccination History</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">MMR/Varicella Vaccinations</MudText>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox @bind-Value="Model.HadMeaslesVaccination" For="@(() => Model.HadMeaslesVaccination)" Label="Measles Vaccination" />
+                                @if (Model.HadMeaslesVaccination)
+                                {
+                                    <MudDatePicker @bind-Date="Model.MeaslesVaccinationDate" For="@(() => Model.MeaslesVaccinationDate)"
+                                        Label="Date" Variant="Variant.Outlined" Class="mt-2" />
+                                }
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox @bind-Value="Model.HadRubellaVaccination" For="@(() => Model.HadRubellaVaccination)" Label="Rubella Vaccination" />
+                                @if (Model.HadRubellaVaccination)
+                                {
+                                    <MudDatePicker @bind-Date="Model.RubellaVaccinationDate" For="@(() => Model.RubellaVaccinationDate)"
+                                        Label="Date" Variant="Variant.Outlined" Class="mt-2" />
+                                }
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox @bind-Value="Model.MMRVaccination" For="@(() => Model.MMRVaccination)" Label="MMR Vaccination" />
+                                @if (Model.MMRVaccination)
+                                {
+                                    <MudDatePicker @bind-Date="Model.MMRVaccinationDate" For="@(() => Model.MMRVaccinationDate)"
+                                        Label="Date" Variant="Variant.Outlined" Class="mt-2" />
+                                }
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudCheckBox @bind-Value="Model.VaricellaVaccination" For="@(() => Model.VaricellaVaccination)" Label="Varicella Vaccination" />
+                                @if (Model.VaricellaVaccination)
+                                {
+                                    <MudDatePicker @bind-Date="Model.VaricellaVaccinationDate" For="@(() => Model.VaricellaVaccinationDate)"
+                                        Label="Date" Variant="Variant.Outlined" Class="mt-2" />
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
         <!-- Tuberculosis Assessment -->
         <MudExpansionPanel Expanded="true">
             <TitleContent>
@@ -195,6 +257,8 @@
                         <MudText Typo="Typo.subtitle2" Class="mb-2">TB Risk Assessment</MudText>
                         <MudCheckBox @bind-Value="Model.TuberculosisDiagnosis" For="@(() => Model.TuberculosisDiagnosis)" Label="Have you ever been diagnosed with tuberculosis?" />
                         <MudCheckBox @bind-Value="Model.PersistentCough3Weeks" For="@(() => Model.PersistentCough3Weeks)" Label="Persistent cough for 3+ weeks" />
+                        <MudCheckBox @bind-Value="Model.UnexplainedWeightLoss" For="@(() => Model.UnexplainedWeightLoss)" Label="Unexplained weight loss" />
+                        <MudCheckBox @bind-Value="Model.NightSweatsOrFever" For="@(() => Model.NightSweatsOrFever)" Label="Night sweats or fever" />
                         <MudCheckBox @bind-Value="Model.TBContactPastYear" For="@(() => Model.TBContactPastYear)" Label="TB contact in past year" />
                         <MudCheckBox @bind-Value="Model.FamilyTBHistory" For="@(() => Model.FamilyTBHistory)" Label="Family TB history" />
                         <MudCheckBox @bind-Value="Model.TravelledHighTBCountry" For="@(() => Model.TravelledHighTBCountry)" Label="Travelled to high TB prevalence country" />
@@ -223,7 +287,56 @@
                         <MudCheckBox @bind-Value="Model.HepatitisBDiagnosis" For="@(() => Model.HepatitisBDiagnosis)" Label="Have you been diagnosed with Hepatitis B?" />
                         <MudCheckBox @bind-Value="Model.JaundiceFatigueSymptoms" For="@(() => Model.JaundiceFatigueSymptoms)" Label="Jaundice or fatigue symptoms" />
                         <MudCheckBox @bind-Value="Model.WorkedWithBloodTissue" For="@(() => Model.WorkedWithBloodTissue)" Label="Worked with blood/tissue" />
+                        <MudCheckBox @bind-Value="Model.HepatitisBContact" For="@(() => Model.HepatitisBContact)" Label="Hepatitis B contact" />
+                        <MudCheckBox @bind-Value="Model.TravelledHighHepBCountry" For="@(() => Model.TravelledHighHepBCountry)" Label="Travelled to high Hepatitis B prevalence country" />
                         <MudCheckBox @bind-Value="Model.OfferedHepBVaccination" For="@(() => Model.OfferedHepBVaccination)" Label="Offered Hepatitis B vaccination" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Hepatitis B Vaccination Dates</MudText>
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="Model.HepBVaccination1stDate" For="@(() => Model.HepBVaccination1stDate)"
+                                    Label="1st Dose" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="Model.HepBVaccination2ndDate" For="@(() => Model.HepBVaccination2ndDate)"
+                                    Label="2nd Dose" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="Model.HepBVaccination3rdDate" For="@(() => Model.HepBVaccination3rdDate)"
+                                    Label="3rd Dose" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="Model.HepBBloodTestDate" For="@(() => Model.HepBBloodTestDate)"
+                                    Label="Blood Test Date" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField @bind-Value="Model.HepBBloodTestResult" For="@(() => Model.HepBBloodTestResult)"
+                                    Label="Blood Test Result" Variant="Variant.Outlined" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Medical Consent -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Security" Class="mr-3" />
+                    <MudText>Medical Consent</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudCheckBox @bind-Value="Model.ConsentToMedicalRecordsDisclosure" For="@(() => Model.ConsentToMedicalRecordsDisclosure)" 
+                            Label="I consent to the disclosure of medical records for occupational health purposes" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudCheckBox @bind-Value="Model.WishToSeeMedicalInformationFirst" For="@(() => Model.WishToSeeMedicalInformationFirst)" 
+                            Label="I wish to see medical information before it is disclosed" />
                     </MudItem>
                 </MudGrid>
             </ChildContent>
@@ -241,7 +354,7 @@
                 <MudGrid>
                     <MudItem xs="12">
                         <MudText Typo="Typo.body2" Class="mb-2">
-                            I declare that the information given in this form is true and complete. I understand that any false information may lead to the refusal of my application or cancellation of my place on the course.
+                            I declare that the information given in this form is true and complete. I understand that any false information may lead to the refusal of my application or cancellation of employment.
                         </MudText>
                         <MudCheckBox @bind-Value="Model.DeclarationSigned" For="@(() => Model.DeclarationSigned)" 
                             Label="I agree to the above declaration" />
@@ -258,17 +371,17 @@
             </ChildContent>
         </MudExpansionPanel>
 
-        <!-- Additional Information -->
+        <!-- Additional Comments -->
         <MudExpansionPanel Expanded="true">
             <TitleContent>
                 <div class="d-flex">
                     <MudIcon Icon="@Icons.Material.Filled.Comment" Class="mr-3" />
-                    <MudText>Additional Information</MudText>
+                    <MudText>Additional Comments</MudText>
                 </div>
             </TitleContent>
             <ChildContent>
-                <MudTextField @bind-Value="Model.AdditionalRelevantInformation" For="@(() => Model.AdditionalRelevantInformation)"
-                    Label="Any additional relevant information" Variant="Variant.Outlined" Lines="4" />
+                <MudTextField @bind-Value="Model.AdditionalComments" For="@(() => Model.AdditionalComments)"
+                    Label="Any additional comments" Variant="Variant.Outlined" Lines="4" />
             </ChildContent>
         </MudExpansionPanel>
 
@@ -295,13 +408,13 @@
 </MudForm>
 
 @code {
-    [Parameter] public PphaFormClinStudentDto Model { get; set; } = new();
-    [Parameter] public EventCallback<PphaFormClinStudentDto> OnSaveComplete { get; set; }
-    [Parameter] public EventCallback<PphaFormClinStudentDto> OnSubmitComplete { get; set; }
+    [Parameter] public PphaFormClinWorkerDto Model { get; set; } = new();
+    [Parameter] public EventCallback<PphaFormClinWorkerDto> OnSaveComplete { get; set; }
+    [Parameter] public EventCallback<PphaFormClinWorkerDto> OnSubmitComplete { get; set; }
     [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
     [Parameter] public bool ShowAsDialog { get; set; } = false;
 
-    private PphaFormClinStudentValidator PphaClinStudentValidator { get; set; } = new();
+    private PphaFormClinWorkerValidator PphaFormClinWorkerValidator { get; set; } = new();
     private MudForm form = new();
     private bool _saving = false;
     
@@ -330,12 +443,12 @@
                     await OnSaveComplete.InvokeAsync(Model);
                 }
                 
-                Snackbar.Add("PPHA Clinical Student form saved successfully!", MudBlazor.Severity.Success);
+                Snackbar.Add("PPHA Clinical Worker form saved successfully!", MudBlazor.Severity.Success);
             }
             catch (Exception ex)
             {
                 Snackbar.Add($"Failed to save form: {ex.Message}", MudBlazor.Severity.Error);
-                Console.Error.WriteLine($"Error saving PPHA Clinical Student form: {ex}");
+                Console.Error.WriteLine($"Error saving PPHA Clinical Worker form: {ex}");
             }
             finally
             {

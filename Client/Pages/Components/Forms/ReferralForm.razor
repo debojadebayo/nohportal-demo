@@ -10,6 +10,7 @@
 @using ComposedHealthBase.BaseClient.Components
 @using ComposedHealthBase.BaseClient.Enums
 @using ComposedHealthBase.Shared.DTOs
+@using Client.Pages.Components.Forms.ReferralDetailsForms
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject ILazyLookupService<ReferralDto> ReferralLookupService
@@ -149,7 +150,7 @@
 
 @formContent
 
-<MudForm @ref="form" Model="Model" Validator="@referralValidator.ValidateValue" ValidationDelay="0">
+<MudForm @ref="form" Model="Model" Validation="@referralValidator.ValidateValue" ValidationDelay="0">
     <!-- Action Buttons -->
     <MudCardActions Class="mt-4">
         <MudButton Variant="Variant.Filled" Color="Color.Primary" 

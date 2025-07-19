@@ -10,7 +10,7 @@
 @inject ILazyLookupService<EmployeeDto> EmployeeLookupService
 
 <MudPaper Class="pa-4">
-    <MudForm @ref="form" Model="Model" Validator="@PphaFormStudentValidator.ValidateValue" ValidationDelay="0">
+    <MudForm @ref="form" Model="Model" Validation="@PphaFormStudentValidator.ValidateValue" ValidationDelay="0">
         <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
             <!-- Personal Details -->
             <MudExpansionPanel Expanded="true">
@@ -79,7 +79,7 @@
         <!-- Actions -->
         <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_saving" OnClick="SaveAsync">@(_saving ? "Saving…" : "Save")</MudButton>
-            <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="ClearAsync">Clear</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="Clear">Clear</MudButton>
         </MudStack>
     </MudForm>
 </MudPaper>
@@ -131,7 +131,7 @@
         finally { _saving = false; }
     }
 
-    private async Task ClearAsync()
+    private void Clear()
     {
         Model = new PphaFormStudentDto();
         History.ForEach(h => h.Reset());
