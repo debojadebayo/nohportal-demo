@@ -1,0 +1,106 @@
+@namespace Client.Pages.Components.Forms.ReferralDetailsForms
+@using Shared.DTOs.Scheduling
+@using Shared.Validators.Forms
+@using FluentValidation
+@using MudBlazor
+@using ComposedHealthBase.BaseClient.Services
+@using Shared.DTOs.CRM
+
+<!-- Form Fields Only - No MudForm wrapper or action buttons -->
+<MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+            <!-- Personal Details -->
+            <MudExpansionPanel Expanded="true">
+                <TitleContent>
+                    <div class="d-flex"><MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-3" /><MudText>Personal Details</MudText></div>
+                </TitleContent>
+                <ChildContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.LastName" Label="Surname" For="@(() => Model.LastName)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.PreviousSurname" Label="Previous Name" For="@(() => Model.PreviousSurname)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.FirstName" Label="Forenames" For="@(() => Model.FirstName)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudDatePicker @bind-Date="Model.DateOfBirth" Label="Date of Birth" For="@(() => Model.DateOfBirth)" /></MudItem>
+                        <MudItem xs="12"><MudTextField @bind-Value="Model.Address" Label="Address" Lines="3" For="@(() => Model.Address)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.ContactNumber" Label="Mobile" For="@(() => Model.ContactNumber)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.Email" Label="Email Address" For="@(() => Model.Email)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.GpName" Label="GP Name" For="@(() => Model.GpName)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.GpAddress" Label="GP Address" Lines="2" For="@(() => Model.GpAddress)" /></MudItem>
+                    </MudGrid>
+                </ChildContent>
+            </MudExpansionPanel>
+
+            <!-- Course Details -->
+            <MudExpansionPanel Expanded="false">
+                <TitleContent>
+                    <div class="d-flex"><MudIcon Icon="@Icons.Material.Filled.School" Class="mr-3" /><MudText>University Course Details</MudText></div>
+                </TitleContent>
+                <ChildContent>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.CourseAppliedFor" Label="Course Applied For" For="@(() => Model.CourseAppliedFor)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.CourseDuration" Label="Duration of Course" For="@(() => Model.CourseDuration)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.University" Label="University" For="@(() => Model.University)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.Department" Label="Department" For="@(() => Model.Department)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudDatePicker @bind-Date="Model.ProposedStartDate" Label="Proposed Start Date" For="@(() => Model.ProposedStartDate)" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.StudentId" Label="Student ID" For="@(() => Model.StudentId)" /></MudItem>
+                        <MudItem xs="12">
+                            <MudCheckBox T="bool" @bind-Value="Model.ManualHandling" Label="Manual Handling" />
+                            <MudCheckBox T="bool" Class="ml-4" @bind-Value="Model.DisplayScreenEquipment" Label="Working with Display Screen Equipment" />
+                            <MudCheckBox T="bool" Class="ml-4" @bind-Value="Model.VulnerableAdultsChildren" Label="Working with Vulnerable Adults or Children" />
+                            <MudCheckBox T="bool" Class="ml-4" @bind-Value="Model.ClinicalDutiesBodyFluidExposure" Label="Clinical Duties with Risk of Exposure to Bodily Fluids" />
+                        </MudItem>
+                    </MudGrid>
+                </ChildContent>
+            </MudExpansionPanel>
+
+            <!-- Health history -->
+            <MudExpansionPanel Expanded="false">
+                <TitleContent>
+                    <div class="d-flex"><MudIcon Icon="@Icons.Material.Filled.HealthAndSafety" Class="mr-3" /><MudText>Health History</MudText></div>
+                </TitleContent>
+                <ChildContent>
+                    <MudGrid>
+                        @foreach (var item in History)
+                        {
+                            <MudItem xs="12">
+                                <MudCheckBox T="bool" @bind-Value="item.Checked" Label="@item.Label" />
+                                <MudTextField Lines="3" Variant="Variant.Outlined" Placeholder="Details if yes" @bind-Value="item.Details" Disabled="@(!item.Checked)" />
+                            </MudItem>
+                        }
+                        <MudItem xs="12" sm="6"><MudCheckBox T="bool" @bind-Value="Model.DrinksAlcohol" Label="Do you drink alcohol?" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField @bind-Value="Model.AlcoholUnitsPerWeek" Label="Units per week" Disabled="@(!Model.DrinksAlcohol)" /></MudItem>
+                    </MudGrid>
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+
+@code {
+    [Parameter] public PphaFormStudentDto Model { get; set; } = new();
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
+
+    private List<HistoryItem> History = new();
+
+    protected override void OnInitialized()
+    {
+        if (CustomerId != Guid.Empty && Model.ReferralId == Guid.Empty)
+        {
+            Model.ReferralId = CustomerId;
+        }
+
+        History = new List<HistoryItem>
+        {
+            new("Physical illness/impairment affecting study", () => Model.PhysicalIllnessAffectsStudy, v => Model.PhysicalIllnessAffectsStudy = v, () => Model.PhysicalIllnessDetails, v => Model.PhysicalIllnessDetails = v),
+            new("Psychological illness/impairment affecting study", () => Model.PsychologicalIllnessAffectsStudy, v => Model.PsychologicalIllnessAffectsStudy = v, () => Model.PsychologicalIllnessDetails, v => Model.PsychologicalIllnessDetails = v),
+            new("Illness caused by previous study/placement", () => Model.StudyPlacementCausedIllness, v => Model.StudyPlacementCausedIllness = v, () => Model.StudyPlacementIllnessDetails, v => Model.StudyPlacementIllnessDetails = v),
+            new("Currently having or waiting for treatment/investigations", () => Model.CurrentTreatmentOrMedication, v => Model.CurrentTreatmentOrMedication = v, () => Model.CurrentTreatmentDetails, v => Model.CurrentTreatmentDetails = v),
+            new("Taking any current medication", () => Model.TakingMedication, v => Model.TakingMedication = v, () => Model.MedicationDetails, v => Model.MedicationDetails = v),
+            new("Known allergies", () => Model.HasAllergies, v => Model.HasAllergies = v, () => Model.AllergiesDetails, v => Model.AllergiesDetails = v),
+            new("Need any adjustments/assistance", () => Model.NeedsAdjustments, v => Model.NeedsAdjustments = v, () => Model.AdjustmentsDetails, v => Model.AdjustmentsDetails = v)
+        };
+    }
+
+    private record HistoryItem(string Label, Func<bool> GetFlag, Action<bool> SetFlag, Func<string?> GetDetails, Action<string?> SetDetails)
+    {
+        public bool Checked { get => GetFlag(); set => SetFlag(value); }
+        public string? Details { get => GetDetails(); set => SetDetails(value); }
+        public void Reset() { Checked = false; Details = string.Empty; }
+    }
+}

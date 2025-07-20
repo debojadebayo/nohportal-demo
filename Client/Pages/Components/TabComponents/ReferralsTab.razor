@@ -7,7 +7,10 @@
 @using Shared.Validators
 @using MudBlazor
 @using Shared.DTOs.Scheduling
+@using Shared.Enums
+@using Client.Pages.Components.Forms
 @inject IAuthHelperService AuthHelper
+@inject ILazyLookupService<ReferralDto> ReferralLookupService
 
 <MudPaper Class="pa-4">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
@@ -15,39 +18,138 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowAddReferralDialog"
             StartIcon="@Icons.Material.Filled.Add">Add New Referral</MudButton>
     </MudStack>
-    <MudDataGrid T="ReferralDto" Items="Referrals ?? new List<ReferralDto>()" Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true">
+
+    <!-- Filtering Section - Only show if neither CustomerId nor EmployeeId are set -->
+    @if (CustomerId == Guid.Empty && EmployeeId == Guid.Empty)
+    {
+        <MudExpansionPanels Class="mb-4">
+            <MudExpansionPanel Text="Advanced Filters">
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="3">
+                        <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_customerFilter"
+                            Label="Filter by Customer" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_employeeFilter"
+                            Label="Filter by Employee" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudSelect T="ReferralStatusEnum?" @bind-Value="_statusFilter" Label="Filter by Status"
+                            Variant="Variant.Outlined">
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)null)">All Statuses</MudSelectItem>
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)ReferralStatusEnum.Pending)">Pending</MudSelectItem>
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)ReferralStatusEnum.InProgress)">In Progress</MudSelectItem>
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)ReferralStatusEnum.Completed)">Completed</MudSelectItem>
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)ReferralStatusEnum.Cancelled)">Cancelled</MudSelectItem>
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)ReferralStatusEnum.Rejected)">Rejected</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="ClearFilters"
+                            StartIcon="@Icons.Material.Filled.Clear">Clear Filters</MudButton>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="mt-2">
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="_dateFromFilter" Label="Created From" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="_dateToFilter" Label="Created To" Variant="Variant.Outlined" />
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    }
+    else
+    {
+        <!-- Show limited filters when CustomerId or EmployeeId is set -->
+        <MudExpansionPanels Class="mb-4">
+            <MudExpansionPanel Text="Filters">
+                <MudGrid>
+                    @if (CustomerId != Guid.Empty && EmployeeId == Guid.Empty)
+                    {
+                        <MudItem xs="12" sm="6" md="3">
+                            <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_employeeFilter"
+                                Label="Filter by Employee" />
+                        </MudItem>
+                    }
+                    @if (EmployeeId != Guid.Empty && CustomerId == Guid.Empty)
+                    {
+                        <MudItem xs="12" sm="6" md="3">
+                            <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_customerFilter"
+                                Label="Filter by Customer" />
+                        </MudItem>
+                    }
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudSelect T="ReferralStatusEnum?" @bind-Value="_statusFilter" Label="Filter by Status"
+                            Variant="Variant.Outlined">
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)null)">All Statuses</MudSelectItem>
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)ReferralStatusEnum.Pending)">Pending</MudSelectItem>
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)ReferralStatusEnum.InProgress)">In Progress</MudSelectItem>
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)ReferralStatusEnum.Completed)">Completed</MudSelectItem>
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)ReferralStatusEnum.Cancelled)">Cancelled</MudSelectItem>
+                            <MudSelectItem T="ReferralStatusEnum?" Value="@((ReferralStatusEnum?)ReferralStatusEnum.Rejected)">Rejected</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="ClearFilters"
+                            StartIcon="@Icons.Material.Filled.Clear">Clear Filters</MudButton>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="mt-2">
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="_dateFromFilter" Label="Created From" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="_dateToFilter" Label="Created To" Variant="Variant.Outlined" />
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    }
+
+    <MudDataGrid T="ReferralDto" Items="@FilteredReferrals" Dense="true" Hover="true" Striped="true" 
+        Bordered="true" Filterable="true" SortMode="SortMode.Multiple" QuickFilter="@_quickFilter"
+        Hideable="true" MultiSelection="false">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Referrals (@FilteredReferrals.Count())</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchString" Placeholder="Search referrals..." Adornment="Adornment.Start" 
+                Immediate="true" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" 
+                Class="mt-0"></MudTextField>
+        </ToolBarContent>
         <Columns>
-            <PropertyColumn Property="x => x.CreatedDate" Title="Created" />
+            <PropertyColumn Property="x => x.CreatedDate" Title="Created" Format="dd/MM/yyyy HH:mm" />
+            <PropertyColumn Property="x => x.ReferralStatus" Title="Status" />
             <PropertyColumn Property="x => x.Title" />
             <PropertyColumn Property="x => x.ReferralDetails" Title="Referral Details" />
-                <TemplateColumn>
-                    <HeaderTemplate>
-                        <MudText Typo="Typo.subtitle2">Employee</MudText>
-                    </HeaderTemplate>
-                    <CellTemplate>
-                        <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.EmployeeId" />
-                    </CellTemplate>
-                </TemplateColumn>
-                <TemplateColumn>
-                    <HeaderTemplate>
-                        <MudText Typo="Typo.subtitle2">Customer</MudText>
-                    </HeaderTemplate>
-                    <CellTemplate>
-                        <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.CustomerId" />
-                    </CellTemplate>
-                </TemplateColumn>
-                <TemplateColumn>
-                    <CellTemplate>
-                                            <MudButton Size="@Size.Small" OnClick="() => ViewReferral(context.Item)"
-                        Variant="@Variant.Filled" Color="@Color.Primary">View Referral</MudButton>
-                            @if (AppointmentMode)
-                            {
-                                <MudButton Size="@Size.Small" OnClick="() => OnSelectForAppointment.InvokeAsync(context.Item)"
-                                    Variant="@Variant.Filled" Color="@Color.Primary">Select for Appointment</MudButton>
-                            }
-                    </CellTemplate>
-                </TemplateColumn>
+            <TemplateColumn Title="Employee">
+                <CellTemplate>
+                    <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.EmployeeId" />
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Customer">
+                <CellTemplate>
+                    <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Text" @bind-ItemId="context.Item.CustomerId" />
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Actions" Sortable="false" Filterable="false">
+                <CellTemplate>
+                    <MudStack Row="true" Spacing="1">
+                        <MudButton Size="@Size.Small" OnClick="() => ViewReferral(context.Item)"
+                            Variant="@Variant.Filled" Color="@Color.Primary">View</MudButton>
+                        @if (AppointmentMode)
+                        {
+                            <MudButton Size="@Size.Small" OnClick="() => OnSelectForAppointment.InvokeAsync(context.Item)"
+                                Variant="@Variant.Filled" Color="@Color.Success">Select</MudButton>
+                        }
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
         </Columns>
+        <PagerContent>
+            <MudDataGridPager T="ReferralDto" />
+        </PagerContent>
         <NoRecordsContent>
             <MudText>No referrals found.</MudText>
         </NoRecordsContent>
@@ -56,26 +158,19 @@
 
 <MudDialog @bind-Visible="_addReferralDialogOpen" Options="_dialogOptions">
     <TitleContent>
-        <MudText Typo="Typo.h6">Referral</MudText>
+        <MudText Typo="Typo.h3">Referral</MudText>
     </TitleContent>
     <DialogContent>
-        <MudForm @ref="form" Model="_newReferral" Validation="@(referralValidator.ValidateValue)" ValidationDelay="0">
-            <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.CustomerId" TenantConstraint="CustomerId" Label="Customer" For="@(() => _newReferral.CustomerId)" />
-            <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="_newReferral.EmployeeId" TenantConstraint="CustomerId" Label="Employee" For="@(() => _newReferral.EmployeeId)" />
-            <MudTextField @bind-Value="_newReferral.Title" Label="Title" Variant="Variant.Outlined" For="@(() => _newReferral.Title)" />
-            <MudTextField @bind-Value="_newReferral.ReferralDetails" Label="Referral Details" Variant="Variant.Outlined" Class="mt-3" Lines="3" For="@(() => _newReferral.ReferralDetails)" />
-            <DocumentBrowser CompactMode="true" TDto="EmployeeDocumentDto" @bind-DocumentIds="_newReferral.RelatedDocumentIds" />
-        </MudForm>
+        <ReferralForm Model="_newReferral" CustomerId="CustomerId" ShowAsDialog="true" 
+                      OnSaveComplete="@Save" OnSubmitComplete="@Save" />
     </DialogContent>
     <DialogActions>
-        <MudButton Color="Color.Primary" OnClick="AddReferral">Save</MudButton>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [Parameter] public IEnumerable<ReferralDto> Referrals { get; set; } = new List<ReferralDto>();
-    [Parameter] public EventCallback<ReferralDto> OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
     [Parameter] public Guid EmployeeId { get; set; } = Guid.Empty;
@@ -83,34 +178,129 @@
     [Parameter] public EventCallback<ReferralDto> OnSelectForAppointment { get; set; }
 
     private bool _addReferralDialogOpen = false;
+
+    private List<ReferralDto> _referrals = new();
     private ReferralDto _newReferral = new ReferralDto();
-    // private EmployeeDocumentDto _newDocument = default!; // Commented out as not used
-    private MudForm form = default!;
-    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-    
-    // Validator instance
-    private ReferralValidator referralValidator = new ReferralValidator();
+    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Large, FullWidth = true };
+
+    // Search and filter properties
+    private string _searchString = "";
+    private Guid _customerFilter = Guid.Empty;
+    private Guid _employeeFilter = Guid.Empty;
+    private ReferralStatusEnum? _statusFilter;
+    private DateTime? _dateFromFilter;
+    private DateTime? _dateToFilter;
+
+    // Quick filter function - filter globally across multiple columns
+    private Func<ReferralDto, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Title?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true)
+            return true;
+
+        if (x.ReferralDetails?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true)
+            return true;
+
+        if (x.ReferralStatus.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.CreatedDate.ToString("dd/MM/yyyy").Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+    // Filtered referrals based on advanced filters
+    private IEnumerable<ReferralDto> FilteredReferrals
+    {
+        get
+        {
+            // Use _referrals when we have loaded data, otherwise use Referrals parameter
+            var source = (CustomerId != Guid.Empty || EmployeeId != Guid.Empty || !Referrals.Any()) ? _referrals : Referrals ?? new List<ReferralDto>();
+            var filtered = source.AsEnumerable();
+
+            if (_customerFilter != Guid.Empty)
+                filtered = filtered.Where(r => r.CustomerId == _customerFilter);
+
+            if (_employeeFilter != Guid.Empty)
+                filtered = filtered.Where(r => r.EmployeeId == _employeeFilter);
+
+            if (_statusFilter.HasValue)
+                filtered = filtered.Where(r => r.ReferralStatus == _statusFilter.Value);
+
+            if (_dateFromFilter.HasValue)
+                filtered = filtered.Where(r => r.CreatedDate >= _dateFromFilter.Value);
+
+            if (_dateToFilter.HasValue)
+                filtered = filtered.Where(r => r.CreatedDate <= _dateToFilter.Value.AddDays(1));
+
+            return filtered;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CustomerId != Guid.Empty)
+        {
+            await GetAllReferralsByCustomerId();
+        }
+        else if (EmployeeId != Guid.Empty)
+        {
+            await GetAllReferralsByEmployeeId();
+        }
+        else
+        {
+            await GetAllReferrals();
+        }
+    }
 
     private void ShowAddReferralDialog()
     {
         _newReferral = new ReferralDto { CustomerId = CustomerId, EmployeeId = EmployeeId };
         _addReferralDialogOpen = true;
     }
-
-    private async Task AddReferral()
+    private void ClearFilters()
     {
-        await form.Validate();
-        if (!form.IsValid) return;
-        await OnSave.InvokeAsync(_newReferral);
-        _addReferralDialogOpen = false;
+        _customerFilter = Guid.Empty;
+        _employeeFilter = Guid.Empty;
+        _statusFilter = null;
+        _dateFromFilter = null;
+        _dateToFilter = null;
+        _searchString = "";
+        StateHasChanged();
     }
+    private async Task GetAllReferralsByCustomerId()
+    {
+        if (CustomerId == Guid.Empty) return;
+        _referrals = (await ReferralLookupService.GetAllByTenantId(CustomerId,
+        CancellationToken.None)).ToList();
+    }
+    private async Task GetAllReferralsByEmployeeId()
+    {
+        if (EmployeeId == Guid.Empty) return;
+        _referrals = (await ReferralLookupService.GetAllBySubjectId(EmployeeId,
+        CancellationToken.None)).ToList();
+    }
+    private async Task GetAllReferrals()
+    {
+        _referrals = (await ReferralLookupService.GetAllItems(CancellationToken.None)).ToList();
+    }
+    private void Save(ReferralDto referral)
+    {
+        if (referral == null) return;
 
+        _referrals.Add(referral);
+        
+        _addReferralDialogOpen = false;
+        StateHasChanged();
+    }
     private void ViewReferral(ReferralDto referral)
     {
         _newReferral = referral;
         _addReferralDialogOpen = true;
     }
-
     private async Task Cancel()
     {
         _addReferralDialogOpen = false;

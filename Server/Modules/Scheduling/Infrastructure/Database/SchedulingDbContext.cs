@@ -1,6 +1,7 @@
 ﻿using ComposedHealthBase.Server.Database;
 using Microsoft.EntityFrameworkCore;
 using Server.Modules.Scheduling.Entities;
+using Shared.DTOs.Scheduling;
 using Shared.Enums;
 
 namespace Server.Modules.Scheduling.Infrastructure.Database
@@ -26,6 +27,11 @@ namespace Server.Modules.Scheduling.Infrastructure.Database
             modelBuilder.Entity<Referral>()
                 .Property(p => p.Id)
                 .HasDefaultValueSql("gen_random_uuid()");
+
+            // Configure Details property as JSON column
+            modelBuilder.Entity<Referral>()
+                .Property(e => e.Details)
+                .HasColumnType("jsonb");
 
             modelBuilder.Entity<Clinician>()
 

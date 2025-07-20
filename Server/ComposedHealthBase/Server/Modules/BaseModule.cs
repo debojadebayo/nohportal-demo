@@ -18,6 +18,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ComposedHealthBase.Server.Modules
 {
@@ -27,6 +29,24 @@ namespace ComposedHealthBase.Server.Modules
         {
             services.Configure<AppOptions>(configuration);
             services.AddSingleton<IKeycloakService, KeycloakService>();
+
+            // Configure JSON serialization options for minimal APIs
+            services.ConfigureHttpJsonOptions(options =>
+            {
+                options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.SerializerOptions.PropertyNameCaseInsensitive = true;
+                options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                // Polymorphic serialization is handled automatically by the JsonPolymorphic attributes
+            });
+
+            // Also configure the default JsonSerializerOptions for DI
+            services.Configure<JsonSerializerOptions>(options =>
+            {
+                options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.PropertyNameCaseInsensitive = true;
+                options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                // Polymorphic serialization is handled automatically by the JsonPolymorphic attributes
+            });
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddCors(options =>

@@ -3,18 +3,21 @@ using System;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Modules.Scheduling.Infrastructure.Database;
 
 #nullable disable
 
-namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
+namespace Server.Modules.Scheduling.Infrastructure.Modules.Scheduling.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(SchedulingDbContext))]
-    partial class SchedulingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250716120059_AddReferralTypeAndDetails")]
+    partial class AddReferralTypeAndDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,6 +66,9 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid>("KeycloakId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("LastModifiedBy")
                         .IsRequired()
@@ -124,6 +130,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             Email = "alice.smith@example.com",
                             FirstName = "Alice",
                             IsActive = false,
+                            KeycloakId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
                             LastModifiedBy = "System",
                             LastName = "Smith",
                             LicenceNumber = "GMC1001",
@@ -149,6 +156,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             Email = "bob.johnson@example.com",
                             FirstName = "Bob",
                             IsActive = false,
+                            KeycloakId = new Guid("9c8b7a6d-5e4f-3c2b-1a09-876543210fed"),
                             LastModifiedBy = "System",
                             LastName = "Johnson",
                             LicenceNumber = "GMC1002",
@@ -174,6 +182,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             Email = "carol.williams@example.com",
                             FirstName = "Carol",
                             IsActive = false,
+                            KeycloakId = new Guid("123e4567-e89b-12d3-a456-426614174000"),
                             LastModifiedBy = "System",
                             LastName = "Williams",
                             LicenceNumber = "NMC1003",
@@ -199,6 +208,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             Email = "david.brown@example.com",
                             FirstName = "David",
                             IsActive = false,
+                            KeycloakId = new Guid("ba012345-6789-abcd-0123-456789abcdef"),
                             LastModifiedBy = "System",
                             LastName = "Brown",
                             LicenceNumber = "GMC1004",
@@ -224,6 +234,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             Email = "eva.jones@example.com",
                             FirstName = "Eva",
                             IsActive = false,
+                            KeycloakId = new Guid("00112233-4455-6677-8899-aabbccddeeff"),
                             LastModifiedBy = "System",
                             LastName = "Jones",
                             LicenceNumber = "NMC1005",
@@ -249,6 +260,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             Email = "frank.garcia@example.com",
                             FirstName = "Frank",
                             IsActive = false,
+                            KeycloakId = new Guid("ffeeddcc-bbaa-9988-7766-554433221100"),
                             LastModifiedBy = "System",
                             LastName = "Garcia",
                             LicenceNumber = "GMC1006",
@@ -274,6 +286,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             Email = "grace.martinez@example.com",
                             FirstName = "Grace",
                             IsActive = false,
+                            KeycloakId = new Guid("abcdef01-2345-6789-abcd-ef0123456789"),
                             LastModifiedBy = "System",
                             LastName = "Martinez",
                             LicenceNumber = "NMC1007",
@@ -299,6 +312,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             Email = "henry.lee@example.com",
                             FirstName = "Henry",
                             IsActive = false,
+                            KeycloakId = new Guid("fedcba98-7654-3210-fedc-ba9876543210"),
                             LastModifiedBy = "System",
                             LastName = "Lee",
                             LicenceNumber = "GMC1008",
@@ -324,6 +338,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             Email = "ivy.walker@example.com",
                             FirstName = "Ivy",
                             IsActive = false,
+                            KeycloakId = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
                             LastModifiedBy = "System",
                             LastName = "Walker",
                             LicenceNumber = "NMC1009",
@@ -349,6 +364,7 @@ namespace Server.Modules.Scheduling.Infrastructure.Database.Migrations
                             Email = "jack.hall@example.com",
                             FirstName = "Jack",
                             IsActive = false,
+                            KeycloakId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
                             LastModifiedBy = "System",
                             LastName = "Hall",
                             LicenceNumber = "GMC1010",

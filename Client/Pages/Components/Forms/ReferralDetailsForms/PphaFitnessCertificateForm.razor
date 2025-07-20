@@ -1,0 +1,233 @@
+@namespace Client.Pages.Components.Forms.ReferralDetailsForms
+@using Shared.DTOs.Scheduling
+@using Shared.DTOs.CRM
+@using Shared.Validators.Forms
+@using FluentValidation
+@using MudBlazor
+@using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.Shared.DTOs
+
+<!-- Form Fields Only - No MudForm wrapper or action buttons -->
+<MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+        
+        <!-- Employee Information -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-3" />
+                    <MudText>Employee Information</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.Name" For="@(() => Model.Name)"
+                            Label="Employee Name" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="Model.DateOfBirth" For="@(() => Model.DateOfBirth)"
+                            Label="Date of Birth" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.Email" For="@(() => Model.Email)"
+                            Label="Email Address" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.ContactNumber" For="@(() => Model.ContactNumber)"
+                            Label="Contact Number" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.Company" For="@(() => Model.Company)"
+                            Label="Company/Organisation" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.Department" For="@(() => Model.Department)"
+                            Label="Department" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.RoleAppliedFor" For="@(() => Model.RoleAppliedFor)"
+                            Label="Role Applied For" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="Model.DateOfAssessment" For="@(() => Model.DateOfAssessment)"
+                            Label="Date of Assessment" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Fitness Assessment -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-3" />
+                    <MudText>Fitness Assessment</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Employee Fitness Status</MudText>
+                        <MudText Typo="Typo.caption" Class="mb-2">
+                            Please select the appropriate fitness status for this employee:
+                        </MudText>
+                        <MudRadioGroup @bind-Value="selectedFitnessStatus" For="@(() => selectedFitnessStatus)">
+                            <MudRadio Value="1" Color="Color.Success">
+                                <MudText>Fit for Work</MudText>
+                            </MudRadio>
+                            <MudRadio Value="2" Color="Color.Warning">
+                                <MudText>Temporarily Unfit for Work</MudText>
+                            </MudRadio>
+                            <MudRadio Value="3" Color="Color.Error">
+                                <MudText>Unfit for Work</MudText>
+                            </MudRadio>
+                        </MudRadioGroup>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Adjustments Required</MudText>
+                        <MudCheckBox @bind-Value="Model.AdjustmentsRequired" For="@(() => Model.AdjustmentsRequired)" 
+                            Label="Are adjustments required for this employee to perform their role?" />
+                        @if (Model.AdjustmentsRequired)
+                        {
+                            <MudTextField @bind-Value="Model.AdjustmentsDetails" For="@(() => Model.AdjustmentsDetails)"
+                                Label="Please provide details of the adjustments required" 
+                                Variant="Variant.Outlined" Lines="4" Class="mt-2" />
+                        }
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Clinician Details -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Class="mr-3" />
+                    <MudText>Clinician Details</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.ClinicianName" For="@(() => Model.ClinicianName)"
+                            Label="Clinician Name" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.ClinicianJobTitle" For="@(() => Model.ClinicianJobTitle)"
+                            Label="Clinician Job Title" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.ClinicianSignature" For="@(() => Model.ClinicianSignature)"
+                            Label="Clinician Digital Signature" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="Model.SignatureDate" For="@(() => Model.SignatureDate)"
+                            Label="Signature Date" Variant="Variant.Outlined" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Certificate Summary -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Summarize" Class="mr-3" />
+                    <MudText>Certificate Summary</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudCard Elevation="2" Class="pa-4">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6" Class="mb-2">Fitness Certificate Summary</MudText>
+                                <MudText Typo="Typo.body1" Class="mb-2">
+                                    <strong>Employee:</strong> @Model.Name
+                                </MudText>
+                                <MudText Typo="Typo.body1" Class="mb-2">
+                                    <strong>Company:</strong> @Model.Company
+                                </MudText>
+                                <MudText Typo="Typo.body1" Class="mb-2">
+                                    <strong>Role:</strong> @Model.RoleAppliedFor
+                                </MudText>
+                                <MudText Typo="Typo.body1" Class="mb-2">
+                                    <strong>Assessment Date:</strong> @Model.DateOfAssessment?.ToString("dd/MM/yyyy")
+                                </MudText>
+                                <MudText Typo="Typo.body1" Class="mb-2">
+                                    <strong>Fitness Status:</strong> 
+                                    @if (Model.FitForWork)
+                                    {
+                                        <MudChip T="string" Color="Color.Success" Size="Size.Small">Fit for Work</MudChip>
+                                    }
+                                    else if (Model.TemporarilyUnfitForWork)
+                                    {
+                                        <MudChip T="string" Color="Color.Warning" Size="Size.Small">Temporarily Unfit for Work</MudChip>
+                                    }
+                                    else if (Model.UnfitForWork)
+                                    {
+                                        <MudChip T="string" Color="Color.Error" Size="Size.Small">Unfit for Work</MudChip>
+                                    }
+                                    else
+                                    {
+                                        <MudChip T="string" Color="Color.Default" Size="Size.Small">Not Assessed</MudChip>
+                                    }
+                                </MudText>
+                                @if (Model.AdjustmentsRequired)
+                                {
+                                    <MudText Typo="Typo.body1" Class="mb-2">
+                                        <strong>Adjustments Required:</strong> Yes
+                                    </MudText>
+                                    <MudText Typo="Typo.body2" Class="mb-2">
+                                        <strong>Details:</strong> @Model.AdjustmentsDetails
+                                    </MudText>
+                                }
+                                <MudText Typo="Typo.body1" Class="mb-2">
+                                    <strong>Clinician:</strong> @Model.ClinicianName (@Model.ClinicianJobTitle)
+                                </MudText>
+                                <MudText Typo="Typo.body1">
+                                    <strong>Date Signed:</strong> @Model.SignatureDate?.ToString("dd/MM/yyyy")
+                                </MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+    </MudExpansionPanels>
+
+@code {
+    [Parameter] public PphaFitnessCertificateDto Model { get; set; } = new();
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
+    
+    private int selectedFitnessStatus = 0;
+
+    protected override void OnInitialized()
+    {
+        if (CustomerId != Guid.Empty && Model.ReferralId == Guid.Empty)
+        {
+            Model.ReferralId = CustomerId;
+        }
+        
+        // Initialize fitness status from model
+        if (Model.FitForWork) selectedFitnessStatus = 1;
+        else if (Model.TemporarilyUnfitForWork) selectedFitnessStatus = 2;
+        else if (Model.UnfitForWork) selectedFitnessStatus = 3;
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Update model based on selected fitness status
+        UpdateFitnessStatus();
+    }
+
+    private void UpdateFitnessStatus()
+    {
+        Model.FitForWork = selectedFitnessStatus == 1;
+        Model.TemporarilyUnfitForWork = selectedFitnessStatus == 2;
+        Model.UnfitForWork = selectedFitnessStatus == 3;
+    }
+}

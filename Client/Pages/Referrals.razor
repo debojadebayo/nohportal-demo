@@ -1,34 +1,16 @@
-﻿@page "/referrals"
-@using Shared.DTOs.CRM
-@using Shared.DTOs.Scheduling
+@page "/referrals"
+@page "/referrals/{SelectedReferralId:guid}"
 @using Client.Pages.Components.TabComponents
-@using ComposedHealthBase.BaseClient.Services
-@inject ILazyLookupService<ReferralDto> ReferralLookupService
-@attribute [Authorize]
+@using MudBlazor
 
 <PageTitle>Referrals</PageTitle>
 
 <MudText Typo="Typo.h1">Referrals</MudText>
 
-<MudPaper Class="pa-4" Elevation="2">
-    <ReferralsTab Referrals="referrals" OnSave="SaveReferral" />
-</MudPaper>
+<MudText Typo="Typo.body1">Search for an existing referral or create a new one</MudText>
+
+<ReferralsTab />
 
 @code {
-    private List<ReferralDto> referrals = new();
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadReferrals();
-    }
-
-    private async Task LoadReferrals()
-    {
-        referrals = (await ReferralLookupService.GetAllItems(CancellationToken.None)).ToList();
-    }
-
-    private async Task SaveReferral(ReferralDto referral)
-    {
-        if (referral == null) return;
-        await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
-    }
+    [Parameter] public Guid SelectedReferralId { get; set; } = Guid.Empty;
 }

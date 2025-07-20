@@ -13,9 +13,12 @@
     case LazyLookupEnum.Text:
         <MudText>@(SelectedItem?.DisplayName ?? "(Not set)")</MudText>
         break;
+    case LazyLookupEnum.ReadOnly:
+        <MudField Variant="Variant.Outlined" Label="@Label">@(SelectedItem?.DisplayName ?? "(Not set)")</MudField>
+        break;
     case LazyLookupEnum.Search:
         <MudAutocomplete T="Guid" ToStringFunc="@LookupService.ItemToString" Label="@Label" Value="@ItemId"
-            ValueChanged="@OnItemChanged" SearchFunc="@((v, ct) => LookupService.ItemSearch(v, ct, TenantConstraint, SubjectConstraint))" ShowProgressIndicator="true"
+            ValueChanged="@OnItemChanged" SearchFunc="@SearchItems" ShowProgressIndicator="true"
             ProgressIndicatorColor="Color.Default" AdornmentIcon="@Icons.Material.Filled.Search"/>
         break;
     case LazyLookupEnum.Select:
@@ -44,22 +47,69 @@
 
     public TDto? SelectedItem { get; set; }
     private List<TDto> _items = new List<TDto>();
+    
+    // Track previous parameter values to avoid unnecessary API calls
+    private Guid _previousItemId = Guid.Empty;
+    private Guid? _previousTenantConstraint = null;
+    private Guid? _previousSubjectConstraint = null;
+    private LazyLookupEnum _previousFieldType = LazyLookupEnum.Text;
+    
     protected override async Task OnParametersSetAsync()
     {
-        if (ItemId != Guid.Empty)
+        // Only make API calls if relevant parameters have actually changed
+        bool itemIdChanged = ItemId != _previousItemId;
+        bool tenantConstraintChanged = TenantConstraint != _previousTenantConstraint;
+        bool subjectConstraintChanged = SubjectConstraint != _previousSubjectConstraint;
+        bool fieldTypeChanged = FieldType != _previousFieldType;
+        
+        // Only proceed if something actually changed
+        if (!itemIdChanged && !tenantConstraintChanged && !subjectConstraintChanged && !fieldTypeChanged)
         {
-            SelectedItem = await LookupService.GetItemById(ItemId, CancellationToken.None);
+            return; // No changes, skip processing
         }
-        else
+        
+        bool stateChanged = false;
+        
+        if (itemIdChanged || tenantConstraintChanged || subjectConstraintChanged)
         {
-            SelectedItem = default;
+            if (ItemId != Guid.Empty)
+            {
+                SelectedItem = await LookupService.GetItemById(ItemId, CancellationToken.None);
+            }
+            else
+            {
+                SelectedItem = default;
+            }
+            stateChanged = true;
         }
-        if (FieldType == LazyLookupEnum.Select)
+        
+        if (fieldTypeChanged || (FieldType == LazyLookupEnum.Select && (tenantConstraintChanged || subjectConstraintChanged)))
         {
-            _items = (await LookupService.GetAllItems(CancellationToken.None)).ToList();
+            if (FieldType == LazyLookupEnum.Select)
+            {
+                _items = (await LookupService.GetAllItems(CancellationToken.None)).ToList();
+            }
+            stateChanged = true;
         }
-        StateHasChanged();
+        
+        // Update previous values
+        _previousItemId = ItemId;
+        _previousTenantConstraint = TenantConstraint;
+        _previousSubjectConstraint = SubjectConstraint;
+        _previousFieldType = FieldType;
+        
+        // Only call StateHasChanged if we actually changed something
+        if (stateChanged)
+        {
+            StateHasChanged();
+        }
     }
+    
+    private async Task<IEnumerable<Guid>> SearchItems(string value, CancellationToken cancellationToken)
+    {
+        return await LookupService.ItemSearch(value, cancellationToken, TenantConstraint, SubjectConstraint);
+    }
+
     private async Task OnItemChanged(Guid value)
     {
         if (value != Guid.Empty)
@@ -73,6 +123,5 @@
         ItemId = value;
         await ItemIdChanged.InvokeAsync(value);
         await SelectedItemChanged.InvokeAsync(SelectedItem);
-        StateHasChanged();
     }
 }

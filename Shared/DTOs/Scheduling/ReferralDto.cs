@@ -14,6 +14,11 @@ namespace Shared.DTOs.Scheduling
         public string DisplayName => $"{Title} - {ReferralDetails}";
         public Guid CustomerId { get; set; }
         public Guid EmployeeId { get; set; }
+        public Guid? ReferringManagerId { get; set; }
+        public Guid? ReferringManager2Id { get; set; }
+        public Guid? HrContactId { get; set; }
         public List<Guid> RelatedDocumentIds { get; set; } = new List<Guid>();
+        public ReferralTypeEnum ReferralType { get; set; } = ReferralTypeEnum.CaseReferral;
+        public ReferralDetailsDto? Details { get; set; }
     }
 }

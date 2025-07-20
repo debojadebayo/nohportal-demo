@@ -1,0 +1,298 @@
+@namespace Client.Pages.Components.Forms.ReferralDetailsForms
+@using Shared.DTOs.Scheduling
+@using Shared.DTOs.CRM
+@using Shared.Validators.Forms
+@using FluentValidation
+@using MudBlazor
+@using ComposedHealthBase.BaseClient.Services
+@using ComposedHealthBase.BaseClient.Components
+@using ComposedHealthBase.BaseClient.Enums
+@using ComposedHealthBase.Shared.DTOs
+
+<!-- Form Fields Only - No MudForm wrapper or action buttons -->
+<MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+        
+        <!-- Personal Information -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-3" />
+                    <MudText>Personal Information</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.FirstName" For="@(() => Model.FirstName)"
+                            Label="First Name" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.LastName" For="@(() => Model.LastName)"
+                            Label="Last Name" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.PreviousSurname" For="@(() => Model.PreviousSurname)"
+                            Label="Previous Surname (if applicable)" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="Model.DateOfBirth" For="@(() => Model.DateOfBirth)"
+                            Label="Date of Birth" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.ContactNumber" For="@(() => Model.ContactNumber)"
+                            Label="Contact Number" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.Email" For="@(() => Model.Email)"
+                            Label="Email Address" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="Model.Address" For="@(() => Model.Address)"
+                            Label="Address" Variant="Variant.Outlined" Lines="3" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.GpName" For="@(() => Model.GpName)"
+                            Label="GP Name" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.GpAddress" For="@(() => Model.GpAddress)"
+                            Label="GP Address" Variant="Variant.Outlined" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- University Course Details -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.School" Class="mr-3" />
+                    <MudText>University Course Details</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.CourseAppliedFor" For="@(() => Model.CourseAppliedFor)"
+                            Label="Course Applied For" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.CourseDuration" For="@(() => Model.CourseDuration)"
+                            Label="Course Duration" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.University" For="@(() => Model.University)"
+                            Label="University" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.Department" For="@(() => Model.Department)"
+                            Label="Department" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="Model.ProposedStartDate" For="@(() => Model.ProposedStartDate)"
+                            Label="Proposed Start Date" Variant="Variant.Outlined" Required="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.StudentId" For="@(() => Model.StudentId)"
+                            Label="Student ID" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Course Requirements</MudText>
+                        <MudCheckBox @bind-Value="Model.ManualHandling" For="@(() => Model.ManualHandling)" Label="Manual Handling" />
+                        <MudCheckBox @bind-Value="Model.DisplayScreenEquipment" For="@(() => Model.DisplayScreenEquipment)" Label="Display Screen Equipment" />
+                        <MudCheckBox @bind-Value="Model.VulnerableAdultsChildren" For="@(() => Model.VulnerableAdultsChildren)" Label="Working with Vulnerable Adults/Children" />
+                        <MudCheckBox @bind-Value="Model.ClinicalDutiesBodyFluidExposure" For="@(() => Model.ClinicalDutiesBodyFluidExposure)" Label="Clinical Duties with Body Fluid Exposure" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Health History -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.HealthAndSafety" Class="mr-3" />
+                    <MudText>Health History</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Do you have any physical illness or disability that might affect your ability to study?</MudText>
+                        <MudRadioGroup @bind-Value="Model.PhysicalIllnessAffectsStudy" For="@(() => Model.PhysicalIllnessAffectsStudy)">
+                            <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
+                            <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
+                        </MudRadioGroup>
+                        @if (Model.PhysicalIllnessAffectsStudy)
+                        {
+                            <MudTextField @bind-Value="Model.PhysicalIllnessDetails" For="@(() => Model.PhysicalIllnessDetails)"
+                                Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Do you have any psychological illness that might affect your ability to study?</MudText>
+                        <MudRadioGroup @bind-Value="Model.PsychologicalIllnessAffectsStudy" For="@(() => Model.PsychologicalIllnessAffectsStudy)">
+                            <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
+                            <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
+                        </MudRadioGroup>
+                        @if (Model.PsychologicalIllnessAffectsStudy)
+                        {
+                            <MudTextField @bind-Value="Model.PsychologicalIllnessDetails" For="@(() => Model.PsychologicalIllnessDetails)"
+                                Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Has your study or placement ever caused you to become ill?</MudText>
+                        <MudRadioGroup @bind-Value="Model.StudyPlacementCausedIllness" For="@(() => Model.StudyPlacementCausedIllness)">
+                            <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
+                            <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
+                        </MudRadioGroup>
+                        @if (Model.StudyPlacementCausedIllness)
+                        {
+                            <MudTextField @bind-Value="Model.StudyPlacementIllnessDetails" For="@(() => Model.StudyPlacementIllnessDetails)"
+                                Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Are you currently receiving treatment or medication?</MudText>
+                        <MudRadioGroup @bind-Value="Model.CurrentTreatmentOrMedication" For="@(() => Model.CurrentTreatmentOrMedication)">
+                            <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
+                            <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
+                        </MudRadioGroup>
+                        @if (Model.CurrentTreatmentOrMedication)
+                        {
+                            <MudTextField @bind-Value="Model.CurrentTreatmentDetails" For="@(() => Model.CurrentTreatmentDetails)"
+                                Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Are you taking any medication?</MudText>
+                        <MudRadioGroup @bind-Value="Model.TakingMedication" For="@(() => Model.TakingMedication)">
+                            <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
+                            <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
+                        </MudRadioGroup>
+                        @if (Model.TakingMedication)
+                        {
+                            <MudTextField @bind-Value="Model.MedicationDetails" For="@(() => Model.MedicationDetails)"
+                                Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Do you have any allergies?</MudText>
+                        <MudRadioGroup @bind-Value="Model.HasAllergies" For="@(() => Model.HasAllergies)">
+                            <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
+                            <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
+                        </MudRadioGroup>
+                        @if (Model.HasAllergies)
+                        {
+                            <MudTextField @bind-Value="Model.AllergiesDetails" For="@(() => Model.AllergiesDetails)"
+                                Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Do you need any adjustments to perform your studies?</MudText>
+                        <MudRadioGroup @bind-Value="Model.NeedsAdjustments" For="@(() => Model.NeedsAdjustments)">
+                            <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
+                            <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
+                        </MudRadioGroup>
+                        @if (Model.NeedsAdjustments)
+                        {
+                            <MudTextField @bind-Value="Model.AdjustmentsDetails" For="@(() => Model.AdjustmentsDetails)"
+                                Label="Please provide details" Variant="Variant.Outlined" Lines="3" Class="mt-2" />
+                        }
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Do you drink alcohol?</MudText>
+                        <MudRadioGroup @bind-Value="Model.DrinksAlcohol" For="@(() => Model.DrinksAlcohol)">
+                            <MudRadio Value="true" Color="Color.Primary">Yes</MudRadio>
+                            <MudRadio Value="false" Color="Color.Primary">No</MudRadio>
+                        </MudRadioGroup>
+                        @if (Model.DrinksAlcohol)
+                        {
+                            <MudTextField @bind-Value="Model.AlcoholUnitsPerWeek" For="@(() => Model.AlcoholUnitsPerWeek)"
+                                Label="How many units per week?" Variant="Variant.Outlined" Class="mt-2" />
+                        }
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Medical Consent -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Security" Class="mr-3" />
+                    <MudText>Medical Consent</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudCheckBox @bind-Value="Model.ConsentToMedicalRecordsDisclosure" For="@(() => Model.ConsentToMedicalRecordsDisclosure)" 
+                            Label="I consent to the disclosure of medical records for occupational health purposes" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudCheckBox @bind-Value="Model.WishToSeeMedicalInformationFirst" For="@(() => Model.WishToSeeMedicalInformationFirst)" 
+                            Label="I wish to see medical information before it is disclosed" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Declaration -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-3" />
+                    <MudText>Declaration</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.body2" Class="mb-2">
+                            I declare that the information given in this form is true and complete. I understand that any false information may lead to the refusal of my application or cancellation of my place on the course.
+                        </MudText>
+                        <MudCheckBox @bind-Value="Model.DeclarationSigned" For="@(() => Model.DeclarationSigned)" 
+                            Label="I agree to the above declaration" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="Model.DeclarationSignature" For="@(() => Model.DeclarationSignature)"
+                            Label="Digital Signature" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="Model.DeclarationDate" For="@(() => Model.DeclarationDate)"
+                            Label="Date" Variant="Variant.Outlined" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Additional Information -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Comment" Class="mr-3" />
+                    <MudText>Additional Information</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudTextField @bind-Value="Model.AdditionalRelevantInformation" For="@(() => Model.AdditionalRelevantInformation)"
+                    Label="Any additional relevant information" Variant="Variant.Outlined" Lines="4" />
+            </ChildContent>
+        </MudExpansionPanel>
+
+    </MudExpansionPanels>
+
+@code {
+    [Parameter] public PphaFormStudentDto Model { get; set; } = new();
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
+
+    protected override void OnInitialized()
+    {
+        if (CustomerId != Guid.Empty && Model.ReferralId == Guid.Empty)
+        {
+            Model.ReferralId = CustomerId;
+        }
+    }
+}
