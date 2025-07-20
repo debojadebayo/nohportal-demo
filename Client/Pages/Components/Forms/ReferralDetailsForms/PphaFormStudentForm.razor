@@ -1,3 +1,4 @@
+@namespace Client.Pages.Components.Forms.ReferralDetailsForms
 @using Shared.DTOs.Scheduling
 @using Shared.Validators.Forms
 @using FluentValidation
@@ -5,13 +6,8 @@
 @using ComposedHealthBase.BaseClient.Services
 @using Shared.DTOs.CRM
 
-@inject ISnackbar Snackbar
-@inject ILazyLookupService<CustomerDto> CustomerLookupService
-@inject ILazyLookupService<EmployeeDto> EmployeeLookupService
-
-<MudPaper Class="pa-4">
-    <MudForm @ref="form" Model="Model" Validation="@PphaFormStudentValidator.ValidateValue" ValidationDelay="0">
-        <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+<!-- Form Fields Only - No MudForm wrapper or action buttons -->
+<MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
             <!-- Personal Details -->
             <MudExpansionPanel Expanded="true">
                 <TitleContent>
@@ -76,27 +72,19 @@
             </MudExpansionPanel>
         </MudExpansionPanels>
 
-        <!-- Actions -->
-        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@_saving" OnClick="SaveAsync">@(_saving ? "Saving…" : "Save")</MudButton>
-            <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="Clear">Clear</MudButton>
-        </MudStack>
-    </MudForm>
-</MudPaper>
-
 @code {
-    [Parameter] public Guid? ReferralId { get; set; }
-    [Parameter] public EventCallback<PphaFormStudentDto> OnSaveComplete { get; set; }
-
-    private PphaFormStudentDto Model { get; set; } = new();
-    private PphaFormStudentValidator PphaFormStudentValidator { get; set; } = new();
-    private MudForm? form;
-    private bool _saving;
+    [Parameter] public PphaFormStudentDto Model { get; set; } = new();
+    [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
 
     private List<HistoryItem> History = new();
 
     protected override void OnInitialized()
     {
+        if (CustomerId != Guid.Empty && Model.ReferralId == Guid.Empty)
+        {
+            Model.ReferralId = CustomerId;
+        }
+
         History = new List<HistoryItem>
         {
             new("Physical illness/impairment affecting study", () => Model.PhysicalIllnessAffectsStudy, v => Model.PhysicalIllnessAffectsStudy = v, () => Model.PhysicalIllnessDetails, v => Model.PhysicalIllnessDetails = v),
@@ -107,35 +95,6 @@
             new("Known allergies", () => Model.HasAllergies, v => Model.HasAllergies = v, () => Model.AllergiesDetails, v => Model.AllergiesDetails = v),
             new("Need any adjustments/assistance", () => Model.NeedsAdjustments, v => Model.NeedsAdjustments = v, () => Model.AdjustmentsDetails, v => Model.AdjustmentsDetails = v)
         };
-    }
-
-    private async Task SaveAsync()
-    {
-        if (form is null) return;
-        await form.Validate();
-        if (!form.IsValid)
-        {
-            Snackbar.Add("Please fix validation errors before saving.", MudBlazor.Severity.Error);
-            return;
-        }
-        _saving = true;
-        try
-        {
-            await OnSaveComplete.InvokeAsync(Model);
-            Snackbar.Add("Form saved successfully.", MudBlazor.Severity.Success);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Save failed: {ex.Message}", MudBlazor.Severity.Error);
-        }
-        finally { _saving = false; }
-    }
-
-    private void Clear()
-    {
-        Model = new PphaFormStudentDto();
-        History.ForEach(h => h.Reset());
-        if (form is not null) form.ResetValidation();
     }
 
     private record HistoryItem(string Label, Func<bool> GetFlag, Action<bool> SetFlag, Func<string?> GetDetails, Action<string?> SetDetails)

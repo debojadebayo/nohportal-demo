@@ -8,13 +8,9 @@
 @using ComposedHealthBase.BaseClient.Components
 @using ComposedHealthBase.BaseClient.Enums
 @using ComposedHealthBase.Shared.DTOs
-@inject IDialogService DialogService
-@inject ISnackbar Snackbar
-@inject ILazyLookupService<ReferralDto> ReferralLookupService
-@inject ILazyLookupService<CustomerDto> CustomerLookupService
 
-<MudForm @ref="form" Model="Model" Validation="@PphaClinFitnessCertificateValidator.ValidateValue" ValidationDelay="0">
-    <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+<!-- Form Fields Only - No MudForm wrapper or action buttons -->
+<MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
         
         <!-- Personal Information -->
         <MudExpansionPanel Expanded="true">
@@ -179,78 +175,14 @@
 
     </MudExpansionPanels>
 
-    <!-- Action Buttons -->
-    <MudCardActions Class="mt-4">
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" 
-            OnClick="@(async () => await Save())" 
-            Disabled="@_saving"
-            Class="ml-auto">
-            @if (_saving)
-            {
-                <MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" />
-                <MudText Class="ml-2">@(IsNewReferral ? "Submitting..." : "Updating...")</MudText>
-            }
-            else
-            {
-                <MudIcon Icon="@Icons.Material.Filled.Save" Class="mr-2" />
-                <MudText>@(IsNewReferral ? "Submit Certificate" : "Update Certificate")</MudText>
-            }
-        </MudButton>
-    </MudCardActions>
-</MudForm>
-
 @code {
     [Parameter] public PphaClinFitnessCertificateDto Model { get; set; } = new();
-    [Parameter] public EventCallback<PphaClinFitnessCertificateDto> OnSaveComplete { get; set; }
-    [Parameter] public EventCallback<PphaClinFitnessCertificateDto> OnSubmitComplete { get; set; }
     [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
-    [Parameter] public bool ShowAsDialog { get; set; } = false;
-
-    private PphaClinFitnessCertificateValidator PphaClinFitnessCertificateValidator { get; set; } = new();
-    private MudForm form = new();
-    private bool _saving = false;
-    
-    private bool IsNewReferral => Model.Id == Guid.Empty;
 
     protected override void OnInitialized()
     {
-        if (CustomerId != Guid.Empty && Model.ReferralId == Guid.Empty)
-        {
-            Model.ReferralId = CustomerId;
-        }
-    }
-
-    private async Task Save()
-    {
-        await form.Validate();
-        if (form.IsValid)
-        {
-            _saving = true;
-            StateHasChanged();
-            
-            try
-            {
-                if (OnSaveComplete.HasDelegate)
-                {
-                    await OnSaveComplete.InvokeAsync(Model);
-                }
-                
-                Snackbar.Add("PPHA Clinical Fitness Certificate saved successfully!", MudBlazor.Severity.Success);
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Failed to save certificate: {ex.Message}", MudBlazor.Severity.Error);
-                Console.Error.WriteLine($"Error saving PPHA Clinical Fitness Certificate: {ex}");
-            }
-            finally
-            {
-                _saving = false;
-                StateHasChanged();
-            }
-        }
-        else
-        {
-            Snackbar.Add("Please correct the validation errors before submitting.", MudBlazor.Severity.Error);
-        }
+        // Set the ReferralId if needed (the parent will handle the overall referral)
+        // No need to set CustomerId since this DTO doesn't have that property
     }
 }
+

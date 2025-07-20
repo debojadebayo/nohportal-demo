@@ -54,96 +54,129 @@
 <!-- Render appropriate form based on referral type -->
 @{
     RenderFragment formContent;
+    
+    // Ensure we have details for the current referral type
+    if (Model.Details == null || !IsCorrectDetailsType(Model.Details, Model.ReferralType))
+    {
+        Model.Details = ReferralDetailsFactory.Create(Model.ReferralType);
+        if (Model.Details != null && Model.Id != Guid.Empty)
+        {
+            Model.Details.ReferralId = Model.Id;
+        }
+    }
+    
     switch (Model.ReferralType)
     {
-        case ReferralTypeEnum.CaseReferral when Model.Details is CaseReferralDetailsDto caseDetails:
-            formContent = @<CaseReferralForm Model="caseDetails" 
-                OnSaveComplete="HandleDetailsUpdate" 
-                CustomerId="CustomerId" 
-                ShowAsDialog="ShowAsDialog" />;
+        case ReferralTypeEnum.CaseReferral:
+            var caseDetails = Model.Details as CaseReferralDetailsDto ?? ReferralDetailsFactory.Create(ReferralTypeEnum.CaseReferral) as CaseReferralDetailsDto;
+            if (caseDetails != null)
+            {
+                formContent = @<CaseReferralForm Model="caseDetails" CustomerId="CustomerId" />;
+            }
+            else
+            {
+                formContent = CreateDefaultFormContent();
+            }
             break;
 
-        case ReferralTypeEnum.PphaForm_Admin when Model.Details is PphaFormAdminDto adminDetails:
-            formContent = @<PphaAdminForm Model="adminDetails" 
-                OnSaveComplete="HandleDetailsUpdate" 
-                CustomerId="CustomerId" 
-                ShowAsDialog="ShowAsDialog" />;
+        case ReferralTypeEnum.PphaForm_Admin:
+            var adminDetails = Model.Details as PphaFormAdminDto ?? ReferralDetailsFactory.Create(ReferralTypeEnum.PphaForm_Admin) as PphaFormAdminDto;
+            if (adminDetails != null)
+            {
+                formContent = @<PphaAdminForm Model="adminDetails" CustomerId="CustomerId" />;
+            }
+            else
+            {
+                formContent = CreateDefaultFormContent();
+            }
             break;
 
-        case ReferralTypeEnum.PphaForm_Student when Model.Details is PphaFormStudentDto studentDetails:
-            formContent = @<PphaStudentForm Model="studentDetails" 
-                OnSaveComplete="HandleDetailsUpdate" 
-                CustomerId="CustomerId" 
-                ShowAsDialog="ShowAsDialog" />;
+        case ReferralTypeEnum.PphaForm_Student:
+            var studentDetails = Model.Details as PphaFormStudentDto ?? ReferralDetailsFactory.Create(ReferralTypeEnum.PphaForm_Student) as PphaFormStudentDto;
+            if (studentDetails != null)
+            {
+                formContent = @<PphaStudentForm Model="studentDetails" CustomerId="CustomerId" />;
+            }
+            else
+            {
+                formContent = CreateDefaultFormContent();
+            }
             break;
 
-        case ReferralTypeEnum.PphaForm_ClinStudent when Model.Details is PphaFormClinStudentDto clinStudentDetails:
-            formContent = @<PphaFormClinStudentForm Model="clinStudentDetails" 
-                OnSaveComplete="HandleDetailsUpdate" 
-                CustomerId="CustomerId" 
-                ShowAsDialog="ShowAsDialog" />;
+        case ReferralTypeEnum.PphaForm_ClinStudent:
+            var clinStudentDetails = Model.Details as PphaFormClinStudentDto ?? ReferralDetailsFactory.Create(ReferralTypeEnum.PphaForm_ClinStudent) as PphaFormClinStudentDto;
+            if (clinStudentDetails != null)
+            {
+                formContent = @<PphaFormClinStudentForm Model="clinStudentDetails" CustomerId="CustomerId" />;
+            }
+            else
+            {
+                formContent = CreateDefaultFormContent();
+            }
             break;
 
-        case ReferralTypeEnum.PphaForm_ClinWorker when Model.Details is PphaFormClinWorkerDto clinWorkerDetails:
-            formContent = @<PphaFormClinWorkerForm Model="clinWorkerDetails" 
-                OnSaveComplete="HandleDetailsUpdate" 
-                CustomerId="CustomerId" 
-                ShowAsDialog="ShowAsDialog" />;
+        case ReferralTypeEnum.PphaForm_ClinWorker:
+            var clinWorkerDetails = Model.Details as PphaFormClinWorkerDto ?? ReferralDetailsFactory.Create(ReferralTypeEnum.PphaForm_ClinWorker) as PphaFormClinWorkerDto;
+            if (clinWorkerDetails != null)
+            {
+                formContent = @<PphaFormClinWorkerForm Model="clinWorkerDetails" CustomerId="CustomerId" />;
+            }
+            else
+            {
+                formContent = CreateDefaultFormContent();
+            }
             break;
 
-        case ReferralTypeEnum.PphaForm_ManWorker when Model.Details is PphaFormManWorkerDto manWorkerDetails:
-            formContent = @<PphaFormManWorkerForm Model="manWorkerDetails" 
-                OnSaveComplete="HandleDetailsUpdate" 
-                CustomerId="CustomerId" 
-                ShowAsDialog="ShowAsDialog" />;
+        case ReferralTypeEnum.PphaForm_ManWorker:
+            var manWorkerDetails = Model.Details as PphaFormManWorkerDto ?? ReferralDetailsFactory.Create(ReferralTypeEnum.PphaForm_ManWorker) as PphaFormManWorkerDto;
+            if (manWorkerDetails != null)
+            {
+                formContent = @<PphaFormManWorkerForm Model="manWorkerDetails" CustomerId="CustomerId" />;
+            }
+            else
+            {
+                formContent = CreateDefaultFormContent();
+            }
             break;
 
-        case ReferralTypeEnum.PphaFitnessCertificate when Model.Details is PphaFitnessCertificateDto fitnessDetails:
-            formContent = @<PphaFitnessCertificateForm Model="fitnessDetails" 
-                OnSaveComplete="HandleDetailsUpdate" 
-                CustomerId="CustomerId" 
-                ShowAsDialog="ShowAsDialog" />;
+        case ReferralTypeEnum.PphaFitnessCertificate:
+            var fitnessDetails = Model.Details as PphaFitnessCertificateDto ?? ReferralDetailsFactory.Create(ReferralTypeEnum.PphaFitnessCertificate) as PphaFitnessCertificateDto;
+            if (fitnessDetails != null)
+            {
+                formContent = @<PphaFitnessCertificateForm Model="fitnessDetails" CustomerId="CustomerId" />;
+            }
+            else
+            {
+                formContent = CreateDefaultFormContent();
+            }
             break;
 
-        case ReferralTypeEnum.PphaClinFitnessCertificate when Model.Details is PphaClinFitnessCertificateDto clinFitnessDetails:
-            formContent = @<PphaClinFitnessCertificateForm Model="clinFitnessDetails" 
-                OnSaveComplete="HandleDetailsUpdate" 
-                CustomerId="CustomerId" 
-                ShowAsDialog="ShowAsDialog" />;
+        case ReferralTypeEnum.PphaClinFitnessCertificate:
+            var clinFitnessDetails = Model.Details as PphaClinFitnessCertificateDto ?? ReferralDetailsFactory.Create(ReferralTypeEnum.PphaClinFitnessCertificate) as PphaClinFitnessCertificateDto;
+            if (clinFitnessDetails != null)
+            {
+                formContent = @<PphaClinFitnessCertificateForm Model="clinFitnessDetails" CustomerId="CustomerId" />;
+            }
+            else
+            {
+                formContent = CreateDefaultFormContent();
+            }
             break;
 
-        case ReferralTypeEnum.StudentClinFitnessCertificate when Model.Details is StudentClinFitnessCertificateDto studentClinFitnessDetails:
-            formContent = @<StudentClinFitnessCertificateForm Model="studentClinFitnessDetails" 
-                OnSaveComplete="HandleDetailsUpdate" 
-                CustomerId="CustomerId" 
-                ShowAsDialog="ShowAsDialog" />;
+        case ReferralTypeEnum.StudentClinFitnessCertificate:
+            var studentClinFitnessDetails = Model.Details as StudentClinFitnessCertificateDto ?? ReferralDetailsFactory.Create(ReferralTypeEnum.StudentClinFitnessCertificate) as StudentClinFitnessCertificateDto;
+            if (studentClinFitnessDetails != null)
+            {
+                formContent = @<StudentClinFitnessCertificateForm Model="studentClinFitnessDetails" CustomerId="CustomerId" />;
+            }
+            else
+            {
+                formContent = CreateDefaultFormContent();
+            }
             break;
 
         default:
-            formContent = @<MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
-                <MudExpansionPanel Expanded="true">
-                    <TitleContent>
-                        <div class="d-flex">
-                            <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3" />
-                            <MudText>Select Referral Type</MudText>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <MudText Typo="Typo.body1" Class="mb-3">
-                                    Please select a referral type from the dropdown above to continue.
-                                </MudText>
-                                <MudButton Variant="Variant.Outlined" 
-                                           Color="Color.Primary" 
-                                           StartIcon="@Icons.Material.Filled.ArrowUpward">
-                                    Select Referral Type Above
-                                </MudButton>
-                            </MudItem>
-                        </MudGrid>
-                    </ChildContent>
-                </MudExpansionPanel>
-            </MudExpansionPanels>;
+            formContent = CreateDefaultFormContent();
             break;
     }
 }
@@ -193,11 +226,40 @@
             Model.CustomerId = CustomerId;
         }
         
-        // Initialize Details if it doesn't exist
-        if (Model.Details == null)
+        // Always ensure we have valid Details for the current ReferralType
+        // This handles cases where Details is null from the server
+        if (Model.Details == null || !IsCorrectDetailsType(Model.Details, Model.ReferralType))
         {
             Model.Details = ReferralDetailsFactory.Create(Model.ReferralType);
+            
+            // Set the ReferralId if this is an existing referral
+            if (Model.Details != null && Model.Id != Guid.Empty)
+            {
+                Model.Details.ReferralId = Model.Id;
+            }
         }
+        else if (Model.Details != null && Model.Id != Guid.Empty)
+        {
+            // Ensure ReferralId is set even if Details already exists
+            Model.Details.ReferralId = Model.Id;
+        }
+    }
+
+    private bool IsCorrectDetailsType(IReferralDetailsDto details, ReferralTypeEnum referralType)
+    {
+        return referralType switch
+        {
+            ReferralTypeEnum.CaseReferral => details is CaseReferralDetailsDto,
+            ReferralTypeEnum.PphaForm_Admin => details is PphaFormAdminDto,
+            ReferralTypeEnum.PphaForm_Student => details is PphaFormStudentDto,
+            ReferralTypeEnum.PphaForm_ClinStudent => details is PphaFormClinStudentDto,
+            ReferralTypeEnum.PphaForm_ClinWorker => details is PphaFormClinWorkerDto,
+            ReferralTypeEnum.PphaForm_ManWorker => details is PphaFormManWorkerDto,
+            ReferralTypeEnum.PphaFitnessCertificate => details is PphaFitnessCertificateDto,
+            ReferralTypeEnum.PphaClinFitnessCertificate => details is PphaClinFitnessCertificateDto,
+            ReferralTypeEnum.StudentClinFitnessCertificate => details is StudentClinFitnessCertificateDto,
+            _ => false
+        };
     }
 
     private void OnReferralTypeChanged(ReferralTypeEnum newType)
@@ -216,36 +278,13 @@
         StateHasChanged();
     }
 
-    private async Task HandleDetailsUpdate<T>(T detailsModel) where T : class
-    {
-        // Update the main model's details with the updated details
-        Model.Details = detailsModel as IReferralDetailsDto;
-        
-        // Update the main model properties from the details if needed
-        if (Model.Details != null)
-        {
-            Model.Details.ReferralId = Model.Id;
-        }
-        
-        // Call the original save logic
-        await Save();
-    }
-
     private async Task Save()
     {
-        // Only validate the main form if we're using the fallback form- why u
-        if (form != null && (Model.ReferralType == ReferralTypeEnum.PphaForm_ClinStudent || 
-                           Model.ReferralType == ReferralTypeEnum.PphaForm_ClinWorker ||
-                           Model.ReferralType == ReferralTypeEnum.PphaForm_ManWorker ||
-                           Model.ReferralType == ReferralTypeEnum.PphaClinFitnessCertificate ||
-                           Model.ReferralType == ReferralTypeEnum.StudentClinFitnessCertificate))
+        await form.Validate();
+        if (!form.IsValid)
         {
-            await form.Validate();
-            if (!form.IsValid)
-            {
-                Snackbar.Add("Please correct the validation errors before submitting.", MudBlazor.Severity.Error);
-                return;
-            }
+            Snackbar.Add("Please correct the validation errors before submitting.", MudBlazor.Severity.Error);
+            return;
         }
         
         _saving = true;
@@ -302,5 +341,32 @@
             form.ResetValidation();
             Snackbar.Add("Form cleared.", MudBlazor.Severity.Info);
         }
+    }
+
+    private RenderFragment CreateDefaultFormContent()
+    {
+        return @<MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
+            <MudExpansionPanel Expanded="true">
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3" />
+                        <MudText>Form Ready</MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.body1" Class="mb-3">
+                                The form for this referral type will be displayed here. If you're seeing this message, 
+                                the specific form component may not be available yet.
+                            </MudText>
+                            <MudAlert Severity="MudBlazor.Severity.Info" Class="mt-2">
+                                You can still save this referral. The detailed form will be available when the component is implemented.
+                            </MudAlert>
+                        </MudItem>
+                    </MudGrid>
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>;
     }
 }

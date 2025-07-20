@@ -54,24 +54,39 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
     {
         if (details == null)
         {
-            return ReferralDetailsFactory.Create(type);
+            return null;
         }
 
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-
-        return type switch
+        try
         {
-            ReferralTypeEnum.CaseReferral => JsonSerializer.Deserialize<CaseReferralDetailsDto>(details, options),
-            ReferralTypeEnum.PphaClinFitnessCertificate => JsonSerializer.Deserialize<PphaClinFitnessCertificateDto>(details, options),
-            ReferralTypeEnum.PphaFitnessCertificate => JsonSerializer.Deserialize<PphaFitnessCertificateDto>(details, options),
-            ReferralTypeEnum.PphaForm_Admin => JsonSerializer.Deserialize<PphaFormAdminDto>(details, options),
-            ReferralTypeEnum.PphaForm_Student => JsonSerializer.Deserialize<PphaFormStudentDto>(details, options),
-            ReferralTypeEnum.PphaForm_ClinStudent => JsonSerializer.Deserialize<PphaFormClinStudentDto>(details, options),
-            ReferralTypeEnum.PphaForm_ClinWorker => JsonSerializer.Deserialize<PphaFormClinWorkerDto>(details, options),
-            ReferralTypeEnum.PphaForm_ManWorker => JsonSerializer.Deserialize<PphaFormManWorkerDto>(details, options),
-            ReferralTypeEnum.StudentClinFitnessCertificate => JsonSerializer.Deserialize<StudentClinFitnessCertificateDto>(details, options),
-            _ => throw new NotSupportedException($"Referral type '{type}' is not supported for deserialization.")
-        };
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            return type switch
+            {
+                ReferralTypeEnum.CaseReferral => JsonSerializer.Deserialize<CaseReferralDetailsDto>(details, options),
+                ReferralTypeEnum.PphaClinFitnessCertificate => JsonSerializer.Deserialize<PphaClinFitnessCertificateDto>(details, options),
+                ReferralTypeEnum.PphaFitnessCertificate => JsonSerializer.Deserialize<PphaFitnessCertificateDto>(details, options),
+                ReferralTypeEnum.PphaForm_Admin => JsonSerializer.Deserialize<PphaFormAdminDto>(details, options),
+                ReferralTypeEnum.PphaForm_Student => JsonSerializer.Deserialize<PphaFormStudentDto>(details, options),
+                ReferralTypeEnum.PphaForm_ClinStudent => JsonSerializer.Deserialize<PphaFormClinStudentDto>(details, options),
+                ReferralTypeEnum.PphaForm_ClinWorker => JsonSerializer.Deserialize<PphaFormClinWorkerDto>(details, options),
+                ReferralTypeEnum.PphaForm_ManWorker => JsonSerializer.Deserialize<PphaFormManWorkerDto>(details, options),
+                ReferralTypeEnum.StudentClinFitnessCertificate => JsonSerializer.Deserialize<StudentClinFitnessCertificateDto>(details, options),
+                _ => null
+            };
+        }
+        catch (JsonException ex)
+        {
+            // Log the error if you have logging configured
+            // _logger?.LogWarning(ex, "Failed to deserialize details for referral type {Type}, creating new instance", type);
+
+            // Fallback to null to indicate no form completed
+            return null;
+        }
     }
 
     public void Map(ReferralDto dto, Referral entity)
