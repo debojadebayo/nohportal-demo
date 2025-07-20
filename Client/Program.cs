@@ -16,6 +16,8 @@ using Blazor.SubtleCrypto;
 using FluentValidation;
 using Shared.Validators;
 using Shared.DTOs.Billing;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -32,7 +34,22 @@ var apiOptions = builder.Configuration.GetSection(ApiOptions.SectionName).Get<Ap
 var oidcOptions = builder.Configuration.GetSection(OidcOptions.SectionName).Get<OidcOptions>() ?? new OidcOptions();
 var cultureOptions = builder.Configuration.GetSection(CultureOptions.SectionName).Get<CultureOptions>() ?? new CultureOptions();
 
-builder.Services.AddHttpClient("api", client => client.BaseAddress = new Uri(apiOptions.BaseUrl))
+// Configure JSON options for System.Text.Json in Blazor WebAssembly
+builder.Services.Configure<JsonSerializerOptions>(options =>
+{
+    options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.PropertyNameCaseInsensitive = true;
+    options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    // Polymorphic serialization is handled automatically by the JsonPolymorphic attributes
+});
+
+builder.Services.AddHttpClient("api", (sp, client) => 
+{
+    client.BaseAddress = new Uri(apiOptions.BaseUrl);
+    // Configure default JSON serialization
+    client.DefaultRequestHeaders.Accept.Clear();
+    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+})
    .AddHttpMessageHandler(sp =>
    {
        var handler = sp.GetRequiredService<AuthorizationMessageHandler>()

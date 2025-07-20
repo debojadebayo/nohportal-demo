@@ -3,10 +3,8 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.Scheduling
 {
-    public class StudentClinFitnessCertificateDto : BaseDto<StudentClinFitnessCertificateDto>, IReferralDetailsDto
+    public class StudentClinFitnessCertificateDto : ReferralDetailsDto
     {
-        public Guid? ReferralId { get; set; }
-
         // Student Information
         public string StudentName { get; set; } = string.Empty;
         public DateTime? DateOfBirth { get; set; }

@@ -49,6 +49,38 @@
             </MudGrid>
         </ChildContent>
     </MudExpansionPanel>
+    
+    <!-- Basic Information -->
+    <MudExpansionPanel Expanded="true">
+        <TitleContent>
+            <div class="d-flex">
+                <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3" />
+                <MudText>Basic Information</MudText>
+            </div>
+        </TitleContent>
+        <ChildContent>
+            <MudGrid>
+                <MudItem xs="12">
+                    <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="Model.CustomerId" Label="Customer" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" 
+                        @bind-ItemId="Model.EmployeeId" 
+                        TenantConstraint="Model.CustomerId" 
+                        Label="Employee" 
+                    />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="Model.Title" For="@(() => Model.Title)"
+                        Label="Title" Variant="Variant.Outlined" Required="true" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Model.ReferralDetails" For="@(() => Model.ReferralDetails)"
+                        Label="Referral Details" Variant="Variant.Outlined" Lines="3" Required="true" />
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
+    </MudExpansionPanel>
 </MudExpansionPanels>
 
 <!-- Render appropriate form based on referral type -->
@@ -245,7 +277,7 @@
         }
     }
 
-    private bool IsCorrectDetailsType(IReferralDetailsDto details, ReferralTypeEnum referralType)
+    private bool IsCorrectDetailsType(ReferralDetailsDto details, ReferralTypeEnum referralType)
     {
         return referralType switch
         {

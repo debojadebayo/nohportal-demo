@@ -13,7 +13,7 @@ namespace Server.Modules.Scheduling.Entities
         public required string Title { get; set; }
         public ReferralStatusEnum ReferralStatus { get; set; } = Shared.Enums.ReferralStatusEnum.Pending;
         public ReferralTypeEnum ReferralType { get; set; } = ReferralTypeEnum.CaseReferral;
-        
+
         // JSON field to store all referral form details
         public JsonDocument? Details { get; set; }
         public HashSet<Schedule> CalendarItems { get; set; } = new HashSet<Schedule>();

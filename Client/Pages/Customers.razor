@@ -12,7 +12,6 @@
 @inject ILazyLookupService<CustomerDto> CustomerLookupService
 @inject ILazyLookupService<ManagerDto> ManagerLookupService
 @inject ILazyLookupService<ScheduleDto> ScheduleLookupService
-@inject ILazyLookupService<ReferralDto> ReferralLookupService
 @inject ILazyLookupService<ContractDto> ContractLookupService
 @inject ILazyLookupService<CustomerDocumentDto> DocumentLookupService
 @inject ILazyLookupService<ProductDto> ProductLookupService
@@ -47,9 +46,8 @@
         <MudTabPanel Text="Appointments" OnClick="GetAllAppointmentsByCustomerId">
             <AppointmentsTab Appointments="appointments" />
         </MudTabPanel>
-        <MudTabPanel Text="Referrals" OnClick="GetAllReferralsByCustomerId">
-            <ReferralsTab Referrals="referrals" CustomerId="selectedCustomer?.Id ?? Guid.Empty"
-                OnSave="HandleReferralSave" />
+        <MudTabPanel Text="Referrals">
+            <ReferralsTab Referrals="referrals" CustomerId="selectedCustomer?.Id ?? Guid.Empty" />
         </MudTabPanel>
         <MudTabPanel Text="Managers" OnClick="GetAllManagersByCustomerId">
             <ManagersTab Managers="managers" CustomerId="selectedCustomer?.Id ?? Guid.Empty" />
@@ -121,12 +119,6 @@
         }
         await CustomerLookupService.UpdateItem(customer, CancellationToken.None);
     }
-    private async Task HandleReferralSave(ReferralDto referral)
-    {
-        if (referral == null) return;
-        await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
-        await GetAllReferralsByCustomerId();
-    }
     async Task DeleteCustomer()
     {
         if (selectedCustomer == null) return;
@@ -136,12 +128,6 @@
     {
         if (selectedCustomer == null) return;
         appointments = (await ScheduleLookupService.GetAllByTenantId(selectedCustomer.Id,
-        CancellationToken.None)).ToList();
-    }
-    private async Task GetAllReferralsByCustomerId()
-    {
-        if (selectedCustomer == null) return;
-        referrals = (await ReferralLookupService.GetAllByTenantId(selectedCustomer.Id,
         CancellationToken.None)).ToList();
     }
     private async Task GetAllManagersByCustomerId()

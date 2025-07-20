@@ -3,7 +3,7 @@ using Shared.DTOs.Scheduling;
 
 namespace Shared.Validators
 {
-    public class ReferralDetailsValidator : AbstractValidator<IReferralDetailsDto>
+    public class ReferralDetailsValidator : AbstractValidator<ReferralDetailsDto>
     {
         public ReferralDetailsValidator()
         {
@@ -12,7 +12,7 @@ namespace Shared.Validators
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<IReferralDetailsDto>.CreateWithOptions((IReferralDetailsDto)model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<ReferralDetailsDto>.CreateWithOptions((ReferralDetailsDto)model, x => x.IncludeProperties(propertyName)));
             if (result.IsValid)
                 return Array.Empty<string>();
             return result.Errors.Select(e => e.ErrorMessage);

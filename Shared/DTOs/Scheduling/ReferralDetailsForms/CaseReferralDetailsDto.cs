@@ -3,10 +3,8 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.Scheduling
 {
-    public class CaseReferralDetailsDto : BaseDto<CaseReferralDetailsDto>, IReferralDetailsDto
+    public class CaseReferralDetailsDto : ReferralDetailsDto
     {
-        public Guid? ReferralId { get; set; }
-
         // Section 1: Referring Manager
         public Guid? ReferringManagerId { get; set; }
         public Guid? ReferringManager2Id { get; set; }

@@ -1,17 +1,7 @@
 @page "/referrals"
 @page "/referrals/{SelectedReferralId:guid}"
-@using Shared.DTOs.CRM
-@using Shared.DTOs.Scheduling
-@using Shared.Enums
-@using Shared.Factories.Scheduling
 @using Client.Pages.Components.TabComponents
-@using ComposedHealthBase.BaseClient.Services
-@using ComposedHealthBase.BaseClient.Components
 @using MudBlazor
-@inject ILazyLookupService<ReferralDto> ReferralLookupService
-@inject ISnackbar Snackbar
-@inject NavigationManager Nav
-@* @attribute [Authorize] *@
 
 <PageTitle>Referrals</PageTitle>
 
@@ -19,147 +9,8 @@
 
 <MudText Typo="Typo.body1">Search for an existing referral or create a new one</MudText>
 
-<LazyLookup TDto="ReferralDto" 
-           FieldType="LazyLookupEnum.Search" 
-           ItemId="@(SelectedReferralId ?? Guid.Empty)"
-           Label="Search Referrals" 
-           SelectedItemChanged="OnReferralSelected" />
-
-@if (selectedReferral == null)
-{
-    <MudButton OnClick="CreateReferral" 
-               Variant="Variant.Filled" 
-               Color="Color.Primary" 
-               StartIcon="Icons.Material.Filled.Add"
-               Class="mt-4">
-        Create New Referral
-    </MudButton>
-}
-
-@if (selectedReferral != null)
-{
-    <ReferralsTab Model="selectedReferral" 
-                OnSave="HandleReferralSave"
-                OnSubmit="HandleReferralSubmit"
-                OnDelete="DeleteReferral" 
-                Class="mt-4" />
-}
+<ReferralsTab />
 
 @code {
-    [Parameter] public Guid? SelectedReferralId { get; set; }
-    
-    private ReferralDto? selectedReferral;
-    private bool newReferral = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (SelectedReferralId.HasValue)
-        {
-            await LoadReferral(SelectedReferralId.Value);
-        }
-    }
-
-    private async Task LoadReferral(Guid referralId)
-    {
-        try
-        {
-            selectedReferral = await ReferralLookupService.GetItemById(referralId, CancellationToken.None);
-            newReferral = false;
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to load referral: {ex.Message}", MudBlazor.Severity.Error);
-        }
-    }
-
-    private void CreateReferral()
-    {
-        Nav.NavigateTo("/referrals/new");
-    }
-
-    private void OnReferralSelected(ReferralDto? referral)
-    {
-        selectedReferral = referral;
-        newReferral = false;
-        
-        if (referral != null)
-        {
-            SelectedReferralId = referral.Id;
-        }
-    }
-
-    private async Task HandleReferralSave(ReferralDto referral)
-    {
-        if (referral == null) return;
-
-        try
-        {
-            // Save as draft
-            referral.ReferralStatus = ReferralStatusEnum.Pending;
-
-            if (newReferral)
-            {
-                await ReferralLookupService.AddItem(referral, CancellationToken.None);
-                selectedReferral = referral;
-                SelectedReferralId = selectedReferral.Id;
-                newReferral = false;
-                Snackbar.Add("Referral saved as draft successfully!", MudBlazor.Severity.Success);
-            }
-            else
-            {
-                await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
-                Snackbar.Add("Referral draft updated successfully!", MudBlazor.Severity.Success);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to save referral: {ex.Message}", MudBlazor.Severity.Error);
-        }
-    }
-
-    private async Task HandleReferralSubmit(ReferralDto referral)
-    {
-        if (referral == null) return;
-
-        try
-        {
-            // Final submission
-            referral.ReferralStatus = ReferralStatusEnum.InProgress;
-
-            if (newReferral)
-            {
-                await ReferralLookupService.AddItem(referral, CancellationToken.None);
-                selectedReferral = referral;
-                SelectedReferralId = selectedReferral.Id;
-                newReferral = false;
-                Snackbar.Add("Referral submitted successfully!", MudBlazor.Severity.Success);
-            }
-            else
-            {
-                await ReferralLookupService.UpdateItem(referral, CancellationToken.None);
-                Snackbar.Add("Referral submitted successfully!", MudBlazor.Severity.Success);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to submit referral: {ex.Message}", MudBlazor.Severity.Error);
-        }
-    }
-
-    private async Task DeleteReferral(ReferralDto referral)
-    {
-        if (referral?.Id == null) return;
-
-        try
-        {
-            await ReferralLookupService.DeleteItem(referral.Id, CancellationToken.None);
-            selectedReferral = null;
-            SelectedReferralId = null;
-            Snackbar.Add("Referral deleted successfully!", MudBlazor.Severity.Success);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Failed to delete referral: {ex.Message}", MudBlazor.Severity.Error);
-        }
-    }
+    [Parameter] public Guid SelectedReferralId { get; set; } = Guid.Empty;
 }

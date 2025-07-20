@@ -12,39 +12,7 @@
 <!-- Form Fields Only - No MudForm wrapper or action buttons -->
 <MudExpansionPanels MultiExpansion="true" Elevation="2" Class="mb-4">
     
-    <!-- Basic Information -->
-    <MudExpansionPanel Expanded="true">
-        <TitleContent>
-            <div class="d-flex">
-                <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-3" />
-                <MudText>Basic Information</MudText>
-            </div>
-        </TitleContent>
-        <ChildContent>
-            <MudGrid>
-                <MudItem xs="12">
-                    <LazyLookup TDto="CustomerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="CustomerId" Label="Customer" />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <LazyLookup TDto="EmployeeDto" FieldType="LazyLookupEnum.Search" 
-                        @bind-ItemId="EmployeeId" 
-                        TenantConstraint="CustomerId" 
-                        Label="Employee" 
-                    />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudDatePicker @bind-Date="Model.ReferralDate" For="@(() => Model.ReferralDate)"
-                        Label="Referral Date" Variant="Variant.Outlined" />
-                </MudItem>
-                <MudItem xs="12">
-                    <MudTextField @bind-Value="Model.ReasonForReferral" For="@(() => Model.ReasonForReferral)"
-                        Label="Reason for Referral" Variant="Variant.Outlined" Lines="3" Required="true" />
-                </MudItem>
-            </MudGrid>
-        </ChildContent>
-        </MudExpansionPanel>
-        
-        <!-- Referring Manager Section -->
+    <!-- Referring Manager Section -->
         <MudExpansionPanel Expanded="true">
             <TitleContent>
                 <div class="d-flex">
@@ -79,6 +47,28 @@
                 <MudGrid>
                     <MudItem xs="12" sm="6">
                         <LazyLookup TDto="ManagerDto" FieldType="LazyLookupEnum.Search" @bind-ItemId="HrContactId" Label="HR Contact" />
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudExpansionPanel>
+
+        <!-- Case Details Section -->
+        <MudExpansionPanel Expanded="true">
+            <TitleContent>
+                <div class="d-flex">
+                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-3" />
+                    <MudText>Case Details</MudText>
+                </div>
+            </TitleContent>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="Model.ReferralDate" For="@(() => Model.ReferralDate)"
+                            Label="Referral Date" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="Model.ReasonForReferral" For="@(() => Model.ReasonForReferral)"
+                            Label="Reason for Referral" Variant="Variant.Outlined" Lines="3" Required="true" />
                     </MudItem>
                 </MudGrid>
             </ChildContent>
@@ -333,12 +323,6 @@
     [Parameter] public CaseReferralDetailsDto Model { get; set; } = new();
     [Parameter] public Guid CustomerId { get; set; } = Guid.Empty;
 
-    private Guid EmployeeId 
-    {
-        get => Model.EmployeeId ?? Guid.Empty;
-        set => Model.EmployeeId = value == Guid.Empty ? null : value;
-    }
-
     private Guid ReferringManagerId 
     {
         get => Model.ReferringManagerId ?? Guid.Empty;
@@ -362,11 +346,6 @@
         if (CustomerId != Guid.Empty && Model.CustomerId == Guid.Empty)
         {
             Model.CustomerId = CustomerId;
-        }
-        
-        if (CustomerId != Guid.Empty && Model.ReferralId == Guid.Empty)
-        {
-            Model.ReferralId = CustomerId;
         }
     }
 }

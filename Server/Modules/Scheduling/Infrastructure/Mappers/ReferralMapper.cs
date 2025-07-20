@@ -39,7 +39,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
             ReferralType = dto.ReferralType,
             CustomerId = dto.CustomerId,
             EmployeeId = dto.EmployeeId,
-            RelatedDocumentIds = dto.RelatedDocumentIds.ToArray(),
+            RelatedDocumentIds = dto.RelatedDocumentIds.ToArray()
         };
 
         if (dto.Details != null)
@@ -50,7 +50,7 @@ public class ReferralMapper : IMapper<Referral, ReferralDto>
         return entity;
     }
 
-    private IReferralDetailsDto? DeserializeDetails(JsonDocument? details, ReferralTypeEnum type)
+    private ReferralDetailsDto? DeserializeDetails(JsonDocument? details, ReferralTypeEnum type)
     {
         if (details == null)
         {

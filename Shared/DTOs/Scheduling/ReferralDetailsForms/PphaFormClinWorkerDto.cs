@@ -3,10 +3,8 @@ using ComposedHealthBase.Shared.Interfaces;
 
 namespace Shared.DTOs.Scheduling
 {
-    public class PphaFormClinWorkerDto : BaseDto<PphaFormClinWorkerDto>, IReferralDetailsDto
+    public class PphaFormClinWorkerDto : ReferralDetailsDto
     {
-        public Guid? ReferralId { get; set; }
-
         // Employee Information
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;

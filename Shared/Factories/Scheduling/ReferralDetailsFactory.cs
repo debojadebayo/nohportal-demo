@@ -7,7 +7,7 @@ namespace Shared.Factories.Scheduling
 {
     public static class ReferralDetailsFactory
     {
-        private static readonly Dictionary<ReferralTypeEnum, Func<IReferralDetailsDto>> _registry =
+        private static readonly Dictionary<ReferralTypeEnum, Func<ReferralDetailsDto>> _registry =
             new()
             {
                 { ReferralTypeEnum.CaseReferral, () => new CaseReferralDetailsDto() },
@@ -21,12 +21,12 @@ namespace Shared.Factories.Scheduling
                 { ReferralTypeEnum.StudentClinFitnessCertificate, () => new StudentClinFitnessCertificateDto() }
             };
 
-        public static IReferralDetailsDto? Create(ReferralTypeEnum referralType)
+        public static ReferralDetailsDto? Create(ReferralTypeEnum referralType)
         {
             return _registry.TryGetValue(referralType, out var factory) ? factory() : null;
         }
 
-        public static void Register(ReferralTypeEnum referralType, Func<IReferralDetailsDto> factory)
+        public static void Register(ReferralTypeEnum referralType, Func<ReferralDetailsDto> factory)
         {
             _registry[referralType] = factory;
         }

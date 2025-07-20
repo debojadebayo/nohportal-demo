@@ -19,6 +19,6 @@ namespace Shared.DTOs.Scheduling
         public Guid? HrContactId { get; set; }
         public List<Guid> RelatedDocumentIds { get; set; } = new List<Guid>();
         public ReferralTypeEnum ReferralType { get; set; } = ReferralTypeEnum.CaseReferral;
-        public IReferralDetailsDto? Details { get; set; }
+        public ReferralDetailsDto? Details { get; set; }
     }
 }
